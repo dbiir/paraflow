@@ -1,79 +1,68 @@
 #！/bin/bash
 
-
-#定义function compilation
+#function for compilation
 compilationRP ()
 {
-export MAVEN_OPTS=-Xmx512m
 cd $PRESTO_DIR
 mvn clean install -DskipTests
 cd $REAL_DIR
 mvn clean package -DskipTests
 }
 
-
-#定义function testRP
+#function for test
 testRP ()
 {
-export MAVEN_OPTS=-Xmx512m
 mvn test-compile
 mvn test
 }
 
 #########################################################################main################################################################################
 
-
 if [ $# = 3 ]
 then
-  #指定RealtimeAnalysis的目录
+  #arg[1]: path for RealTimeAnalysis project
   REAL_DIR=$1
-  #指定Presto的目录
+  #arg[2]: path for Presto project
   PRESTO_DIR=$2
-  #用户选择操作代码
+  #arg[3]: running mode. 1 for compilation only, 2 for test only, 3 for compilation and test
   OPT=$3
 else 
-  echo "参数不够!"
-  echo "请按照RealtimeAnalysis目录，Presto目录，可选操作代码顺序输入三个参数"
-  echo "可选代码含义如下："
-  echo "1：只编译"
-  echo "2：只测试"
-  echo "3：既编译又测试"
+  echo "CT Tool Usage"
+  echo "./ct.sh <RealTimeAnalysis> <Presto> <mode>"
+  echo "RealTimeAnalysis: path for RealTimeAnalysis project"
+  echo "Presto: path for Presto project"
+  echo "mode：running mode. 1 for compilation, 2 for test, 3 for compilation and test"
   exit 0
 fi
-
 
 if [ -d $REAL_DIR ]
 then
   :
 else
-  echo "目录格式输入有误or目录不存在"
-  echo "第一个参数为RealtimeAnalysis的路径"
+  echo "Specified RealTimeAnalysis path is not a valid dir"
   exit 0
 fi
-
-
-echo "RealtimeAnalysis directory is $REAL_DIR"
-echo "Presto directory is $PRESTO_DIR"
-echo "Option number is $OPT"
 
 if [ -d $PRESTO_DIR ]
 then
   :
 else
-  echo "目录格式输入有误or目录不存在"
-  echo "第二个参数为Presto的路径"
+  echo "Specified Presto path is not a valid dir"
   exit 0
 fi
 
+echo "RealtimeAnalysis path is $REAL_DIR"
+echo "Presto path is $PRESTO_DIR"
+echo "Running mode is $OPT"
 
 if [ $OPT -eq 1 ]
 then
   compilationRP
   if [ $? -eq 0 ]
   then
-    echo "-------------Compilation is OK-----------"
+    echo "-------------Compilation DONE-----------"
   else
-    echo "------------Compilation is failed-------------"
+    echo "------------Compilation FAILED-------------"
     exit 0
   fi
 elif [ $OPT -eq 2 ]
@@ -81,9 +70,9 @@ then
   testRP
   if [ $? -eq 0 ]
   then
-    echo "-------------Test is OK-----------"
+    echo "-------------Test DONE-----------"
   else
-    echo "------------Test is failed-------------"
+    echo "------------Test FAILED-------------"
     exit 0
   fi
 elif [ $OPT -eq 3 ]
@@ -91,23 +80,23 @@ then
   compilationRP
   if [ $? -eq 0 ]
   then
-    echo "-------------Compilation is OK-----------"
+    echo "-------------Compilation DONE-----------"
   else
-    echo "------------Compilation is failed-------------"
+    echo "------------Compilation FAILED-------------"
     exit 0
   fi
   testRP
   if [ $? -eq 0 ]
   then
-    echo "-------------Test is OK-----------"
+    echo "-------------Test DONE-----------"
   else
-    echo "------------Test is failed-------------"
+    echo "------------Test FAILED-------------"
     exit 0
   fi
 else
-  echo "可选操作代码输入不符合要求!"
-  echo "1：只编译"
-  echo "2：只测试"
-  echo "3：既编译又测试"
+  echo "Specified running mode is not valid"
+  echo "1：compilation only"
+  echo "2：test only"
+  echo "3：compilation and test"
   exit 0
 fi

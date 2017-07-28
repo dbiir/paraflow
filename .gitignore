@@ -1,3 +1,7 @@
+.idea
+*.iml
+dist/ParaFlow-1.0-alpha1/lib
+
 # Compiled class file
 *.class
 
