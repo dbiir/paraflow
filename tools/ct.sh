@@ -3,7 +3,6 @@
 #function for compilation
 compilationRP ()
 {
-export MAVEN_OPTS=-Xmx512m
 cd $PRESTO_DIR
 mvn clean install -DskipTests
 cd $REAL_DIR
@@ -13,7 +12,6 @@ mvn clean package -DskipTests
 #function for test
 testRP ()
 {
-export MAVEN_OPTS=-Xmx512m
 mvn test-compile
 mvn test
 }
