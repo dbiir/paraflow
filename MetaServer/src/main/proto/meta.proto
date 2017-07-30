@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_package = "cn.edu.ruc.dbiir.metaserver";
+
+service MetaKeeper {
+    rpc SayHi(Request) returns (Response) {}
+}
+
+message Request {
+    String name = 1;
+}
+
+message Response {
+    State status = 1;
+    enum State {
+        OK = 0;
+        ERR = 1;
+    }
+}

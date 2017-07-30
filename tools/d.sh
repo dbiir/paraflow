@@ -46,13 +46,13 @@ then
   #arg[5]: Username
   USER_NAME=$5
 else 
-  echo "D Tool Usage"
-  echo "./d.sh <Deploy Dictionary> <server Dictionary>"
-  echo "Deploy Dictionary: path for deploying"
-  echo "Server Dictionary: path for server"
+  echo "Deployment Tool Usage"
+  echo "./d.sh <Deployment directory> <Server file path> <RealTimeAnalysis> <Presto> <User name>"
+  echo "Deployment directory: local directory for deployment"
+  echo "Server file path: path for servers file, which stores the ip list of servers in the cluster"
   echo "RealTimeAnalysis: path for RealTimeAnalysis project"
   echo "Presto: path for Presto project"
-  echo "Username for every node"
+  echo "User name: username for every node in the cluster"
   exit 0
 fi
 
@@ -61,7 +61,7 @@ if [ -d $DEPLOY_DIR ]
 then
   :
 else
-  echo "Specified Deploying path is not a valid dir"
+  echo "Specified deployment path is not valid"
   exit 0
 fi
 
@@ -70,7 +70,7 @@ if [ -d $SERVER_DIR ]
 then
   :
 else
-  echo "Specified server path is not a valid dir"
+  echo "Specified server path is not valid"
   exit 0
 fi
 
@@ -79,7 +79,7 @@ if [ -d $REAL_DIR ]
 then
   :
 else
-  echo "Specified RealTimeAnalysis path is not a valid dir"
+  echo "Specified RealTimeAnalysis path is not valid"
   exit 0
 fi
 
@@ -88,7 +88,7 @@ if [ -d $PRESTO_DIR ]
 then
   :
 else
-  echo "Specified Presto path is not a valid dir"
+  echo "Specified Presto path is not valid"
   exit 0
 fi
 
