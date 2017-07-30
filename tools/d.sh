@@ -1,4 +1,5 @@
 #！/bin/bash
+
 #path for lib
 LIB_DIR=../dist/ParaFlow-1.0-alpha1/lib
 #function for scp tar file to each server specified in servers file
@@ -6,6 +7,11 @@ scp_tar ()
 {
 #Login $SSH_IP
 ssh $USER_NAME@$SSH_IP
+expect {
+"*yes/no*" {send "yes\r"; exp_continue}
+"*password*" {send "$IP_PW\r";}
+}
+expect eof
 #Check if $DEPLOY_DIR exists in $SSH_IP.
 #If not exists, create the $DEPLOY_DIR.
 if [ -d $DEPLOY_DIR ]
@@ -25,6 +31,11 @@ untar ()
 {
 #Login $SSH_IP
 ssh $USER_NAME@$SSH_IP
+expect {
+"*yes/no*" {send "yes\r"; exp_continue}
+"*password*" {send "$IP_PW\r";}
+}
+expect eof
 cd $DEPLOY_DIR
 tar -zxvf ParaFlow-1.0-alpha1.tar.gz
 exit
@@ -33,7 +44,8 @@ exit
 
 ################################################main##########################################################
 
-if [ $# = 5 ]
+
+if [ $# = 6 ]
 then
   #arg[1]: path for deploying
   DEPLOY_DIR=$1
@@ -45,6 +57,8 @@ then
   PRESTO_DIR=$4
   #arg[5]: Username
   USER_NAME=$5
+  #arg[6]: IP_PW
+  IP_PW=$6
 else 
   echo "D Tool Usage"
   echo "./d.sh <Deploy Dictionary> <server Dictionary>"
@@ -53,6 +67,7 @@ else
   echo "RealTimeAnalysis: path for RealTimeAnalysis project"
   echo "Presto: path for Presto project"
   echo "Username for every node"
+  echo "Password for every node"
   exit 0
 fi
 
@@ -102,6 +117,14 @@ else
   echo "############# servers For Example #############"
   echo "192.168.136.3"
   exit 0
+fi
+
+
+if ( rpm -qa | grep -q expect )
+then 
+  :
+else
+  yum -y install expect > /dev/null
 fi
 
 
