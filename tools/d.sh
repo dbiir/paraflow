@@ -1,4 +1,5 @@
 #！/bin/bash
+
 #path for lib
 LIB_DIR=../dist/ParaFlow-1.0-alpha1/lib
 #function for scp tar file to each server specified in servers file
@@ -6,6 +7,11 @@ scp_tar ()
 {
 #Login $SSH_IP
 ssh $USER_NAME@$SSH_IP
+expect {
+"*yes/no*" {send "yes\r"; exp_continue}
+"*password*" {send "$IP_PW\r";}
+}
+expect eof
 #Check if $DEPLOY_DIR exists in $SSH_IP.
 #If not exists, create the $DEPLOY_DIR.
 if [ -d $DEPLOY_DIR ]
@@ -17,23 +23,30 @@ fi
 #Logout $SSH_IP
 exit
 scp ParaFlow-1.0-alpha1.tar.gz $USER_NAME@$SSH_IP:$DEPLOY_DIR 
+expect {
+"*yes/no*" {send "yes\r"; exp_continue}
+"*password*" {send "$IP_PW\r";}
+expect eof
 }
-
 
 #Untar the tar file to specified dir in each server
 untar ()
 {
 #Login $SSH_IP
 ssh $USER_NAME@$SSH_IP
+expect {
+"*yes/no*" {send "yes\r"; exp_continue}
+"*password*" {send "$IP_PW\r";}
+}
+expect eof
 cd $DEPLOY_DIR
 tar -zxvf ParaFlow-1.0-alpha1.tar.gz
 exit
 }
 
-
 ################################################main##########################################################
 
-if [ $# = 5 ]
+if [ $# = 6 ]
 then
   #arg[1]: path for deploying
   DEPLOY_DIR=$1
@@ -45,17 +58,19 @@ then
   PRESTO_DIR=$4
   #arg[5]: Username
   USER_NAME=$5
+  #arg[6]: IP_PW
+  IP_PW=$6
 else 
   echo "Deployment Tool Usage"
-  echo "./d.sh <Deployment directory> <Server file path> <RealTimeAnalysis> <Presto> <User name>"
+  echo "./d.sh <Deployment directory> <Server file path> <RealTimeAnalysis> <Presto> <User name> <Password>"
   echo "Deployment directory: local directory for deployment"
   echo "Server file path: path for servers file, which stores the ip list of servers in the cluster"
   echo "RealTimeAnalysis: path for RealTimeAnalysis project"
   echo "Presto: path for Presto project"
-  echo "User name: username for every node in the cluster"
+  echo "User name: Username for every node in the cluster"
+  echo "Password: Password for every node in the cluster"
   exit 0
 fi
-
 
 if [ -d $DEPLOY_DIR ]
 then
@@ -65,7 +80,6 @@ else
   exit 0
 fi
 
-
 if [ -d $SERVER_DIR ]
 then
   :
@@ -73,7 +87,6 @@ else
   echo "Specified server path is not valid"
   exit 0
 fi
-
 
 if [ -d $REAL_DIR ]
 then
@@ -83,7 +96,6 @@ else
   exit 0
 fi
 
-
 if [ -d $PRESTO_DIR ]
 then
   :
@@ -91,7 +103,6 @@ else
   echo "Specified Presto path is not valid"
   exit 0
 fi
-
 
 if [ -f $SERVER_DIR/servers ]
 then
@@ -102,6 +113,13 @@ else
   echo "############# servers For Example #############"
   echo "192.168.136.3"
   exit 0
+fi
+
+if ( rpm -qa | grep -q expect )
+then 
+  :
+else
+  yum -y install expect > /dev/null
 fi
 
 
@@ -122,7 +140,6 @@ cp $PRESTO_DIR/presto-server/target/lib/*.jar $LIB_DIR/
 cd ../dist/
 tar -zcvf ParaFlow-1.0-alpha1.tar.gz ParaFlow-1.0-alpha1
 
-
 while read SSH_IP; do
   echo $SSH_IP
   scp_tar
@@ -140,4 +157,3 @@ while read SSH_IP; do
     echo "------------$SSH_IP untar is failed-------------"
   fi
 done <servers
-
