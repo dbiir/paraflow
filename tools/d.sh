@@ -23,6 +23,11 @@ fi
 #Logout $SSH_IP
 exit
 scp ParaFlow-1.0-alpha1.tar.gz $USER_NAME@$SSH_IP:$DEPLOY_DIR 
+expect {
+"*yes/no*" {send "yes\r"; exp_continue}
+"*password*" {send "$IP_PW\r";}
+}
+expect eof
 }
 
 
