@@ -2,14 +2,26 @@
 
 #path for lib
 LIB_DIR=../dist/ParaFlow-1.0-alpha1/lib
-#function for scp tar file to each server specified in servers file
-scp_tar ()
+
+
+#Check if $DEPLOY_DIR exists in $SSH_IP.
+#If not exists, create the $DEPLOY_DIR. 
+dir_exist ()
 {
+cat >dir_exist.exp<<EOF
 #!/usr/bin/expect
 #Login $SSH_IP
-ssh $USER_NAME@$SSH_IP
-#Check if $DEPLOY_DIR exists in $SSH_IP.
-#If not exists, create the $DEPLOY_DIR.
+#fork一个子进程执行ssh命令
+spawn ssh $USER_NAME@$SSH_IP
+expect {
+"*yes/no*" {send "yes\r"; exp_continue}
+"*password*" {send "$IP_PW\r";}
+}
+interact  
+expect eof
+EOF
+chmod 755 dir_exist.exp
+./dir_exist.exp > /dev/null 
 if [ -d $DEPLOY_DIR ]
 then
   :
@@ -18,26 +30,62 @@ else
 fi
 #Logout $SSH_IP
 exit
-scp ParaFlow-1.0-alpha1.tar.gz $USER_NAME@$SSH_IP:$DEPLOY_DIR 
+/bin/rm -rf dir_exist.exp
+}
 
+
+#function for scp tar file to each server specified in servers file
+scp_tar ()
+{
+cat >scp_tar.exp<<EOF
+#!/usr/bin/expect
+#Login $SSH_IP
+#fork一个子进程执行ssh命令
+spawn scp ParaFlow-1.0-alpha1.tar.gz $USER_NAME@$SSH_IP:$DEPLOY_DIR 
+expect {
+"*yes/no*" {send "yes\r"; exp_continue}
+"*password*" {send "$IP_PW\r";}
+}
+interact  
+expect eof
+EOF
+chmod 755 scp_tar.exp
+./scp_tar.exp > /dev/null 
+#Logout $SSH_IP
+exit
+/bin/rm -rf scp_tar.exp
 }
 
 
 #Untar the tar file to specified dir in each server
 untar ()
 {
+cat >untar.exp<<EOF
+#!/usr/bin/expect
 #Login $SSH_IP
-ssh $USER_NAME@$SSH_IP
+#fork一个子进程执行ssh命令
+spawn ssh $USER_NAME@$SSH_IP
+expect {
+"*yes/no*" {send "yes\r"; exp_continue}
+"*password*" {send "$IP_PW\r";}
+}
+interact  
+expect eof
+EOF
+chmod 755 untar.exp
+./untar.exp > /dev/null 
 cd $DEPLOY_DIR
 tar -zxvf ParaFlow-1.0-alpha1.tar.gz
+#Logout $SSH_IP
 exit
+/bin/rm -rf dir_exist.exp
 }
 
 
 ################################################main##########################################################
 
 
-if [ $# = 5 ]
+if [ $# = 6 ]
 then
   #arg[1]: path for deploying
   DEPLOY_DIR=$1
@@ -49,8 +97,10 @@ then
   PRESTO_DIR=$4
   #arg[5]: Username
   USER_NAME=$5
+#arg[6]: Username
+  IP_PW=$6
 else 
-  echo "$#;$1;$2;$3;$4;$5"
+  echo "$#;$1;$2;$3;$4;$5;$6"
   echo "D Tool Usage"
   echo "./d.sh <Deploy Dictionary> <server Dictionary> <RealTimeAnalysis> <Presto> <Username>"
   echo "Deploy Dictionary: path for deploying"
@@ -58,6 +108,7 @@ else
   echo "RealTimeAnalysis: path for RealTimeAnalysis project"
   echo "Presto: path for Presto project"
   echo "Username for every node"
+  echo "Password for every node"
   exit 0
 fi
 
