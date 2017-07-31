@@ -79,6 +79,7 @@ tar -zxvf ParaFlow-1.0-alpha1.tar.gz
 #Logout $SSH_IP
 exit
 /bin/rm -rf dir_exist.exp
+
 }
 
 
@@ -102,13 +103,13 @@ then
 else 
   echo "$#;$1;$2;$3;$4;$5;$6"
   echo "D Tool Usage"
-  echo "./d.sh <Deploy Dictionary> <server Dictionary> <RealTimeAnalysis> <Presto> <Username>"
-  echo "Deploy Dictionary: path for deploying"
-  echo "Server Dictionary: path for server"
+  echo "./d.sh <Deployment Directory> <Server Directory> <RealTimeAnalysis> <Presto> <Username> <Password>"
+  echo "Deploy Directory: path for deploying"
+  echo "Server Directory: path for server"
   echo "RealTimeAnalysis: path for RealTimeAnalysis project"
   echo "Presto: path for Presto project"
-  echo "Username for every node"
-  echo "Password for every node"
+  echo "Username for all nodes in the cluster"
+  echo "Password for all nodes in the cluster"
   exit 0
 fi
 
@@ -185,6 +186,14 @@ else
   echo "############# servers For Example #############"
   echo "192.168.136.3"
   exit 0
+fi
+
+
+if ( rpm -qa | grep -q expect )
+then 
+  :
+else
+  yum -y install expect > /dev/null
 fi
 
 
