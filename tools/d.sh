@@ -56,7 +56,6 @@ exit
 /bin/rm -rf scp_tar.exp
 }
 
-
 #Untar the tar file to specified dir in each server
 untar ()
 {
@@ -82,9 +81,7 @@ exit
 
 }
 
-
 ################################################main##########################################################
-
 
 if [ $# = 6 ]
 then
@@ -102,7 +99,7 @@ then
   IP_PW=$6
 else 
   echo "$#;$1;$2;$3;$4;$5;$6"
-  echo "D Tool Usage"
+  echo "Deployment Tool Usage"
   echo "./d.sh <Deployment Directory> <Server Directory> <RealTimeAnalysis> <Presto> <Username> <Password>"
   echo "Deploy Directory: path for deploying"
   echo "Server Directory: path for server"
@@ -112,7 +109,6 @@ else
   echo "Password for all nodes in the cluster"
   exit 0
 fi
-
 
 #delete the lsat '/' in dictionary if have
 if [[ $DEPLOY_DIR == */ ]]
@@ -152,31 +148,32 @@ else
   echo "Specified Deploying path is not a valid dir"
   mkdir $DEPLOY_DIR || echo "mkdir deploy dir failure!" && exit 0
 fi
+
 #Judge specified server path is or isn't a valid dir
 if [ -d $SERVER_DIR ]
 then
   :
 else
-  echo "Specified server path is not a valid dir"
+  echo "Specified server path is not valid"
   exit 0
 fi
-#Judge specified RealTimeAnalysis path is or isn't a valid dir
-if [ -d $REAL_DIR/dist/bin/ ]
+
+if [ -d $REAL_DIR ]
 then
   :
 else
-  echo "$REAL_DIR/dist/bin/: No such directory"
+  echo "Specified RealTimeAnalysis path is not valid"
   exit 0
 fi
-#Judge specified Presto path is or isn't a valid dir
-if [ -d $PRESTO_DIR/presto-server/target/lib/ ]
+
+if [ -d $PRESTO_DIR ]
 then
   :
 else
-  echo "$PRESTO_DIR/presto-server/target/lib/: No such directory"
+  echo "Specified Presto path is not valid"
   exit 0
 fi
-#Judge file servers is or isn't exist
+
 if [ -f $SERVER_DIR/servers ]
 then
   :
@@ -187,7 +184,6 @@ else
   echo "192.168.136.3"
   exit 0
 fi
-
 
 if ( rpm -qa | grep -q expect )
 then 
@@ -233,4 +229,3 @@ while read SSH_IP; do
     echo "------------$SSH_IP untar is failed-------------"
   fi
 done <servers
-

@@ -1,6 +1,7 @@
 .idea
 *.iml
-dist/ParaFlow-1.0-alpha1/lib
+dist/paraflow-1.0-alpha1/lib
+_site
 
 # Compiled class file
 *.class
@@ -24,3 +25,5 @@ dist/ParaFlow-1.0-alpha1/lib
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+target
