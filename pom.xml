@@ -18,9 +18,10 @@
     <artifactId>paraflow</artifactId>
     <version>1.0-alpha1</version>
     <modules>
-        <module>LoaderProducer</module>
-        <module>LoaderConsumer</module>
-        <module>MetaServer</module>
+        <module>paraflow-loader-consumer</module>
+        <module>paraflow-loader-producer</module>
+        <module>paraflow-metaserver</module>
+        <module>paraflow-commons</module>
     </modules>
     <packaging>pom</packaging>
 
