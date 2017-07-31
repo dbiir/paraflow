@@ -1,6 +1,6 @@
 .idea
 *.iml
-dist/ParaFlow-1.0-alpha1/lib
+dist/paraflow-1.0-alpha1/lib
 _site
 
 # Compiled class file
