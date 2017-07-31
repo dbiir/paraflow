@@ -5,13 +5,9 @@ LIB_DIR=../dist/ParaFlow-1.0-alpha1/lib
 #function for scp tar file to each server specified in servers file
 scp_tar ()
 {
+#!/usr/bin/expect
 #Login $SSH_IP
 ssh $USER_NAME@$SSH_IP
-expect {
-"*yes/no*" {send "yes\r"; exp_continue}
-"*password*" {send "$IP_PW\r";}
-}
-expect eof
 #Check if $DEPLOY_DIR exists in $SSH_IP.
 #If not exists, create the $DEPLOY_DIR.
 if [ -d $DEPLOY_DIR ]
@@ -23,11 +19,7 @@ fi
 #Logout $SSH_IP
 exit
 scp ParaFlow-1.0-alpha1.tar.gz $USER_NAME@$SSH_IP:$DEPLOY_DIR 
-expect {
-"*yes/no*" {send "yes\r"; exp_continue}
-"*password*" {send "$IP_PW\r";}
-}
-expect eof
+
 }
 
 
@@ -36,11 +28,6 @@ untar ()
 {
 #Login $SSH_IP
 ssh $USER_NAME@$SSH_IP
-expect {
-"*yes/no*" {send "yes\r"; exp_continue}
-"*password*" {send "$IP_PW\r";}
-}
-expect eof
 cd $DEPLOY_DIR
 tar -zxvf ParaFlow-1.0-alpha1.tar.gz
 exit
@@ -50,7 +37,7 @@ exit
 ################################################main##########################################################
 
 
-if [ $# = 6 ]
+if [ $# = 5 ]
 then
   #arg[1]: path for deploying
   DEPLOY_DIR=$1
@@ -62,30 +49,58 @@ then
   PRESTO_DIR=$4
   #arg[5]: Username
   USER_NAME=$5
-  #arg[6]: IP_PW
-  IP_PW=$6
 else 
+  echo "$#;$1;$2;$3;$4;$5"
   echo "D Tool Usage"
-  echo "./d.sh <Deploy Dictionary> <server Dictionary>"
+  echo "./d.sh <Deploy Dictionary> <server Dictionary> <RealTimeAnalysis> <Presto> <Username>"
   echo "Deploy Dictionary: path for deploying"
   echo "Server Dictionary: path for server"
   echo "RealTimeAnalysis: path for RealTimeAnalysis project"
   echo "Presto: path for Presto project"
   echo "Username for every node"
-  echo "Password for every node"
   exit 0
 fi
 
 
+#delete the lsat '/' in dictionary if have
+if [[ $DEPLOY_DIR == */ ]]
+then
+  DEPLOY_DIR=${DEPLOY_DIR%/*}
+else
+  :
+fi
+#delete the lsat '/' in dictionary if have
+if [[ $SERVER_DIR == */ ]]
+then
+  SERVER_DIR=${SERVER_DIR%/*}
+else
+  :
+fi
+#delete the lsat '/' in dictionary if have
+if [[ $REAL_DIR == */ ]]
+then
+  REAL_DIR=${REAL_DIR%/*}
+else
+  :
+fi
+#delete the lsat '/' in dictionary if have
+if [[ $PRESTO_DIR == */ ]]
+then
+  PRESTO_DIR=${PRESTO_DIR%/*}
+else
+  :
+fi
+
+
+#Judge specified Deploying path is or isn't a valid dir
 if [ -d $DEPLOY_DIR ]
 then
   :
 else
   echo "Specified Deploying path is not a valid dir"
-  exit 0
+  mkdir $DEPLOY_DIR || echo "mkdir deploy dir failure!" && exit 0
 fi
-
-
+#Judge specified server path is or isn't a valid dir
 if [ -d $SERVER_DIR ]
 then
   :
@@ -93,26 +108,23 @@ else
   echo "Specified server path is not a valid dir"
   exit 0
 fi
-
-
-if [ -d $REAL_DIR ]
+#Judge specified RealTimeAnalysis path is or isn't a valid dir
+if [ -d $REAL_DIR/dist/bin/ ]
 then
   :
 else
-  echo "Specified RealTimeAnalysis path is not a valid dir"
+  echo "$REAL_DIR/dist/bin/: No such directory"
   exit 0
 fi
-
-
-if [ -d $PRESTO_DIR ]
+#Judge specified Presto path is or isn't a valid dir
+if [ -d $PRESTO_DIR/presto-server/target/lib/ ]
 then
   :
 else
-  echo "Specified Presto path is not a valid dir"
+  echo "$PRESTO_DIR/presto-server/target/lib/: No such directory"
   exit 0
 fi
-
-
+#Judge file servers is or isn't exist
 if [ -f $SERVER_DIR/servers ]
 then
   :
@@ -125,14 +137,6 @@ else
 fi
 
 
-if ( rpm -qa | grep -q expect )
-then 
-  :
-else
-  yum -y install expect > /dev/null
-fi
-
-
 #Check if lib dir exists under the directory of ParaFlow/dist/ParaFlow-xxx/.
 #If not exists, create the lib dir.
 if [ -d $LIB_DIR ]
@@ -142,6 +146,7 @@ else
   mkdir ../dist/ParaFlow-1.0-alpha1/lib
 fi
 
+
 #Copy jar files from RealTimeAnalysis/dist/bin/ to lib
 cp $REAL_DIR/dist/bin/*.jar $LIB_DIR/
 #Copy jar files from Presto/presto-server/target/lib to lib
@@ -150,7 +155,7 @@ cp $PRESTO_DIR/presto-server/target/lib/*.jar $LIB_DIR/
 cd ../dist/
 tar -zcvf ParaFlow-1.0-alpha1.tar.gz ParaFlow-1.0-alpha1
 
-
+#Loop for every server in servers to deploy
 while read SSH_IP; do
   echo $SSH_IP
   scp_tar
