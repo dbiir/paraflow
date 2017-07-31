@@ -1,19 +1,23 @@
 syntax = "proto3";
 
-option java_package = "cn.edu.ruc.dbiir.metaserver";
+option java_package = "cn.edu.ruc.dbiir.metaserver.proto";
+option java_outer_classname = "MetaProto";
+option objc_class_prefix = "META";
 
-service MetaKeeper {
+package meta;
+
+service Meta {
     rpc SayHi(Request) returns (Response) {}
 }
 
 message Request {
-    String name = 1;
+    string name = 1;
 }
 
 message Response {
-    State status = 1;
     enum State {
         OK = 0;
         ERR = 1;
     }
+    State status = 1;
 }
