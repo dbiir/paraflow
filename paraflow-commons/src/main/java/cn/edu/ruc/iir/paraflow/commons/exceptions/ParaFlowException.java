@@ -10,6 +10,8 @@ import java.io.StringWriter;
  */
 public abstract class ParaFlowException extends Exception
 {
+    private static final long serialVersionUID = -6514778398567346776L;
+
     /**
      * get exception name. default to class name
      *
