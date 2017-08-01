@@ -28,6 +28,19 @@
             <groupId>org.javalite</groupId>
             <artifactId>activejdbc</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.edu.ruc.dbiir</groupId>
+            <artifactId>paraflow-commons</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>
