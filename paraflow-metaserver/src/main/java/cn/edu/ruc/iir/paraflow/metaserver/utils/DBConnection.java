@@ -4,27 +4,42 @@ import org.javalite.activejdbc.Base;
 
 /**
  * ParaFlow
- * This is a per-thread db connection.
+ * This is a db connection instance.
+ * This is NOT thread safe!!!
  *
  * @author guodong
  */
 public class DBConnection
 {
-    private String driver;
-    private String host;
-    private String user;
-    private String password;
+    private static String driver;
+    private static String host;
+    private static String user;
+    private static String password;
 
-    public DBConnection(String driver, String host, String user, String password)
+    private static DBConnection connectionInstance = null;
+
+    public static DBConnection getConnectionInstance()
     {
-        this.driver = driver;
-        this.host = host;
-        this.user = user;
-        this.password = password;
+        if (connectionInstance == null) {
+            connectionInstance = new DBConnection();
+        }
+
+        return connectionInstance;
     }
 
-    public void open()
+    private DBConnection()
     {
+    }
+
+    public static void connect(String driver, String host, String user, String password)
+    {
+        DBConnection.driver = driver;
+        DBConnection.host = host;
+        DBConnection.user = user;
+        DBConnection.password = password;
+
+        getConnectionInstance();
+
         Base.open(driver, host, user, password);
     }
 
