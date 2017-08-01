@@ -1,20 +1,22 @@
 package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
 /**
- * ParaFlow
+ * This exception is intended to be used in paraflow-metaserver.
+ * Representing for gRPC server IOExpception when starting up.
  *
  * @author guodong
  */
-public class ConfigFileNotFoundException extends ParaFlowException
+public class RPCServerIOException extends ParaFlowException
 {
-    private static final long serialVersionUID = 6980171393859140121L;
+    private static final long serialVersionUID = 5621165837126253248L;
 
-    private final String configPath;
+    private final int port;
 
-    public ConfigFileNotFoundException(String configPath)
+    public RPCServerIOException(int port)
     {
-        this.configPath = configPath;
+        this.port = port;
     }
+
     /**
      * get error message.
      *
@@ -23,7 +25,7 @@ public class ConfigFileNotFoundException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return String.format("Configuration file %s not found", this.configPath);
+        return String.format("gRPC server cannot start at port %d", port);
     }
 
     /**
@@ -34,7 +36,7 @@ public class ConfigFileNotFoundException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return "Use default configuration properties set by user or in system instead.";
+        return "Server stops. Check if port is already used and try again.";
     }
 
     /**
@@ -45,6 +47,6 @@ public class ConfigFileNotFoundException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return ParaFlowExceptionLevel.WARNING;
+        return ParaFlowExceptionLevel.FATAL;
     }
 }
