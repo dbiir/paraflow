@@ -15,7 +15,7 @@ public class TestConfigFactory
     @Test
     public void testConfig()
     {
-        ConfigFactory configInstance = ConfigFactory.getConfigInstace("")
+        ConfigFactory configInstance = ConfigFactory.getConfigInstance("")
                 .setDefault("name", "jelly")
                 .setDefault("age", "23");
         try {
