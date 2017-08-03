@@ -26,7 +26,7 @@ public class ConfigFactory
 
     private static ConfigFactory configInstance = null;
 
-    public static synchronized ConfigFactory getConfigInstace(String configPath)
+    public static synchronized ConfigFactory getConfigInstance(String configPath)
     {
         if (configInstance == null) {
             configInstance = new ConfigFactory(configPath);
