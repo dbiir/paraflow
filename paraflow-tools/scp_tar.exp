@@ -1,0 +1,10 @@
+#!/usr/bin/expect
+#Login 192.168.124.15
+#fork一个子进程执行ssh命令
+spawn scp ParaFlow-1.0-alpha1.tar.gz presto@192.168.124.15:/home/presto/paraflow 
+expect {
+"*yes/no*" {send "yes\r"; exp_continue}
+"*password*" {send "presto455\r";}
+}
+interact  
+expect eof
