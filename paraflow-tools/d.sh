@@ -1,7 +1,9 @@
 #！/bin/bash
 
 #path for lib
-LIB_DIR=../dist/ParaFlow-1.0-alpha1/lib
+LIB_DIR=../dist/paraflow-1.0-alpha1/lib
+BIN_DIR=../dist/paraflow-1.0-alpha1/bin
+PLUGIN_DIR=../dist/paraflow-1.0-alpha1/plugin
 
 
 #Check if $DEPLOY_DIR exists in $SSH_IP.
@@ -139,15 +141,14 @@ else
   :
 fi
 
-
-#Judge specified Deploying path is or isn't a valid dir
-if [ -d $DEPLOY_DIR ]
-then
-  :
-else
-  echo "Specified Deploying path is not a valid dir"
-  mkdir $DEPLOY_DIR || echo "mkdir deploy dir failure!" && exit 0
-fi
+##Judge specified Deploying path is or isn't a valid dir
+#if [ -d $DEPLOY_DIR ]
+#then
+#  :
+#else
+#  echo "Specified Deploying path is not a valid dir"
+#  mkdir $DEPLOY_DIR || echo "mkdir deploy dir failure!" && exit 0
+#fi
 
 #Judge specified server path is or isn't a valid dir
 if [ -d $SERVER_DIR ]
@@ -197,16 +198,31 @@ fi
 #If not exists, create the lib dir.
 if [ -d $LIB_DIR ]
 then
-  :
+  : rm -f $LIB_DIR/*
 else
-  mkdir ../dist/ParaFlow-1.0-alpha1/lib
+  mkdir $LIB_DIR
 fi
 
+if [ -d $BIN_DIR ]
+then
+  :
+else
+  mkdir $BIN_DIR
+fi
+
+if [ -d $PLUGIN_DIR ]
+then
+  : rm -rf $PLUGIN_DIR/*
+else
+  mkdir $PLUGIN_DIR
+fi
 
 #Copy jar files from RealTimeAnalysis/dist/bin/ to lib
 cp $REAL_DIR/dist/bin/*.jar $LIB_DIR/
 #Copy jar files from Presto/presto-server/target/lib to lib
-cp $PRESTO_DIR/presto-server/target/lib/*.jar $LIB_DIR/
+cp $PRESTO_DIR/presto-server/target/presto-server-0.158-SNAPSHOT/lib/*.jar $LIB_DIR/
+cp -r $PRESTO_DIR/presto-server/target/presto-server-0.158-SNAPSHOT/bin/* $BIN_DIR/
+cp -r $PRESTO_DIR/presto-server/target/presto-server-0.158-SNAPSHOT/plugin/hdfs $PLUGIN_DIR/
 #Package the ParaFlow-xxx/ dir to a tar file as ParaFlow-xxx.tar
 cd ../dist/
 tar -zcvf ParaFlow-1.0-alpha1.tar.gz ParaFlow-1.0-alpha1
@@ -228,4 +244,4 @@ while read SSH_IP; do
   else
     echo "------------$SSH_IP untar is failed-------------"
   fi
-done <servers
+done <$SERVER_DIR/servers
