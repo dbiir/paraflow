@@ -4,6 +4,8 @@
 LIB_DIR=../dist/paraflow-1.0-alpha1/lib
 BIN_DIR=../dist/paraflow-1.0-alpha1/bin
 PLUGIN_DIR=../dist/paraflow-1.0-alpha1/plugin
+VERSION_TAR=paraflow-1.0-alpha1.tar.gz
+VERSION=paraflow-1.0-alpha1
 
 
 #Check if $DEPLOY_DIR exists in $SSH_IP.
@@ -19,19 +21,14 @@ expect {
 "*yes/no*" {send "yes\r"; exp_continue}
 "*password*" {send "$IP_PW\r";}
 }
-interact  
+expect "*#"
+send "mkdir -p $DEPLOY_DIR\r"
+expect "*#"
+send "exit\r"
 expect eof
 EOF
 chmod 755 dir_exist.exp
 ./dir_exist.exp > /dev/null 
-if [ -d $DEPLOY_DIR ]
-then
-  :
-else
-  mkdir $DEPLOY_DIR || echo "mkdir on $SSH_IP failure!" && exit 0 
-fi
-#Logout $SSH_IP
-exit
 /bin/rm -rf dir_exist.exp
 }
 
@@ -43,18 +40,16 @@ cat >scp_tar.exp<<EOF
 #!/usr/bin/expect
 #Login $SSH_IP
 #fork一个子进程执行ssh命令
-spawn scp ParaFlow-1.0-alpha1.tar.gz $USER_NAME@$SSH_IP:$DEPLOY_DIR 
+spawn scp $VERSION_TAR $USER_NAME@$SSH_IP:$DEPLOY_DIR 
 expect {
 "*yes/no*" {send "yes\r"; exp_continue}
 "*password*" {send "$IP_PW\r";}
 }
-interact  
 expect eof
 EOF
 chmod 755 scp_tar.exp
 ./scp_tar.exp > /dev/null 
 #Logout $SSH_IP
-exit
 /bin/rm -rf scp_tar.exp
 }
 
@@ -70,17 +65,17 @@ expect {
 "*yes/no*" {send "yes\r"; exp_continue}
 "*password*" {send "$IP_PW\r";}
 }
-interact  
+expect "*#"
+send "cd $DEPLOY_DIR\r"
+expect "*#"
+send "tar -zxvf $VERSION_TAR\r"
+expect "*#"
+send "exit\r"
 expect eof
 EOF
 chmod 755 untar.exp
 ./untar.exp > /dev/null 
-cd $DEPLOY_DIR
-tar -zxvf ParaFlow-1.0-alpha1.tar.gz
-#Logout $SSH_IP
-exit
 /bin/rm -rf dir_exist.exp
-
 }
 
 ################################################main##########################################################
@@ -97,10 +92,9 @@ then
   PRESTO_DIR=$4
   #arg[5]: Username
   USER_NAME=$5
-#arg[6]: Username
+  #arg[6]: Username
   IP_PW=$6
 else 
-  echo "$#;$1;$2;$3;$4;$5;$6"
   echo "Deployment Tool Usage"
   echo "./d.sh <Deployment Directory> <Server Directory> <RealTimeAnalysis> <Presto> <Username> <Password>"
   echo "Deploy Directory: path for deploying"
@@ -112,28 +106,29 @@ else
   exit 0
 fi
 
-#delete the lsat '/' in dictionary if have
+#delete the last '/' in dictionary if have
 if [[ $DEPLOY_DIR == */ ]]
 then
   DEPLOY_DIR=${DEPLOY_DIR%/*}
 else
   :
 fi
-#delete the lsat '/' in dictionary if have
+#delete dir "/home/presto
+#delete the last '/' in dictionary if have
 if [[ $SERVER_DIR == */ ]]
 then
   SERVER_DIR=${SERVER_DIR%/*}
 else
   :
 fi
-#delete the lsat '/' in dictionary if have
+#delete the last '/' in dictionary if have
 if [[ $REAL_DIR == */ ]]
 then
   REAL_DIR=${REAL_DIR%/*}
 else
   :
 fi
-#delete the lsat '/' in dictionary if have
+#delete the last '/' in dictionary if have
 if [[ $PRESTO_DIR == */ ]]
 then
   PRESTO_DIR=${PRESTO_DIR%/*}
@@ -225,11 +220,11 @@ cp -r $PRESTO_DIR/presto-server/target/presto-server-0.158-SNAPSHOT/bin/* $BIN_D
 cp -r $PRESTO_DIR/presto-server/target/presto-server-0.158-SNAPSHOT/plugin/hdfs $PLUGIN_DIR/
 #Package the ParaFlow-xxx/ dir to a tar file as ParaFlow-xxx.tar
 cd ../dist/
-tar -zcvf ParaFlow-1.0-alpha1.tar.gz ParaFlow-1.0-alpha1
+tar -zcvf $VERSION_TAR $VERSION 
 
 #Loop for every server in servers to deploy
 while read SSH_IP; do
-  echo $SSH_IP
+  echo "-------------------$SSH_IP--------------------------"
   dir_exist
   if [ $? -eq 0 ]
   then
