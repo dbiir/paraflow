@@ -10,7 +10,7 @@ PLUGIN_DIR=../dist/paraflow-1.0-alpha1/plugin
 #If not exists, create the $DEPLOY_DIR. 
 dir_exist ()
 {
-cat >dir_exist.exp<<EOF
+
 #!/usr/bin/expect
 #Login $SSH_IP
 #fork一个子进程执行ssh命令
@@ -21,9 +21,6 @@ expect {
 }
 interact  
 expect eof
-EOF
-chmod 755 dir_exist.exp
-./dir_exist.exp > /dev/null 
 if [ -d $DEPLOY_DIR ]
 then
   :
@@ -32,14 +29,12 @@ else
 fi
 #Logout $SSH_IP
 exit
-/bin/rm -rf dir_exist.exp
 }
 
 
 #function for scp tar file to each server specified in servers file
 scp_tar ()
 {
-cat >scp_tar.exp<<EOF
 #!/usr/bin/expect
 #Login $SSH_IP
 #fork一个子进程执行ssh命令
@@ -50,18 +45,15 @@ expect {
 }
 interact  
 expect eof
-EOF
-chmod 755 scp_tar.exp
-./scp_tar.exp > /dev/null 
+
 #Logout $SSH_IP
 exit
-/bin/rm -rf scp_tar.exp
 }
 
 #Untar the tar file to specified dir in each server
 untar ()
 {
-cat >untar.exp<<EOF
+
 #!/usr/bin/expect
 #Login $SSH_IP
 #fork一个子进程执行ssh命令
@@ -72,14 +64,11 @@ expect {
 }
 interact  
 expect eof
-EOF
-chmod 755 untar.exp
-./untar.exp > /dev/null 
+
 cd $DEPLOY_DIR
 tar -zxvf ParaFlow-1.0-alpha1.tar.gz
 #Logout $SSH_IP
 exit
-/bin/rm -rf dir_exist.exp
 
 }
 
