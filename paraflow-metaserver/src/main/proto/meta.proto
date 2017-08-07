@@ -1,23 +1,177 @@
 syntax = "proto3";
 
-option java_package = "cn.edu.ruc.dbiir.metaserver.proto";
+option java_package = "cn.edu.ruc.iir.paraflow.metaserver.proto";
 option java_outer_classname = "MetaProto";
 option objc_class_prefix = "META";
 
 package meta;
 
 service Meta {
-    rpc SayHi(Request) returns (Response) {}
+    //rpc SayHi(Request) returns (Response) {}
+    rpc listDatabases(None) returns (StringList) {}
+    rpc listTables(DatabaseName) returns (StringList) {}
+    rpc getDatabase(DatabaseName) returns (Database) {}
+    rpc getTable(DatabaseTable) returns (Table) {}
+    rpc getColumn(DatabaseTableColumn) returns (Column) {}
+    rpc createDatabase(Database) returns (Status) {}
+    rpc createTable(Table) returns (Status) {}
+    rpc deleteDatabase(DatabaseName) returns (Status) {}
+    rpc deleteTable(DatabaseTable) returns (Status) {}
+    rpc renameDatabase(RenameDatabase) returns (Status) {}
+    rpc renameTable(RenameTable) returns (Status) {}
+    rpc renameColumn(RenameColumn) returns (Status) {}
+    rpc createFiber(Fiber) returns (Status) {}
+    rpc listFiberValues(Fiber) returns (LongList) {}
+    rpc addBlockIndex(AddBlockIndex) returns (Status) {}
+    rpc filterBlockPathsByTime(FilterBlockPathsByTime) returns (StringList) {}
+    rpc filterBlockPaths(FilterBlockPaths) returns (StringList) {}
 }
 
-message Request {
+message None {
+
+}
+
+message DatabaseName {
+    string database = 1;
+}
+
+message TableName {
+    string table = 1;
+}
+
+
+message DatabaseTable {
+    DatabaseName database = 1;
+    TableName table = 2;
+}
+
+message ColumnName {
+    string column = 1;
+}
+
+message DatabaseTableColumn {
+    DatabaseName databasestring = 1;
+    TableName tablestring = 2;
+    ColumnName column = 3;
+}
+
+message RenameDatabase {
+    string old_name = 1;
+    string new_name = 2;
+}
+
+message RenameTable {
+    DatabaseName database = 1;
+    string old_name = 2;
+    string new_name = 3;
+}
+
+message RenameColumn {
+    DatabaseName database = 1;
+    TableName table = 2;
+    string old_name = 3;
+    string new_name = 4;
+}
+
+message Fiber {
+    DatabaseName database = 1;
+    TableName table = 2;
+    int64 value = 3;
+}
+
+message FiberValue {
+    int64 value = 1;
+}
+
+message AddBlockIndex {
+    DatabaseName database = 1;
+    TableName table = 2;
+    FiberValue value = 3;
+    string begin_time = 4;
+    string end_time = 5;
+    string path = 6;
+}
+
+message FilterBlockPathsByTime {
+    DatabaseName database = 1;
+    TableName table = 2;
+    string timelow = 3;
+    string timehigh = 4;
+}
+
+message FilterBlockPaths {
+    DatabaseName database = 1;
+    TableName table = 2;
+    FiberValue value = 3;
+    string timelow = 4;
+    string timehigh = 5;
+}
+
+//message Request {
+//    string name = 1;
+//}
+//
+//message Response {
+//    enum State {
+//        OK = 0;
+//        ERR = 1;
+//    }
+//    State status = 1;
+//}
+message Database {
     string name = 1;
+    string locationUri = 2;
+    User user = 3;
 }
 
-message Response {
-    enum State {
+message Table {
+    Database database = 1;
+    int64 creationTime = 2;
+    int64 lastAccessTime = 3;
+    User owner = 4;
+    string tableName = 5;
+    string tableLocationUri = 6;
+    Columns columns = 7;
+}
+
+message User {
+    string userName = 1;
+    string userPass = 2;
+    string roleName = 3;
+    int64 creationTime = 4;
+    int64 lastVisitTime = 5;
+}
+
+message Column {
+    string databasename = 1;
+    string tablename = 2;
+    string colName = 3;
+    string dataType = 4;
+    int32 colIndex = 5;
+}
+
+message Columns {
+    repeated Column column = 1;
+}
+
+message StringList {
+    repeated string str = 1;
+}
+
+message LongList {
+    repeated int64 lon = 1;
+}
+
+message Status {
+    enum type {
         OK = 0;
-        ERR = 1;
+        DATABASE_ALREADY_EXISTS = 1;
+        DATABASE_NOT_FOUND = 2;
+        TABLE_ALREADY_EXISTS = 3;
+        TABLE_NOT_FOUND = 4;
+        COLUMN_ALREADY_EXISTS = 5;
+        COLUMN_NOT_FOUND = 6;
+        FIBER_ALREADY_EXISTS = 7;
+        BLOCK_INDEX_ERROR = 8;
     }
-    State status = 1;
 }
