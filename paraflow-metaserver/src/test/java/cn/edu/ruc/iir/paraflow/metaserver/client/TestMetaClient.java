@@ -22,6 +22,21 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
+    @Test
+    public void clientListTableTest()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        client.listTables();
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     @Test
     public void clientGetDatabaseTest()
     {
@@ -35,6 +50,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientGetTableTest()
     {
@@ -48,6 +64,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientGetColumnTest()
     {
@@ -61,6 +78,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientCreateDatabaseTest()
     {
@@ -74,6 +92,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientCreateTableTest()
     {
@@ -87,6 +106,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientDeleteDatabaseTest()
     {
@@ -100,6 +120,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientDeleteTableTest()
     {
@@ -113,6 +134,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientRenameDatabaseTest()
     {
@@ -126,6 +148,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientRenameTableTest()
     {
@@ -139,6 +162,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientRenameColumnTest()
     {
@@ -152,6 +176,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientCreateFiberTest()
     {
@@ -165,6 +190,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientListFiberValuesTest()
     {
@@ -178,6 +204,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientAddBlockIndexTest()
     {
@@ -191,6 +218,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientFilterBlockPathsByTimeTest()
     {
@@ -204,6 +232,7 @@ public class TestMetaClient
             e.printStackTrace();
         }
     }
+
     @Test
     public void clientFilterBlockPathsTest()
     {

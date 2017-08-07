@@ -50,8 +50,8 @@ message ColumnName {
 }
 
 message DatabaseTableColumn {
-    DatabaseName databasestring = 1;
-    TableName tablestring = 2;
+    DatabaseName database = 1;
+    TableName table = 2;
     ColumnName column = 3;
 }
 
@@ -163,7 +163,7 @@ message LongList {
 }
 
 message Status {
-    enum type {
+    enum State {
         OK = 0;
         DATABASE_ALREADY_EXISTS = 1;
         DATABASE_NOT_FOUND = 2;
@@ -174,4 +174,5 @@ message Status {
         FIBER_ALREADY_EXISTS = 7;
         BLOCK_INDEX_ERROR = 8;
     }
+    State status = 1;
 }
