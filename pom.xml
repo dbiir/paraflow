@@ -88,7 +88,11 @@
                 <artifactId>log4j-core</artifactId>
                 <version>2.8.2</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-nop</artifactId>
+                <version>1.7.21</version>
+            </dependency>
             <dependency>
                 <groupId>cn.edu.ruc.dbiir</groupId>
                 <artifactId>paraflow-commons</artifactId>
@@ -126,27 +130,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-checkstyle-plugin</artifactId>
                     <version>2.17</version>
-                    <executions>
-                        <execution>
-                            <phase>validate</phase>
-                            <goals>
-                                <goal>check</goal>
-                            </goals>
-                            <configuration>
-                                <skip>${check.skip-checkstyle}</skip>
-                                <failOnViolation>${check.fail-checkstyle}</failOnViolation>
-                                <consoleOutput>true</consoleOutput>
-                                <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                                <configLocation>${main.baseDir}/src/checkstyle/checks.xml</configLocation>
-                                <sourceDirectories>
-                                    <directory>${project.build.sourceDirectory}</directory>
-                                </sourceDirectories>
-                                <testSourceDirectories>
-                                    <directory>${project.build.testSourceDirectory}</directory>
-                                </testSourceDirectories>
-                            </configuration>
-                        </execution>
-                    </executions>
                     <dependencies>
                         <dependency>
                             <groupId>com.puppycrawl.tools</groupId>
@@ -166,6 +149,7 @@
                     <target>${java.target.version}</target>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
 </project>

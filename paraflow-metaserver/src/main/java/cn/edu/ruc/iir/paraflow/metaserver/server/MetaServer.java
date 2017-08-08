@@ -57,11 +57,11 @@ public class MetaServer
         MetaConfig metaConfig = new MetaConfig(metaConfigPath);
 
         // connect database
-        DBConnection.connect(
-                metaConfig.getDBDriver(),
-                metaConfig.getDBHost(),
-                metaConfig.getDBUser(),
-                metaConfig.getDBPassword());
+//        DBConnection.connect(
+//                metaConfig.getDBDriver(),
+//                metaConfig.getDBHost(),
+//                metaConfig.getDBUser(),
+//                metaConfig.getDBPassword());
         logger.info("****** Database connected successfully");
         System.out.println("****** Database connected successfully");
 
@@ -103,7 +103,7 @@ public class MetaServer
 
     public static void main(String[] args)
     {
-        MetaServer server = new MetaServer(args[1]);
+        MetaServer server = new MetaServer(args[0]);
         try {
             server.start(10012);
             server.blockUntilTermination();
