@@ -17,8 +17,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -31,8 +30,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -45,8 +43,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -59,8 +56,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -73,8 +69,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -87,8 +82,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -101,8 +95,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -115,8 +108,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -129,8 +121,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -143,8 +134,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -157,8 +147,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -171,8 +160,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -185,8 +173,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -199,8 +186,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -213,8 +199,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -227,8 +212,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -241,8 +225,7 @@ public class TestMetaClient
         try {
             client.shutdown(3);
         }
-        catch (InterruptedException e)
-        {
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

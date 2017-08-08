@@ -46,29 +46,29 @@ public class MetaClient
     public void listDatabases()
     {
         MetaProto.NoneType none = MetaProto.NoneType.newBuilder().build();
-        MetaProto.StringListType string_list;
+        MetaProto.StringListType stringList;
         try {
-            string_list = metaBlockingStub.listDatabases(none);
+            stringList = metaBlockingStub.listDatabases(none);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
             return;
         }
-        logger.info("Database list : " + string_list);
+        logger.info("Database list : " + stringList);
     }
 
     public void listTables()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
-        MetaProto.StringListType string_list;
+        MetaProto.StringListType stringList;
         try {
-            string_list = metaBlockingStub.listTables(databaseName);
+            stringList = metaBlockingStub.listTables(databaseName);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
             return;
         }
-        logger.info("Table list : " + string_list);
+        logger.info("Table list : " + stringList);
     }
 
     public void getDatabase()
@@ -142,7 +142,7 @@ public class MetaClient
         MetaProto.ColModel column2 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("salary").setDataType("double").setColIndex(2).build();
         MetaProto.ColModel column3 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("check-in").setDataType("timestamp").setColIndex(3).build();
         MetaProto.ColModel column4 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("comment").setDataType("char(10)").setColIndex(0).build();
-        MetaProto.ColumnListType columns = MetaProto.ColumnListType.newBuilder().addColumn(0,column0).addColumn(1,column1).addColumn(2,column2).addColumn(3,column3).addColumn(4,column4).build();
+        MetaProto.ColumnListType columns = MetaProto.ColumnListType.newBuilder().addColumn(0, column0).addColumn(1, column1).addColumn(2, column2).addColumn(3, column3).addColumn(4, column4).build();
         MetaProto.TblModel table = MetaProto.TblModel.newBuilder().setDatabase(database).setCreationTime(20170807).setLastAccessTime(20170807).setOwner(user).setTableName("employee").setTableLocationUri("hdfs:/127.0.0.1:9000/warehouse/default/employee").setColumns(columns).build();
         MetaProto.StatusType status;
         try {
@@ -251,15 +251,15 @@ public class MetaClient
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
         MetaProto.FiberModel fiber = MetaProto.FiberModel.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(1234567890).build();
-        MetaProto.LongListType long_list;
+        MetaProto.LongListType longList;
         try {
-            long_list = metaBlockingStub.listFiberValues(fiber);
+            longList = metaBlockingStub.listFiberValues(fiber);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
             return;
         }
-        logger.info("Fiber values list is : " + long_list);
+        logger.info("Fiber values list is : " + longList);
     }
 
     public void addBlockIndex()
@@ -295,7 +295,8 @@ public class MetaClient
         logger.info("Filter block paths by time is : " + stringList);
     }
 
-    public void filterBlockPaths() {
+    public void filterBlockPaths()
+    {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
         MetaProto.FiberValueType fiberValue = MetaProto.FiberValueType.newBuilder().setValue(1234567890).build();
@@ -303,7 +304,8 @@ public class MetaClient
         MetaProto.StringListType stringlist;
         try {
             stringlist = metaBlockingStub.filterBlockPaths(filterBlockPaths);
-        } catch (StatusRuntimeException e) {
+        }
+        catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
             return;
         }
