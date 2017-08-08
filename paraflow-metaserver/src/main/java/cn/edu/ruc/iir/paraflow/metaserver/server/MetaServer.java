@@ -101,7 +101,7 @@ public class MetaServer
         }
     }
 
-    public static void main(String[] args) throws IOException, InterruptedException
+    public static void main(String[] args)
     {
         MetaServer server = new MetaServer(args[0]);
         try {

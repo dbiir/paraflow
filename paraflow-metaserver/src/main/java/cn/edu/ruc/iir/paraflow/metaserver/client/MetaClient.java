@@ -43,24 +43,10 @@ public class MetaClient
         this.channel.shutdown().awaitTermination(pollSecs, TimeUnit.SECONDS);
     }
 
-//    public void sayHi(String name)
-//    {
-//        logger.info("Say hi to server: " + name);
-//        MetaProto.Request request = MetaProto.Request.newBuilder().setName(name).build();
-//        MetaProto.Response response;
-//        try {
-//            response = metaBlockingStub.sayHi(request);
-//        }
-//        catch (StatusRuntimeException e) {
-//            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-//            return;
-//        }
-//        logger.info("Greeting: " + response.getStatus());
-//    }
-       public void listDatabases()
-     {
-        MetaProto.None none = MetaProto.None.newBuilder().build();
-        MetaProto.StringList string_list;
+    public void listDatabases()
+    {
+        MetaProto.NoneType none = MetaProto.NoneType.newBuilder().build();
+        MetaProto.StringListType string_list;
         try {
             string_list = metaBlockingStub.listDatabases(none);
         }
@@ -70,10 +56,11 @@ public class MetaClient
         }
         logger.info("Database list : " + string_list);
     }
+
     public void listTables()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.StringList string_list;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.StringListType string_list;
         try {
             string_list = metaBlockingStub.listTables(databaseName);
         }
@@ -83,10 +70,11 @@ public class MetaClient
         }
         logger.info("Table list : " + string_list);
     }
+
     public void getDatabase()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.Database database;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.DbModel database;
         try {
             database = metaBlockingStub.getDatabase(databaseName);
         }
@@ -96,12 +84,13 @@ public class MetaClient
         }
         logger.info("Database is : " + database);
     }
+
     public void getTable()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.TableName tableName = MetaProto.TableName.newBuilder().setTable("employee").build();
-        MetaProto.DatabaseTable databaseTable = MetaProto.DatabaseTable.newBuilder().setDatabase(databaseName).setTable(tableName).build();
-        MetaProto.Table table;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
+        MetaProto.DbTblParam databaseTable = MetaProto.DbTblParam.newBuilder().setDatabase(databaseName).setTable(tableName).build();
+        MetaProto.TblModel table;
         try {
             table = metaBlockingStub.getTable(databaseTable);
         }
@@ -111,13 +100,14 @@ public class MetaClient
         }
         logger.info("Table is : " + table);
     }
+
     public void getColumn()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("defult").build();
-        MetaProto.TableName tableName = MetaProto.TableName.newBuilder().setTable("employee").build();
-        MetaProto.ColumnName columnName = MetaProto.ColumnName.newBuilder().setColumn("name").build();
-        MetaProto.DatabaseTableColumn databaseTableColumn = MetaProto.DatabaseTableColumn.newBuilder().setDatabase(databaseName).setTable(tableName).setColumn(columnName).build();
-        MetaProto.Column column;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("defult").build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
+        MetaProto.ColNameParam columnName = MetaProto.ColNameParam.newBuilder().setColumn("name").build();
+        MetaProto.DbTblColParam databaseTableColumn = MetaProto.DbTblColParam.newBuilder().setDatabase(databaseName).setTable(tableName).setColumn(columnName).build();
+        MetaProto.ColModel column;
         try {
             column = metaBlockingStub.getColumn(databaseTableColumn);
         }
@@ -127,11 +117,12 @@ public class MetaClient
         }
         logger.info("Column is : " + column);
     }
+
     public void createDatabase()
     {
-        MetaProto.User user = MetaProto.User.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
-        MetaProto.Database database = MetaProto.Database.newBuilder().setName("default").setLocationUri("hdfs:/127.0.0.1:9000/warehouse/default").setUser(user).build();
-        MetaProto.Status status;
+        MetaProto.UserModel user = MetaProto.UserModel.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
+        MetaProto.DbModel database = MetaProto.DbModel.newBuilder().setName("default").setLocationUri("hdfs:/127.0.0.1:9000/warehouse/default").setUser(user).build();
+        MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createDatabase(database);
         }
@@ -141,18 +132,19 @@ public class MetaClient
         }
         logger.info("Create database status is : " + status.getStatus());
     }
+
     public void createTable()
     {
-        MetaProto.User user = MetaProto.User.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
-        MetaProto.Database database = MetaProto.Database.newBuilder().setName("default").setLocationUri("hdfs:/127.0.0.1:9000/warehouse/default").setUser(user).build();
-        MetaProto.Column column0 = MetaProto.Column.newBuilder().setDatabasename("default").setTablename("employee").setColName("name").setDataType("varchar(20)").setColIndex(0).build();
-        MetaProto.Column column1 = MetaProto.Column.newBuilder().setDatabasename("default").setTablename("employee").setColName("age").setDataType("integer").setColIndex(1).build();
-        MetaProto.Column column2 = MetaProto.Column.newBuilder().setDatabasename("default").setTablename("employee").setColName("salary").setDataType("double").setColIndex(2).build();
-        MetaProto.Column column3 = MetaProto.Column.newBuilder().setDatabasename("default").setTablename("employee").setColName("check-in").setDataType("timestamp").setColIndex(3).build();
-        MetaProto.Column column4 = MetaProto.Column.newBuilder().setDatabasename("default").setTablename("employee").setColName("comment").setDataType("char(10)").setColIndex(0).build();
-        MetaProto.Columns columns = MetaProto.Columns.newBuilder().addColumn(0,column0).addColumn(1,column1).addColumn(2,column2).addColumn(3,column3).addColumn(4,column4).build();
-        MetaProto.Table table = MetaProto.Table.newBuilder().setDatabase(database).setCreationTime(20170807).setLastAccessTime(20170807).setOwner(user).setTableName("employee").setTableLocationUri("hdfs:/127.0.0.1:9000/warehouse/default/employee").setColumns(columns).build();
-        MetaProto.Status status;
+        MetaProto.UserModel user = MetaProto.UserModel.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
+        MetaProto.DbModel database = MetaProto.DbModel.newBuilder().setName("default").setLocationUri("hdfs:/127.0.0.1:9000/warehouse/default").setUser(user).build();
+        MetaProto.ColModel column0 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("name").setDataType("varchar(20)").setColIndex(0).build();
+        MetaProto.ColModel column1 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("age").setDataType("integer").setColIndex(1).build();
+        MetaProto.ColModel column2 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("salary").setDataType("double").setColIndex(2).build();
+        MetaProto.ColModel column3 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("check-in").setDataType("timestamp").setColIndex(3).build();
+        MetaProto.ColModel column4 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("comment").setDataType("char(10)").setColIndex(0).build();
+        MetaProto.ColumnListType columns = MetaProto.ColumnListType.newBuilder().addColumn(0,column0).addColumn(1,column1).addColumn(2,column2).addColumn(3,column3).addColumn(4,column4).build();
+        MetaProto.TblModel table = MetaProto.TblModel.newBuilder().setDatabase(database).setCreationTime(20170807).setLastAccessTime(20170807).setOwner(user).setTableName("employee").setTableLocationUri("hdfs:/127.0.0.1:9000/warehouse/default/employee").setColumns(columns).build();
+        MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createTable(table);
         }
@@ -162,10 +154,11 @@ public class MetaClient
         }
         logger.info("Create table status is : " + status.getStatus());
     }
+
     public void deleteDatabase()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.Status status;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.StatusType status;
         try {
             status = metaBlockingStub.deleteDatabase(databaseName);
         }
@@ -175,12 +168,13 @@ public class MetaClient
         }
         logger.info("Delete database status is : " + status.getStatus());
     }
+
     public void deleteTable()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.TableName tableName = MetaProto.TableName.newBuilder().setTable("employee").build();
-        MetaProto.DatabaseTable databaseTable = MetaProto.DatabaseTable.newBuilder().setDatabase(databaseName).setTable(tableName).build();
-        MetaProto.Status status;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
+        MetaProto.DbTblParam databaseTable = MetaProto.DbTblParam.newBuilder().setDatabase(databaseName).setTable(tableName).build();
+        MetaProto.StatusType status;
         try {
             status = metaBlockingStub.deleteTable(databaseTable);
         }
@@ -190,10 +184,11 @@ public class MetaClient
         }
         logger.info("Delete table status is : " + status.getStatus());
     }
+
     public void renameDatabase()
     {
-        MetaProto.RenameDatabase renameDatabase = MetaProto.RenameDatabase.newBuilder().setOldName("default").setNewName("defaultnew").build();
-        MetaProto.Status status;
+        MetaProto.RenameDbParam renameDatabase = MetaProto.RenameDbParam.newBuilder().setOldName("default").setNewName("defaultnew").build();
+        MetaProto.StatusType status;
         try {
             status = metaBlockingStub.renameDatabase(renameDatabase);
         }
@@ -203,11 +198,12 @@ public class MetaClient
         }
         logger.info("Rename database status is : " + status.getStatus());
     }
+
     public void renameTable()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.RenameTable renameTable = MetaProto.RenameTable.newBuilder().setDatabase(databaseName).setOldName("employee").setNewName("employeenew").build();
-        MetaProto.Status status;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.RenameTblParam renameTable = MetaProto.RenameTblParam.newBuilder().setDatabase(databaseName).setOldName("employee").setNewName("employeenew").build();
+        MetaProto.StatusType status;
         try {
             status = metaBlockingStub.renameTable(renameTable);
         }
@@ -217,12 +213,13 @@ public class MetaClient
         }
         logger.info("Rename table status is : " + status.getStatus());
     }
+
     public void renameColumn()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.TableName tableName = MetaProto.TableName.newBuilder().setTable("employee").build();
-        MetaProto.RenameColumn renameColumn = MetaProto.RenameColumn.newBuilder().setDatabase(databaseName).setTable(tableName).setOldName("name").setNewName("firstname").build();
-        MetaProto.Status status;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
+        MetaProto.RenameColParam renameColumn = MetaProto.RenameColParam.newBuilder().setDatabase(databaseName).setTable(tableName).setOldName("name").setNewName("firstname").build();
+        MetaProto.StatusType status;
         try {
             status = metaBlockingStub.renameColumn(renameColumn);
         }
@@ -232,12 +229,13 @@ public class MetaClient
         }
         logger.info("Rename column status is : " + status.getStatus());
     }
+
     public void createFiber()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.TableName tableName = MetaProto.TableName.newBuilder().setTable("employee").build();
-        MetaProto.Fiber fiber = MetaProto.Fiber.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(1234567890).build();
-        MetaProto.Status status;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
+        MetaProto.FiberModel fiber = MetaProto.FiberModel.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(1234567890).build();
+        MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createFiber(fiber);
         }
@@ -247,12 +245,13 @@ public class MetaClient
         }
         logger.info("Create fiber status is : " + status.getStatus());
     }
+
     public void listFiberValues()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.TableName tableName = MetaProto.TableName.newBuilder().setTable("employee").build();
-        MetaProto.Fiber fiber = MetaProto.Fiber.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(1234567890).build();
-        MetaProto.LongList long_list;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
+        MetaProto.FiberModel fiber = MetaProto.FiberModel.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(1234567890).build();
+        MetaProto.LongListType long_list;
         try {
             long_list = metaBlockingStub.listFiberValues(fiber);
         }
@@ -262,13 +261,14 @@ public class MetaClient
         }
         logger.info("Fiber values list is : " + long_list);
     }
+
     public void addBlockIndex()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.TableName tableName = MetaProto.TableName.newBuilder().setTable("employee").build();
-        MetaProto.FiberValue fiberValue = MetaProto.FiberValue.newBuilder().setValue(1234567890).build();
-        MetaProto.AddBlockIndex addBlockIndex = MetaProto.AddBlockIndex.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(fiberValue).setBeginTime("20170807 13:50:00").setEndTime("20170807 13:55:00").setPath("hdfs://127.0.0.1:9000/warehouse/default/employee/20170807123456").build();
-        MetaProto.Status status;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
+        MetaProto.FiberValueType fiberValue = MetaProto.FiberValueType.newBuilder().setValue(1234567890).build();
+        MetaProto.AddBlockIndexParam addBlockIndex = MetaProto.AddBlockIndexParam.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(fiberValue).setBeginTime("20170807 13:50:00").setEndTime("20170807 13:55:00").setPath("hdfs://127.0.0.1:9000/warehouse/default/employee/20170807123456").build();
+        MetaProto.StatusType status;
         try {
             status = metaBlockingStub.addBlockIndex(addBlockIndex);
         }
@@ -278,12 +278,13 @@ public class MetaClient
         }
         logger.info("Add block index status is : " + status.getStatus());
     }
+
     public void filterBlockPathsByTime()
     {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.TableName tableName = MetaProto.TableName.newBuilder().setTable("employee").build();
-        MetaProto.FilterBlockPathsByTime filterBlockPathsByTime = MetaProto.FilterBlockPathsByTime.newBuilder().setDatabase(databaseName).setTable(tableName).setTimelow("20170807 13:50:00").setTimehigh("20170807 13:55:00").build();
-        MetaProto.StringList stringList;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
+        MetaProto.FilterBlockPathsByTimeParam filterBlockPathsByTime = MetaProto.FilterBlockPathsByTimeParam.newBuilder().setDatabase(databaseName).setTable(tableName).setTimelow("20170807 13:50:00").setTimehigh("20170807 13:55:00").build();
+        MetaProto.StringListType stringList;
         try {
             stringList = metaBlockingStub.filterBlockPathsByTime(filterBlockPathsByTime);
         }
@@ -293,12 +294,13 @@ public class MetaClient
         }
         logger.info("Filter block paths by time is : " + stringList);
     }
+
     public void filterBlockPaths() {
-        MetaProto.DatabaseName databaseName = MetaProto.DatabaseName.newBuilder().setDatabase("default").build();
-        MetaProto.TableName tableName = MetaProto.TableName.newBuilder().setTable("employee").build();
-        MetaProto.FiberValue fiberValue = MetaProto.FiberValue.newBuilder().setValue(1234567890).build();
-        MetaProto.FilterBlockPaths filterBlockPaths = MetaProto.FilterBlockPaths.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(fiberValue).setTimelow("20170807 13:50:00").setTimehigh("20170807 13:55:00").build();
-        MetaProto.StringList stringlist;
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
+        MetaProto.FiberValueType fiberValue = MetaProto.FiberValueType.newBuilder().setValue(1234567890).build();
+        MetaProto.FilterBlockPathsParam filterBlockPaths = MetaProto.FilterBlockPathsParam.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(fiberValue).setTimelow("20170807 13:50:00").setTimehigh("20170807 13:55:00").build();
+        MetaProto.StringListType stringlist;
         try {
             stringlist = metaBlockingStub.filterBlockPaths(filterBlockPaths);
         } catch (StatusRuntimeException e) {
