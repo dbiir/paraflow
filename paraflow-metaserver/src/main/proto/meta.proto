@@ -28,28 +28,93 @@ service Meta {
 
 // Models
 
+message VerModel {
+    int32 verId = 1;
+}
+
 message DbModel {
-    string name = 1;
-    string locationUri = 2;
-    UserModel user = 3;
+    int64 dbId = 1;
+    string dbName = 2;
+    string locationUrl = 3;
+    int64 userId = 4;
+}
+
+message DbParamModel {
+    int64 dbId = 1;
+    string paramKey = 2;
+    string paramValue = 3;
+}
+
+message DbPrivsModel {
+    int64 dbPrivId = 1;
+    int64 grantTime = 2;
+    int64 userId = 3;
+    int32 privType = 4;
+    int64 dbId = 5;
 }
 
 message TblModel {
-    DbModel database = 1;
-    int64 creationTime = 2;
-    int64 lastAccessTime = 3;
-    UserModel owner = 4;
-    string tableName = 5;
-    string tableLocationUri = 6;
-    ColumnListType columns = 7;
+    int64 tblId = 1;
+    int64 dbId = 2;
+    int64 createTime = 3;
+    int64 lastAccessTime = 4;
+    int64 userId = 5;
+    string tblName = 6;
+    int32 tblType = 7;
+    int64 fiberColId = 8;
+    string locationUrl = 9;
+    int32 storageFormat = 10;
+    int64 fiberFuncId = 11;
+}
+
+message TblParamModel {
+    int64 tblId = 1;
+    string paramKey = 2;
+    string paramValue = 3;
+}
+
+message TblPrivModel {
+    int64 tblPrivId = 1;
+    int64 grantTime = 2;
+    int32 privType = 3;
+    int64 tblId = 4;
+}
+
+message StorageFormatModel {
+    int32 storageFormatId = 1;
+    string compression = 2;
+    string serialFormat = 3;
 }
 
 message ColModel {
-    string databasename = 1;
-    string tablename = 2;
+    int64 colId = 1;
+    int64 tblId = 2;
     string colName = 3;
-    string dataType = 4;
-    int32 colIndex = 5;
+    string colType = 4;
+    string dataType = 5;
+    int32 colIndex = 6;
+}
+
+message FiberFuncNodel {
+    int64 fiberFuncId = 1;
+    string fiberFuncName = 2;
+    bytes fiberFuncContent = 3;
+}
+
+message BlockIndex {
+    int64 blockIndexId = 1;
+    int64 tblId = 2;
+    int64 fiberValue = 3;
+    int64 timeBegin = 4;
+    int64 timeEnd = 5;
+    string timeZone = 6;
+    string blockPath = 7;
+}
+
+message FiberModel {
+    DbNameParam database = 1;
+    TblNameParam table = 2;
+    int64 value = 3;
 }
 
 message UserModel {
@@ -60,15 +125,10 @@ message UserModel {
     int64 lastVisitTime = 5;
 }
 
-message FiberModel {
-    DbNameParam database = 1;
-    TblNameParam table = 2;
-    int64 value = 3;
-}
-
 // Customized types
 
 message NoneType {
+
 }
 
 message StringListType {

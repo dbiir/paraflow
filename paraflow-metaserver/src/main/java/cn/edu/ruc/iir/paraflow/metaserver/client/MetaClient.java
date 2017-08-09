@@ -43,7 +43,7 @@ public class MetaClient
         this.channel.shutdown().awaitTermination(pollSecs, TimeUnit.SECONDS);
     }
 
-    public void listDatabases()
+    public MetaProto.StringListType listDatabases()
     {
         MetaProto.NoneType none = MetaProto.NoneType.newBuilder().build();
         MetaProto.StringListType stringList;
@@ -52,12 +52,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            stringList = MetaProto.StringListType.newBuilder().build();
+            return stringList;
         }
         logger.info("Database list : " + stringList);
+        return stringList;
     }
 
-    public void listTables()
+    public MetaProto.StringListType listTables()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.StringListType stringList;
@@ -66,12 +68,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            stringList = MetaProto.StringListType.newBuilder().build();
+            return stringList;
         }
         logger.info("Table list : " + stringList);
+        return stringList;
     }
 
-    public void getDatabase()
+    public MetaProto.DbModel getDatabase()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.DbModel database;
@@ -80,12 +84,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            database = MetaProto.DbModel.newBuilder().build();
+            return database;
         }
         logger.info("Database is : " + database);
+        return  database;
     }
 
-    public void getTable()
+    public MetaProto.TblModel getTable()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
@@ -96,12 +102,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            table = MetaProto.TblModel.newBuilder().build();
+            return table;
         }
         logger.info("Table is : " + table);
+        return table;
     }
 
-    public void getColumn()
+    public MetaProto.ColModel getColumn()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("defult").build();
         MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
@@ -113,49 +121,55 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            column = MetaProto.ColModel.newBuilder().build();
+            return column;
         }
         logger.info("Column is : " + column);
+        return column;
     }
 
-    public void createDatabase()
+    public MetaProto.StatusType createDatabase()
     {
-        MetaProto.UserModel user = MetaProto.UserModel.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
-        MetaProto.DbModel database = MetaProto.DbModel.newBuilder().setName("default").setLocationUri("hdfs:/127.0.0.1:9000/warehouse/default").setUser(user).build();
+        //MetaProto.UserModel user = MetaProto.UserModel.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
+        MetaProto.DbModel database = MetaProto.DbModel.newBuilder().setDbName("default").setLocationUrl("hdfs:/127.0.0.1:9000/warehouse/default").setUserId(1).build();
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createDatabase(database);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            status = MetaProto.StatusType.newBuilder().build();
+            return status;
         }
         logger.info("Create database status is : " + status.getStatus());
+        return status;
     }
 
-    public void createTable()
+    public MetaProto.StatusType createTable()
     {
-        MetaProto.UserModel user = MetaProto.UserModel.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
-        MetaProto.DbModel database = MetaProto.DbModel.newBuilder().setName("default").setLocationUri("hdfs:/127.0.0.1:9000/warehouse/default").setUser(user).build();
-        MetaProto.ColModel column0 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("name").setDataType("varchar(20)").setColIndex(0).build();
-        MetaProto.ColModel column1 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("age").setDataType("integer").setColIndex(1).build();
-        MetaProto.ColModel column2 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("salary").setDataType("double").setColIndex(2).build();
-        MetaProto.ColModel column3 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("check-in").setDataType("timestamp").setColIndex(3).build();
-        MetaProto.ColModel column4 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("comment").setDataType("char(10)").setColIndex(0).build();
-        MetaProto.ColumnListType columns = MetaProto.ColumnListType.newBuilder().addColumn(0, column0).addColumn(1, column1).addColumn(2, column2).addColumn(3, column3).addColumn(4, column4).build();
-        MetaProto.TblModel table = MetaProto.TblModel.newBuilder().setDatabase(database).setCreationTime(20170807).setLastAccessTime(20170807).setOwner(user).setTableName("employee").setTableLocationUri("hdfs:/127.0.0.1:9000/warehouse/default/employee").setColumns(columns).build();
+//        MetaProto.UserModel user = MetaProto.UserModel.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
+//        MetaProto.DbModel database = MetaProto.DbModel.newBuilder().setName("default").setLocationUri("hdfs:/127.0.0.1:9000/warehouse/default").setUser(user).build();
+//        MetaProto.ColModel column0 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("name").setDataType("varchar(20)").setColIndex(0).build();
+//        MetaProto.ColModel column1 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("age").setDataType("integer").setColIndex(1).build();
+//        MetaProto.ColModel column2 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("salary").setDataType("double").setColIndex(2).build();
+//        MetaProto.ColModel column3 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("check-in").setDataType("timestamp").setColIndex(3).build();
+//        MetaProto.ColModel column4 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("comment").setDataType("char(10)").setColIndex(0).build();
+//        MetaProto.ColumnListType columns = MetaProto.ColumnListType.newBuilder().addColumn(0, column0).addColumn(1, column1).addColumn(2, column2).addColumn(3, column3).addColumn(4, column4).build();
+        MetaProto.TblModel table = MetaProto.TblModel.newBuilder().setDbId(1).setCreateTime(20170807).setLastAccessTime(20170807).setUserId(1).setTblName("employee").setTblType(0).setFiberColId(-1).setLocationUrl("hdfs:/127.0.0.1:9000/warehouse/default/employee").setStorageFormat(1).setFiberFuncId(1).build();
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createTable(table);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            status = MetaProto.StatusType.newBuilder().build();
+            return status;
         }
         logger.info("Create table status is : " + status.getStatus());
+        return status;
     }
 
-    public void deleteDatabase()
+    public MetaProto.StatusType deleteDatabase()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.StatusType status;
@@ -164,12 +178,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            status = MetaProto.StatusType.newBuilder().build();
+            return status;
         }
         logger.info("Delete database status is : " + status.getStatus());
+        return status;
     }
 
-    public void deleteTable()
+    public MetaProto.StatusType deleteTable()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
@@ -180,12 +196,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            status = MetaProto.StatusType.newBuilder().build();
+            return status;
         }
         logger.info("Delete table status is : " + status.getStatus());
+        return status;
     }
 
-    public void renameDatabase()
+    public MetaProto.StatusType renameDatabase()
     {
         MetaProto.RenameDbParam renameDatabase = MetaProto.RenameDbParam.newBuilder().setOldName("default").setNewName("defaultnew").build();
         MetaProto.StatusType status;
@@ -194,12 +212,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            status = MetaProto.StatusType.newBuilder().build();
+            return status;
         }
         logger.info("Rename database status is : " + status.getStatus());
+        return status;
     }
 
-    public void renameTable()
+    public MetaProto.StatusType renameTable()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.RenameTblParam renameTable = MetaProto.RenameTblParam.newBuilder().setDatabase(databaseName).setOldName("employee").setNewName("employeenew").build();
@@ -209,12 +229,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            status = MetaProto.StatusType.newBuilder().build();
+            return status;
         }
         logger.info("Rename table status is : " + status.getStatus());
+        return status;
     }
 
-    public void renameColumn()
+    public MetaProto.StatusType renameColumn()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
@@ -225,12 +247,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            status = MetaProto.StatusType.newBuilder().build();
+            return status;
         }
         logger.info("Rename column status is : " + status.getStatus());
+        return status;
     }
 
-    public void createFiber()
+    public MetaProto.StatusType createFiber()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
@@ -241,12 +265,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            status = MetaProto.StatusType.newBuilder().build();
+            return status;
         }
         logger.info("Create fiber status is : " + status.getStatus());
+        return status;
     }
 
-    public void listFiberValues()
+    public MetaProto.LongListType listFiberValues()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
@@ -257,12 +283,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            longList = MetaProto.LongListType.newBuilder().build();
+            return longList;
         }
         logger.info("Fiber values list is : " + longList);
+        return longList;
     }
 
-    public void addBlockIndex()
+    public MetaProto.StatusType addBlockIndex()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
@@ -274,12 +302,14 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            status = MetaProto.StatusType.newBuilder().build();
+            return status;
         }
         logger.info("Add block index status is : " + status.getStatus());
+        return status;
     }
 
-    public void filterBlockPathsByTime()
+    public MetaProto.StringListType filterBlockPathsByTime()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
@@ -290,25 +320,29 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            stringList = MetaProto.StringListType.newBuilder().build();
+            return stringList;
         }
         logger.info("Filter block paths by time is : " + stringList);
+        return stringList;
     }
 
-    public void filterBlockPaths()
+    public MetaProto.StringListType filterBlockPaths()
     {
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase("default").build();
         MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable("employee").build();
         MetaProto.FiberValueType fiberValue = MetaProto.FiberValueType.newBuilder().setValue(1234567890).build();
         MetaProto.FilterBlockPathsParam filterBlockPaths = MetaProto.FilterBlockPathsParam.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(fiberValue).setTimelow("20170807 13:50:00").setTimehigh("20170807 13:55:00").build();
-        MetaProto.StringListType stringlist;
+        MetaProto.StringListType stringList;
         try {
-            stringlist = metaBlockingStub.filterBlockPaths(filterBlockPaths);
+            stringList = metaBlockingStub.filterBlockPaths(filterBlockPaths);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            return;
+            stringList = MetaProto.StringListType.newBuilder().build();
+            return stringList;
         }
-        logger.info("Filter block paths is : " + stringlist);
+        logger.info("Filter block paths is : " + stringList);
+        return stringList;
     }
 }

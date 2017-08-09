@@ -29,8 +29,8 @@ public class MetaService extends MetaGrpc.MetaImplBase
     @Override
     public void getDatabase(MetaProto.DbNameParam dbNameParam, StreamObserver<MetaProto.DbModel> responseStreamObserver)
     {
-        MetaProto.UserModel user = MetaProto.UserModel.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
-        MetaProto.DbModel dbModel = MetaProto.DbModel.newBuilder().setName("default").setLocationUri("hdfs:/127.0.0.1:9000/warehouse/default").setUser(user).build();
+        //MetaProto.UserModel user = MetaProto.UserModel.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
+        MetaProto.DbModel dbModel = MetaProto.DbModel.newBuilder().setDbName("default").setLocationUrl("hdfs:/127.0.0.1:9000/warehouse/default").setUserId(1).build();
         responseStreamObserver.onNext(dbModel);
         responseStreamObserver.onCompleted();
     }
@@ -38,15 +38,15 @@ public class MetaService extends MetaGrpc.MetaImplBase
     @Override
     public void getTable(MetaProto.DbTblParam dbTblParam, StreamObserver<MetaProto.TblModel> responseStreamObserver)
     {
-        MetaProto.UserModel user = MetaProto.UserModel.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
-        MetaProto.DbModel dbModel = MetaProto.DbModel.newBuilder().setName("default").setLocationUri("hdfs:/127.0.0.1:9000/warehouse/default").setUser(user).build();
-        MetaProto.ColModel column0 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("name").setDataType("varchar(20)").setColIndex(0).build();
-        MetaProto.ColModel column1 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("age").setDataType("integer").setColIndex(1).build();
-        MetaProto.ColModel column2 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("salary").setDataType("double").setColIndex(2).build();
-        MetaProto.ColModel column3 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("check-in").setDataType("timestamp").setColIndex(3).build();
-        MetaProto.ColModel column4 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("comment").setDataType("char(10)").setColIndex(4).build();
-        MetaProto.ColumnListType columns = MetaProto.ColumnListType.newBuilder().addColumn(0, column0).addColumn(1, column1).addColumn(2, column2).addColumn(3, column3).addColumn(4, column4).build();
-        MetaProto.TblModel tblModel = MetaProto.TblModel.newBuilder().setDatabase(dbModel).setCreationTime(20170807).setLastAccessTime(20170807).setOwner(user).setTableName("employee").setTableLocationUri("hdfs:/127.0.0.1:9000/warehouse/default/employee").setColumns(columns).build();
+        //MetaProto.UserModel user = MetaProto.UserModel.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
+        //MetaProto.DbModel dbModel = MetaProto.DbModel.newBuilder().setDbName("default").setLocationUrl("hdfs:/127.0.0.1:9000/warehouse/default").setUserId(2016100862).build();
+        //MetaProto.ColModel column0 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("name").setDataType("varchar(20)").setColIndex(0).build();
+        //MetaProto.ColModel column1 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("age").setDataType("integer").setColIndex(1).build();
+        //MetaProto.ColModel column2 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("salary").setDataType("double").setColIndex(2).build();
+        //MetaProto.ColModel column3 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("check-in").setDataType("timestamp").setColIndex(3).build();
+        //MetaProto.ColModel column4 = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("comment").setDataType("char(10)").setColIndex(4).build();
+        //MetaProto.ColumnListType columns = MetaProto.ColumnListType.newBuilder().addColumn(0, column0).addColumn(1, column1).addColumn(2, column2).addColumn(3, column3).addColumn(4, column4).build();
+        MetaProto.TblModel tblModel = MetaProto.TblModel.newBuilder().setDbId(1).setCreateTime(20170807).setLastAccessTime(20170807).setUserId(1).setTblName("employee").setTblType(0).setFiberColId(-1).setLocationUrl("hdfs:/127.0.0.1:9000/warehouse/default/employee").setStorageFormat(1).setFiberFuncId(1).build();
         responseStreamObserver.onNext(tblModel);
         responseStreamObserver.onCompleted();
     }
@@ -54,7 +54,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
     @Override
     public void getColumn(MetaProto.DbTblColParam dbTblColParam, StreamObserver<MetaProto.ColModel> responseStreamObserver)
     {
-        MetaProto.ColModel column = MetaProto.ColModel.newBuilder().setDatabasename("default").setTablename("employee").setColName("name").setDataType("varchar(20)").setColIndex(0).build();
+        MetaProto.ColModel column = MetaProto.ColModel.newBuilder().setTblId(1).setColName("name").setColType("regular").setDataType("varchar(20)").setColIndex(0).build();
         responseStreamObserver.onNext(column);
         responseStreamObserver.onCompleted();
     }
