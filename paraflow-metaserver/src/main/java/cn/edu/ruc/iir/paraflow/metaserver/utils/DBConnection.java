@@ -1,7 +1,5 @@
 package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
-import org.javalite.activejdbc.Base;
-
 /**
  * ParaFlow
  * This is a db connection instance.
@@ -39,12 +37,9 @@ public class DBConnection
         DBConnection.password = password;
 
         getConnectionInstance();
-
-        Base.open(driver, host, user, password);
     }
 
     public void close()
     {
-        Base.close();
     }
 }
