@@ -15,7 +15,6 @@ dir_exist ()
 cat >dir_exist.exp<<EOF
 #!/usr/bin/expect
 #Login $SSH_IP
-#fork一个子进程执行ssh命令
 spawn ssh $USER_NAME@$SSH_IP
 expect {
 "*yes/no*" {send "yes\r"; exp_continue}
@@ -39,8 +38,7 @@ scp_tar ()
 cat >scp_tar.exp<<EOF
 #!/usr/bin/expect
 #Login $SSH_IP
-#fork一个子进程执行ssh命令
-spawn scp $VERSION_TAR $USER_NAME@$SSH_IP:$DEPLOY_DIR 
+spawn scp $VERSION_TAR $USER_NAME@$SSH_IP:$DEPLOY_DIR
 expect {
 "*yes/no*" {send "yes\r"; exp_continue}
 "*password*" {send "$IP_PW\r";}
@@ -59,7 +57,6 @@ untar ()
 cat >untar.exp<<EOF
 #!/usr/bin/expect
 #Login $SSH_IP
-#fork一个子进程执行ssh命令
 spawn ssh $USER_NAME@$SSH_IP
 expect {
 "*yes/no*" {send "yes\r"; exp_continue}
