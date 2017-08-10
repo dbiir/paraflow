@@ -1,10 +1,10 @@
 ### MetaServer Models
-#### 1. VERSION (metadata version corresponding to MetaServer)
+#### 1. VerModel (metadata version corresponding to MetaServer)
 | NAME           | TYPE             | COMMENT              |
 |----------------|------------------|----------------------|
 | VER_ID         | INT              | version of MetaServer|
 
-#### 2. DBS (database information)
+#### 2. DbModel (database information)
 | NAME           | TYPE             | COMMENT              |
 |----------------|------------------|----------------------|
 | DB_ID          | BIGINT           | unique database id   |
@@ -12,14 +12,14 @@
 | LOCATION_URI   | VARCHAR(768)     | path in filesystem   |
 | USER_ID        | BIGINT           | owner        id      |
 
-#### 3. DB_PARAMS (user specified parameters related to database) [optional]
+#### 3. DbParamModel (user specified parameters related to database) [optional]
 | NAME           | TYPE             | COMMENT               |
 |----------------|------------------|-----------------------|
 | DB_ID          | BIGINT           | referenced database id|
 | PARAM_KEY      | VARCHAR(128)     | key as string         |
 | PARAM_VALUE    | VARCHAR(256)     | value as string       |
 
-#### 4. DB_PRIVS(database privileges)
+#### 4. DbPrivsModel(database privileges)
 | NAME            | TYPE             | COMMENT               |
 |-----------------|------------------|-----------------------|
 | DB_PRIV_ID      | BIGINT           | unique sequential id  |
@@ -33,7 +33,7 @@ Available privilege types:
 6: write + grant write to other, 7: read + write + grant read/write to other.
 (4: grant current privilege to other users)
 
-#### 5. TBLS (table information)
+#### 5. TblModel (table information)
 | NAME           | TYPE             | COMMENT                                 |
 |----------------|------------------|-----------------------------------------|
 | TBL_ID         | BIGINT           | unique table id                         |
@@ -48,14 +48,14 @@ Available privilege types:
 | STORAGE_FORMAT | INT              |                                         |
 | FIBER_FUNC_ID  | BIGINT           | table partition function                |
 
-#### 6. TBL_PARAMS (user specified parameters related to table) [optional]
+#### 6. TblParamModel (user specified parameters related to table) [optional]
 | NAME           | TYPE             | COMMENT              |
 |----------------|------------------|----------------------|
 | TBL_ID         | BIGINT           | unique table id      |
 | PARAM_KEY      | VARCHAR(128)     | key as string        |
 | PARAM_VALUE    | VARCHAR(128)     | value as string      |
 
-#### 7. TBL_PRIVS(table privileges)
+#### 7. TblPrivModel(table privileges)
 | NAME           | TYPE             | COMMENT               |
 |----------------|------------------|-----------------------|
 | TBL_PRIV_ID    | BIGINT           |                       |
@@ -64,14 +64,14 @@ Available privilege types:
 | PRIV_TYPE      | INT              |                       |
 | TBL_ID         | BIGINT           |                       |
 
-#### 8. SFS (storage format information)
+#### 8. StorageFormatModel (storage format information)
 | NAME           | TYPE             | COMMENT                      |
 |----------------|------------------|------------------------------|
 | SF_ID          | INT              |                              |
 | COMPRESSION    | VARCHAR(20)      | uncompressed \| snappy \| etc|
 | SERIAL_FORMAT  | VARCHAR(512)     | serial class name            |
 
-#### 9. COLS (column information)
+#### 9. ColModel (column information)
 | NAME           | TYPE             | COMMENT                                   |
 |----------------|------------------|-------------------------------------------|
 | COL_ID         | BIGINT           |                                           |
@@ -81,14 +81,14 @@ Available privilege types:
 | DATA_TYPE      | VARCHAR(20)      | data type: integer \| char(x) \| float    |
 | COL_INDEX      | INT              | index of column in table                  |
 
-#### 10. FIBER_FUNCS
+#### 10. FiberFuncNodel
 | NAME               | TYPE             | COMMENT              |
 |----------------    |------------------|----------------------|
 | FIBER_FUNC_ID      | BIGINT           | function id          |
 | FIBER_FUNC_NAME    | VARCHAR(20)      | function name        |
 | FIBER_FUNC_CONTENT | BLOB             | function template id |
 
-#### 11. BLOCK_INDEX
+#### 11. BlockIndex
 | NAME            | TYPE             | COMMENT              |
 |-----------------|------------------|----------------------|
 | BLOCK_INDEX_ID  | BIGINT           | block id             |
@@ -99,7 +99,7 @@ Available privilege types:
 | TIME_ZONE       | VARCHAR(20)      | time zone            |
 | BLOCK_PATH      | VARCHAR(512)     | block file path      |
 
-#### 12. USERS
+#### 12. FiberModel
 | NAME           | TYPE             | COMMENT               |
 |----------------|------------------|-----------------------|
 | USER_ID        | BIGINT           | all recorded users    |
