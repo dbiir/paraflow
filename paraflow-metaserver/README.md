@@ -8,8 +8,8 @@
  |----------------|------------------|----------------------|
  | dbId           | int64            | unique database id   |
  | dbName         | string           | unique database name |
- | locationUrl    | string           | path in filesystem   |
  | userId         | int64            | owner        id      |
+ | locationUrl    | string           | path in filesystem   |
  
  #### 3. DbParamModel (user specified parameters related to database) [optional]
  | NAME           | TYPE             | COMMENT               |
@@ -35,14 +35,14 @@
  |----------------|------------------|-----------------------------------------|
  | tblId          | int64            | unique table id                         |
  | dbId           | int64            | database belonging to                   |
- | createTime     | int64            | timestamp stored as long                |
- | lastAccessTime | int64            | timestamp stored as long                |
- | userId         | int64            | user_id is owner's                      |
  | tblName        | string           | table name                              |
  | tblType        | int32            | 0 represents regular, 1 represents fiber|
- | fiberColId     | int64            | -1 means no fiber column                |
+ | userId         | int64            | user_id is owner's                      |
+ | createTime     | int64            | timestamp stored as long                |
+ | lastAccessTime | int64            | timestamp stored as long                |
  | locationUrl    | string           | path in filesystem                      |
  | storageFormatId| int32            |                                         |
+ | fiberColId     | int64            | -1 means no fiber column                |
  | fiberFuncId    | int64            | table partition function                |
  
  #### 6. TblParamModel (user specified parameters related to table) [optional]
@@ -56,10 +56,10 @@
  | NAME           | TYPE             | COMMENT               |
  |----------------|------------------|-----------------------|
  | tblPrivId      | int64            |                       |
- | grantTime      | int64            | grant time            |
- | privType       | int32            |                       |
  | tblId          | int64            |                       |
  | userId         | int64            |                       |
+ | privType       | int32            |                       |
+ | grantTime      | int64            | grant time            |
  
  #### 8. StorageFormatModel (storage format information)
  | NAME             | TYPE             | COMMENT                      |
@@ -72,12 +72,12 @@
  #### 9. ColModel (column information)
  | NAME           | TYPE             | COMMENT                                   |
  |----------------|------------------|-------------------------------------------|
- | colId          | int64            |                                           |
  | tblId          | int64            | table id                                  |
+ | colId          | int64            |                                           |
+ | colIndex       | int32            | index of column in table                  |
  | colName        | string           | column name                               |
  | colType        | string           | column type: regular \| fiber \| timestamp|
  | dataType       | string           | data type: integer \| char(x) \| float    |
- | colIndex       | int32            | index of column in table                  |
  
  #### 10. FiberFuncNodel
  | NAME               | TYPE             | COMMENT              |
@@ -101,6 +101,6 @@
  | NAME           | TYPE             | COMMENT               |
  |----------------|------------------|-----------------------|
  | userId         | int64            | all recorded users    |
- | createTime     | int64            | creation time         |
  | userName       | string           | user name             |
+ | createTime     | int64            | creation time         |
  | lastVisitTime  | int64            | last visit time       |
