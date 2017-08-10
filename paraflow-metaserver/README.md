@@ -22,10 +22,10 @@
  | NAME            | TYPE             | COMMENT               |
  |-----------------|------------------|-----------------------|
  | dbPrivId        | int64            | unique sequential id  |
- | grantTime       | int64            | grant time            |
+ | dbId            | int64            | database id           |
  | userId          | int64            | user id               |
  | privType        | int32            |                       |
- | dbId            | int64            | database id           |
+ | grantTime       | int64            | grant time            |
  
  Available privilege types:    
  1: read, 2: write, 3: read + write   __5: read + grant read to other__
