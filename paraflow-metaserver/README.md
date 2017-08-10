@@ -18,7 +18,7 @@
  | paramKey       | string           | key as string         |
  | paramValue     | string           | value as string       |
  
- #### __4. DbPrivsModel(database privileges)__       
+ [useless]#### __4. DbPrivsModel(database privileges)__       
  | NAME            | TYPE             | COMMENT               |
  |-----------------|------------------|-----------------------|
  | dbPrivId        | int64            | unique sequential id  |
@@ -28,7 +28,7 @@
  | grantTime       | int64            | grant time            |
  
  Available privilege types:    
- 1: read, 2: write, 3: read + write   __5: read + grant read to other__
+ 1: read, 2: write, 3: read + write   [useless]__5: read + grant read to other__
  
  #### 5. TblModel (table information)
  | NAME           | TYPE             | COMMENT                                 |
