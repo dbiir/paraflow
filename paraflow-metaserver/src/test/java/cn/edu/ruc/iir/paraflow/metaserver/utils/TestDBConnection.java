@@ -16,5 +16,6 @@ package cn.edu.ruc.iir.paraflow.metaserver.utils;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class TestDBConnection {
+public class TestDBConnection
+{
 }

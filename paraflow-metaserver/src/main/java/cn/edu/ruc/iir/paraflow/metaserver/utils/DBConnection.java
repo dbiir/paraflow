@@ -29,20 +29,12 @@ public class DBConnection
         return connectionInstance;
     }
 
-    public static void connect(String driver, String host, String user, String password)
+    public void connect(String driver, String host, String user, String password)
     {
         DBConnection.driver = driver;
         DBConnection.host = host;
         DBConnection.user = user;
         DBConnection.password = password;
-    }
-
-    public void close()
-    {
-    }
-
-    private DBConnection()
-    {
         try {
             Class.forName(driver);
             this.connection = DriverManager.getConnection(host, user, password);
@@ -54,12 +46,39 @@ public class DBConnection
         }
     }
 
-    public void SqlExecutor(String sqlStatement)
+    private DBConnection()
+    {
+    }
+
+    public void sqlUpdate(String sqlStatement)
     {
         try {
             Statement stmt = connection.createStatement();
             stmt.executeUpdate(sqlStatement);
             stmt.close();
+        }
+        catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+    }
+
+    public void sqlQuery(String sqlStatement)
+    {
+        try {
+            Statement stmt = connection.createStatement();
+            stmt.executeQuery(sqlStatement);
+            stmt.close();
+        }
+        catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+    }
+
+    public void close()
+    {
+        try {
             connection.commit();
             connection.close();
         }
@@ -71,8 +90,14 @@ public class DBConnection
 
         public static void main(String[] args)
     {
-        connect(args[1], args[2], args[3], args[4]);
         DBConnection dbConnection = new DBConnection();
-        dbConnection.SqlExecutor(args[4]);
+        dbConnection.connect(args[1], args[2], args[3], args[4]);
+        if (args[4].subSequence(0, 5).equals("SELECT")) {
+            dbConnection.sqlQuery(args[4]);
+        }
+        else {
+            dbConnection.sqlUpdate(args[4]);
+        }
+        dbConnection.close();
     }
 }

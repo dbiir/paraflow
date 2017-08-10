@@ -14,6 +14,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.service;
 
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
+
 import io.grpc.stub.StreamObserver;
 
 /**
@@ -21,71 +22,102 @@ import io.grpc.stub.StreamObserver;
  */
 public class SqlGenerator
 {
-    public void listDatabases(MetaProto.NoneType none, StreamObserver<MetaProto.StringListType> responseStreamObserver)
+    public String listDatabases()
+    {
+        String sql = "SELECT * FROM DbModel;";
+        return sql;
+    }
+
+    public String findDatabaseId(String dbName)
+    {
+        String sql = "SELECT dbId FROM DbModel WHERE dbName = '" + dbName + "';";
+        return sql;
+    }
+
+    public String listTables(int dbId)
+    {
+        String sql = "SELECT * FROM TblModel WHERE dbId = '" + dbId + "';";
+        return sql;
+    }
+
+    public String getDatabase(String dbName)
+    {
+        String sql = "SELECT * FROM DbModel WHERE dbName = '" + dbName + "';";
+        return sql;
+    }
+
+    public String getTable(int dbId, String tblName)
+    {
+        String sql = "SELECT * FROM TblModel WHERE dbId = '" + dbId + "' AND tblName = '" + tblName + "';";
+        return sql;
+    }
+
+    public String findTableId(String tblName)
+    {
+        String sql = "SELECT tblId FROM TblModel WHERE tblName = " + tblName + "';";
+        return sql;
+    }
+
+    public String getColumn(int tblId, String colName)
+    {
+        String sql = "SELECT * FROM ColModel WHERE tblId = '" + tblId + "' AND colName = '" + colName + "';";
+        return sql;
+    }
+
+    public String createDatabase(int dbId, String dbName, String locationUrl, int userId)
+    {
+        String sql = "INSERT INTO DbModel VALUES('" + dbId + "','" + dbName + "','" + locationUrl + "','" + userId + "');";
+        return sql;
+    }
+
+    public String createTable(int tblId, int dbId, int createTime, int lastAccessTime, int userId, String tblName, int tblType, int fiberColId, String locationUrl, int storageFormat, int fiberFuncId)
+    {
+        String sql = "INSERT INTO TblModel VALUES('" + tblId + "','"
+                + dbId + "','" + createTime + "','" + lastAccessTime + "','"
+                + userId + "','" + tblName + "','" + tblType + "','" + fiberColId + "','"
+                + locationUrl + "','" + storageFormat + "','" + fiberFuncId + "');";
+        return sql;
+    }
+
+    public String deleteDatabase(String dbName)
+    {
+        String sql = "DELETE FROM Dbmodel WHERE dbName = '" + dbName + "';";
+        return sql;
+    }
+
+    public String deleteTable(int dbId, int tblId)
+    {
+        String sql = "DELETE FROM TblModel WHERE dbId = '" + dbId + "' AND tblId = '" + tblId + "';";
+        return sql;
+    }
+
+    public String renameDatabase(String oldName, String newName)
+    {
+        String sql = "UPDATE DbModel SET dbName = '" + newName + "' WHERE dbName = '" + oldName + "';";
+        return sql;
+    }
+
+    public String renameTable(int dbId, String oldName, String newName)
+    {
+        String sql = "UPDATE TblModel SET tblName = '" + newName + "' WHERE dbId = '" + dbId + "' AND tblName = '" + oldName + "';";
+        return sql;
+    }
+
+    public String renameColumn(int dbId, int tblId, String oldName, String newName)
+    {
+        String sql = "UPDATA ColModel SET colName = '" + newName + "' WHERE dbId = '" + dbId + "' AND tblId = '" + tblId + "' AND colName = '" + oldName + "';";
+        return sql;
+    }
+
+    public void addBlockIndex(MetaProto.CreateBlockIndexParam addBlockIndex, StreamObserver<MetaProto.StatusType> responseStreamObserver)
     {
     }
 
-    public void listTables(MetaProto.DbNameParam dbNameParam, StreamObserver<MetaProto.StringListType> responseStreamObserver)
-    {
-    }
-
-    public void getDatabase(MetaProto.DbNameParam dbNameParam, StreamObserver<MetaProto.DbModel> responseStreamObserver)
-    {
-    }
-
-    public void getTable(MetaProto.DbTblParam dbTblParam, StreamObserver<MetaProto.TblModel> responseStreamObserver)
-    {
-    }
-
-    public void getColumn(MetaProto.DbTblColParam dbTblColParam, StreamObserver<MetaProto.ColModel> responseStreamObserver)
-    {
-    }
-
-    public void createDatabase(MetaProto.DbModel dbModel, StreamObserver<MetaProto.StatusType> responseStreamObserver)
-    {
-    }
-
-    public void createTable(MetaProto.TblModel tblModel, StreamObserver<MetaProto.StatusType> responseStreamObserver)
-    {
-    }
-
-    public void deleteDatabase(MetaProto.DbNameParam dbNameParam, StreamObserver<MetaProto.StatusType> responseStreamObserver)
-    {
-    }
-
-    public void deleteTable(MetaProto.DbTblParam dbTblParam, StreamObserver<MetaProto.StatusType> responseStreamObserver)
-    {
-    }
-
-    public void renameDatabase(MetaProto.RenameDbParam renameDbModel, StreamObserver<MetaProto.StatusType> responseStreamObserver)
-    {
-    }
-
-    public void renameTable(MetaProto.RenameTblParam renameTblModel, StreamObserver<MetaProto.StatusType> responseStreamObserver)
-    {
-    }
-
-    public void renameColumn(MetaProto.RenameColParam renameColumn, StreamObserver<MetaProto.StatusType> responseStreamObserver)
-    {
-    }
-
-    public void createFiber(MetaProto.FiberModel fiber, StreamObserver<MetaProto.StatusType> responseStreamObserver)
-    {
-    }
-
-    public void listFiberValues(MetaProto.FiberModel fiber, StreamObserver<MetaProto.LongListType> responseStreamObserver)
-    {
-    }
-
-    public void addBlockIndex(MetaProto.AddBlockIndexParam addBlockIndex, StreamObserver<MetaProto.StatusType> responseStreamObserver)
-    {
-    }
-
-    public void filterBlockPathsByTime(MetaProto.FilterBlockPathsByTimeParam filterBlockPathsByTime, StreamObserver<MetaProto.StringListType> responseStreamObserver)
-    {
-    }
-
-    public void filterBlockPaths(MetaProto.FilterBlockPathsParam filterBlockPaths, StreamObserver<MetaProto.StringListType> responseStreamObserver)
-    {
-    }
+//    public void filterBlockIndex(MetaProto.FilterBlockIndex filterBlockPathsByTime, StreamObserver<MetaProto.StringListType> responseStreamObserver)
+//    {
+//    }
+//
+//    public void filterBlockPaths(MetaProto.FilterBlockPathsParam filterBlockPaths, StreamObserver<MetaProto.StringListType> responseStreamObserver)
+//    {
+//    }
 }
