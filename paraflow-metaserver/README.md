@@ -28,8 +28,8 @@
  | dbId            | int64            | database id           |
  
  Available privilege types:    
- 1: read, 2: write, 3: read + write, 5: read + grant read to other,
-@@ -36,72 +36,73 @@ Available privilege types:
+ 1: read, 2: write, 3: read + write   [useless:  5: read + grant read to other]
+ 
  #### 5. TblModel (table information)
  | NAME           | TYPE             | COMMENT                                 |
  |----------------|------------------|-----------------------------------------|
