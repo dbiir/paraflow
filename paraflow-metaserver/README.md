@@ -61,11 +61,12 @@
  | tblId          | int64            |                       |
  
  #### 8. StorageFormatModel (storage format information)
- | NAME           | TYPE             | COMMENT                      |
- |----------------|------------------|------------------------------|
- | storageFormatId| int32            |                              |
- | compression    | string           | uncompressed \| snappy \| etc|
- | serialFormat   | string           | serial class name            |
+ | NAME             | TYPE             | COMMENT                      |
+ |------------------|------------------|------------------------------|
+ | storageFormatId  | int32            |                              |
+ | storageFormatName| string           |                              |
+ | compression      | string           | uncompressed \| snappy \| etc|
+ | serialFormat     | string           | serial class name            |
 
  #### 9. ColModel (column information)
  | NAME           | TYPE             | COMMENT                                   |
