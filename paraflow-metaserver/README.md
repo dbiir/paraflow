@@ -18,7 +18,7 @@
  | paramKey       | string           | key as string         |
  | paramValue     | string           | value as string       |
  
- #### 4. DbPrivsModel(database privileges)
+ #### __4. DbPrivsModel(database privileges)__       
  | NAME            | TYPE             | COMMENT               |
  |-----------------|------------------|-----------------------|
  | dbPrivId        | int64            | unique sequential id  |
@@ -28,7 +28,7 @@
  | dbId            | int64            | database id           |
  
  Available privilege types:    
- 1: read, 2: write, 3: read + write   [useless:  5: read + grant read to other]
+ 1: read, 2: write, 3: read + write   __5: read + grant read to other__
  
  #### 5. TblModel (table information)
  | NAME           | TYPE             | COMMENT                                 |
@@ -42,7 +42,7 @@
  | tblType        | int32            | 0 represents regular, 1 represents fiber|
  | fiberColId     | int64            | -1 means no fiber column                |
  | locationUrl    | string           | path in filesystem                      |
- | storageFormat  | int32            |                                         |
+ | storageFormatId| int32            |                                         |
  | fiberFuncId    | int64            | table partition function                |
  
  #### 6. TblParamModel (user specified parameters related to table) [optional]
@@ -59,6 +59,7 @@
  | grantTime      | int64            | grant time            |
  | privType       | int32            |                       |
  | tblId          | int64            |                       |
+ | userId         | int64            |                       |
  
  #### 8. StorageFormatModel (storage format information)
  | NAME             | TYPE             | COMMENT                      |
