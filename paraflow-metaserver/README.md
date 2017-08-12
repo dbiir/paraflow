@@ -79,7 +79,7 @@
  | colType        | string           | column type: regular \| fiber \| timestamp|
  | dataType       | string           | data type: integer \| char(x) \| float    |
  
- #### 10. FiberFuncNodel
+ #### 10. FiberFuncModel
  | NAME               | TYPE             | COMMENT              |
  |----------------    |------------------|----------------------|
  | fiberFuncId        | int64            | function id          |
