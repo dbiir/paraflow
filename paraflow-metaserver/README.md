@@ -73,8 +73,8 @@
  | NAME           | TYPE             | COMMENT                                   |
  |----------------|------------------|-------------------------------------------|
  | colId          | int64            |                                           |
- | tblId          | int64            | table id                                  |
  | colIndex       | int32            | index of column in table                  |
+ | tblId          | int64            | table id                                  |
  | colName        | string           | column name                               |
  | colType        | string           | column type: regular \| fiber \| timestamp|
  | dataType       | string           | data type: integer \| char(x) \| float    |
