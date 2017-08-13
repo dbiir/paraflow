@@ -14,6 +14,7 @@ service Meta {
     rpc getColumn(DbTblColParam) returns (ColParam) {}
     rpc createDatabase(DbParam) returns (StatusType) {}
     rpc createTable(TblParam) returns (StatusType) {}
+    rpc createColumn(ColListType) returns (StatusType) {}
     rpc deleteDatabase(DbNameParam) returns (StatusType) {}
     rpc deleteTable(DbTblParam) returns (StatusType) {}
     rpc renameDatabase(RenameDbParam) returns (StatusType) {}
@@ -93,11 +94,12 @@ message StorageFormatModel {
 
 message ColModel {
     int64 colId = 1;
-    int64 tblId = 2;
+    int32 colIndex = 2;
     string colName = 3;
-    string colType = 4;
-    string dataType = 5;
-    int32 colIndex = 6;
+    int64 dbId = 4;
+    int64 tblId = 5;
+    string colType = 6;
+    string dataType = 7;
 }
 
 message FiberFuncNodel {
@@ -138,8 +140,8 @@ message LongListType {
     repeated int64 lon = 1;
 }
 
-message ColumnListType {
-    repeated ColModel column = 1;
+message ColListType {
+    repeated ColParam column = 1;
 }
 
 message FiberValueType {
@@ -157,6 +159,7 @@ message StatusType {
         COLUMN_NOT_FOUND = 6;
         FIBER_ALREADY_EXISTS = 7;
         BLOCK_INDEX_ERROR = 8;
+        CREAT_COLUMN_ERROR = 9;
     }
     State status = 1;
 }
@@ -184,10 +187,11 @@ message TblParam {
 
 message ColParam {
     int32 colIndex = 1;
-    string tblName = 2;
-    string colName = 3;
-    string colType = 4;
-    string dataType = 5;
+    string dbName = 2;
+    string tblName = 3;
+    string colName = 4;
+    string colType = 5;
+    string dataType = 6;
 }
 
 message DbNameParam {
@@ -214,45 +218,46 @@ message DbTblColParam {
 }
 
 message RenameDbParam {
-    string old_name = 1;
-    string new_name = 2;
+    string oldName = 1;
+    string newName = 2;
 }
 
 message RenameTblParam {
     DbNameParam database = 1;
-    string old_name = 2;
-    string new_name = 3;
+    string oldName = 2;
+    string newName = 3;
 }
 
 message RenameColParam {
     DbNameParam database = 1;
     TblNameParam table = 2;
-    string old_name = 3;
-    string new_name = 4;
+    string oldName = 3;
+    string newName = 4;
 }
 
 message CreateBlockIndexParam {
     DbNameParam database = 1;
     TblNameParam table = 2;
     FiberValueType value = 3;
-    string begin_time = 4;
-    string end_time = 5;
-    string path = 6;
+    int64 timeBegin = 4;
+    int64 timeEnd = 5;
+    string timeZone = 6;
+    string blockPath = 7;
 }
 
 message FilterBlockIndexParam {
     DbNameParam database = 1;
     TblNameParam table = 2;
-    string timelow = 3;
-    string timehigh = 4;
+    int64 timeBegin = 3;
+    int64 timeEnd = 4;
 }
 
 message FilterBlockIndexByFiberParam {
     DbNameParam database = 1;
     TblNameParam table = 2;
     FiberValueType value = 3;
-    string timelow = 4;
-    string timehigh = 5;
+    int64 timeBegin = 4;
+    int64 timeEnd = 5;
 }
 
 message CreateDbParamParam {
@@ -269,16 +274,18 @@ message CreateDbParamParam {
 //}
 
 message CreateTblParamParam {
-    string tblName = 1;
-    string paramKey = 2;
-    string paramValue = 3;
+    string dbName = 1;
+    string tblName = 2;
+    string paramKey = 3;
+    string paramValue = 4;
 }
 
 message CreateTblPrivParam {
-    string tblName = 1;
-    string userName = 2;
-    int32 privType = 3;
-    int64 grantTime = 4;
+    string dbName = 1;
+    string tblName = 2;
+    string userName = 3;
+    int32 privType = 4;
+    int64 grantTime = 5;
 }
 
 message CreateStorageFormatParam {

@@ -2,7 +2,10 @@ package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Optional;
+
 /**
  * ParaFlow
  * This is a db connection instance.
@@ -13,10 +16,10 @@ import java.sql.Statement;
 
 public class DBConnection
 {
-    private static String driver;
-    private static String host;
-    private static String user;
-    private static String password;
+//    private static String driver;
+//    private static String host;
+//    private static String user;
+//    private static String password;
     private Connection connection;
     private static DBConnection connectionInstance = null;
 
@@ -31,14 +34,14 @@ public class DBConnection
 
     public void connect(String driver, String host, String user, String password)
     {
-        DBConnection.driver = driver;
-        DBConnection.host = host;
-        DBConnection.user = user;
-        DBConnection.password = password;
+//        DBConnection.driver = driver;
+//        DBConnection.host = host;
+//        DBConnection.user = user;
+//        DBConnection.password = password;
         try {
             Class.forName(driver);
-            this.connection = DriverManager.getConnection(host, user, password);
-            this.connection.setAutoCommit(false);
+            connection = DriverManager.getConnection(host, user, password);
+            connection.setAutoCommit(true);
         }
         catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -50,29 +53,53 @@ public class DBConnection
     {
     }
 
-    public void sqlUpdate(String sqlStatement)
+    public Optional sqlUpdate(String sqlStatement)
     {
+        int rowNumber = 0;
         try {
             Statement stmt = connection.createStatement();
-            stmt.executeUpdate(sqlStatement);
+            System.out.println("connection.createStatement");
+            rowNumber = stmt.executeUpdate(sqlStatement);
+            System.out.println("stmt.executeUpdate");
             stmt.close();
         }
         catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
+        }
+        Optional option = Optional.ofNullable(rowNumber);
+        if (option.isPresent() == true) {
+            return option;
+        }
+        else {
+            return null;
         }
     }
 
-    public void sqlQuery(String sqlStatement)
+    public Optional<ResultSet> sqlQuery(String sqlStatement)
     {
+        System.out.println(sqlStatement);
+        ResultSet resultSet = null;
         try {
             Statement stmt = connection.createStatement();
-            stmt.executeQuery(sqlStatement);
-            stmt.close();
+            resultSet = stmt.executeQuery(sqlStatement);
+//            stmt.close();
         }
-        catch (Exception e) {
+        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.out.println("sqlQuery java.sql.SQLException");
             System.exit(0);
+        }
+        catch (NullPointerException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.out.println("sqlQuery NullPointerException");
+            System.exit(0);
+        }
+        if (resultSet != null) {
+            return Optional.of(resultSet);
+        }
+        else {
+            return Optional.empty();
         }
     }
 
@@ -86,18 +113,5 @@ public class DBConnection
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-    }
-
-        public static void main(String[] args)
-    {
-        DBConnection dbConnection = new DBConnection();
-        dbConnection.connect(args[1], args[2], args[3], args[4]);
-        if (args[4].subSequence(0, 5).equals("SELECT")) {
-            dbConnection.sqlQuery(args[4]);
-        }
-        else {
-            dbConnection.sqlUpdate(args[4]);
-        }
-        dbConnection.close();
     }
 }

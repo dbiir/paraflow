@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.server;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.RPCServerIOException;
 import cn.edu.ruc.iir.paraflow.metaserver.service.MetaService;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.DBConnection;
@@ -54,14 +55,21 @@ public class MetaServer
         System.out.println("****** RPC server started at port " + port);
 
         // get config instance
-        MetaConfig metaConfig = new MetaConfig(metaConfigPath);
+        MetaConfig metaConfig = null;
+        try {
+            metaConfig = new MetaConfig(metaConfigPath);
+        }
+        catch (ConfigFileNotFoundException e) {
+            e.printStackTrace();
+        }
 
         // connect database
-//        DBConnection.connect(
-//                metaConfig.getDBDriver(),
-//                metaConfig.getDBHost(),
-//                metaConfig.getDBUser(),
-//                metaConfig.getDBPassword());
+        DBConnection dbConnection = DBConnection.getConnectionInstance();
+        dbConnection.connect(
+                metaConfig.getDBDriver(),
+                metaConfig.getDBHost(),
+                metaConfig.getDBUser(),
+                metaConfig.getDBPassword());
         logger.info("****** Database connected successfully");
         System.out.println("****** Database connected successfully");
 
@@ -109,6 +117,7 @@ public class MetaServer
             server.blockUntilTermination();
         }
         catch (RPCServerIOException e) {
+            server.stop();
             e.printStackTrace();
         }
     }
