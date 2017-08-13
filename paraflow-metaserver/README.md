@@ -72,8 +72,8 @@
  #### 9. ColModel (column information)
  | NAME           | TYPE             | COMMENT                                   |
  |----------------|------------------|-------------------------------------------|
- | tblId          | int64            | table id                                  |
  | colId          | int64            |                                           |
+ | tblId          | int64            | table id                                  |
  | colIndex       | int32            | index of column in table                  |
  | colName        | string           | column name                               |
  | colType        | string           | column type: regular \| fiber \| timestamp|
