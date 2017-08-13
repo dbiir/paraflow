@@ -72,14 +72,15 @@
  #### 9. ColModel (column information)
  | NAME           | TYPE             | COMMENT                                   |
  |----------------|------------------|-------------------------------------------|
- | tblId          | int64            | table id                                  |
  | colId          | int64            |                                           |
  | colIndex       | int32            | index of column in table                  |
+ | dbId           | int64            | database id                               |
+ | tblId          | int64            | table id                                  |
  | colName        | string           | column name                               |
  | colType        | string           | column type: regular \| fiber \| timestamp|
  | dataType       | string           | data type: integer \| char(x) \| float    |
  
- #### 10. FiberFuncNodel
+ #### 10. FiberFuncModel
  | NAME               | TYPE             | COMMENT              |
  |----------------    |------------------|----------------------|
  | fiberFuncId        | int64            | function id          |
