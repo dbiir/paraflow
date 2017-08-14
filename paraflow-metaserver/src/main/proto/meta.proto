@@ -160,6 +160,9 @@ message StatusType {
         FIBER_ALREADY_EXISTS = 7;
         BLOCK_INDEX_ERROR = 8;
         CREAT_COLUMN_ERROR = 9;
+        META_TABLE_CREATE_FAIL = 10;
+        META_TABLE_ALREADY_EXISTS = 11;
+        META_TABLE_BROKEN = 12;
     }
     State status = 1;
 }

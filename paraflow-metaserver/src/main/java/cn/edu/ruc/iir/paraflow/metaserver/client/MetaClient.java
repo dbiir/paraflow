@@ -77,14 +77,14 @@ public class MetaClient
         return status;
     }
 
-    public MetaProto.StatusType createTable(String dbName, String tblName, int tblType, int createTime, int lastAccessTime, String locationUrl, int storageFormatId, int fiberColId, int fiberFuncId, ArrayList<String> columnName, ArrayList<String> columnType, ArrayList<String> datatype)
+    public MetaProto.StatusType createTable(String dbName, String tblName, int tblType, int createTime, int lastAccessTime, String locationUrl, int storageFormatId, int fiberColId, int fiberFuncId, ArrayList<String> columnName, ArrayList<String> columnType, ArrayList<String> dataType)
     {
 //        MetaProto.UserParam user = MetaProto.UserParam.newBuilder().setUserName("Alice").setUserPass("123456").setRoleName("admin").setCreationTime(20170807).setLastVisitTime(20170807).build();
 //        MetaProto.DbParam database = MetaProto.DbParam.newBuilder().setName("default").setLocationUri("hdfs:/127.0.0.1:9000/warehouse/default").setUser(user).build();
         int number = columnName.size();
         ArrayList<MetaProto.ColParam> columns = new ArrayList<>();
         for (int i = 0; i < number; i++) {
-            MetaProto.ColParam column = MetaProto.ColParam.newBuilder().setColIndex(i).setTblName(tblName).setColName(columnName.get(i)).setColType(columnType.get(i)).setDataType(datatype.get(i)).build();
+            MetaProto.ColParam column = MetaProto.ColParam.newBuilder().setColIndex(i).setTblName(tblName).setColName(columnName.get(i)).setColType(columnType.get(i)).setDataType(dataType.get(i)).build();
             columns.add(column);
         }
         MetaProto.ColListType colList = MetaProto.ColListType.newBuilder().addAllColumn(columns).build();
