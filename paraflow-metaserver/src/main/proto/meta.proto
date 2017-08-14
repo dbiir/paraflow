@@ -163,6 +163,7 @@ message StatusType {
         META_TABLE_CREATE_FAIL = 10;
         META_TABLE_ALREADY_EXISTS = 11;
         META_TABLE_BROKEN = 12;
+        USER_NOT_FOUND = 13;
     }
     State status = 1;
 }

@@ -49,14 +49,16 @@ public class MetaClient
         MetaProto.CreateUserParam createUser = MetaProto.CreateUserParam.newBuilder().setUserName(userName).setCreateTime(createTime).setLastVisitTime(lastVisitTime).build();
         MetaProto.StatusType status;
         try {
+            System.out.println("1status = metaBlockingStub.createUser(createUser)");
             status = metaBlockingStub.createUser(createUser);
+            System.out.println("2status = metaBlockingStub.createUser(createUser)");
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
             status = MetaProto.StatusType.newBuilder().build();
             return status;
         }
-        logger.info("Rename column status is : " + status.getStatus());
+        logger.info("Create user status is : " + status.getStatus());
         return status;
     }
 

@@ -97,31 +97,31 @@ public class MetaServer
                 Optional<Integer> optCreateVerModel = dbConnection.sqlUpdate(createVerModelSql);
                 int resCreateVerModel = (int) optCreateVerModel.get();
                 //UserModel
-                String createUserModelSql = "CREATE TABLE usermodel (userid SERIAL primary key,username varchar(50),createtime long,lastvisittime long);";
+                String createUserModelSql = "CREATE TABLE usermodel (userid SERIAL primary key,username varchar(50),createtime int,lastvisittime int);";
                 Optional<Integer> optCreateUserModel = dbConnection.sqlUpdate(createUserModelSql);
                 int resCreateUserModel = (int) optCreateUserModel.get();
                 //DbModel
-                String createDbModelSql = "CREATE TABLE dbmodel (dbid SERIAL primary key,dbname varchar(20),userid long REFERENCES usermodel(userid),locationurl varchar(200));";
+                String createDbModelSql = "CREATE TABLE dbmodel (dbid SERIAL primary key,dbname varchar(20),userid int REFERENCES usermodel(userid),locationurl varchar(200));";
                 Optional<Integer> optCreateDbModel = dbConnection.sqlUpdate(createDbModelSql);
                 int resCreateDbModel = (int) optCreateDbModel.get();
                 //TblModel
-                String createTblModelSql = "CREATE TABLE tblmodel (tblid SERIAL primary key,dbid long REFERENCES dbmodel(dbid),tblname varchar(50),tbltype int,userid long REFERENCES usermodel(userid),createtime long,lastaccesstime long,locationUrl varchar(100),storageformatid int,fiberColId long,fiberfuncid long);";
+                String createTblModelSql = "CREATE TABLE tblmodel (tblid SERIAL primary key,dbid int REFERENCES dbmodel(dbid),tblname varchar(50),tbltype int,userid int REFERENCES usermodel(userid),createtime int,lastaccesstime int,locationUrl varchar(100),storageformatid int,fiberColId int,fiberfuncid int);";
                 Optional<Integer> optCreateTblModel = dbConnection.sqlUpdate(createTblModelSql);
                 int resCreateTblModel = (int) optCreateTblModel.get();
                 //ColModel
-                String createColModelSql = "CREATE TABLE colmodel (colid SERIAL primary key,colIndex int,dbid long REFERENCES dbmodel(dbid),tblid long REFERENCES tblmodel(tblid),colName varchar(50),colType varchar(50),dataType varchar(50));";
+                String createColModelSql = "CREATE TABLE colmodel (colid SERIAL primary key,colIndex int,dbid int REFERENCES dbmodel(dbid),tblid int REFERENCES tblmodel(tblid),colName varchar(50),colType varchar(50),dataType varchar(50));";
                 Optional<Integer> optCreateColModel = dbConnection.sqlUpdate(createColModelSql);
                 int resCreateColModel = (int) optCreateColModel.get();
                 //DbParamModel
-                String createDbParamModelSql = "CREATE TABLE dbparammodel (dbid long REFERENCES dbmodel(dbid),paramkey varchar(100),paramvalue varchar(200));";
+                String createDbParamModelSql = "CREATE TABLE dbparammodel (dbid int REFERENCES dbmodel(dbid),paramkey varchar(100),paramvalue varchar(200));";
                 Optional<Integer> optCreateDbParamModel = dbConnection.sqlUpdate(createDbParamModelSql);
                 int resCreateDbParamModel = (int) optCreateDbParamModel.get();
                 //TblParamModel
-                String createTblParamModelSql = "CREATE TABLE tblparammodel (tblid long REFERENCES tblmodel(tblid),paramkey varchar(100),paramvalue varchar(200));";
+                String createTblParamModelSql = "CREATE TABLE tblparammodel (tblid int REFERENCES tblmodel(tblid),paramkey varchar(100),paramvalue varchar(200));";
                 Optional<Integer> optCreateTblParamModel = dbConnection.sqlUpdate(createTblParamModelSql);
                 int resCreateTblParamModel = (int) optCreateTblParamModel.get();
                 //TblPrivModel
-                String createTblPrivModelSql = "CREATE TABLE tblprivmodel (tblprivid SERIAL primary key,tblid long REFERENCES tblmodel(tblid),userid long REFERENCES usermodel(userid),privtype int,granttime long);";
+                String createTblPrivModelSql = "CREATE TABLE tblprivmodel (tblprivid SERIAL primary key,tblid int REFERENCES tblmodel(tblid),userid int REFERENCES usermodel(userid),privtype int,granttime int);";
                 Optional<Integer> optCreateTblPrivModel = dbConnection.sqlUpdate(createTblPrivModelSql);
                 int resCreateTblPrivModel = (int) optCreateTblPrivModel.get();
                 //StorageFormatModel
@@ -133,7 +133,7 @@ public class MetaServer
                 Optional<Integer> optCreateFiberFuncModel = dbConnection.sqlUpdate(createFiberFuncModelSql);
                 int resCreateFiberFuncModel = (int) optCreateFiberFuncModel.get();
                 //BlockIndex
-                String createBlockIndexSql = "CREATE TABLE blockindex (blockindexid SERIAL primary key,tblid long REFERENCES tblmodel(tblid),fibervalue long,timebegin long,timeend long,timezone varchar(50),blockpath varchar(100));";
+                String createBlockIndexSql = "CREATE TABLE blockindex (blockindexid SERIAL primary key,tblid int REFERENCES tblmodel(tblid),fibervalue int,timebegin int,timeend int,timezone varchar(50),blockpath varchar(100));";
                 Optional<Integer> optCreateBlockIndex = dbConnection.sqlUpdate(createBlockIndexSql);
                 int resCreateBlockIndex = (int) optCreateBlockIndex.get();
                 if (resCreateVerModel == 0 && resCreateDbModel == 0 && resCreateDbParamModel == 0
@@ -156,7 +156,7 @@ public class MetaServer
                     && result.contains("tblparammodel") && result.contains("tblprivmodel")
                     && result.contains("usermodel") && result.contains("vermodel")) {
                 statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.META_TABLE_ALREADY_EXISTS).build();
-                System.out.println("Meta table create status is : " + statusType.getStatus());
+                System.out.println("Meta table status is : " + statusType.getStatus());
             }
             else {
                 statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.META_TABLE_BROKEN).build();
