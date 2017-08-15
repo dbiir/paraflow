@@ -1,9 +1,10 @@
 package cn.edu.ruc.iir.paraflow.metaserver.service;
 
+import cn.edu.ruc.iir.paraflow.metaserver.connection.SqlGenerator;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaGrpc;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 
-import cn.edu.ruc.iir.paraflow.metaserver.utils.DBConnection;
+import cn.edu.ruc.iir.paraflow.metaserver.connection.DBConnection;
 import io.grpc.stub.StreamObserver;
 
 import java.sql.ResultSet;
@@ -18,8 +19,9 @@ import java.util.Optional;
  */
 public class MetaService extends MetaGrpc.MetaImplBase
 {
-    SqlGenerator sqlGenerator = new SqlGenerator();
-    DBConnection dbConnection = DBConnection.getConnectionInstance();
+    private SqlGenerator sqlGenerator = new SqlGenerator();
+    private DBConnection dbConnection = DBConnection.getConnectionInstance();
+
     @Override
     public void createUser(MetaProto.CreateUserParam createUser, StreamObserver<MetaProto.StatusType> responseStreamObserver)
     {
