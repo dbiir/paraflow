@@ -15,7 +15,10 @@ service Meta {
     rpc createDatabase(DbParam) returns (StatusType) {}
     rpc createTable(TblParam) returns (StatusType) {}
     rpc createColumn(ColListType) returns (StatusType) {}
+    rpc deleteTblColumn(DbTblParam) returns (StatusType) {}
+    rpc deleteDbColumn(DbNameParam) returns (StatusType) {}
     rpc deleteDatabase(DbNameParam) returns (StatusType) {}
+    rpc deleteDbTable(DbNameParam) returns (StatusType) {}
     rpc deleteTable(DbTblParam) returns (StatusType) {}
     rpc renameDatabase(RenameDbParam) returns (StatusType) {}
     rpc renameTable(RenameTblParam) returns (StatusType) {}
@@ -160,6 +163,13 @@ message StatusType {
         FIBER_ALREADY_EXISTS = 7;
         BLOCK_INDEX_ERROR = 8;
         CREAT_COLUMN_ERROR = 9;
+        META_TABLE_CREATE_FAIL = 10;
+        META_TABLE_ALREADY_EXISTS = 11;
+        META_TABLE_BROKEN = 12;
+        USER_NOT_FOUND = 13;
+        CREATE_TABLE_ERROR = 14;
+        DELETE_COLUMN_ERROR = 15;
+        DELETE_TABLE_ERROR = 16;
     }
     State status = 1;
 }
