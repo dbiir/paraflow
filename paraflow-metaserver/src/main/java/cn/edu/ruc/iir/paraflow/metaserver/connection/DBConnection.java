@@ -1,8 +1,9 @@
-package cn.edu.ruc.iir.paraflow.metaserver.utils;
+package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Optional;
 
@@ -14,12 +15,13 @@ import java.util.Optional;
  * @author guodong
  */
 
+// TODO catch explicit exceptions in detail
+
+// TODO change autoCommit to false. call commit() in meta service manually
+// ref: http://docs.oracle.com/javase/tutorial/jdbc/basics/transactions.html
+
 public class DBConnection
 {
-//    private static String driver;
-//    private static String host;
-//    private static String user;
-//    private static String password;
     private Connection connection;
     private static DBConnection connectionInstance = null;
 
@@ -34,18 +36,13 @@ public class DBConnection
 
     public void connect(String driver, String host, String user, String password)
     {
-//        DBConnection.driver = driver;
-//        DBConnection.host = host;
-//        DBConnection.user = user;
-//        DBConnection.password = password;
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(host, user, password);
-            connection.setAutoCommit(true);
+            connection.setAutoCommit(false);
         }
         catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
         }
     }
 
@@ -53,7 +50,8 @@ public class DBConnection
     {
     }
 
-    public Optional sqlUpdate(String sqlStatement)
+    // TODO use preparedStatement() instead of createStatement()
+    public int sqlUpdate(String sqlStatement)
     {
         int rowNumber = 0;
         try {
@@ -67,39 +65,58 @@ public class DBConnection
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        Optional option = Optional.ofNullable(rowNumber);
-        if (option.isPresent() == true) {
-            return option;
-        }
-        else {
-            return null;
-        }
+
+        return rowNumber;
     }
 
-    public Optional<ResultSet> sqlQuery(String sqlStatement)
+    // TODO close resultSet and statement locally. return an JDBCRecord
+    // reference: https://github.com/dbiir/presto/blob/master/presto-hdfs/src/main/java/com/facebook/presto/hdfs/jdbc/JDBCDriver.java
+    public Optional<ResultList> sqlQuery(String sqlStatement)
     {
         System.out.println(sqlStatement);
         ResultSet resultSet = null;
         try {
             Statement stmt = connection.createStatement();
             resultSet = stmt.executeQuery(sqlStatement);
-//            stmt.close();
+            // TODO convert ResultSet to ResultList
+            resultSet.close();
+            stmt.close();
         }
         catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.out.println("sqlQuery java.sql.SQLException");
-            System.exit(0);
         }
         catch (NullPointerException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.out.println("sqlQuery NullPointerException");
-            System.exit(0);
         }
         if (resultSet != null) {
             return Optional.of(resultSet);
         }
         else {
             return Optional.empty();
+        }
+    }
+
+    public void commit()
+    {
+        try
+        {
+            connection.commit();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    public void rollback()
+    {
+        try
+        {
+            connection.rollback();
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
         }
     }
 

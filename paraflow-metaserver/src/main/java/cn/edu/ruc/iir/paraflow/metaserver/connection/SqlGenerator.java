@@ -11,14 +11,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.ruc.iir.paraflow.metaserver.service;
-
-//import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
-
-//import io.grpc.stub.StreamObserver;
+package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
 /**
- * @author jelly.guodong.jin@gmail.com
  */
 public class SqlGenerator
 {

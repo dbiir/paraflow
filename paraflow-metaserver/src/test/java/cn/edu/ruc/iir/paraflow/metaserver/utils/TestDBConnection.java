@@ -13,6 +13,7 @@
  */
 package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
+import cn.edu.ruc.iir.paraflow.metaserver.connection.DBConnection;
 import org.junit.Test;
 
 import java.sql.ResultSet;
