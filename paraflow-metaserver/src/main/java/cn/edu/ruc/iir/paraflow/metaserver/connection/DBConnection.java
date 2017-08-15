@@ -2,9 +2,8 @@ package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Optional;
 
 /**
@@ -14,10 +13,6 @@ import java.util.Optional;
  *
  * @author guodong
  */
-
-// TODO catch explicit exceptions in detail
-
-// TODO change autoCommit to false. call commit() in meta service manually
 // ref: http://docs.oracle.com/javase/tutorial/jdbc/basics/transactions.html
 
 public class DBConnection
@@ -41,7 +36,10 @@ public class DBConnection
             connection = DriverManager.getConnection(host, user, password);
             connection.setAutoCommit(false);
         }
-        catch (Exception e) {
+        catch (java.lang.ClassNotFoundException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
     }
@@ -50,73 +48,81 @@ public class DBConnection
     {
     }
 
-    // TODO use preparedStatement() instead of createStatement()
     public int sqlUpdate(String sqlStatement)
     {
         int rowNumber = 0;
         try {
-            Statement stmt = connection.createStatement();
+            PreparedStatement stmt = connection.prepareStatement(sqlStatement);
             System.out.println("connection.createStatement");
-            rowNumber = stmt.executeUpdate(sqlStatement);
+            rowNumber = stmt.executeUpdate();
             System.out.println("stmt.executeUpdate");
             stmt.close();
         }
-        catch (Exception e) {
+        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
         }
 
         return rowNumber;
     }
 
+    public ResultList convert(ResultSet resultSet, int colCount)
+    {
+        ResultList resultList = new ResultList();
+        JDBCRecord jdbcRecord = new JDBCRecord(colCount);
+        try {
+            while (resultSet.next()) {
+                for (int i = 0; i < colCount; i++) {
+                    jdbcRecord.put(resultSet.getString(i + 1), i);
+                    resultList.add(jdbcRecord);
+                }
+            }
+        }
+        catch (java.sql.SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        return resultList;
+    }
     // TODO close resultSet and statement locally. return an JDBCRecord
     // reference: https://github.com/dbiir/presto/blob/master/presto-hdfs/src/main/java/com/facebook/presto/hdfs/jdbc/JDBCDriver.java
-    public Optional<ResultList> sqlQuery(String sqlStatement)
+    public ResultList sqlQuery(String sqlStatement, int colCount)
     {
         System.out.println(sqlStatement);
         ResultSet resultSet = null;
+        ResultList resultList = new ResultList();
         try {
-            Statement stmt = connection.createStatement();
-            resultSet = stmt.executeQuery(sqlStatement);
+            PreparedStatement stmt = connection.prepareStatement(sqlStatement);
+            resultSet = stmt.executeQuery();
+            resultList = convert(resultSet, colCount);
             // TODO convert ResultSet to ResultList
             resultSet.close();
             stmt.close();
         }
         catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.out.println("sqlQuery java.sql.SQLException");
         }
         catch (NullPointerException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.out.println("sqlQuery NullPointerException");
         }
-        if (resultSet != null) {
-            return Optional.of(resultSet);
-        }
-        else {
-            return Optional.empty();
-        }
+        return  resultList;
     }
 
     public void commit()
     {
-        try
-        {
+        try {
             connection.commit();
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
+        }
+        catch (java.sql.SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
     }
 
     public void rollback()
     {
-        try
-        {
+        try {
             connection.rollback();
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
+        }
+        catch (java.sql.SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
     }
 
@@ -126,9 +132,8 @@ public class DBConnection
             connection.commit();
             connection.close();
         }
-        catch (Exception e) {
+        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
         }
     }
 }

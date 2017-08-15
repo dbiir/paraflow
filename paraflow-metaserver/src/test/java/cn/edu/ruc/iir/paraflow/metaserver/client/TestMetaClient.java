@@ -19,7 +19,7 @@ public class TestMetaClient
     {
         MetaClient client = new MetaClient("127.0.0.1", 10012);
         MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createUser("alice", 20170814, 20170814);
+        MetaProto.StatusType status = client.createUser("alice", "123456");
         assertEquals(expect, status);
         try {
             client.shutdown(3);

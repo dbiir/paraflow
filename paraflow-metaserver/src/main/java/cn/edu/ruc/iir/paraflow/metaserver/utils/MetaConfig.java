@@ -37,4 +37,9 @@ public class MetaConfig
     {
         return configInstance.getProperty("db.password");
     }
+
+    public String getHDFSWarehouse()
+    {
+        return configInstance.getProperty("hdfs.warehouse");
+    }
 }
