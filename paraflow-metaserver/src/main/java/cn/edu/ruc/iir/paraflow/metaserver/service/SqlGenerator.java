@@ -48,7 +48,7 @@ public class SqlGenerator
 
     public String getDatabase(String dbName)
     {
-        String sql = String.format("SELECT dbname,locationurl,username FROM dbmodel WHERE dbname = '%s';", dbName);
+        String sql = String.format("SELECT dbname,locationurl,userid FROM dbmodel WHERE dbname = '%s';", dbName);
         return sql;
     }
 
@@ -75,12 +75,11 @@ public class SqlGenerator
         String sql = String.format("SELECT colindex,tblid,colname,coltype,datatype FROM colmodel WHERE tblid = '%d' AND colname = '%s';", tblId, colName);
         return sql;
     }
-
-    public String findTblName(int tblId)
-    {
-        String sql = String.format("SELECT tblname FROM tblmodel WHERE tblid = '%d';", tblId);
-        return sql;
-    }
+//    public String findTblName(int tblId)
+//    {
+//        String sql = String.format("SELECT tblname FROM tblmodel WHERE tblid = '%d';", tblId);
+//        return sql;
+//    }
 
     public String findUserId(String userName)
     {
@@ -100,15 +99,15 @@ public class SqlGenerator
         return sql;
     }
 
-    public String createColumn(int colIndex, String colName, int tblId, String colType, String dataType)
+    public String createColumn(int colIndex, int dbId, String colName, int tblId, String colType, String dataType)
     {
-        String sql = String.format("INSERT INTO colmodel (colindex,colname,tblid,coltype,dataType) VALUES('%d','%s','%d','%s','%s');", colIndex, colName, tblId, colType, dataType);
+        String sql = String.format("INSERT INTO colmodel (colindex,dbid,colname,tblid,coltype,dataType) VALUES('%d','%d','%s','%d','%s','%s');", colIndex, dbId, colName, tblId, colType, dataType);
         return sql;
     }
 
     public String renameColumn(int dbId, int tblId, String oldName, String newName)
     {
-        String sql = String.format("UPDATA colmodel SET colname = '%s' WHERE dbid = '%d' AND tblid = '%d' AND colname = '%s';", newName, dbId, tblId, oldName);
+        String sql = String.format("UPDATE colmodel SET colname = '%s' WHERE dbid = '%d' AND tblid = '%d' AND colname = '%s';", newName, dbId, tblId, oldName);
         return sql;
     }
 
@@ -124,9 +123,27 @@ public class SqlGenerator
         return sql;
     }
 
+    public String deleteTblColumn(int dbId, int tblId)
+    {
+        String sql = String.format("DELETE FROM colmodel WHERE dbid = '%d' AND tblid = '%d';", dbId, tblId);
+        return sql;
+    }
+
+    public String deleteDbColumn(int dbId)
+    {
+        String sql = String.format("DELETE FROM colmodel WHERE dbid = '%d';", dbId);
+        return sql;
+    }
+
     public String deleteTable(int dbId, String tblName)
     {
         String sql = String.format("DELETE FROM tblmodel WHERE dbid = '%d' AND tblname = '%s';", dbId, tblName);
+        return sql;
+    }
+
+    public String deleteDbTable(int dbId)
+    {
+        String sql = String.format("DELETE FROM tblmodel WHERE dbid = '%d';", dbId);
         return sql;
     }
 
@@ -162,7 +179,7 @@ public class SqlGenerator
 
     public String createFiberFunc(String fiberFuncName, String fiberFuncContent)
     {
-        String sql = String.format("INSERT INTO fiberfuncmodel (fiberfuncmodel,fiberfunccontent) VALUES('%s','%s');", fiberFuncName, fiberFuncContent);
+        String sql = String.format("INSERT INTO fiberfuncmodel (fiberfuncname,fiberfunccontent) VALUES('%s','%s');", fiberFuncName, fiberFuncContent);
         return sql;
     }
 

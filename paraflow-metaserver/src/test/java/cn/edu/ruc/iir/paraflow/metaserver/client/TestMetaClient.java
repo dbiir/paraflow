@@ -62,7 +62,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         MetaProto.StatusType status = client.createTable("food", "rice", 0,
-                20170814, 20170814, "hdfs:/127.0.0.1/:5432/metadata/food/rice",
+                "alice", 20170814, 20170814, "hdfs:/127.0.0.1/:5432/metadata/food/rice",
                 1, -1, 1, columnName, columnType, dataType);
         assertEquals(expect, status);
         try {
@@ -77,7 +77,7 @@ public class TestMetaClient
     public void clientListDatabasesTest()
     {
         MetaClient client = new MetaClient("127.0.0.1", 10012);
-        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder().addStr("default").addStr("test").addStr("food").build();
+        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder().addStr("food").build();
         MetaProto.NoneType none = MetaProto.NoneType.newBuilder().build();
         MetaProto.StringListType stringList = client.listDatabases();
         //System.out.println(stringList);
@@ -230,7 +230,7 @@ public class TestMetaClient
     {
         MetaClient client = new MetaClient("127.0.0.1", 10012);
         MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createDbParam("default", "She", "is beautiful and smart");
+        MetaProto.StatusType status = client.createDbParam("food", "She", "is beautiful and smart");
         assertEquals(expect, status);
         try {
             client.shutdown(3);
@@ -245,7 +245,7 @@ public class TestMetaClient
     {
         MetaClient client = new MetaClient("127.0.0.1", 10012);
         MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createTblParam("book", "It", "is a good book");
+        MetaProto.StatusType status = client.createTblParam("food", "rice", "It", "is a good book");
         assertEquals(expect, status);
         try {
             client.shutdown(3);
@@ -260,7 +260,7 @@ public class TestMetaClient
     {
         MetaClient client = new MetaClient("127.0.0.1", 10012);
         MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createTblPriv("book", 1, 20170814);
+        MetaProto.StatusType status = client.createTblPriv("food", "rice", "alice", 1, 20170814);
         assertEquals(expect, status);
         try {
             client.shutdown(3);
@@ -304,7 +304,7 @@ public class TestMetaClient
     {
         MetaClient client = new MetaClient("127.0.0.1", 10012);
         MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createBlockIndex("default", "book", 123, 20170814, 20170814, "hdfs:127.0.0.1");
+        MetaProto.StatusType status = client.createBlockIndex("food", "rice", 123, 20170814, 20170814, "hdfs:127.0.0.1");
         assertEquals(expect, status);
         try {
             client.shutdown(3);

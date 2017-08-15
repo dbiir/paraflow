@@ -99,6 +99,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(tblParam.getDbName());
+            System.out.println("find dbId Sql : " + findDbIdSql);
             Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
             ResultSet resFindDbId = (ResultSet) optFindDbId.get();
             int dbId = 0;
@@ -107,10 +108,11 @@ public class MetaService extends MetaGrpc.MetaImplBase
                 dbId = resFindDbId.getInt(1);
             }
             else {
-                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.USER_NOT_FOUND).build();
+                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND).build();
                 responseStreamObserver.onNext(statusType);
                 responseStreamObserver.onCompleted();
             }
+            System.out.println("dbId = " + dbId);
             //find user id
             String findUserIdSql = sqlGenerator.findUserId(tblParam.getUserName());
             Optional<ResultSet> optFindUserId = dbConnection.sqlQuery(findUserIdSql);
@@ -124,24 +126,35 @@ public class MetaService extends MetaGrpc.MetaImplBase
                 responseStreamObserver.onNext(statusType);
                 responseStreamObserver.onCompleted();
             }
-            //create table
-            String createTblSql = sqlGenerator.createTable(dbId,
-                    tblParam.getTblName(), tblParam.getTblType(),
-                    userId, tblParam.getCreateTime(), tblParam.getLastAccessTime(),
-                    tblParam.getLocationUrl(), tblParam.getStorageFormatId(),
-                    tblParam.getFiberColId(), tblParam.getFiberFuncId());
-            Optional<Integer> optCreateTbl = dbConnection.sqlUpdate(createTblSql);
-            int resCreateTbl = (int) optCreateTbl.get();
-            //result
-            if (resCreateTbl == 1) {
-                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+            //find table id
+            String findTblIdSql = sqlGenerator.findTblId(dbId, tblParam.getTblName());
+            Optional<ResultSet> optFindTblId = dbConnection.sqlQuery(findTblIdSql);
+            ResultSet resFindTblId = (ResultSet) optFindTblId.get();
+            if (resFindTblId.next()) {
+                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.TABLE_ALREADY_EXISTS).build();
                 responseStreamObserver.onNext(statusType);
                 responseStreamObserver.onCompleted();
             }
             else {
-                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.TABLE_ALREADY_EXISTS).build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
+                //create table
+                String createTblSql = sqlGenerator.createTable(dbId,
+                        tblParam.getTblName(), tblParam.getTblType(),
+                        userId, tblParam.getCreateTime(), tblParam.getLastAccessTime(),
+                        tblParam.getLocationUrl(), tblParam.getStorageFormatId(),
+                        tblParam.getFiberColId(), tblParam.getFiberFuncId());
+                Optional<Integer> optCreateTbl = dbConnection.sqlUpdate(createTblSql);
+                int resCreateTbl = (int) optCreateTbl.get();
+                //result
+                if (resCreateTbl == 1) {
+                    statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+                    responseStreamObserver.onNext(statusType);
+                    responseStreamObserver.onCompleted();
+                }
+                else {
+                    statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.TABLE_ALREADY_EXISTS).build();
+                    responseStreamObserver.onNext(statusType);
+                    responseStreamObserver.onCompleted();
+                }
             }
         }
         catch (NullPointerException e) {
@@ -191,7 +204,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             for (int i = 0; i < colCount; i++) {
                 colParam = columns.get(i);
                 //insert column
-                String createColSql = sqlGenerator.createColumn(i, colParam.getColName(), tblId, colParam.getColType(), colParam.getDataType());
+                String createColSql = sqlGenerator.createColumn(i, dbId, colParam.getColName(), tblId, colParam.getColType(), colParam.getDataType());
                 Optional<Integer> optCreateCol = dbConnection.sqlUpdate(createColSql);
                 int resCreateCol = (int) optCreateCol.get();
                 //result
@@ -294,9 +307,26 @@ public class MetaService extends MetaGrpc.MetaImplBase
             Optional<ResultSet> optGetDb = dbConnection.sqlQuery(getDbSql);
             ResultSet resGetDb = (ResultSet) optGetDb.get();
             //result
-            MetaProto.DbParam dbParam = MetaProto.DbParam.newBuilder().setDbName(resGetDb.getString(1)).setLocationUrl(resGetDb.getString(2)).setUserName(resGetDb.getString(3)).build();
-            responseStreamObserver.onNext(dbParam);
-            responseStreamObserver.onCompleted();
+            if (resGetDb.next()) {
+                //find user name
+                String findUserNameSql = sqlGenerator.findUserName(resGetDb.getInt(3));
+                Optional<ResultSet> optFindUserName = dbConnection.sqlQuery(findUserNameSql);
+                ResultSet resFindUserName = (ResultSet) optFindUserName.get();
+                String userName = "";
+                MetaProto.StringListType stringList;
+                if (resFindUserName.next()) {
+                    userName = resFindUserName.getString(1);
+                    MetaProto.DbParam dbParam = MetaProto.DbParam.newBuilder().setDbName(resGetDb.getString(1)).setLocationUrl(resGetDb.getString(2)).setUserName(userName).build();
+                    responseStreamObserver.onNext(dbParam);
+                    responseStreamObserver.onCompleted();
+                }
+                else {
+                    System.out.println("user not found");
+                }
+            }
+            else {
+                System.out.println("database not found");
+            }
         }
         catch (NullPointerException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -327,27 +357,32 @@ public class MetaService extends MetaGrpc.MetaImplBase
             String getTblSql = sqlGenerator.getTable(dbId, dbTblParam.getTable().getTable());
             Optional<ResultSet> optGetTbl = dbConnection.sqlQuery(getTblSql);
             ResultSet resGetTbl = (ResultSet) optGetTbl.get();
-            //find username
-            String findUserNameSql = sqlGenerator.findUserName(resGetTbl.getInt(2));
-            Optional<ResultSet> optFindUserName = dbConnection.sqlQuery(findUserNameSql);
-            ResultSet resFindUserName = (ResultSet) optFindUserName.get();
             String userName = "";
-            if (resFindUserName.next()) {
-                userName = resFindUserName.getString(1);
+            if (resGetTbl.next()) {
+                //find username
+                String findUserNameSql = sqlGenerator.findUserName(resGetTbl.getInt(2));
+                Optional<ResultSet> optFindUserName = dbConnection.sqlQuery(findUserNameSql);
+                ResultSet resFindUserName = (ResultSet) optFindUserName.get();
+                if (resFindUserName.next()) {
+                    userName = resFindUserName.getString(1);
+                }
+                else {
+                    System.out.println("database not found");
+                }
+                //result
+                MetaProto.TblParam tblParam = MetaProto.TblParam.newBuilder()
+                        .setDbName(dbTblParam.getDatabase().getDatabase())
+                        .setTblName(dbTblParam.getTable().getTable())
+                        .setTblType(resGetTbl.getInt(1)).setUserName(userName)
+                        .setCreateTime(resGetTbl.getInt(3)).setLastAccessTime(resGetTbl.getInt(4))
+                        .setLocationUrl(resGetTbl.getString(5)).setStorageFormatId(resGetTbl.getInt(6))
+                        .setFiberColId(resGetTbl.getInt(7)).setFiberFuncId(resGetTbl.getInt(8)).build();
+                responseStreamObserver.onNext(tblParam);
+                responseStreamObserver.onCompleted();
             }
             else {
-                System.out.println("database not found");
+                System.out.println("table not found");
             }
-            //result
-            MetaProto.TblParam tblParam = MetaProto.TblParam.newBuilder()
-                    .setDbName(dbTblParam.getDatabase().getDatabase())
-                    .setTblName(dbTblParam.getTable().getTable())
-                    .setTblType(resGetTbl.getInt(1)).setUserName(userName)
-                    .setCreateTime(resGetTbl.getInt(3)).setLastAccessTime(resGetTbl.getInt(4))
-                    .setLocationUrl(resGetTbl.getString(5)).setStorageFormatId(resGetTbl.getInt(6))
-                    .setFiberColId(resGetTbl.getInt(7)).setFiberFuncId(resGetTbl.getInt(8)).build();
-            responseStreamObserver.onNext(tblParam);
-            responseStreamObserver.onCompleted();
         }
         catch (NullPointerException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -389,13 +424,18 @@ public class MetaService extends MetaGrpc.MetaImplBase
             String getColSql = sqlGenerator.getColumn(tblId, dbTblColParam.getColumn().getColumn());
             Optional<ResultSet> optGetCol = dbConnection.sqlQuery(getColSql);
             ResultSet resGetCol = (ResultSet) optGetCol.get();
-            //result
-            MetaProto.ColParam column = MetaProto.ColParam.newBuilder()
-                    .setColIndex(resGetCol.getInt(1)).setTblName(dbTblColParam.getTable().getTable())
-                    .setColName(resGetCol.getString(3)).setColType(resGetCol.getString(4)).
-                            setDataType(resGetCol.getString(5)).build();
-            responseStreamObserver.onNext(column);
-            responseStreamObserver.onCompleted();
+            if (resGetCol.next()) {
+                //result
+                MetaProto.ColParam column = MetaProto.ColParam.newBuilder()
+                        .setColIndex(resGetCol.getInt(1)).setTblName(dbTblColParam.getTable().getTable())
+                        .setColName(resGetCol.getString(3)).setColType(resGetCol.getString(4)).
+                                setDataType(resGetCol.getString(5)).build();
+                responseStreamObserver.onNext(column);
+                responseStreamObserver.onCompleted();
+            }
+            else {
+                System.out.println("column not found");
+            }
         }
         catch (NullPointerException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -536,6 +576,64 @@ public class MetaService extends MetaGrpc.MetaImplBase
     }
 
     @Override
+    public void deleteTblColumn(MetaProto.DbTblParam dbTblParam, StreamObserver<MetaProto.StatusType> responseStreamObserver)
+    {
+        try {
+            //find database id
+            String findDbIdSql = sqlGenerator.findDbId(dbTblParam.getDatabase().getDatabase());
+            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
+            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
+            int dbId = 0;
+            MetaProto.StatusType statusType;
+            if (resFindDbId.next()) {
+                dbId = resFindDbId.getInt(1);
+            }
+            else {
+                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND).build();
+                responseStreamObserver.onNext(statusType);
+                responseStreamObserver.onCompleted();
+            }
+            //find table id
+            String findTblIdSql = sqlGenerator.findTblId(dbId, dbTblParam.getTable().getTable());
+            Optional<ResultSet> optFindTblId = dbConnection.sqlQuery(findTblIdSql);
+            ResultSet resFindTblId = (ResultSet) optFindTblId.get();
+            int tblId = 0;
+            if (resFindTblId.next()) {
+                tblId = resFindTblId.getInt(1);
+            }
+            else {
+                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND).build();
+                responseStreamObserver.onNext(statusType);
+                responseStreamObserver.onCompleted();
+            }
+            //delete column
+            String deleteColSql = sqlGenerator.deleteTblColumn(dbId, tblId);
+            Optional<Integer> optdeleteCol = dbConnection.sqlUpdate(deleteColSql);
+            int resDeleteCol = (int) optdeleteCol.get();
+            System.out.println("delete column status is " + resDeleteCol);
+            //result
+            if (resDeleteCol != 0) {
+                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+                responseStreamObserver.onNext(statusType);
+                responseStreamObserver.onCompleted();
+            }
+            else {
+                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.DATABASE_ALREADY_EXISTS).build();
+                responseStreamObserver.onNext(statusType);
+                responseStreamObserver.onCompleted();
+            }
+        }
+        catch (NullPointerException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+        catch (java.sql.SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+    }
+
+    @Override
     public void deleteTable(MetaProto.DbTblParam dbTblParam, StreamObserver<MetaProto.StatusType> responseStreamObserver)
     {
         try {
@@ -568,6 +666,102 @@ public class MetaService extends MetaGrpc.MetaImplBase
                 responseStreamObserver.onNext(statusType);
                 responseStreamObserver.onCompleted();
             }
+        }
+        catch (NullPointerException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+        catch (java.sql.SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+    }
+
+    @Override
+    public void deleteDbColumn(MetaProto.DbNameParam dbNameParam, StreamObserver<MetaProto.StatusType> responseStreamObserver)
+    {
+        try {
+            //find database id
+            String findDbIdSql = sqlGenerator.findDbId(dbNameParam.getDatabase());
+            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
+            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
+            int dbId = 0;
+            MetaProto.StatusType statusType;
+            if (resFindDbId.next()) {
+                dbId = resFindDbId.getInt(1);
+            }
+            else {
+                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND).build();
+                responseStreamObserver.onNext(statusType);
+                responseStreamObserver.onCompleted();
+            }
+            //delete column
+            String deleteColSql = sqlGenerator.deleteDbColumn(dbId);
+            dbConnection.sqlUpdate(deleteColSql);
+//            Optional<Integer> optdeleteCol = dbConnection.sqlUpdate(deleteColSql);
+//            int resDeleteCol = (int) optdeleteCol.get();
+//            //result
+//            if (resDeleteCol != 0) {
+//                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+//                responseStreamObserver.onNext(statusType);
+//                responseStreamObserver.onCompleted();
+//            }
+//            else {
+//                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.DELETE_COLUMN_ERROR).build();
+//                responseStreamObserver.onNext(statusType);
+//                responseStreamObserver.onCompleted();
+//            }
+            statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
+        }
+        catch (NullPointerException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+        catch (java.sql.SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.exit(0);
+        }
+    }
+
+    @Override
+    public void deleteDbTable(MetaProto.DbNameParam dbNameParam, StreamObserver<MetaProto.StatusType> responseStreamObserver)
+    {
+        try {
+            //find database id
+            String findDbIdSql = sqlGenerator.findDbId(dbNameParam.getDatabase());
+            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
+            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
+            int dbId = 0;
+            MetaProto.StatusType statusType;
+            if (resFindDbId.next()) {
+                dbId = resFindDbId.getInt(1);
+            }
+            else {
+                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND).build();
+                responseStreamObserver.onNext(statusType);
+                responseStreamObserver.onCompleted();
+            }
+            //delete table
+            String deleteTblSql = sqlGenerator.deleteDbTable(dbId);
+            dbConnection.sqlUpdate(deleteTblSql);
+//            Optional<Integer> optdeleteTbl = dbConnection.sqlUpdate(deleteTblSql);
+//            int resDeleteTbl = (int) optdeleteTbl.get();
+//            //result
+//            if (resDeleteTbl != 0) {
+//                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+//                responseStreamObserver.onNext(statusType);
+//                responseStreamObserver.onCompleted();
+//            }
+//            else {
+//                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.DATABASE_ALREADY_EXISTS).build();
+//                responseStreamObserver.onNext(statusType);
+//                responseStreamObserver.onCompleted();
+//            }
+            statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         catch (NullPointerException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -742,7 +936,16 @@ public class MetaService extends MetaGrpc.MetaImplBase
             String findUserIdSql = sqlGenerator.findUserId(createTblPriv.getUserName());
             Optional<ResultSet> optFindUserId = dbConnection.sqlQuery(findUserIdSql);
             ResultSet resFindUserId = (ResultSet) optFindUserId.get();
-            int userId = resFindUserId.getInt(1);
+            int userId = 0;
+            if (resFindUserId.next()) {
+                userId = resFindUserId.getInt(1);
+            }
+            else {
+                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.USER_NOT_FOUND).build();
+                responseStreamObserver.onNext(statusType);
+                responseStreamObserver.onCompleted();
+            }
+            System.out.println("userid = " + userId);
             //create table priv
             String createTblPrivSql = sqlGenerator.createTblPriv(tblId, userId, createTblPriv.getPrivType(), createTblPriv.getGrantTime());
             Optional<Integer> optCreateTblPriv = dbConnection.sqlUpdate(createTblPrivSql);
