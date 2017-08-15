@@ -4,7 +4,7 @@ import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.RPCServerIOException;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import cn.edu.ruc.iir.paraflow.metaserver.service.MetaService;
-import cn.edu.ruc.iir.paraflow.metaserver.utils.DBConnection;
+import cn.edu.ruc.iir.paraflow.metaserver.connection.DBConnection;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -75,6 +75,7 @@ public class MetaServer
                 metaConfig.getDBUser(),
                 metaConfig.getDBPassword());
 
+        // TODO rewrite this code block into a new function
         //find whether table exit
         try {
             String allTableSql = "SELECT tablename FROM pg_tables WHERE tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' ORDER BY tablename;";

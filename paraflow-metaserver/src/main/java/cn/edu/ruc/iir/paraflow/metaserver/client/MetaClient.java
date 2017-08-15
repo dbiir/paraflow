@@ -16,6 +16,10 @@ import java.util.logging.Logger;
  *
  * @author guodong
  */
+
+// TODO add security mechanism for rpc communication
+
+// TODO split lines of code which are too long into multiple lines
 public class MetaClient
 {
     private static final Logger logger = Logger.getLogger(MetaClient.class.getName());
@@ -44,9 +48,16 @@ public class MetaClient
         this.channel.shutdown().awaitTermination(pollSecs, TimeUnit.SECONDS);
     }
 
-    public MetaProto.StatusType createUser(String userName, int createTime, int lastVisitTime)
+    // TODO change params to (String userName, String password)
+    public MetaProto.StatusType createUser(String userName, long createTime, int lastVisitTime)
     {
-        MetaProto.CreateUserParam createUser = MetaProto.CreateUserParam.newBuilder().setUserName(userName).setCreateTime(createTime).setLastVisitTime(lastVisitTime).build();
+        // TODO change CreateUserParam to UserParam, createUser to user
+        MetaProto.CreateUserParam createUser =
+                MetaProto.CreateUserParam.newBuilder()
+                        .setUserName(userName)
+                        .setCreateTime(createTime)
+                        .setLastVisitTime(lastVisitTime)
+                        .build();
         MetaProto.StatusType status;
         try {
             System.out.println("1status = metaBlockingStub.createUser(createUser)");
@@ -60,6 +71,13 @@ public class MetaClient
         }
         logger.info("Create user status is : " + status.getStatus());
         return status;
+    }
+
+    public MetaProto.StatusType createDatabase(String dbName, String userName)
+    {
+        // TODO get location url from config
+        String locationUrl = "";
+        return createDatabase(dbName, locationUrl, userName);
     }
 
     public MetaProto.StatusType createDatabase(String dbName, String locationUrl, String userName)
@@ -78,7 +96,21 @@ public class MetaClient
         return status;
     }
 
-    public MetaProto.StatusType createTable(String dbName, String tblName, int tblType, String userName, int createTime, int lastAccessTime, String locationUrl, int storageFormatId, int fiberColId, int fiberFuncId, ArrayList<String> columnName, ArrayList<String> columnType, ArrayList<String> dataType)
+    // TODO remove createTime, lastAccessTime from params
+    public MetaProto.StatusType createTable(
+            String dbName,
+            String tblName,
+            int tblType,
+            String userName,
+            int createTime,
+            int lastAccessTime,
+            String locationUrl,
+            int storageFormatId,
+            int fiberColId,
+            int fiberFuncId,
+            ArrayList<String> columnName,
+            ArrayList<String> columnType,
+            ArrayList<String> dataType)
     {
         int number = columnName.size();
         ArrayList<MetaProto.ColParam> columns = new ArrayList<>();
@@ -343,6 +375,7 @@ public class MetaClient
         return status;
     }
 
+    // TODO remove grantTime from params
     public MetaProto.StatusType createTblPriv(String dbName, String tblName, String userName, int privType, int grantTime)
     {
         MetaProto.CreateTblPrivParam createTblPriv = MetaProto.CreateTblPrivParam.newBuilder().setDbName(dbName).setTblName(tblName).setUserName(userName).setPrivType(privType).setGrantTime(grantTime).build();
@@ -375,6 +408,7 @@ public class MetaClient
         return status;
     }
 
+    // TODO change `String fiberFuncContent` to `byte[] fiberFuncContent`
     public MetaProto.StatusType createFiberFunc(String fiberFuncName, String fiberFuncContent)
     {
         MetaProto.CreateFiberFuncParam createFiberFunc = MetaProto.CreateFiberFuncParam.newBuilder().setFiberFuncName(fiberFuncName).setFiberFuncContent(fiberFuncContent).build();
