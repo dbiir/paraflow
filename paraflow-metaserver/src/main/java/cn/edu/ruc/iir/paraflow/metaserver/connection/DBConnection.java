@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Optional;
 
 /**
  * ParaFlow
@@ -73,8 +72,8 @@ public class DBConnection
             while (resultSet.next()) {
                 for (int i = 0; i < colCount; i++) {
                     jdbcRecord.put(resultSet.getString(i + 1), i);
-                    resultList.add(jdbcRecord);
                 }
+                resultList.add(jdbcRecord);
             }
         }
         catch (java.sql.SQLException e) {

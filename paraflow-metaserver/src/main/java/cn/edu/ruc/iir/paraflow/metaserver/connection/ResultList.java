@@ -1,19 +1,18 @@
 package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * paraflow
  *
- * @author guodong
  */
 public class ResultList
 {
-    private static ArrayList<JDBCRecord> jdbcRecords;
+    private LinkedList<JDBCRecord> jdbcRecords;
 
-    public void JDBCRecord()
+    public ResultList()
     {
-        jdbcRecords = new ArrayList<>();
+        jdbcRecords = new LinkedList<>();
     }
 
     public JDBCRecord get(int index)
@@ -24,5 +23,10 @@ public class ResultList
     public void add(JDBCRecord jdbcRecord)
     {
         jdbcRecords.add(jdbcRecord);
+    }
+
+    public int size()
+    {
+        return jdbcRecords.size();
     }
 }

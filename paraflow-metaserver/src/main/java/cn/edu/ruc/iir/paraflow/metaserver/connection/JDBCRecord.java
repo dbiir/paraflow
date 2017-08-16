@@ -14,11 +14,11 @@
 package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
 /**
- * @author jelly.guodong.jin@gmail.com
+ *
  */
 public class JDBCRecord
 {
-    private static String[] stringList;
+    private String[] stringList;
 
     public JDBCRecord(int size)
     {

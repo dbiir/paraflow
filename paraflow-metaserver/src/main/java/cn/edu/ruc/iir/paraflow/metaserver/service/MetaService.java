@@ -8,10 +8,8 @@ import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 
 import io.grpc.stub.StreamObserver;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * ParaFlow
@@ -145,9 +143,9 @@ public class MetaService extends MetaGrpc.MetaImplBase
                              StreamObserver<MetaProto.StatusType> responseStreamObserver)
     {
         try {
-            //get a columnparam
+            //get a column param
             int colCount = colListType.getColumnCount();
-            List<MetaProto.ColParam> columns = new ArrayList<>();
+            List<MetaProto.ColParam> columns;
             columns = colListType.getColumnList();
             MetaProto.ColParam colParam;
             colParam = columns.get(0);
@@ -159,7 +157,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             //find table id
             String findTblIdSql = sqlGenerator.findTblId(dbId, colParam.getTblName());
             ResultList resFindTblId = dbConnection.sqlQuery(findTblIdSql, 1);
-            int tblId = Integer.parseInt(resFindDbId.get(0).get(0));
+            int tblId = Integer.parseInt(resFindTblId.get(0).get(0));
             //loop for every column to insert them
             for (int i = 0; i < colCount; i++) {
                 colParam = columns.get(i);
@@ -172,15 +170,9 @@ public class MetaService extends MetaGrpc.MetaImplBase
                         colParam.getDataType());
                 int resCreateCol = dbConnection.sqlUpdate(createColSql);
                 //result
-                if (resCreateCol == 1) {
+                if (resCreateCol != 1) {
                     statusType = MetaProto.StatusType.newBuilder()
-                            .setStatus(MetaProto.StatusType.State.OK)
-                            .build();
-                    continue;
-                }
-                else {
-                    statusType = MetaProto.StatusType.newBuilder()
-                            .setStatus(MetaProto.StatusType.State.TABLE_ALREADY_EXISTS)
+                            .setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR)
                             .build();
                     responseStreamObserver.onNext(statusType);
                     responseStreamObserver.onCompleted();
@@ -205,12 +197,12 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //query
             String listDbSql = sqlGenerator.listDatabases();
-            Optional optListDb = dbConnection.sqlQuery(listDbSql);
-            ResultSet resListDb = (ResultSet) optListDb.get();
+            ResultList resListDb = dbConnection.sqlQuery(listDbSql, 1);
             //result
             ArrayList<String> result = new ArrayList<>();
-            while (resListDb.next()) {
-                result.add(resListDb.getString(1));
+            int size = resListDb.size();
+            for (int i = 0; i < size; i++) {
+                result.add(resListDb.get(i).get(0));
             }
             MetaProto.StringListType stringList = MetaProto.StringListType.newBuilder()
                     .addAllStr(result)
@@ -219,10 +211,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             responseStreamObserver.onCompleted();
         }
         catch (NullPointerException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
@@ -235,34 +223,23 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(dbNameParam.getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             MetaProto.StringListType stringList;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                System.out.println("database not found");
-            }
             //query
             String listTblSql = sqlGenerator.listTables(dbId);
-            Optional<ResultSet> optListTbl = dbConnection.sqlQuery(listTblSql);
-            ResultSet resListTbl = (ResultSet) optListTbl.get();
+            ResultList resListTbl = dbConnection.sqlQuery(listTblSql, 1);
             //result
             ArrayList<String> result = new ArrayList<>();
-            while (resListTbl.next()) {
-                result.add(resListTbl.getString(1));
+            int size = resListTbl.size();
+            for (int i = 0; i < size; i++) {
+                result.add(resListTbl.get(i).get(0));
             }
             stringList = MetaProto.StringListType.newBuilder().addAllStr(result).build();
             responseStreamObserver.onNext(stringList);
             responseStreamObserver.onCompleted();
         }
         catch (NullPointerException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
@@ -275,39 +252,21 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //query
             String getDbSql = sqlGenerator.getDatabase(dbNameParam.getDatabase());
-            Optional<ResultSet> optGetDb = dbConnection.sqlQuery(getDbSql);
-            ResultSet resGetDb = (ResultSet) optGetDb.get();
+            ResultList resGetDb = dbConnection.sqlQuery(getDbSql, 3);
             //result
-            if (resGetDb.next()) {
-                //find user name
-                String findUserNameSql = sqlGenerator.findUserName(resGetDb.getInt(3));
-                Optional<ResultSet> optFindUserName = dbConnection.sqlQuery(findUserNameSql);
-                ResultSet resFindUserName = (ResultSet) optFindUserName.get();
-                String userName = "";
-                MetaProto.StringListType stringList;
-                if (resFindUserName.next()) {
-                    userName = resFindUserName.getString(1);
-                    MetaProto.DbParam dbParam = MetaProto.DbParam.newBuilder()
-                            .setDbName(resGetDb.getString(1))
-                            .setLocationUrl(resGetDb.getString(2))
-                            .setUserName(userName)
-                            .build();
-                    responseStreamObserver.onNext(dbParam);
-                    responseStreamObserver.onCompleted();
-                }
-                else {
-                    System.out.println("user not found");
-                }
-            }
-            else {
-                System.out.println("database not found");
-            }
+            //find user name
+            String findUserNameSql = sqlGenerator.findUserName(Integer.parseInt(resGetDb.get(0).get(2)));
+            ResultList resFindUserName = dbConnection.sqlQuery(findUserNameSql, 1);
+            String userName = resFindUserName.get(0).get(0);
+            MetaProto.DbParam dbParam = MetaProto.DbParam.newBuilder()
+                    .setDbName(resGetDb.get(0).get(0))
+                    .setLocationUrl(resGetDb.get(0).get(1))
+                    .setUserName(userName)
+                    .build();
+            responseStreamObserver.onNext(dbParam);
+            responseStreamObserver.onCompleted();
         }
         catch (NullPointerException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
@@ -320,56 +279,32 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(dbTblParam.getDatabase().getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                System.out.println("database not found");
-            }
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             //query
             String getTblSql = sqlGenerator.getTable(dbId, dbTblParam.getTable().getTable());
-            Optional<ResultSet> optGetTbl = dbConnection.sqlQuery(getTblSql);
-            ResultSet resGetTbl = (ResultSet) optGetTbl.get();
-            String userName = "";
-            if (resGetTbl.next()) {
-                //find username
-                String findUserNameSql = sqlGenerator.findUserName(resGetTbl.getInt(2));
-                Optional<ResultSet> optFindUserName = dbConnection.sqlQuery(findUserNameSql);
-                ResultSet resFindUserName = (ResultSet) optFindUserName.get();
-                if (resFindUserName.next()) {
-                    userName = resFindUserName.getString(1);
-                }
-                else {
-                    System.out.println("database not found");
-                }
-                //result
-                MetaProto.TblParam tblParam = MetaProto.TblParam.newBuilder()
-                        .setDbName(dbTblParam.getDatabase().getDatabase())
-                        .setTblName(dbTblParam.getTable().getTable())
-                        .setTblType(resGetTbl.getInt(1))
-                        .setUserName(userName)
-                        .setCreateTime(resGetTbl.getInt(3))
-                        .setLastAccessTime(resGetTbl.getInt(4))
-                        .setLocationUrl(resGetTbl.getString(5))
-                        .setStorageFormatId(resGetTbl.getInt(6))
-                        .setFiberColId(resGetTbl.getInt(7))
-                        .setFiberFuncId(resGetTbl.getInt(8))
-                        .build();
-                responseStreamObserver.onNext(tblParam);
-                responseStreamObserver.onCompleted();
-            }
-            else {
-                System.out.println("table not found");
-            }
+            ResultList resGetTbl = dbConnection.sqlQuery(getTblSql, 8);
+            //find username
+            String findUserNameSql = sqlGenerator.findUserName(Integer.parseInt(resGetTbl.get(0).get(1)));
+            ResultList resFindUserName = dbConnection.sqlQuery(findUserNameSql, 1);
+            String userName = resFindUserName.get(0).get(0);
+            //result
+            MetaProto.TblParam tblParam = MetaProto.TblParam.newBuilder()
+                    .setDbName(dbTblParam.getDatabase().getDatabase())
+                    .setTblName(dbTblParam.getTable().getTable())
+                    .setTblType(Integer.parseInt(resGetTbl.get(0).get(0)))
+                    .setUserName(userName)
+                    .setCreateTime(Integer.parseInt(resGetTbl.get(0).get(2)))
+                    .setLastAccessTime(Integer.parseInt(resGetTbl.get(0).get(3)))
+                    .setLocationUrl(resGetTbl.get(0).get(4))
+                    .setStorageFormatId(Integer.parseInt(resGetTbl.get(0).get(5)))
+                    .setFiberColId(Integer.parseInt(resGetTbl.get(0).get(6)))
+                    .setFiberFuncId(Integer.parseInt(resGetTbl.get(0).get(7)))
+                    .build();
+            responseStreamObserver.onNext(tblParam);
+            responseStreamObserver.onCompleted();
         }
         catch (NullPointerException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
@@ -382,51 +317,27 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(dbTblColParam.getDatabase().getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                System.out.println("database not found");
-            }
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             //find table id
             String findTblIdSql = sqlGenerator.findTblId(dbId, dbTblColParam.getTable().getTable());
-            Optional<ResultSet> optFindTblId = dbConnection.sqlQuery(findTblIdSql);
-            ResultSet resFindTblId = (ResultSet) optFindTblId.get();
-            int tblId = 0;
-            if (resFindTblId.next()) {
-                tblId = resFindTblId.getInt(1);
-            }
-            else {
-                System.out.println("table not found");
-            }
+            ResultList resFindTblId = dbConnection.sqlQuery(findTblIdSql, 1);
+            int tblId = Integer.parseInt(resFindTblId.get(0).get(0));
             //query
             String getColSql = sqlGenerator.getColumn(tblId, dbTblColParam.getColumn().getColumn());
-            Optional<ResultSet> optGetCol = dbConnection.sqlQuery(getColSql);
-            ResultSet resGetCol = (ResultSet) optGetCol.get();
-            if (resGetCol.next()) {
-                //result
-                MetaProto.ColParam column = MetaProto.ColParam.newBuilder()
-                        .setColIndex(resGetCol.getInt(1))
-                        .setTblName(dbTblColParam.getTable().getTable())
-                        .setColName(resGetCol.getString(3))
-                        .setColType(resGetCol.getString(4))
-                        .setDataType(resGetCol.getString(5))
-                        .build();
-                responseStreamObserver.onNext(column);
-                responseStreamObserver.onCompleted();
-            }
-            else {
-                System.out.println("column not found");
-            }
+            ResultList resGetCol = dbConnection.sqlQuery(getColSql, 3);
+            //result
+            MetaProto.ColParam column = MetaProto.ColParam.newBuilder()
+                    .setColIndex(Integer.parseInt(resGetCol.get(0).get(0)))
+                    .setTblName(dbTblColParam.getTable().getTable())
+                    .setColName(dbTblColParam.getColumn().getColumn())
+                    .setColType(resGetCol.get(0).get(1))
+                    .setDataType(resGetCol.get(0).get(2))
+                    .build();
+            responseStreamObserver.onNext(column);
+            responseStreamObserver.onCompleted();
         }
         catch (NullPointerException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
@@ -439,35 +350,13 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(renameColumn.getDatabase().getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             MetaProto.StatusType statusType;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
             //find table id
             String findTblIdSql = sqlGenerator.findTblId(dbId, renameColumn.getTable().getTable());
-            Optional<ResultSet> optFindTblId = dbConnection.sqlQuery(findTblIdSql);
-            ResultSet resFindTblId = (ResultSet) optFindTblId.get();
-            int tblId = 0;
-            if (resFindTblId.next()) {
-                tblId = resFindTblId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
+            ResultList resFindTblId = dbConnection.sqlQuery(findTblIdSql, 1);
+            int tblId = Integer.parseInt(resFindTblId.get(0).get(0));
             //rename column
             String renameColSql = sqlGenerator.renameColumn(dbId,
                     tblId,
@@ -494,10 +383,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
     }
 
     @Override
@@ -507,20 +392,9 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(renameTblParam.getDatabase().getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             MetaProto.StatusType statusType;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
             //rename table
             String renameTblSql = sqlGenerator.renameTable(dbId,
                     renameTblParam.getOldName(),
@@ -543,10 +417,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             }
         }
         catch (NullPointerException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
@@ -592,35 +462,13 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(dbTblParam.getDatabase().getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             MetaProto.StatusType statusType;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
             //find table id
             String findTblIdSql = sqlGenerator.findTblId(dbId, dbTblParam.getTable().getTable());
-            Optional<ResultSet> optFindTblId = dbConnection.sqlQuery(findTblIdSql);
-            ResultSet resFindTblId = (ResultSet) optFindTblId.get();
-            int tblId = 0;
-            if (resFindTblId.next()) {
-                tblId = resFindTblId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
+            ResultList resFindTblId = dbConnection.sqlQuery(findTblIdSql, 1);
+            int tblId = Integer.parseInt(resFindTblId.get(0).get(0));
             //delete column
             String deleteColSql = sqlGenerator.deleteTblColumn(dbId, tblId);
             int resDeleteCol = dbConnection.sqlUpdate(deleteColSql);
@@ -645,10 +493,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
     }
 
     @Override
@@ -658,20 +502,9 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(dbTblParam.getDatabase().getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             MetaProto.StatusType statusType;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
             //delete table
             String deleteTblSql = sqlGenerator.deleteTable(dbId, dbTblParam.getTable().getTable());
             int resDeleteTbl = dbConnection.sqlUpdate(deleteTblSql);
@@ -695,10 +528,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
     }
 
     @Override
@@ -708,20 +537,9 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(dbNameParam.getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             MetaProto.StatusType statusType;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
             //delete column
             String deleteColSql = sqlGenerator.deleteDbColumn(dbId);
             dbConnection.sqlUpdate(deleteColSql);
@@ -748,10 +566,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
     }
 
     @Override
@@ -761,20 +575,9 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(dbNameParam.getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             MetaProto.StatusType statusType;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
             //delete table
             String deleteTblSql = sqlGenerator.deleteDbTable(dbId);
             dbConnection.sqlUpdate(deleteTblSql);
@@ -798,10 +601,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             responseStreamObserver.onCompleted();
         }
         catch (NullPointerException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
@@ -845,20 +644,9 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(dbParam.getDbName());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             MetaProto.StatusType statusType;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
             //create database param
             String createDbParamSql = sqlGenerator.createDbParam(
                     dbId,
@@ -885,10 +673,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
     }
 
     @Override
@@ -898,35 +682,13 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(tblParam.getDbName());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             MetaProto.StatusType statusType;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
             //find table id
             String findTblIdSql = sqlGenerator.findTblId(dbId, tblParam.getTblName());
-            Optional<ResultSet> optFindTblId = dbConnection.sqlQuery(findTblIdSql);
-            ResultSet resFindTblId = (ResultSet) optFindTblId.get();
-            int tblId = 0;
-            if (resFindTblId.next()) {
-                tblId = resFindTblId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
+            ResultList resFindTblId = dbConnection.sqlQuery(findTblIdSql, 1);
+            int tblId = Integer.parseInt(resFindTblId.get(0).get(0));
             //create table param
             String createTblParamSql = sqlGenerator.createTblParam(
                     tblId,
@@ -953,10 +715,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
     }
 
     @Override
@@ -966,51 +724,17 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(tblPriv.getDbName());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             MetaProto.StatusType statusType;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
             //find table id
             String findTblIdSql = sqlGenerator.findTblId(dbId, tblPriv.getTblName());
-            Optional<ResultSet> optFindTblId = dbConnection.sqlQuery(findTblIdSql);
-            ResultSet resFindTblId = (ResultSet) optFindTblId.get();
-            int tblId = 0;
-            if (resFindTblId.next()) {
-                tblId = resFindTblId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
+            ResultList resFindTblId = dbConnection.sqlQuery(findTblIdSql, 1);
+            int tblId = Integer.parseInt(resFindTblId.get(0).get(0));
             //find user id
             String findUserIdSql = sqlGenerator.findUserId(tblPriv.getUserName());
-            Optional<ResultSet> optFindUserId = dbConnection.sqlQuery(findUserIdSql);
-            ResultSet resFindUserId = (ResultSet) optFindUserId.get();
-            int userId = 0;
-            if (resFindUserId.next()) {
-                userId = resFindUserId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.USER_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
-            System.out.println("userid = " + userId);
+            ResultList resFindUserId = dbConnection.sqlQuery(findUserIdSql, 1);
+            int userId = Integer.parseInt(resFindUserId.get(0).get(0));
             //create table priv
             String createTblPrivSql = sqlGenerator.createTblPriv(
                     tblId,
@@ -1035,10 +759,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             }
         }
         catch (NullPointerException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
@@ -1118,35 +838,13 @@ public class MetaService extends MetaGrpc.MetaImplBase
         try {
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(blockIndex.getDatabase().getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             MetaProto.StatusType statusType;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
             //find table id
             String findTblIdSql = sqlGenerator.findTblId(dbId, blockIndex.getTable().getTable());
-            Optional<ResultSet> optFindTblId = dbConnection.sqlQuery(findTblIdSql);
-            ResultSet resFindTblId = (ResultSet) optFindTblId.get();
-            int tblId = 0;
-            if (resFindTblId.next()) {
-                tblId = resFindTblId.getInt(1);
-            }
-            else {
-                statusType = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND)
-                        .build();
-                responseStreamObserver.onNext(statusType);
-                responseStreamObserver.onCompleted();
-            }
+            ResultList resFindTblId = dbConnection.sqlQuery(findTblIdSql, 1);
+            int tblId = Integer.parseInt(resFindTblId.get(0).get(0));
             //create storage format
             String createBlockIndexSql = sqlGenerator.createBlockIndex(
                     tblId,
@@ -1176,10 +874,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
     }
 
     @Override
@@ -1190,37 +884,23 @@ public class MetaService extends MetaGrpc.MetaImplBase
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(
                     filterBlockIndexParam.getDatabase().getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                System.out.println("database not found");
-            }
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             //find table id
             String findTblIdSql = sqlGenerator.findTblId(
                     dbId,
                     filterBlockIndexParam.getTable().getTable());
-            Optional<ResultSet> optFindTblId = dbConnection.sqlQuery(findTblIdSql);
-            ResultSet resFindTblId = (ResultSet) optFindTblId.get();
-            int tblId = 0;
-            if (resFindTblId.next()) {
-                tblId = resFindTblId.getInt(1);
-            }
-            else {
-                System.out.println("table not found");
-            }
+            ResultList resFindTblId = dbConnection.sqlQuery(findTblIdSql, 1);
+            int tblId = Integer.parseInt(resFindTblId.get(0).get(0));
             ArrayList<String> result = new ArrayList<>();
             if (filterBlockIndexParam.getTimeBegin() == -1
                     && filterBlockIndexParam.getTimeEnd() == -1) {
                 //query
                 String filterBlockIndexSql = sqlGenerator.filterBlockIndex(tblId);
-                Optional optfilterBlockIndex = dbConnection.sqlQuery(filterBlockIndexSql);
-                ResultSet resfilterBlockIndex = (ResultSet) optfilterBlockIndex.get();
-                while (resfilterBlockIndex.next()) {
-                    result.add(resfilterBlockIndex.getString(1));
+                ResultList resfilterBlockIndex = dbConnection.sqlQuery(filterBlockIndexSql, 1);
+                int size = resfilterBlockIndex.size();
+                for (int i = 0; i < size; i++) {
+                    result.add(resfilterBlockIndex.get(i).get(0));
                 }
             }
             else if (filterBlockIndexParam.getTimeBegin() == -1
@@ -1229,10 +909,10 @@ public class MetaService extends MetaGrpc.MetaImplBase
                 String filterBlockIndexSql = sqlGenerator.filterBlockIndexEnd(
                         tblId,
                         filterBlockIndexParam.getTimeEnd());
-                Optional optfilterBlockIndex = dbConnection.sqlQuery(filterBlockIndexSql);
-                ResultSet resfilterBlockIndex = (ResultSet) optfilterBlockIndex.get();
-                while (resfilterBlockIndex.next()) {
-                    result.add(resfilterBlockIndex.getString(1));
+                ResultList resfilterBlockIndex = dbConnection.sqlQuery(filterBlockIndexSql, 1);
+                int size = resfilterBlockIndex.size();
+                for (int i = 0; i < size; i++) {
+                    result.add(resfilterBlockIndex.get(i).get(0));
                 }
             }
             else if (filterBlockIndexParam.getTimeBegin() != -1
@@ -1241,10 +921,10 @@ public class MetaService extends MetaGrpc.MetaImplBase
                 String filterBlockIndexSql = sqlGenerator.filterBlockIndexBegin(
                         tblId,
                         filterBlockIndexParam.getTimeBegin());
-                Optional optfilterBlockIndex = dbConnection.sqlQuery(filterBlockIndexSql);
-                ResultSet resfilterBlockIndex = (ResultSet) optfilterBlockIndex.get();
-                while (resfilterBlockIndex.next()) {
-                    result.add(resfilterBlockIndex.getString(1));
+                ResultList resfilterBlockIndex = dbConnection.sqlQuery(filterBlockIndexSql, 1);
+                int size = resfilterBlockIndex.size();
+                for (int i = 0; i < size; i++) {
+                    result.add(resfilterBlockIndex.get(i).get(0));
                 }
             }
             else {
@@ -1253,10 +933,10 @@ public class MetaService extends MetaGrpc.MetaImplBase
                         tblId,
                         filterBlockIndexParam.getTimeBegin(),
                         filterBlockIndexParam.getTimeEnd());
-                Optional optfilterBlockIndex = dbConnection.sqlQuery(filterBlockIndexSql);
-                ResultSet resfilterBlockIndex = (ResultSet) optfilterBlockIndex.get();
-                while (resfilterBlockIndex.next()) {
-                    result.add(resfilterBlockIndex.getString(1));
+                ResultList resfilterBlockIndex = dbConnection.sqlQuery(filterBlockIndexSql, 1);
+                int size = resfilterBlockIndex.size();
+                for (int i = 0; i < size; i++) {
+                    result.add(resfilterBlockIndex.get(i).get(0));
                 }
             }
             //result
@@ -1267,10 +947,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             responseStreamObserver.onCompleted();
         }
         catch (NullPointerException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }
@@ -1284,28 +960,14 @@ public class MetaService extends MetaGrpc.MetaImplBase
             //find database id
             String findDbIdSql = sqlGenerator.findDbId(
                     filterBlockIndexByFiberParam.getDatabase().getDatabase());
-            Optional<ResultSet> optFindDbId = dbConnection.sqlQuery(findDbIdSql);
-            ResultSet resFindDbId = (ResultSet) optFindDbId.get();
-            int dbId = 0;
-            if (resFindDbId.next()) {
-                dbId = resFindDbId.getInt(1);
-            }
-            else {
-                System.out.println("database not found");
-            }
+            ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
+            int dbId = Integer.parseInt(resFindDbId.get(0).get(0));
             //find table id
             String findTblIdSql = sqlGenerator.findTblId(
                     dbId,
                     filterBlockIndexByFiberParam.getTable().getTable());
-            Optional<ResultSet> optFindTblId = dbConnection.sqlQuery(findTblIdSql);
-            ResultSet resFindTblId = (ResultSet) optFindTblId.get();
-            int tblId = 0;
-            if (resFindTblId.next()) {
-                tblId = resFindTblId.getInt(1);
-            }
-            else {
-                System.out.println("table not found");
-            }
+            ResultList resFindTblId = dbConnection.sqlQuery(findTblIdSql, 1);
+            int tblId = Integer.parseInt(resFindTblId.get(0).get(0));
             ArrayList<String> result = new ArrayList<>();
             if (filterBlockIndexByFiberParam.getTimeBegin() == -1
                     && filterBlockIndexByFiberParam.getTimeEnd() == -1) {
@@ -1313,10 +975,10 @@ public class MetaService extends MetaGrpc.MetaImplBase
                 String filterBlockIndexByFiberSql = sqlGenerator.filterBlockIndexByFiber(
                         tblId,
                         filterBlockIndexByFiberParam.getValue().getValue());
-                Optional optfilterBlockIndexByFiber = dbConnection.sqlQuery(filterBlockIndexByFiberSql);
-                ResultSet resfilterBlockIndexByFiber = (ResultSet) optfilterBlockIndexByFiber.get();
-                while (resfilterBlockIndexByFiber.next()) {
-                    result.add(resfilterBlockIndexByFiber.getString(1));
+                ResultList resfilterBlockIndexByFiber = dbConnection.sqlQuery(filterBlockIndexByFiberSql, 1);
+                int size = resfilterBlockIndexByFiber.size();
+                for (int i = 0; i < size; i++) {
+                    result.add(resfilterBlockIndexByFiber.get(i).get(0));
                 }
             }
             else if (filterBlockIndexByFiberParam.getTimeBegin() == -1
@@ -1326,10 +988,10 @@ public class MetaService extends MetaGrpc.MetaImplBase
                         tblId,
                         filterBlockIndexByFiberParam.getValue().getValue(),
                         filterBlockIndexByFiberParam.getTimeEnd());
-                Optional optfilterBlockIndexByFiber = dbConnection.sqlQuery(filterBlockIndexByFiberSql);
-                ResultSet resfilterBlockIndexByFiber = (ResultSet) optfilterBlockIndexByFiber.get();
-                while (resfilterBlockIndexByFiber.next()) {
-                    result.add(resfilterBlockIndexByFiber.getString(1));
+                ResultList resfilterBlockIndexByFiber = dbConnection.sqlQuery(filterBlockIndexByFiberSql, 1);
+                int size = resfilterBlockIndexByFiber.size();
+                for (int i = 0; i < size; i++) {
+                    result.add(resfilterBlockIndexByFiber.get(i).get(0));
                 }
             }
             else if (filterBlockIndexByFiberParam.getTimeBegin() != -1
@@ -1339,10 +1001,10 @@ public class MetaService extends MetaGrpc.MetaImplBase
                         tblId,
                         filterBlockIndexByFiberParam.getValue().getValue(),
                         filterBlockIndexByFiberParam.getTimeBegin());
-                Optional optfilterBlockIndexByFiber = dbConnection.sqlQuery(filterBlockIndexByFiberSql);
-                ResultSet resfilterBlockIndexByFiber = (ResultSet) optfilterBlockIndexByFiber.get();
-                while (resfilterBlockIndexByFiber.next()) {
-                    result.add(resfilterBlockIndexByFiber.getString(1));
+                ResultList resfilterBlockIndexByFiber = dbConnection.sqlQuery(filterBlockIndexByFiberSql, 1);
+                int size = resfilterBlockIndexByFiber.size();
+                for (int i = 0; i < size; i++) {
+                    result.add(resfilterBlockIndexByFiber.get(i).get(0));
                 }
             }
             else {
@@ -1352,10 +1014,10 @@ public class MetaService extends MetaGrpc.MetaImplBase
                         filterBlockIndexByFiberParam.getValue().getValue(),
                         filterBlockIndexByFiberParam.getTimeBegin(),
                         filterBlockIndexByFiberParam.getTimeEnd());
-                Optional optfilterBlockIndexByFiber = dbConnection.sqlQuery(filterBlockIndexByFiberSql);
-                ResultSet resfilterBlockIndexByFiber = (ResultSet) optfilterBlockIndexByFiber.get();
-                while (resfilterBlockIndexByFiber.next()) {
-                    result.add(resfilterBlockIndexByFiber.getString(1));
+                ResultList resfilterBlockIndexByFiber = dbConnection.sqlQuery(filterBlockIndexByFiberSql, 1);
+                int size = resfilterBlockIndexByFiber.size();
+                for (int i = 0; i < size; i++) {
+                    result.add(resfilterBlockIndexByFiber.get(i).get(0));
                 }
             }
             //result
@@ -1366,10 +1028,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             responseStreamObserver.onCompleted();
         }
         catch (NullPointerException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            System.exit(0);
-        }
-        catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             System.exit(0);
         }

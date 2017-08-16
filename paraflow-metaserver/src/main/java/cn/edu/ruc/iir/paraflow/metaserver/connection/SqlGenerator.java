@@ -69,7 +69,7 @@ public class SqlGenerator
 
     public String getColumn(int tblId, String colName)
     {
-        String sql = String.format("SELECT colindex,tblid,colname,coltype,datatype FROM colmodel WHERE tblid = '%d' AND colname = '%s';", tblId, colName);
+        String sql = String.format("SELECT colindex,coltype,datatype FROM colmodel WHERE tblid = '%d' AND colname = '%s';", tblId, colName);
         return sql;
     }
 //    public String findTblName(int tblId)

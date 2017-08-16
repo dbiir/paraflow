@@ -56,7 +56,6 @@ public class MetaClient
         }
     }
 
-
     public void shutdown(int pollSecs) throws InterruptedException
     {
         this.channel.shutdown().awaitTermination(pollSecs, TimeUnit.SECONDS);
