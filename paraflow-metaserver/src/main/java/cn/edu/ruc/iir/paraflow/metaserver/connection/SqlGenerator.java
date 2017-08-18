@@ -13,13 +13,15 @@
  */
 package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
+import com.google.protobuf.ByteString;
+
 /**
  */
 public class SqlGenerator
 {
-    public String createUser(String userName, long createTime, long lastVisitTime)
+    public String createUser(String userName, String password, long createTime, long lastVisitTime)
     {
-        String sql = String.format("INSERT INTO usermodel (username,createtime,lastvisittime) VALUES('%s','%d','%d');", userName, createTime, lastVisitTime);
+        String sql = String.format("INSERT INTO usermodel (username,password,createtime,lastvisittime) VALUES('%s','%s','%d','%d');", userName, password, createTime, lastVisitTime);
         return sql;
     }
 
@@ -67,7 +69,7 @@ public class SqlGenerator
 
     public String getColumn(int tblId, String colName)
     {
-        String sql = String.format("SELECT colindex,tblid,colname,coltype,datatype FROM colmodel WHERE tblid = '%d' AND colname = '%s';", tblId, colName);
+        String sql = String.format("SELECT colindex,coltype,datatype FROM colmodel WHERE tblid = '%d' AND colname = '%s';", tblId, colName);
         return sql;
     }
 //    public String findTblName(int tblId)
@@ -172,7 +174,7 @@ public class SqlGenerator
         return sql;
     }
 
-    public String createFiberFunc(String fiberFuncName, String fiberFuncContent)
+    public String createFiberFunc(String fiberFuncName, ByteString fiberFuncContent)
     {
         String sql = String.format("INSERT INTO fiberfuncmodel (fiberfuncname,fiberfunccontent) VALUES('%s','%s');", fiberFuncName, fiberFuncContent);
         return sql;

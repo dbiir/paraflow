@@ -23,14 +23,14 @@ service Meta {
     rpc renameDatabase(RenameDbParam) returns (StatusType) {}
     rpc renameTable(RenameTblParam) returns (StatusType) {}
     rpc renameColumn(RenameColParam) returns (StatusType) {}
-    rpc createDbParam(CreateDbParamParam) returns (StatusType) {}
+    rpc createDbParam(DbParamParam) returns (StatusType) {}
     //rpc createDbPrivs(CreateDbPrivsParam) returns (StatusType) {}
-    rpc createTblParam(CreateTblParamParam) returns (StatusType) {}
-    rpc createTblPriv(CreateTblPrivParam) returns (StatusType) {}
-    rpc createStorageFormat(CreateStorageFormatParam) returns (StatusType) {}
-    rpc createFiberFunc(CreateFiberFuncParam) returns (StatusType) {}
-    rpc createBlockIndex(CreateBlockIndexParam) returns (StatusType) {}
-    rpc createUser(CreateUserParam) returns (StatusType) {}
+    rpc createTblParam(TblParamParam) returns (StatusType) {}
+    rpc createTblPriv(TblPrivParam) returns (StatusType) {}
+    rpc createStorageFormat(StorageFormatParam) returns (StatusType) {}
+    rpc createFiberFunc(FiberFuncParam) returns (StatusType) {}
+    rpc createBlockIndex(BlockIndexParam) returns (StatusType) {}
+    rpc createUser(UserParam) returns (StatusType) {}
     rpc filterBlockIndex(FilterBlockIndexParam) returns (StringListType) {}
     rpc filterBlockIndexByFiber(FilterBlockIndexByFiberParam) returns (StringListType) {}
 }
@@ -41,25 +41,19 @@ message VerModel {
     int32 verId = 1;
 }
 
+message UserModel {
+    string userName = 1;
+    string userPass = 2;
+    string roleName = 3;
+    int64 creationTime = 4;
+    int64 lastVisitTime = 5;
+}
+
 message DbModel {
     int64 dbId = 1;
     string dbName = 2;
     string locationUrl = 3;
     int64 userId = 4;
-}
-
-message DbParamModel {
-    int64 dbId = 1;
-    string paramKey = 2;
-    string paramValue = 3;
-}
-
-message DbPrivsModel {
-    int64 dbPrivId = 1;
-    int64 grantTime = 2;
-    int64 userId = 3;
-    int32 privType = 4;
-    int64 dbId = 5;
 }
 
 message TblModel {
@@ -75,6 +69,30 @@ message TblModel {
     int32 storageFormatId = 10;
     int64 fiberFuncId = 11;
 }
+
+message ColModel {
+    int64 colId = 1;
+    int32 colIndex = 2;
+    string colName = 3;
+    int64 dbId = 4;
+    int64 tblId = 5;
+    string colType = 6;
+    string dataType = 7;
+}
+
+message DbParamModel {
+    int64 dbId = 1;
+    string paramKey = 2;
+    string paramValue = 3;
+}
+
+//message DbPrivsModel {
+//    int64 dbPrivId = 1;
+//    int64 grantTime = 2;
+//    int64 userId = 3;
+//    int32 privType = 4;
+//    int64 dbId = 5;
+//}
 
 message TblParamModel {
     int64 tblId = 1;
@@ -95,16 +113,6 @@ message StorageFormatModel {
     string serialFormat = 3;
 }
 
-message ColModel {
-    int64 colId = 1;
-    int32 colIndex = 2;
-    string colName = 3;
-    int64 dbId = 4;
-    int64 tblId = 5;
-    string colType = 6;
-    string dataType = 7;
-}
-
 message FiberFuncNodel {
     int64 fiberFuncId = 1;
     string fiberFuncName = 2;
@@ -119,14 +127,6 @@ message BlockIndex {
     int64 timeEnd = 5;
     string timeZone = 6;
     string blockPath = 7;
-}
-
-message UserModel {
-    string userName = 1;
-    string userPass = 2;
-    string roleName = 3;
-    int64 creationTime = 4;
-    int64 lastVisitTime = 5;
 }
 
 // Customized types
@@ -175,6 +175,12 @@ message StatusType {
 }
 
 // Customized paremeters
+message UserParam {
+    string userName = 1;
+    string password = 2;
+    int64 createTime = 3;
+    int64 lastVisitTime = 4;
+}
 
 message DbParam {
     string dbName = 1;
@@ -245,7 +251,7 @@ message RenameColParam {
     string newName = 4;
 }
 
-message CreateBlockIndexParam {
+message BlockIndexParam {
     DbNameParam database = 1;
     TblNameParam table = 2;
     FiberValueType value = 3;
@@ -270,7 +276,7 @@ message FilterBlockIndexByFiberParam {
     int64 timeEnd = 5;
 }
 
-message CreateDbParamParam {
+message DbParamParam {
     string dbName = 1;
     string paramKey = 2;
     string paramValue = 3;
@@ -283,14 +289,14 @@ message CreateDbParamParam {
 //    int64 grantTime = 4;
 //}
 
-message CreateTblParamParam {
+message TblParamParam {
     string dbName = 1;
     string tblName = 2;
     string paramKey = 3;
     string paramValue = 4;
 }
 
-message CreateTblPrivParam {
+message TblPrivParam {
     string dbName = 1;
     string tblName = 2;
     string userName = 3;
@@ -298,19 +304,13 @@ message CreateTblPrivParam {
     int64 grantTime = 5;
 }
 
-message CreateStorageFormatParam {
+message StorageFormatParam {
     string storageFormatName = 1;
     string compression = 2;
     string serialFormat = 3;
 }
 
-message CreateFiberFuncParam {
+message FiberFuncParam {
     string fiberFuncName = 1;
-    string fiberFuncContent = 2;
-}
-
-message CreateUserParam {
-    string userName = 1;
-    int64 createTime = 2;
-    int64 lastVisitTime = 3;
+    bytes fiberFuncContent = 2;
 }
