@@ -1,7 +1,11 @@
 package cn.edu.ruc.iir.paraflow.metaserver.client;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
+import cn.edu.ruc.iir.paraflow.metaserver.connection.DBConnection;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaGrpc;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
+import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
+import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
@@ -18,14 +22,13 @@ import java.util.logging.Logger;
  */
 
 // TODO add security mechanism for rpc communication
-
-// TODO split lines of code which are too long into multiple lines
 public class MetaClient
 {
     private static final Logger logger = Logger.getLogger(MetaClient.class.getName());
 
     private final ManagedChannel channel;
     private final MetaGrpc.MetaBlockingStub metaBlockingStub;
+    private DBConnection dbConnection = DBConnection.getConnectionInstance();
 
     public MetaClient(String host, int port)
     {
@@ -43,26 +46,36 @@ public class MetaClient
         logger.info("***Client started.");
     }
 
+    public void commitRollBack(MetaProto.StatusType statusType)
+    {
+        if (statusType.getStatus() == MetaProto.StatusType.State.OK) {
+            dbConnection.commit();
+        }
+        else {
+            dbConnection.rollback();
+        }
+    }
+
     public void shutdown(int pollSecs) throws InterruptedException
     {
         this.channel.shutdown().awaitTermination(pollSecs, TimeUnit.SECONDS);
     }
 
-    // TODO change params to (String userName, String password)
-    public MetaProto.StatusType createUser(String userName, long createTime, int lastVisitTime)
+    public MetaProto.StatusType createUser(String userName, String password)
     {
-        // TODO change CreateUserParam to UserParam, createUser to user
-        MetaProto.CreateUserParam createUser =
-                MetaProto.CreateUserParam.newBuilder()
+        long createTime = System.currentTimeMillis();
+        long lastVisitTime = System.currentTimeMillis();
+        MetaProto.UserParam user =
+                MetaProto.UserParam.newBuilder()
                         .setUserName(userName)
                         .setCreateTime(createTime)
                         .setLastVisitTime(lastVisitTime)
+                        .setPassword(password)
                         .build();
         MetaProto.StatusType status;
         try {
-            System.out.println("1status = metaBlockingStub.createUser(createUser)");
-            status = metaBlockingStub.createUser(createUser);
-            System.out.println("2status = metaBlockingStub.createUser(createUser)");
+            status = metaBlockingStub.createUser(user);
+            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -75,17 +88,37 @@ public class MetaClient
 
     public MetaProto.StatusType createDatabase(String dbName, String userName)
     {
-        // TODO get location url from config
-        String locationUrl = "";
+        // get config instance
+        MetaConfig metaConfig = null;
+        try {
+            metaConfig = new MetaConfig("/home/jelly/Developer/paraflow/dist/paraflow-1.0-alpha1/conf/metaserver.conf");
+        }
+        catch (ConfigFileNotFoundException e) {
+            e.printStackTrace();
+        }
+        // locationurl
+        String url = metaConfig.getHDFSWarehouse();
+        String locationUrl;
+        if (url.endsWith("/")) {
+            locationUrl = String.format("%s%s", url, dbName);
+        }
+        else {
+            locationUrl = String.format("%s/%s", url, dbName);
+        }
         return createDatabase(dbName, locationUrl, userName);
     }
 
     public MetaProto.StatusType createDatabase(String dbName, String locationUrl, String userName)
     {
-        MetaProto.DbParam database = MetaProto.DbParam.newBuilder().setDbName(dbName).setLocationUrl(locationUrl).setUserName(userName).build();
+        MetaProto.DbParam database = MetaProto.DbParam.newBuilder()
+                .setDbName(dbName)
+                .setLocationUrl(locationUrl)
+                .setUserName(userName)
+                .build();
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createDatabase(database);
+            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -96,14 +129,54 @@ public class MetaClient
         return status;
     }
 
-    // TODO remove createTime, lastAccessTime from params
     public MetaProto.StatusType createTable(
             String dbName,
             String tblName,
             int tblType,
             String userName,
-            int createTime,
-            int lastAccessTime,
+            int storageFormatId,
+            int fiberColId,
+            int fiberFuncId,
+            ArrayList<String> columnName,
+            ArrayList<String> columnType,
+            ArrayList<String> dataType)
+    {
+        // get config instance
+        MetaConfig metaConfig = null;
+        try {
+            metaConfig = new MetaConfig("/home/jelly/Developer/paraflow/dist/paraflow-1.0-alpha1/conf/metaserver.conf");
+        }
+        catch (ConfigFileNotFoundException e) {
+            e.printStackTrace();
+        }
+        // locationurl
+        String url = metaConfig.getHDFSWarehouse();
+        String locationUrl;
+        if (url.endsWith("/")) {
+            locationUrl = String.format("%s%s/%s", url, dbName, tblName);
+        }
+        else {
+            locationUrl = String.format("%s/%s/%s", url, dbName, tblName);
+        }
+        return createTable(
+                dbName,
+                tblName,
+                tblType,
+                userName,
+                locationUrl,
+                storageFormatId,
+                fiberColId,
+                fiberFuncId,
+                columnName,
+                columnType,
+                dataType);
+    }
+
+    public MetaProto.StatusType createTable(
+            String dbName,
+            String tblName,
+            int tblType,
+            String userName,
             String locationUrl,
             int storageFormatId,
             int fiberColId,
@@ -112,31 +185,62 @@ public class MetaClient
             ArrayList<String> columnType,
             ArrayList<String> dataType)
     {
+        long createTime = System.currentTimeMillis();
+        long lastAccessTime = System.currentTimeMillis();
         int number = columnName.size();
         ArrayList<MetaProto.ColParam> columns = new ArrayList<>();
         for (int i = 0; i < number; i++) {
-            MetaProto.ColParam column = MetaProto.ColParam.newBuilder().setColIndex(i).setDbName(dbName).setTblName(tblName).setColName(columnName.get(i)).setColType(columnType.get(i)).setDataType(dataType.get(i)).build();
+            MetaProto.ColParam column = MetaProto.ColParam.newBuilder()
+                    .setColIndex(i)
+                    .setDbName(dbName)
+                    .setTblName(tblName)
+                    .setColName(columnName.get(i))
+                    .setColType(columnType.get(i))
+                    .setDataType(dataType.get(i))
+                    .build();
             columns.add(column);
         }
-        MetaProto.ColListType colList = MetaProto.ColListType.newBuilder().addAllColumn(columns).build();
-        MetaProto.TblParam table = MetaProto.TblParam.newBuilder().setDbName(dbName).setTblName(tblName).setUserName(userName).setTblType(tblType).setCreateTime(createTime).setLastAccessTime(lastAccessTime).setLocationUrl(locationUrl).setStorageFormatId(storageFormatId).setFiberColId(fiberColId).setFiberFuncId(fiberFuncId).build();
+        MetaProto.ColListType colList = MetaProto.ColListType.newBuilder()
+                .addAllColumn(columns)
+                .build();
+        MetaProto.TblParam table = MetaProto.TblParam.newBuilder()
+                .setDbName(dbName)
+                .setTblName(tblName)
+                .setUserName(userName)
+                .setTblType(tblType)
+                .setCreateTime(createTime)
+                .setLastAccessTime(lastAccessTime)
+                .setLocationUrl(locationUrl)
+                .setStorageFormatId(storageFormatId)
+                .setFiberColId(fiberColId)
+                .setFiberFuncId(fiberFuncId)
+                .build();
         MetaProto.StatusType statusColumn;
         MetaProto.StatusType statusTable;
         try {
             statusTable = metaBlockingStub.createTable(table);
-            //System.out.println("create table status is" + statusTable.getStatus());
-            //MetaProto.StatusType statusOK = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
             if (statusTable.getStatus() == MetaProto.StatusType.State.OK) {
                 statusColumn = metaBlockingStub.createColumn(colList);
+                if (statusColumn.getStatus() == MetaProto.StatusType.State.OK) {
+                    dbConnection.commit();
+                }
+                else {
+                    dbConnection.rollback();
+                }
             }
             else {
-                MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.CREATE_TABLE_ERROR).build();
+                MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
+                        .setStatus(MetaProto.StatusType.State.CREATE_TABLE_ERROR)
+                        .build();
+                dbConnection.rollback();
                 return statusError;
             }
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR).build();
+            MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR)
+                    .build();
             return statusError;
         }
         logger.info("Create table status is : " + statusColumn.getStatus());
@@ -149,6 +253,7 @@ public class MetaClient
         MetaProto.StringListType stringList;
         try {
             stringList = metaBlockingStub.listDatabases(none);
+            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -161,10 +266,13 @@ public class MetaClient
 
     public MetaProto.StringListType listTables(String dbName)
     {
-        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase(dbName).build();
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
         MetaProto.StringListType stringList;
         try {
             stringList = metaBlockingStub.listTables(databaseName);
+            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -177,10 +285,13 @@ public class MetaClient
 
     public MetaProto.DbParam getDatabase(String dbName)
     {
-        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase(dbName).build();
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
         MetaProto.DbParam database;
         try {
             database = metaBlockingStub.getDatabase(databaseName);
+            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -193,12 +304,20 @@ public class MetaClient
 
     public MetaProto.TblParam getTable(String dbName, String tblName)
     {
-        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase(dbName).build();
-        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable(tblName).build();
-        MetaProto.DbTblParam databaseTable = MetaProto.DbTblParam.newBuilder().setDatabase(databaseName).setTable(tableName).build();
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder()
+                .setTable(tblName)
+                .build();
+        MetaProto.DbTblParam databaseTable = MetaProto.DbTblParam.newBuilder()
+                .setDatabase(databaseName)
+                .setTable(tableName)
+                .build();
         MetaProto.TblParam table;
         try {
             table = metaBlockingStub.getTable(databaseTable);
+            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -211,13 +330,24 @@ public class MetaClient
 
     public MetaProto.ColParam getColumn(String dbName, String tblName, String colName)
     {
-        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase(dbName).build();
-        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable(tblName).build();
-        MetaProto.ColNameParam columnName = MetaProto.ColNameParam.newBuilder().setColumn(colName).build();
-        MetaProto.DbTblColParam databaseTableColumn = MetaProto.DbTblColParam.newBuilder().setDatabase(databaseName).setTable(tableName).setColumn(columnName).build();
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder()
+                .setTable(tblName)
+                .build();
+        MetaProto.ColNameParam columnName = MetaProto.ColNameParam.newBuilder()
+                .setColumn(colName)
+                .build();
+        MetaProto.DbTblColParam databaseTableColumn = MetaProto.DbTblColParam.newBuilder()
+                .setDatabase(databaseName)
+                .setTable(tableName)
+                .setColumn(columnName)
+                .build();
         MetaProto.ColParam column;
         try {
             column = metaBlockingStub.getColumn(databaseTableColumn);
+            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -228,14 +358,27 @@ public class MetaClient
         return column;
     }
 
-    public MetaProto.StatusType renameColumn(String dbName, String tblName, String oleName, String newName)
+    public MetaProto.StatusType renameColumn(String dbName,
+                                             String tblName,
+                                             String oleName,
+                                             String newName)
     {
-        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable(tblName).build();
-        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase(dbName).build();
-        MetaProto.RenameColParam renameColumn = MetaProto.RenameColParam.newBuilder().setDatabase(databaseName).setTable(tableName).setOldName(oleName).setNewName(newName).build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder()
+                .setTable(tblName)
+                .build();
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
+        MetaProto.RenameColParam renameColumn = MetaProto.RenameColParam.newBuilder()
+                .setDatabase(databaseName)
+                .setTable(tableName)
+                .setOldName(oleName)
+                .setNewName(newName)
+                .build();
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.renameColumn(renameColumn);
+            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -248,11 +391,18 @@ public class MetaClient
 
     public MetaProto.StatusType renameTable(String dbName, String oldName, String newName)
     {
-        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase(dbName).build();
-        MetaProto.RenameTblParam renameTable = MetaProto.RenameTblParam.newBuilder().setDatabase(databaseName).setOldName(oldName).setNewName(newName).build();
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
+        MetaProto.RenameTblParam renameTable = MetaProto.RenameTblParam.newBuilder()
+                .setDatabase(databaseName)
+                .setOldName(oldName)
+                .setNewName(newName)
+                .build();
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.renameTable(renameTable);
+            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -265,10 +415,14 @@ public class MetaClient
 
     public MetaProto.StatusType renameDatabase(String oldName, String newName)
     {
-        MetaProto.RenameDbParam renameDatabase = MetaProto.RenameDbParam.newBuilder().setOldName(oldName).setNewName(newName).build();
+        MetaProto.RenameDbParam renameDatabase = MetaProto.RenameDbParam.newBuilder()
+                .setOldName(oldName)
+                .setNewName(newName)
+                .build();
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.renameDatabase(renameDatabase);
+            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -281,21 +435,35 @@ public class MetaClient
 
     public MetaProto.StatusType deleteTable(String dbName, String tblName)
     {
-        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase(dbName).build();
-        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable(tblName).build();
-        MetaProto.DbTblParam databaseTable = MetaProto.DbTblParam.newBuilder().setDatabase(databaseName).setTable(tableName).build();
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder()
+                .setTable(tblName)
+                .build();
+        MetaProto.DbTblParam databaseTable = MetaProto.DbTblParam.newBuilder()
+                .setDatabase(databaseName)
+                .setTable(tableName)
+                .build();
         MetaProto.StatusType statusColumn;
         MetaProto.StatusType statusTable;
         try {
             statusColumn = metaBlockingStub.deleteTblColumn(databaseTable);
-            //System.out.println("create table status is" + statusTable.getStatus());
-            //MetaProto.StatusType statusOK = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
             System.out.println("delete column state is : " + statusColumn.getStatus());
             if (statusColumn.getStatus() == MetaProto.StatusType.State.OK) {
                 statusTable = metaBlockingStub.deleteTable(databaseTable);
+                if (statusTable.getStatus() == MetaProto.StatusType.State.OK) {
+                    dbConnection.commit();
+                }
+                else {
+                    dbConnection.rollback();
+                }
             }
             else {
-                MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.DELETE_COLUMN_ERROR).build();
+                MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
+                        .setStatus(MetaProto.StatusType.State.DELETE_COLUMN_ERROR)
+                        .build();
+                dbConnection.rollback();
                 return statusError;
             }
         }
@@ -310,27 +478,38 @@ public class MetaClient
 
     public MetaProto.StatusType deleteDatabase(String dbName)
     {
-        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase(dbName).build();
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
         MetaProto.StatusType statusDb;
         MetaProto.StatusType statusCol;
         MetaProto.StatusType statusTbl;
         try {
             statusCol = metaBlockingStub.deleteDbColumn(databaseName);
-            //System.out.println("create table status is" + statusTable.getStatus());
-            //MetaProto.StatusType statusOK = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-            //System.out.println("delete column state is : " + statusColumn.getStatus());
             if (statusCol.getStatus() == MetaProto.StatusType.State.OK) {
                 statusTbl = metaBlockingStub.deleteDbTable(databaseName);
                 if (statusTbl.getStatus() == MetaProto.StatusType.State.OK) {
                     statusDb = metaBlockingStub.deleteDatabase(databaseName);
+                    if (statusDb.getStatus() == MetaProto.StatusType.State.OK) {
+                        dbConnection.commit();
+                    }
+                    else {
+                        dbConnection.rollback();
+                    }
             }
             else {
-                    MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.DELETE_TABLE_ERROR).build();
+                    MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
+                            .setStatus(MetaProto.StatusType.State.DELETE_TABLE_ERROR)
+                            .build();
+                    dbConnection.rollback();
                     return statusError;
                 }
             }
             else {
-                MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.DELETE_COLUMN_ERROR).build();
+                MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
+                        .setStatus(MetaProto.StatusType.State.DELETE_COLUMN_ERROR)
+                        .build();
+                dbConnection.rollback();
                 return statusError;
             }
         }
@@ -345,10 +524,15 @@ public class MetaClient
 
     public MetaProto.StatusType createDbParam(String dbName, String paramKey, String paramValue)
     {
-        MetaProto.CreateDbParamParam createDbParam = MetaProto.CreateDbParamParam.newBuilder().setDbName(dbName).setParamKey(paramKey).setParamValue(paramValue).build();
+        MetaProto.DbParamParam dbParam = MetaProto.DbParamParam.newBuilder()
+                .setDbName(dbName)
+                .setParamKey(paramKey)
+                .setParamValue(paramValue)
+                .build();
         MetaProto.StatusType status;
         try {
-            status = metaBlockingStub.createDbParam(createDbParam);
+            status = metaBlockingStub.createDbParam(dbParam);
+            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -359,12 +543,21 @@ public class MetaClient
         return status;
     }
 
-    public MetaProto.StatusType createTblParam(String dbName, String tblName, String paramKey, String paramValue)
+    public MetaProto.StatusType createTblParam(String dbName,
+                                               String tblName,
+                                               String paramKey,
+                                               String paramValue)
     {
-        MetaProto.CreateTblParamParam createTblParam = MetaProto.CreateTblParamParam.newBuilder().setDbName(dbName).setTblName(tblName).setParamKey(paramKey).setParamValue(paramValue).build();
+        MetaProto.TblParamParam tblParam = MetaProto.TblParamParam.newBuilder()
+                .setDbName(dbName)
+                .setTblName(tblName)
+                .setParamKey(paramKey)
+                .setParamValue(paramValue)
+                .build();
         MetaProto.StatusType status;
         try {
-            status = metaBlockingStub.createTblParam(createTblParam);
+            status = metaBlockingStub.createTblParam(tblParam);
+            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -375,13 +568,23 @@ public class MetaClient
         return status;
     }
 
-    // TODO remove grantTime from params
-    public MetaProto.StatusType createTblPriv(String dbName, String tblName, String userName, int privType, int grantTime)
+    public MetaProto.StatusType createTblPriv(String dbName,
+                                              String tblName,
+                                              String userName,
+                                              int privType)
     {
-        MetaProto.CreateTblPrivParam createTblPriv = MetaProto.CreateTblPrivParam.newBuilder().setDbName(dbName).setTblName(tblName).setUserName(userName).setPrivType(privType).setGrantTime(grantTime).build();
+        long grantTime = System.currentTimeMillis();
+        MetaProto.TblPrivParam tblPriv = MetaProto.TblPrivParam.newBuilder()
+                .setDbName(dbName)
+                .setTblName(tblName)
+                .setUserName(userName)
+                .setPrivType(privType)
+                .setGrantTime(grantTime)
+                .build();
         MetaProto.StatusType status;
         try {
-            status = metaBlockingStub.createTblPriv(createTblPriv);
+            status = metaBlockingStub.createTblPriv(tblPriv);
+            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -392,12 +595,20 @@ public class MetaClient
         return status;
     }
 
-    public MetaProto.StatusType createStorageFormat(String storageFormatName, String compression, String serialFormat)
+    public MetaProto.StatusType createStorageFormat(String storageFormatName,
+                                                    String compression,
+                                                    String serialFormat)
     {
-        MetaProto.CreateStorageFormatParam createStorageFormat = MetaProto.CreateStorageFormatParam.newBuilder().setStorageFormatName(storageFormatName).setCompression(compression).setSerialFormat(serialFormat).build();
+        MetaProto.StorageFormatParam storageFormat
+                = MetaProto.StorageFormatParam.newBuilder()
+                .setStorageFormatName(storageFormatName)
+                .setCompression(compression)
+                .setSerialFormat(serialFormat)
+                .build();
         MetaProto.StatusType status;
         try {
-            status = metaBlockingStub.createStorageFormat(createStorageFormat);
+            status = metaBlockingStub.createStorageFormat(storageFormat);
+            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -408,13 +619,15 @@ public class MetaClient
         return status;
     }
 
-    // TODO change `String fiberFuncContent` to `byte[] fiberFuncContent`
-    public MetaProto.StatusType createFiberFunc(String fiberFuncName, String fiberFuncContent)
+    public MetaProto.StatusType createFiberFunc(String fiberFuncName, ByteString fiberFuncContent)
     {
-        MetaProto.CreateFiberFuncParam createFiberFunc = MetaProto.CreateFiberFuncParam.newBuilder().setFiberFuncName(fiberFuncName).setFiberFuncContent(fiberFuncContent).build();
+        MetaProto.FiberFuncParam fiberFunc = MetaProto.FiberFuncParam.newBuilder()
+                .setFiberFuncName(fiberFuncName)
+                .setFiberFuncContent(fiberFuncContent).build();
         MetaProto.StatusType status;
         try {
-            status = metaBlockingStub.createFiberFunc(createFiberFunc);
+            status = metaBlockingStub.createFiberFunc(fiberFunc);
+            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -425,15 +638,34 @@ public class MetaClient
         return status;
     }
 
-    public MetaProto.StatusType createBlockIndex(String dbName, String tblName, int value, long timeBegin, long timeEnd, String path)
+    public MetaProto.StatusType createBlockIndex(String dbName,
+                                                 String tblName,
+                                                 int value,
+                                                 long timeBegin,
+                                                 long timeEnd,
+                                                 String path)
     {
-        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase(dbName).build();
-        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable(tblName).build();
-        MetaProto.FiberValueType fiberValue = MetaProto.FiberValueType.newBuilder().setValue(value).build();
-        MetaProto.CreateBlockIndexParam createBlockIndex = MetaProto.CreateBlockIndexParam.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(fiberValue).setTimeBegin(timeBegin).setTimeEnd(timeEnd).setBlockPath(path).build();
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder()
+                .setTable(tblName)
+                .build();
+        MetaProto.FiberValueType fiberValue = MetaProto.FiberValueType.newBuilder()
+                .setValue(value)
+                .build();
+        MetaProto.BlockIndexParam blockIndex = MetaProto.BlockIndexParam.newBuilder()
+                .setDatabase(databaseName)
+                .setTable(tableName)
+                .setValue(fiberValue)
+                .setTimeBegin(timeBegin)
+                .setTimeEnd(timeEnd)
+                .setBlockPath(path)
+                .build();
         MetaProto.StatusType status;
         try {
-            status = metaBlockingStub.createBlockIndex(createBlockIndex);
+            status = metaBlockingStub.createBlockIndex(blockIndex);
+            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -444,14 +676,27 @@ public class MetaClient
         return status;
     }
 
-    public MetaProto.StringListType filterBlockIndex(String dbName, String tblName, long timeBegin, long timeEnd)
+    public MetaProto.StringListType filterBlockIndex(String dbName,
+                                                     String tblName,
+                                                     long timeBegin,
+                                                     long timeEnd)
     {
-        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase(dbName).build();
-        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable(tblName).build();
-        MetaProto.FilterBlockIndexParam filterBlockIndex = MetaProto.FilterBlockIndexParam.newBuilder().setDatabase(databaseName).setTable(tableName).setTimeBegin(timeBegin).setTimeEnd(timeEnd).build();
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder()
+                .setTable(tblName)
+                .build();
+        MetaProto.FilterBlockIndexParam filterBlockIndex = MetaProto.FilterBlockIndexParam.newBuilder()
+                .setDatabase(databaseName)
+                .setTable(tableName)
+                .setTimeBegin(timeBegin)
+                .setTimeEnd(timeEnd)
+                .build();
         MetaProto.StringListType stringList;
         try {
             stringList = metaBlockingStub.filterBlockIndex(filterBlockIndex);
+            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -462,15 +707,33 @@ public class MetaClient
         return stringList;
     }
 
-    public MetaProto.StringListType filterBlockIndexByFiber(String dbName, String tblName, int value, long timeBegin, long timeEnd)
+    public MetaProto.StringListType filterBlockIndexByFiber(String dbName,
+                                                            String tblName,
+                                                            int value,
+                                                            long timeBegin,
+                                                            long timeEnd)
     {
-        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder().setDatabase(dbName).build();
-        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder().setTable(tblName).build();
-        MetaProto.FiberValueType fiberValue = MetaProto.FiberValueType.newBuilder().setValue(value).build();
-        MetaProto.FilterBlockIndexByFiberParam filterBlockIndexByFiber = MetaProto.FilterBlockIndexByFiberParam.newBuilder().setDatabase(databaseName).setTable(tableName).setValue(fiberValue).setTimeBegin(timeBegin).setTimeEnd(timeEnd).build();
+        MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
+        MetaProto.TblNameParam tableName = MetaProto.TblNameParam.newBuilder()
+                .setTable(tblName)
+                .build();
+        MetaProto.FiberValueType fiberValue = MetaProto.FiberValueType.newBuilder()
+                .setValue(value)
+                .build();
+        MetaProto.FilterBlockIndexByFiberParam filterBlockIndexByFiber
+                = MetaProto.FilterBlockIndexByFiberParam.newBuilder()
+                .setDatabase(databaseName)
+                .setTable(tableName)
+                .setValue(fiberValue)
+                .setTimeBegin(timeBegin)
+                .setTimeEnd(timeEnd)
+                .build();
         MetaProto.StringListType stringList;
         try {
             stringList = metaBlockingStub.filterBlockIndexByFiber(filterBlockIndexByFiber);
+            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
