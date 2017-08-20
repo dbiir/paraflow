@@ -39,8 +39,8 @@
  |----------------|------------------|-----------------------------------------------------------|
  | colId          | int64            |//Auto-add Primary Key                                     |   
  | colIndex       | int32            | index of column in table                      ///unique   |
- | dbId           | int64            | database id //Forign Key：DbModel：dbId                    |   
- | tblId          | int64            | table id //Forign Key：UserModel：userId                   |   
+ | dbId           | int64            | database id //Forign Key：DbModel：dbId                    |   
+ | tblId          | int64            | table id //Forign Key：UserModel：userId       ///unique   |   
  | colName        | string           | column name                                   ///unique   |
  | colType        | string           | column type: regular \| fiber \| timestamp                |
  | dataType       | string           | data type: integer \| char(x) \| float                    |
@@ -53,13 +53,13 @@
  | paramValue     | string           | value as string                                                |
  
  [useless]#### __7. DbPrivsModel(database privileges)__       
- | NAME            | TYPE             | COMMENT                                      |
- |-----------------|------------------|----------------------------------------------|
- | dbPrivId        | int64            | unique sequential id //Auto-add Primary Key  |
- | dbId            | int64            | database id                                  |
- | userId          | int64            | user id                                      |
- | privType        | int32            |                                              |
- | grantTime       | int64            | grant time                                   |
+ | NAME            | TYPE             | COMMENT                                                 |
+ |-----------------|------------------|---------------------------------------------------------|
+ | dbPrivId        | int64            | unique sequential id //Auto-add Primary Key             |
+ | dbId            | int64            | database id                                   ///unique |
+ | userId          | int64            | user id                                       ///unique |
+ | privType        | int32            |                                               ///unique |
+ | grantTime       | int64            | grant time                                              |
  
  Available privilege types:    
  1: read, 2: write, 3: read + write   [useless]__5: read + grant read to other__
@@ -72,13 +72,13 @@
  | paramValue     | string           | value as string                                          |
  
  #### 9. TblPrivModel(table privileges)
- | NAME           | TYPE             | COMMENT                       |
- |----------------|------------------|-------------------------------|
- | tblPrivId      | int64            |//Auto-add Primary Key         |   
- | tblId          | int64            |//Forign Key：TblModel：tblId   |   
- | userId         | int64            |//Forign Key：UserModel：userId |   
- | privType       | int32            |                               |
- | grantTime      | int64            | grant time                    |
+ | NAME           | TYPE             | COMMENT                                    |
+ |----------------|------------------|--------------------------------------------|
+ | tblPrivId      | int64            |//Auto-add Primary Key                      |   
+ | tblId          | int64            |//Forign Key：TblModel：tblId      ///unique |   
+ | userId         | int64            |//Forign Key：UserModel：userId    ///unique |   
+ | privType       | int32            |                                  ///unique |
+ | grantTime      | int64            | grant time                                 |
  
  #### 10. StorageFormatModel (storage format information)
  | NAME             | TYPE             | COMMENT                                    |
