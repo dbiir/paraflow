@@ -15,10 +15,7 @@ service Meta {
     rpc createDatabase(DbParam) returns (StatusType) {}
     rpc createTable(TblParam) returns (StatusType) {}
     rpc createColumn(ColListType) returns (StatusType) {}
-    rpc deleteTblColumn(DbTblParam) returns (StatusType) {}
-    rpc deleteDbColumn(DbNameParam) returns (StatusType) {}
     rpc deleteDatabase(DbNameParam) returns (StatusType) {}
-    rpc deleteDbTable(DbNameParam) returns (StatusType) {}
     rpc deleteTable(DbTblParam) returns (StatusType) {}
     rpc renameDatabase(RenameDbParam) returns (StatusType) {}
     rpc renameTable(RenameTblParam) returns (StatusType) {}
@@ -33,6 +30,7 @@ service Meta {
     rpc createUser(UserParam) returns (StatusType) {}
     rpc filterBlockIndex(FilterBlockIndexParam) returns (StringListType) {}
     rpc filterBlockIndexByFiber(FilterBlockIndexByFiberParam) returns (StringListType) {}
+    rpc stopServer(NoneType) returns (NoneType) {}
 }
 
 // Models
@@ -170,6 +168,14 @@ message StatusType {
         CREATE_TABLE_ERROR = 14;
         DELETE_COLUMN_ERROR = 15;
         DELETE_TABLE_ERROR = 16;
+        DELETE_DATABASE_ERROR = 17;
+        USER_ALREADY_EXISTS = 18;
+        DATABASE_PARAM_ALREADY_EXISTS = 19;
+        TABLE_PARAM_ALREADY_EXISTS = 20;
+        TABLE_PRIV_ALREADY_EXISTS = 21;
+        STORAGE_FORMAT_ALREADY_EXISTS = 22;
+        FIBER_FUNCTION_ALREADY_EXISTS = 23;
+        BLOCK_INDEX_ALREADY_EXISTS = 24;
     }
     State status = 1;
 }
@@ -186,6 +192,7 @@ message DbParam {
     string dbName = 1;
     string locationUrl = 2;
     string userName = 3;
+    StatusType status = 4;
 }
 
 message TblParam {
@@ -199,6 +206,7 @@ message TblParam {
     int32 storageFormatId = 8;
     int64 fiberColId = 9;
     int64 fiberFuncId = 10;
+    ColListType colList = 11;
 }
 
 message ColParam {
@@ -208,6 +216,7 @@ message ColParam {
     string colName = 4;
     string colType = 5;
     string dataType = 6;
+    StatusType status = 7;
 }
 
 message DbNameParam {

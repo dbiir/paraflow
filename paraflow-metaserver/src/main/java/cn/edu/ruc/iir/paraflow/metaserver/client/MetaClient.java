@@ -1,10 +1,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.client;
 
-import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
-import cn.edu.ruc.iir.paraflow.metaserver.connection.DBConnection;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaGrpc;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
-import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -28,7 +25,6 @@ public class MetaClient
 
     private final ManagedChannel channel;
     private final MetaGrpc.MetaBlockingStub metaBlockingStub;
-    private DBConnection dbConnection = DBConnection.getConnectionInstance();
 
     public MetaClient(String host, int port)
     {
@@ -46,16 +42,6 @@ public class MetaClient
         logger.info("***Client started.");
     }
 
-    public void commitRollBack(MetaProto.StatusType statusType)
-    {
-        if (statusType.getStatus() == MetaProto.StatusType.State.OK) {
-            dbConnection.commit();
-        }
-        else {
-            dbConnection.rollback();
-        }
-    }
-
     public void shutdown(int pollSecs) throws InterruptedException
     {
         this.channel.shutdown().awaitTermination(pollSecs, TimeUnit.SECONDS);
@@ -63,19 +49,14 @@ public class MetaClient
 
     public MetaProto.StatusType createUser(String userName, String password)
     {
-        long createTime = System.currentTimeMillis();
-        long lastVisitTime = System.currentTimeMillis();
         MetaProto.UserParam user =
                 MetaProto.UserParam.newBuilder()
                         .setUserName(userName)
-                        .setCreateTime(createTime)
-                        .setLastVisitTime(lastVisitTime)
                         .setPassword(password)
                         .build();
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createUser(user);
-            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -88,23 +69,7 @@ public class MetaClient
 
     public MetaProto.StatusType createDatabase(String dbName, String userName)
     {
-        // get config instance
-        MetaConfig metaConfig = null;
-        try {
-            metaConfig = new MetaConfig("/home/jelly/Developer/paraflow/dist/paraflow-1.0-alpha1/conf/metaserver.conf");
-        }
-        catch (ConfigFileNotFoundException e) {
-            e.printStackTrace();
-        }
-        // locationurl
-        String url = metaConfig.getHDFSWarehouse();
-        String locationUrl;
-        if (url.endsWith("/")) {
-            locationUrl = String.format("%s%s", url, dbName);
-        }
-        else {
-            locationUrl = String.format("%s/%s", url, dbName);
-        }
+        String locationUrl = "";
         return createDatabase(dbName, locationUrl, userName);
     }
 
@@ -118,7 +83,6 @@ public class MetaClient
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createDatabase(database);
-            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -141,23 +105,7 @@ public class MetaClient
             ArrayList<String> columnType,
             ArrayList<String> dataType)
     {
-        // get config instance
-        MetaConfig metaConfig = null;
-        try {
-            metaConfig = new MetaConfig("/home/jelly/Developer/paraflow/dist/paraflow-1.0-alpha1/conf/metaserver.conf");
-        }
-        catch (ConfigFileNotFoundException e) {
-            e.printStackTrace();
-        }
-        // locationurl
-        String url = metaConfig.getHDFSWarehouse();
-        String locationUrl;
-        if (url.endsWith("/")) {
-            locationUrl = String.format("%s%s/%s", url, dbName, tblName);
-        }
-        else {
-            locationUrl = String.format("%s/%s/%s", url, dbName, tblName);
-        }
+        String locationUrl = "";
         return createTable(
                 dbName,
                 tblName,
@@ -185,8 +133,6 @@ public class MetaClient
             ArrayList<String> columnType,
             ArrayList<String> dataType)
     {
-        long createTime = System.currentTimeMillis();
-        long lastAccessTime = System.currentTimeMillis();
         int number = columnName.size();
         ArrayList<MetaProto.ColParam> columns = new ArrayList<>();
         for (int i = 0; i < number; i++) {
@@ -208,33 +154,15 @@ public class MetaClient
                 .setTblName(tblName)
                 .setUserName(userName)
                 .setTblType(tblType)
-                .setCreateTime(createTime)
-                .setLastAccessTime(lastAccessTime)
                 .setLocationUrl(locationUrl)
                 .setStorageFormatId(storageFormatId)
                 .setFiberColId(fiberColId)
                 .setFiberFuncId(fiberFuncId)
+                .setColList(colList)
                 .build();
-        MetaProto.StatusType statusColumn;
         MetaProto.StatusType statusTable;
         try {
             statusTable = metaBlockingStub.createTable(table);
-            if (statusTable.getStatus() == MetaProto.StatusType.State.OK) {
-                statusColumn = metaBlockingStub.createColumn(colList);
-                if (statusColumn.getStatus() == MetaProto.StatusType.State.OK) {
-                    dbConnection.commit();
-                }
-                else {
-                    dbConnection.rollback();
-                }
-            }
-            else {
-                MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.CREATE_TABLE_ERROR)
-                        .build();
-                dbConnection.rollback();
-                return statusError;
-            }
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -243,8 +171,8 @@ public class MetaClient
                     .build();
             return statusError;
         }
-        logger.info("Create table status is : " + statusColumn.getStatus());
-        return statusColumn;
+        logger.info("Create table status is : " + statusTable.getStatus());
+        return statusTable;
     }
 
     public MetaProto.StringListType listDatabases()
@@ -253,7 +181,6 @@ public class MetaClient
         MetaProto.StringListType stringList;
         try {
             stringList = metaBlockingStub.listDatabases(none);
-            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -272,7 +199,6 @@ public class MetaClient
         MetaProto.StringListType stringList;
         try {
             stringList = metaBlockingStub.listTables(databaseName);
-            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -291,7 +217,6 @@ public class MetaClient
         MetaProto.DbParam database;
         try {
             database = metaBlockingStub.getDatabase(databaseName);
-            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -317,7 +242,6 @@ public class MetaClient
         MetaProto.TblParam table;
         try {
             table = metaBlockingStub.getTable(databaseTable);
-            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -347,7 +271,6 @@ public class MetaClient
         MetaProto.ColParam column;
         try {
             column = metaBlockingStub.getColumn(databaseTableColumn);
-            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -378,7 +301,6 @@ public class MetaClient
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.renameColumn(renameColumn);
-            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -402,7 +324,6 @@ public class MetaClient
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.renameTable(renameTable);
-            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -422,7 +343,6 @@ public class MetaClient
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.renameDatabase(renameDatabase);
-            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -445,35 +365,17 @@ public class MetaClient
                 .setDatabase(databaseName)
                 .setTable(tableName)
                 .build();
-        MetaProto.StatusType statusColumn;
-        MetaProto.StatusType statusTable;
+        MetaProto.StatusType status;
         try {
-            statusColumn = metaBlockingStub.deleteTblColumn(databaseTable);
-            System.out.println("delete column state is : " + statusColumn.getStatus());
-            if (statusColumn.getStatus() == MetaProto.StatusType.State.OK) {
-                statusTable = metaBlockingStub.deleteTable(databaseTable);
-                if (statusTable.getStatus() == MetaProto.StatusType.State.OK) {
-                    dbConnection.commit();
-                }
-                else {
-                    dbConnection.rollback();
-                }
-            }
-            else {
-                MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DELETE_COLUMN_ERROR)
-                        .build();
-                dbConnection.rollback();
-                return statusError;
-            }
+            status = metaBlockingStub.deleteTable(databaseTable);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            statusTable = MetaProto.StatusType.newBuilder().build();
-            return statusTable;
+            status = MetaProto.StatusType.newBuilder().build();
+            return status;
         }
-        logger.info("Delete table status is : " + statusTable.getStatus());
-        return statusTable;
+        logger.info("Delete table status is : " + status.getStatus());
+        return status;
     }
 
     public MetaProto.StatusType deleteDatabase(String dbName)
@@ -481,45 +383,17 @@ public class MetaClient
         MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
                 .setDatabase(dbName)
                 .build();
-        MetaProto.StatusType statusDb;
-        MetaProto.StatusType statusCol;
-        MetaProto.StatusType statusTbl;
+        MetaProto.StatusType status;
         try {
-            statusCol = metaBlockingStub.deleteDbColumn(databaseName);
-            if (statusCol.getStatus() == MetaProto.StatusType.State.OK) {
-                statusTbl = metaBlockingStub.deleteDbTable(databaseName);
-                if (statusTbl.getStatus() == MetaProto.StatusType.State.OK) {
-                    statusDb = metaBlockingStub.deleteDatabase(databaseName);
-                    if (statusDb.getStatus() == MetaProto.StatusType.State.OK) {
-                        dbConnection.commit();
-                    }
-                    else {
-                        dbConnection.rollback();
-                    }
-            }
-            else {
-                    MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
-                            .setStatus(MetaProto.StatusType.State.DELETE_TABLE_ERROR)
-                            .build();
-                    dbConnection.rollback();
-                    return statusError;
-                }
-            }
-            else {
-                MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.DELETE_COLUMN_ERROR)
-                        .build();
-                dbConnection.rollback();
-                return statusError;
-            }
+            status = metaBlockingStub.deleteDatabase(databaseName);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            statusDb = MetaProto.StatusType.newBuilder().build();
-            return statusDb;
+            status = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.DELETE_DATABASE_ERROR).build();
+            return status;
         }
-        logger.info("Delete database status is : " + statusDb.getStatus());
-        return statusDb;
+        logger.info("Delete database status is : " + status.getStatus());
+        return status;
     }
 
     public MetaProto.StatusType createDbParam(String dbName, String paramKey, String paramValue)
@@ -532,7 +406,6 @@ public class MetaClient
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createDbParam(dbParam);
-            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -557,7 +430,6 @@ public class MetaClient
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createTblParam(tblParam);
-            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -573,18 +445,15 @@ public class MetaClient
                                               String userName,
                                               int privType)
     {
-        long grantTime = System.currentTimeMillis();
         MetaProto.TblPrivParam tblPriv = MetaProto.TblPrivParam.newBuilder()
                 .setDbName(dbName)
                 .setTblName(tblName)
                 .setUserName(userName)
                 .setPrivType(privType)
-                .setGrantTime(grantTime)
                 .build();
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createTblPriv(tblPriv);
-            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -608,7 +477,6 @@ public class MetaClient
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createStorageFormat(storageFormat);
-            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -627,7 +495,6 @@ public class MetaClient
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createFiberFunc(fiberFunc);
-            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -665,7 +532,6 @@ public class MetaClient
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createBlockIndex(blockIndex);
-            commitRollBack(status);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -696,7 +562,6 @@ public class MetaClient
         MetaProto.StringListType stringList;
         try {
             stringList = metaBlockingStub.filterBlockIndex(filterBlockIndex);
-            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -733,7 +598,6 @@ public class MetaClient
         MetaProto.StringListType stringList;
         try {
             stringList = metaBlockingStub.filterBlockIndexByFiber(filterBlockIndexByFiber);
-            dbConnection.commit();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -742,5 +606,17 @@ public class MetaClient
         }
         logger.info("Filter block paths is : " + stringList);
         return stringList;
+    }
+
+    public void stopServer()
+    {
+        MetaProto.NoneType noneType =
+                MetaProto.NoneType.newBuilder().build();
+        try {
+            metaBlockingStub.stopServer(noneType);
+        }
+        catch (StatusRuntimeException e) {
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+        }
     }
 }
