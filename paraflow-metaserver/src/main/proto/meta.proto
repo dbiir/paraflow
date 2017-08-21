@@ -21,7 +21,6 @@ service Meta {
     rpc renameTable(RenameTblParam) returns (StatusType) {}
     rpc renameColumn(RenameColParam) returns (StatusType) {}
     rpc createDbParam(DbParamParam) returns (StatusType) {}
-    //rpc createDbPrivs(CreateDbPrivsParam) returns (StatusType) {}
     rpc createTblParam(TblParamParam) returns (StatusType) {}
     rpc createTblPriv(TblPrivParam) returns (StatusType) {}
     rpc createStorageFormat(StorageFormatParam) returns (StatusType) {}
@@ -134,7 +133,8 @@ message NoneType {
 }
 
 message StringListType {
-    repeated string str = 1;
+    bool isEmpty = 1;
+    repeated string str = 2;
 }
 
 message LongListType {
@@ -189,34 +189,37 @@ message UserParam {
 }
 
 message DbParam {
-    string dbName = 1;
-    string locationUrl = 2;
-    string userName = 3;
-    StatusType status = 4;
+    bool isEmpty = 1;
+    string dbName = 2;
+    string locationUrl = 3;
+    string userName = 4;
+    StatusType status = 5;
 }
 
 message TblParam {
-    string dbName = 1;
-    string tblName = 2;
-    int32 tblType = 3;
-    string userName = 4;
-    int64 createTime = 5;
-    int64 lastAccessTime = 6;
-    string locationUrl = 7;
-    int32 storageFormatId = 8;
-    int64 fiberColId = 9;
-    int64 fiberFuncId = 10;
-    ColListType colList = 11;
+    bool isEmpty = 1;
+    string dbName = 2;
+    string tblName = 3;
+    int32 tblType = 4;
+    string userName = 5;
+    int64 createTime = 6;
+    int64 lastAccessTime = 7;
+    string locationUrl = 8;
+    string storageFormatName = 9;
+    int32 fiberColId = 11;
+    string fiberFuncName = 12;
+    ColListType colList = 13;
 }
 
 message ColParam {
-    int32 colIndex = 1;
-    string dbName = 2;
-    string tblName = 3;
-    string colName = 4;
-    string colType = 5;
-    string dataType = 6;
-    StatusType status = 7;
+    bool isEmpty = 1;
+    int32 colIndex = 2;
+    string dbName = 3;
+    string tblName = 4;
+    string colName = 5;
+    string colType = 6;
+    string dataType = 7;
+    StatusType status = 8;
 }
 
 message DbNameParam {

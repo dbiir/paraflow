@@ -135,6 +135,12 @@ public class MetaServer
             //DbModel
             String createDbModelSql = CreateSQL.createDbModelSql;
             int resCreateDbModel = dbConnection.sqlUpdate(createDbModelSql);
+            //StorageFormatModel
+            String createStorageFormatModelSql = CreateSQL.createStorageFormatModelSql;
+            int resCreateStorageFormatModel = dbConnection.sqlUpdate(createStorageFormatModelSql);
+            //FiberFuncModel
+            String createFiberFuncModelSql = CreateSQL.createFiberFuncModelSql;
+            int resCreateFiberFuncModel = dbConnection.sqlUpdate(createFiberFuncModelSql);
             //TblModel
             String createTblModelSql = CreateSQL.createTblModelSql;
             int resCreateTblModel = dbConnection.sqlUpdate(createTblModelSql);
@@ -150,20 +156,21 @@ public class MetaServer
             //TblPrivModel
             String createTblPrivModelSql = CreateSQL.createTblPrivModelSql;
             int resCreateTblPrivModel = dbConnection.sqlUpdate(createTblPrivModelSql);
-            //StorageFormatModel
-            String createStorageFormatModelSql = CreateSQL.createStorageFormatModelSql;
-            int resCreateStorageFormatModel = dbConnection.sqlUpdate(createStorageFormatModelSql);
-            //FiberFuncModel
-            String createFiberFuncModelSql = CreateSQL.createFiberFuncModelSql;
-            int resCreateFiberFuncModel = dbConnection.sqlUpdate(createFiberFuncModelSql);
             //BlockIndex
             String createBlockIndexSql = CreateSQL.createBlockIndexSql;
             int resCreateBlockIndex = dbConnection.sqlUpdate(createBlockIndexSql);
+            //init vermodel
+            String insertVerSql = "INSERT INTO vermodel (vername) VALUES('1.0-alpha1');";
+            int resInsertVer = dbConnection.sqlUpdate(insertVerSql);
+            //init fiberfuncmodel
+            String insertFiberFuncSql = "INSERT INTO fiberfuncmodel (fiberfuncname,fiberfunccontent) VALUES('none','none');";
+            int resInsertFiberFunc = dbConnection.sqlUpdate(insertFiberFuncSql);
             if (resCreateVerModel == 0 && resCreateDbModel == 0 && resCreateDbParamModel == 0
                     && resCreateTblModel == 0 && resCreateTblParamModel == 0
                     && resCreateTblPrivModel == 0 && resCreateStorageFormatModel == 0
                     && resCreateColModel == 0 && resCreateFiberFuncModel == 0
-                    && resCreateBlockIndex == 0 && resCreateUserModel == 0) {
+                    && resCreateBlockIndex == 0 && resCreateUserModel == 0
+                    && resInsertVer == 1 && resInsertFiberFunc == 1) {
                 statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
                 System.out.println("Meta table create status is : " + statusType.getStatus());
             }

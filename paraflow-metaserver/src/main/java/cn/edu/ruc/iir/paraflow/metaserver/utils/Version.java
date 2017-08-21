@@ -16,7 +16,8 @@ package cn.edu.ruc.iir.paraflow.metaserver.utils;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class Version {
+public class Version
+{
 //    public enum version{
 //        1.0-alpha1 = 0;
 //    }

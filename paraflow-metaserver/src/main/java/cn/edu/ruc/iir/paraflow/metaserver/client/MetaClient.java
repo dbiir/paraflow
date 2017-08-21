@@ -93,83 +93,182 @@ public class MetaClient
         return status;
     }
 
-    public MetaProto.StatusType createTable(
+    public MetaProto.StatusType createRegularTable(
             String dbName,
             String tblName,
-            int tblType,
             String userName,
-            int storageFormatId,
-            int fiberColId,
-            int fiberFuncId,
+            String storageFormatName,
             ArrayList<String> columnName,
             ArrayList<String> columnType,
             ArrayList<String> dataType)
     {
         String locationUrl = "";
-        return createTable(
+        return createRegularTable(
                 dbName,
                 tblName,
-                tblType,
                 userName,
                 locationUrl,
-                storageFormatId,
-                fiberColId,
-                fiberFuncId,
+                storageFormatName,
                 columnName,
                 columnType,
                 dataType);
     }
 
-    public MetaProto.StatusType createTable(
+    public MetaProto.StatusType createRegularTable(
             String dbName,
             String tblName,
-            int tblType,
             String userName,
             String locationUrl,
-            int storageFormatId,
-            int fiberColId,
-            int fiberFuncId,
+            String storageFormatName,
             ArrayList<String> columnName,
             ArrayList<String> columnType,
             ArrayList<String> dataType)
     {
-        int number = columnName.size();
-        ArrayList<MetaProto.ColParam> columns = new ArrayList<>();
-        for (int i = 0; i < number; i++) {
-            MetaProto.ColParam column = MetaProto.ColParam.newBuilder()
-                    .setColIndex(i)
+        int tblType = 0;
+        int columnNameSize = columnName.size();
+        int columnTypeSize = columnType.size();
+        int dataTypeSize = dataType.size();
+        MetaProto.StatusType statusTable;
+        if (columnNameSize == columnTypeSize && columnTypeSize == dataTypeSize) {
+            ArrayList<MetaProto.ColParam> columns = new ArrayList<>();
+            for (int i = 0; i < columnNameSize; i++) {
+                MetaProto.ColParam column = MetaProto.ColParam.newBuilder()
+                        .setColIndex(i)
+                        .setDbName(dbName)
+                        .setTblName(tblName)
+                        .setColName(columnName.get(i))
+                        .setColType(columnType.get(i))
+                        .setDataType(dataType.get(i))
+                        .build();
+                columns.add(column);
+            }
+            MetaProto.ColListType colList = MetaProto.ColListType.newBuilder()
+                    .addAllColumn(columns)
+                    .build();
+            MetaProto.TblParam table = MetaProto.TblParam.newBuilder()
                     .setDbName(dbName)
                     .setTblName(tblName)
-                    .setColName(columnName.get(i))
-                    .setColType(columnType.get(i))
-                    .setDataType(dataType.get(i))
+                    .setUserName(userName)
+                    .setTblType(tblType)
+                    .setLocationUrl(locationUrl)
+                    .setStorageFormatName(storageFormatName)
+                    .setColList(colList)
                     .build();
-            columns.add(column);
+            try {
+                statusTable = metaBlockingStub.createTable(table);
+            }
+            catch (StatusRuntimeException e) {
+                logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+                MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
+                        .setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR)
+                        .build();
+                return statusError;
+            }
         }
-        MetaProto.ColListType colList = MetaProto.ColListType.newBuilder()
-                .addAllColumn(columns)
-                .build();
-        MetaProto.TblParam table = MetaProto.TblParam.newBuilder()
-                .setDbName(dbName)
-                .setTblName(tblName)
-                .setUserName(userName)
-                .setTblType(tblType)
-                .setLocationUrl(locationUrl)
-                .setStorageFormatId(storageFormatId)
-                .setFiberColId(fiberColId)
-                .setFiberFuncId(fiberFuncId)
-                .setColList(colList)
-                .build();
-        MetaProto.StatusType statusTable;
-        try {
-            statusTable = metaBlockingStub.createTable(table);
-        }
-        catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
+        else {
+            statusTable = MetaProto.StatusType.newBuilder()
                     .setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR)
                     .build();
-            return statusError;
+        }
+        logger.info("Create table status is : " + statusTable.getStatus());
+        return statusTable;
+    }
+
+    public MetaProto.StatusType createFiberTable(
+            String dbName,
+            String tblName,
+            String userName,
+            String storageFormatName,
+            String fiberColName,
+            String fiberFuncName,
+            ArrayList<String> columnName,
+            ArrayList<String> columnType,
+            ArrayList<String> dataType)
+    {
+        String locationUrl = "";
+        return createFiberTable(
+                dbName,
+                tblName,
+                userName,
+                locationUrl,
+                storageFormatName,
+                fiberColName,
+                fiberFuncName,
+                columnName,
+                columnType,
+                dataType);
+    }
+
+    public MetaProto.StatusType createFiberTable(
+            String dbName,
+            String tblName,
+            String userName,
+            String locationUrl,
+            String storageFormatName,
+            String fiberColName,
+            String fiberFuncName,
+            ArrayList<String> columnName,
+            ArrayList<String> columnType,
+            ArrayList<String> dataType)
+    {
+        int tblType = 1;
+        int columnNameSize = columnName.size();
+        int columnTypeSize = columnType.size();
+        int dataTypeSize = dataType.size();
+        MetaProto.StatusType statusTable;
+        if (columnNameSize == columnTypeSize && columnTypeSize == dataTypeSize) {
+            ArrayList<MetaProto.ColParam> columns = new ArrayList<>();
+            for (int i = 0; i < columnNameSize; i++) {
+                MetaProto.ColParam column = MetaProto.ColParam.newBuilder()
+                        .setColIndex(i)
+                        .setDbName(dbName)
+                        .setTblName(tblName)
+                        .setColName(columnName.get(i))
+                        .setColType(columnType.get(i))
+                        .setDataType(dataType.get(i))
+                        .build();
+                columns.add(column);
+            }
+            MetaProto.ColListType colList = MetaProto.ColListType.newBuilder()
+                    .addAllColumn(columns)
+                    .build();
+            int fiberColId = columnName.indexOf(fiberColName);
+            System.out.println("fiberColName : " + fiberColName);
+            System.out.println("fiberColId : " + fiberColId);
+            if (fiberColId == -1) {
+                System.err.println("FiberColName is not exist!");
+                statusTable = MetaProto.StatusType.newBuilder()
+                        .setStatus(MetaProto.StatusType.State.CREATE_TABLE_ERROR)
+                        .build();
+            }
+            else {
+                MetaProto.TblParam table = MetaProto.TblParam.newBuilder()
+                        .setDbName(dbName)
+                        .setTblName(tblName)
+                        .setUserName(userName)
+                        .setTblType(tblType)
+                        .setLocationUrl(locationUrl)
+                        .setStorageFormatName(storageFormatName)
+                        .setFiberColId(fiberColId)
+                        .setFiberFuncName(fiberFuncName)
+                        .setColList(colList)
+                        .build();
+                try {
+                    statusTable = metaBlockingStub.createTable(table);
+                }
+                catch (StatusRuntimeException e) {
+                    logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+                    statusTable = MetaProto.StatusType.newBuilder()
+                            .setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR)
+                            .build();
+                    return statusTable;
+                }
+            }
+        }
+        else  {
+            statusTable = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR)
+                    .build();
         }
         logger.info("Create table status is : " + statusTable.getStatus());
         return statusTable;
