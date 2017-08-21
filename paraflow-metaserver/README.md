@@ -52,7 +52,7 @@
  | paramKey       | string           | key as string                                        ///unique |
  | paramValue     | string           | value as string                                                |
  
- [useless]#### __7. DbPrivsModel(database privileges)__       
+ #### [useless]__7. DbPrivsModel(database privileges)__       
  | NAME            | TYPE             | COMMENT                                                 |
  |-----------------|------------------|---------------------------------------------------------|
  | dbPrivId        | int64            | unique sequential id //Auto-add Primary Key             |

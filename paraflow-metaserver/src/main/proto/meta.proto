@@ -4,7 +4,9 @@ option java_package = "cn.edu.ruc.iir.paraflow.metaserver.proto";
 option java_outer_classname = "MetaProto";
 option objc_class_prefix = "META";
 
-package meta;
+import "status.proto";
+
+package paraflow;
 
 service Meta {
     rpc listDatabases(NoneType) returns (StringListType) {}
@@ -21,7 +23,6 @@ service Meta {
     rpc renameTable(RenameTblParam) returns (StatusType) {}
     rpc renameColumn(RenameColParam) returns (StatusType) {}
     rpc createDbParam(DbParamParam) returns (StatusType) {}
-    //rpc createDbPrivs(CreateDbPrivsParam) returns (StatusType) {}
     rpc createTblParam(TblParamParam) returns (StatusType) {}
     rpc createTblPriv(TblPrivParam) returns (StatusType) {}
     rpc createStorageFormat(StorageFormatParam) returns (StatusType) {}
@@ -83,14 +84,6 @@ message DbParamModel {
     string paramKey = 2;
     string paramValue = 3;
 }
-
-//message DbPrivsModel {
-//    int64 dbPrivId = 1;
-//    int64 grantTime = 2;
-//    int64 userId = 3;
-//    int32 privType = 4;
-//    int64 dbId = 5;
-//}
 
 message TblParamModel {
     int64 tblId = 1;
@@ -290,13 +283,6 @@ message DbParamParam {
     string paramKey = 2;
     string paramValue = 3;
 }
-
-//message CreateDbPrivsParam {
-//    string dbName = 1;
-//    string userName = 2;
-//    int32 privType = 3;
-//    int64 grantTime = 4;
-//}
 
 message TblParamParam {
     string dbName = 1;

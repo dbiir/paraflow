@@ -1,5 +1,7 @@
 package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
+import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+
 /**
  * paraflow
  *
@@ -24,6 +26,12 @@ public class MethodNotImplementedException extends ParaFlowException
     public String getMessage()
     {
         return String.format("Method %s not implemented", methodName);
+    }
+
+    @Override
+    public StatusProto.ResponseStatus getResponseStatus()
+    {
+        return null;
     }
 
     /**

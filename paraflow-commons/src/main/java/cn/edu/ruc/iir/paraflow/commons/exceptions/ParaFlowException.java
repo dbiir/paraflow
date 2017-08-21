@@ -1,5 +1,10 @@
 package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
+import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -11,6 +16,7 @@ import java.io.StringWriter;
 public abstract class ParaFlowException extends Exception
 {
     private static final long serialVersionUID = -6514778398567346776L;
+    private static final Logger logger = LogManager.getLogger(ParaFlowException.class);
 
     /**
      * get exception name. default to class name
@@ -29,11 +35,31 @@ public abstract class ParaFlowException extends Exception
      * */
     public abstract String getMessage();
 
-    @Override
-    public StackTraceElement[] getStackTrace()
+    public void handle()
     {
-        return super.getStackTrace();
+        switch (getLevel()) {
+            case DEBUG:
+                System.out.println(toString());
+                return;
+            case INFO:
+                logger.log(Level.INFO, toString());
+                return;
+            case WARN:
+                logger.log(Level.WARN, toString());
+                logger.log(Level.WARN, getStackTraceMessage());
+                return;
+            case ERROR:
+                logger.log(Level.ERROR, toString());
+                logger.log(Level.ERROR, getStackTraceMessage());
+                return;
+            case FATAL:
+                logger.log(Level.FATAL, toString());
+                logger.log(Level.FATAL, getStackTraceMessage());
+                Runtime.getRuntime().exit(getResponseStatus().getStatusValue());
+        }
     }
+
+    public abstract StatusProto.ResponseStatus getResponseStatus();
 
     /**
      * get system hint message for user on how to deal with this exception
@@ -55,7 +81,7 @@ public abstract class ParaFlowException extends Exception
         return String.format("[%s]%s: %s. %s", getLevel(), getName(), getMessage(), getHint());
     }
 
-    public String getFullMessage()
+    private String getStackTraceMessage()
     {
         StringWriter sw = new StringWriter();
         PrintWriter pw = new PrintWriter(sw);

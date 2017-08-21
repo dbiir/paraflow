@@ -1,10 +1,10 @@
 package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
+import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+
 /**
  * This exception is intended to be used in paraflow-metaserver.
  * Representing for gRPC server IOExpception when starting up.
- *
- * @author guodong
  */
 public class RPCServerIOException extends ParaFlowException
 {
@@ -26,6 +26,15 @@ public class RPCServerIOException extends ParaFlowException
     public String getMessage()
     {
         return String.format("gRPC server cannot start at port %d", port);
+    }
+
+    @Override
+    public StatusProto.ResponseStatus getResponseStatus()
+    {
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.STATUS_SERVER_FATAL_ERR)
+                .build();
     }
 
     /**
