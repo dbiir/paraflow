@@ -40,7 +40,7 @@
  | colId          | int64            |//Auto-add Primary Key                                     |   
  | colIndex       | int32            | index of column in table                      ///unique   |
  | dbId           | int64            | database id //Forign Key：DbModel：dbId                    |   
- | tblId          | int64            | table id //Forign Key：UserModel：userId       ///unique   |   
+ | tblId          | int64            | table id //Forign Key：TblModel：tblId         ///unique   |   
  | colName        | string           | column name                                   ///unique   |
  | colType        | string           | column type: regular \| fiber \| timestamp                |
  | dataType       | string           | data type: integer \| char(x) \| float                    |
