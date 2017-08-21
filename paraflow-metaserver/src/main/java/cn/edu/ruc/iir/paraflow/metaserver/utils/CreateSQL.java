@@ -21,8 +21,8 @@ public final class CreateSQL
     private CreateSQL()
     {
     }
-    public static String createVerModelSql = "CREATE TABLE vermodel (verid int);";
-    public static String createUserModelSql = "CREATE TABLE usermodel (userid SERIAL primary key,password varchar(50),username varchar(50),createtime bigint,lastvisittime bigint,constraint unique_user unique(username));";
+    public static String createVerModelSql = "CREATE TABLE vermodel (verid varchar(50),constraint unique_ver unique(verid));";
+    public static String createUserModelSql = "CREATE TABLE usermodel (userid SERIAL primary key,username varchar(50),password varchar(50),createtime bigint,lastvisittime bigint,constraint unique_user unique(username));";
     public static String createDbModelSql = "CREATE TABLE dbmodel (dbid SERIAL primary key,dbname varchar(20),userid int REFERENCES usermodel(userid),locationurl varchar(200),constraint unique_db unique(dbname));";
     public static String createTblModelSql = "CREATE TABLE tblmodel (tblid SERIAL primary key,dbid int REFERENCES dbmodel(dbid),tblname varchar(50),tbltype int,userid int REFERENCES usermodel(userid),createtime bigint,lastaccesstime bigint,locationUrl varchar(100),storageformatid int,fiberColId int,fiberfuncid int,constraint unique_tbl unique(dbid,tblname));";
     public static String createColModelSql = "CREATE TABLE colmodel (colid SERIAL primary key,colIndex int,dbid int REFERENCES dbmodel(dbid),tblid int REFERENCES tblmodel(tblid),colName varchar(50),colType varchar(50),dataType varchar(50),constraint unique_col unique(colIndex,tblid,colName),constraint unique_col unique(tblid,colName));";

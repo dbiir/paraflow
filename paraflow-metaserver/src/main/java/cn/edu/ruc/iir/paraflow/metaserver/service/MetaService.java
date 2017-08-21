@@ -521,6 +521,39 @@ public class MetaService extends MetaGrpc.MetaImplBase
         dbConnection.autoCommitTrue();
     }
 
+    private void deleteTblParam(int tblId)
+    {
+        //find paramKey
+        String findParamKeySql = sqlGenerator.findParamKey(tblId);
+        ResultList resFindParamKey = dbConnection.sqlQuery(findParamKeySql, 1);
+        if (!resFindParamKey.isEmpty()) {
+            String deleteTblParamSql = sqlGenerator.deleteTblParam(tblId);
+            dbConnection.sqlUpdate(deleteTblParamSql);
+        }
+    }
+
+    private void deleteTblPriv(int tblId)
+    {
+        //find TblPriv
+        String findTblPrivSql = sqlGenerator.findTblPriv(tblId);
+        ResultList resFindTblPriv = dbConnection.sqlQuery(findTblPrivSql, 1);
+        if (!resFindTblPriv.isEmpty()) {
+            String deleteTblPrivSql = sqlGenerator.deleteTblPriv(tblId);
+            dbConnection.sqlUpdate(deleteTblPrivSql);
+        }
+    }
+
+    private void deleteBlockIndex(int tblId)
+    {
+        //find BlockIndex
+        String findBlockIndexSql = sqlGenerator.findBlockIndex(tblId);
+        ResultList resFindBlockIndex = dbConnection.sqlQuery(findBlockIndexSql, 1);
+        if (!resFindBlockIndex.isEmpty()) {
+            String deleteBlockIndexSql = sqlGenerator.deleteBlockIndex(tblId);
+            dbConnection.sqlUpdate(deleteBlockIndexSql);
+        }
+    }
+
     @Override
     public void deleteTable(MetaProto.DbTblParam dbTblParam,
                             StreamObserver<MetaProto.StatusType> responseStreamObserver)
@@ -535,6 +568,9 @@ public class MetaService extends MetaGrpc.MetaImplBase
             //delete columns
             String deleteColSql = sqlGenerator.deleteTblColumn(dbId, tblId);
             int resDeleteCol = dbConnection.sqlUpdate(deleteColSql);
+            deleteTblParam(tblId);
+            deleteTblPriv(tblId);
+            deleteBlockIndex(tblId);
             //result
             if (resDeleteCol != 0) {
                 //delete table
@@ -583,11 +619,21 @@ public class MetaService extends MetaGrpc.MetaImplBase
             MetaProto.StatusType statusType;
             //find database id
             int dbId = findDbId(dbNameParam.getDatabase());
-            //delete column
-            String deleteColSql = sqlGenerator.deleteDbColumn(dbId);
-            dbConnection.sqlUpdate(deleteColSql);
-            String deleteTblSql = sqlGenerator.deleteDbTable(dbId);
-            dbConnection.sqlUpdate(deleteTblSql);
+            //find table
+            String findTblSql = sqlGenerator.findTblIdWithoutName(dbId);
+            ResultList resFindTbl = dbConnection.sqlQuery(findTblSql, 1);
+            if (!resFindTbl.isEmpty()) {
+                int size = resFindTbl.size();
+                for (int i = 0; i < size; i++) {
+                    deleteTblParam(Integer.parseInt(resFindTbl.get(i).get(0)));
+                    deleteTblPriv(Integer.parseInt(resFindTbl.get(i).get(0)));
+                    deleteBlockIndex(Integer.parseInt(resFindTbl.get(i).get(0)));
+                }
+                String deleteColSql = sqlGenerator.deleteDbColumn(dbId);
+                dbConnection.sqlUpdate(deleteColSql);
+                String deleteTblSql = sqlGenerator.deleteDbTable(dbId);
+                dbConnection.sqlUpdate(deleteTblSql);
+            }
             String deleteDbSql = sqlGenerator.deleteDatabase(dbNameParam.getDatabase());
             dbConnection.sqlUpdate(deleteDbSql);
             dbConnection.commit();
