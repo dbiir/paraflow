@@ -5,7 +5,6 @@ import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.SqlGenerator;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaGrpc;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
-
 import io.grpc.stub.StreamObserver;
 
 import java.util.ArrayList;

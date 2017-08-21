@@ -11,6 +11,13 @@
 
     <artifactId>paraflow-loader-producer</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>cn.edu.ruc.iir</groupId>
+            <artifactId>paraflow-commons</artifactId>
+        </dependency>
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
