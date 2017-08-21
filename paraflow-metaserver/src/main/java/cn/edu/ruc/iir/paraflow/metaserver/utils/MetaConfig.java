@@ -1,7 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
-import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
-import cn.edu.ruc.iir.paraflow.commons.utils.ConfigFactory;
+import cn.edu.ruc.iir.paraflow.commons.utils.ParaFlowConfig;
 /**
  * ParaFlow
  *
@@ -9,42 +8,59 @@ import cn.edu.ruc.iir.paraflow.commons.utils.ConfigFactory;
  */
 public class MetaConfig
 {
-    private ConfigFactory configInstance = null;
+    private ParaFlowConfig paraflowConfig;
 
-    public MetaConfig(String configPath) throws ConfigFileNotFoundException
+    private MetaConfig()
+    {}
+
+    private static class MetaConfigHolder
     {
-        configInstance = ConfigFactory.getConfigInstance(configPath);
-        configInstance.build();
+        private static final MetaConfig instance = new MetaConfig();
     }
 
-    public MetaConfig() throws ConfigFileNotFoundException
+    public static final MetaConfig INSTANCE()
     {
-        configInstance = ConfigFactory.getConfigInstance();
-        configInstance.build();
+        return MetaConfigHolder.instance;
+    }
+
+    public void init(String configPath)
+    {
+        paraflowConfig = new ParaFlowConfig(configPath);
+    }
+
+    public boolean validate()
+    {
+        // TODO validate configuration content
+        return true;
+    }
+
+    public int getServerPort()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("server.port"));
     }
 
     public String getDBDriver()
     {
-        return configInstance.getProperty("db.driver");
+        return paraflowConfig.getProperty("db.driver");
     }
 
     public String getDBHost()
     {
-        return configInstance.getProperty("db.host");
+        return paraflowConfig.getProperty("db.host");
     }
 
     public String getDBUser()
     {
-        return configInstance.getProperty("db.user");
+        return paraflowConfig.getProperty("db.user");
     }
 
     public String getDBPassword()
     {
-        return configInstance.getProperty("db.password");
+        return paraflowConfig.getProperty("db.password");
     }
 
     public String getHDFSWarehouse()
     {
-        return configInstance.getProperty("hdfs.warehouse");
+        return paraflowConfig.getProperty("hdfs.warehouse");
     }
 }

@@ -6,7 +6,6 @@ import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.SqlGenerator;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaGrpc;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
-import cn.edu.ruc.iir.paraflow.metaserver.server.MetaServer;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
 import io.grpc.stub.StreamObserver;
 
@@ -1064,8 +1063,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
     public void stopServer(MetaProto.NoneType noneType,
                            StreamObserver<MetaProto.NoneType> responseStreamObserver)
     {
-        MetaServer metaServer = MetaServer.getServerInstance();
-        metaServer.stop();
+        Runtime.getRuntime().exit(0);
         MetaProto.NoneType none = MetaProto.NoneType.newBuilder().build();
         responseStreamObserver.onNext(none);
         responseStreamObserver.onCompleted();

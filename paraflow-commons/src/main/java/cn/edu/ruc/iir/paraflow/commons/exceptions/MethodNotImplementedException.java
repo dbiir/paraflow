@@ -7,7 +7,7 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  *
  * @author guodong
  */
-public class MethodNotImplementedException extends ParaFlowException
+public final class MethodNotImplementedException extends ParaFlowException
 {
     private static final long serialVersionUID = 2492705799817499827L;
     private final String methodName;

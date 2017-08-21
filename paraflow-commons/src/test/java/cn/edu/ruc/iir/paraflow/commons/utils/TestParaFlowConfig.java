@@ -10,12 +10,12 @@ import static org.junit.Assert.assertEquals;
  *
  * @author guodong
  */
-public class TestConfigFactory
+public class TestParaFlowConfig
 {
     @Test
     public void testConfig()
     {
-        ConfigFactory configInstance = ConfigFactory.getConfigInstance("")
+        ParaFlowConfig configInstance = ParaFlowConfig.getConfigInstance("")
                 .setDefault("name", "jelly")
                 .setDefault("age", "23");
         try {

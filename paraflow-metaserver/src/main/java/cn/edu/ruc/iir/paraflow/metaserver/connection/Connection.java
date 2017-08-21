@@ -1,6 +1,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
 import cn.edu.ruc.iir.paraflow.metaserver.action.Action;
+import cn.edu.ruc.iir.paraflow.metaserver.action.ActionResponse;
 
 /**
  * paraflow
@@ -9,19 +10,9 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.Action;
  */
 public abstract class Connection
 {
-    private final TransactionController txController;
+    public abstract <T> ActionResponse<T> execute(Action action);
 
-    public Connection(TransactionController txController)
-    {
-        this.txController = txController;
-    }
+    public abstract void setAutoCommit(boolean autoCommit);
 
-    public TransactionController getTxController()
-    {
-        return txController;
-    }
-
-    public void execute(Action action)
-    {
-    }
+    public abstract void commit();
 }

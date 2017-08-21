@@ -6,7 +6,7 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  * This exception is intended to be used in paraflow-metaserver.
  * Representing for gRPC server IOExpception when starting up.
  */
-public class RPCServerIOException extends ParaFlowException
+public final class RPCServerIOException extends ParaFlowException
 {
     private static final long serialVersionUID = 5621165837126253248L;
 

@@ -7,7 +7,7 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  *
  * @author guodong
  */
-public class ConfigFileNotFoundException extends ParaFlowException
+public final class ConfigFileNotFoundException extends ParaFlowException
 {
     private static final long serialVersionUID = 6980171393859140121L;
 

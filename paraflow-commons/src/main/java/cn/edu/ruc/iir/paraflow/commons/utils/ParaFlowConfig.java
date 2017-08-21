@@ -12,42 +12,19 @@ import java.util.Properties;
  *
  * @author guodong
  */
-public class ConfigFactory
+public class ParaFlowConfig
 {
     private String configPath;
     private Properties properties;
     private Properties defaultProps;
-    private static ConfigFactory configInstance = null;
 
-    private ConfigFactory()//with default config path
-    {
-        this.configPath = "morenlujing";
-        defaultProps = new Properties();
-    }
-
-    private ConfigFactory(String configPath)//user design config path
+    public ParaFlowConfig(String configPath)
     {
         this.configPath = configPath;
         defaultProps = new Properties();
     }
 
-    public static synchronized ConfigFactory getConfigInstance()
-    {
-        if (configInstance == null) {
-            configInstance = new ConfigFactory();
-        }
-        return configInstance;
-    }
-
-    public static synchronized ConfigFactory getConfigInstance(String configPath)
-    {
-        if (configInstance == null) {
-            configInstance = new ConfigFactory(configPath);
-        }
-        return configInstance;
-    }
-
-    public ConfigFactory build() throws ConfigFileNotFoundException
+    public ParaFlowConfig build() throws ConfigFileNotFoundException
     {
         properties = new Properties(defaultProps);
         try {
@@ -59,7 +36,7 @@ public class ConfigFactory
         return this;
     }
 
-    public ConfigFactory setDefault(String key, String value)
+    public ParaFlowConfig setDefault(String key, String value)
     {
         this.defaultProps.setProperty(key, value);
 
