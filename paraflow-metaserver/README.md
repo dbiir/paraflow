@@ -1,7 +1,7 @@
  #### 1. VerModel (metadata version corresponding to MetaServer)
- | NAME           | TYPE             | COMMENT               |
- |----------------|------------------|-----------------------|
- | verId          | string            | version of MetaServer|
+ | NAME              | TYPE             | COMMENT               |
+ |------------------|------------------|-----------------------|
+ | verName          | string            | version of MetaServer|
  
  #### 2. UserModel
  | NAME           | TYPE             | COMMENT                                               |
