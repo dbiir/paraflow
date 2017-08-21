@@ -2,7 +2,6 @@ package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.utils.ConfigFactory;
-
 /**
  * ParaFlow
  *
@@ -15,6 +14,12 @@ public class MetaConfig
     public MetaConfig(String configPath) throws ConfigFileNotFoundException
     {
         configInstance = ConfigFactory.getConfigInstance(configPath);
+        configInstance.build();
+    }
+
+    public MetaConfig() throws ConfigFileNotFoundException
+    {
+        configInstance = ConfigFactory.getConfigInstance();
         configInstance.build();
     }
 
