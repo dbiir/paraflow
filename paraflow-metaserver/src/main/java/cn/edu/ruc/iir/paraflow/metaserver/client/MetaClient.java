@@ -487,11 +487,12 @@ public class MetaClient
         return status;
     }
 
-    public MetaProto.StatusType createFiberFunc(String fiberFuncName, ByteString fiberFuncContent)
+    public MetaProto.StatusType createFiberFunc(String fiberFuncName, byte[] fiberFuncContent)
     {
+        ByteString byteString = ByteString.copyFrom(fiberFuncContent);
         MetaProto.FiberFuncParam fiberFunc = MetaProto.FiberFuncParam.newBuilder()
                 .setFiberFuncName(fiberFuncName)
-                .setFiberFuncContent(fiberFuncContent).build();
+                .setFiberFuncContent(byteString).build();
         MetaProto.StatusType status;
         try {
             status = metaBlockingStub.createFiberFunc(fiberFunc);

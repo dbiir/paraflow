@@ -1,6 +1,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.client;
 
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
+import com.google.protobuf.ByteString;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -252,21 +253,22 @@ public class TestMetaClient
         }
     }
 
-//    @Test
-//    public void clientCreateFiberFuncTest()
-//    {
-//        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-//        ByteString fiberFuncContent = ;
-//        MetaProto.StatusType status = client.createFiberFunc("fiberFuncName", fiberFuncContent);
-//        assertEquals(expect, status);
-//        try {
-//            client.shutdown(3);
-//        }
-//        catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    @Test
+    public void clientCreateFiberFuncTest()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+        String string = "I am a girl";
+        byte[] fiberFuncContent = string.getBytes();
+        MetaProto.StatusType status = client.createFiberFunc("fiberFuncName", fiberFuncContent);
+        assertEquals(expect, status);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void clientCreateBlockIndexTest()
