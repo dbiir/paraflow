@@ -14,7 +14,7 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>cn.edu.ruc.dbiir</groupId>
+    <groupId>cn.edu.ruc.iir</groupId>
     <artifactId>paraflow</artifactId>
     <version>1.0-alpha1</version>
     <modules>
@@ -94,22 +94,28 @@
                 <version>1.7.21</version>
             </dependency>
             <dependency>
-                <groupId>cn.edu.ruc.dbiir</groupId>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>0.11.0.0</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-commons</artifactId>
                 <version>1.0-alpha1</version>
             </dependency>
             <dependency>
-                <groupId>cn.edu.ruc.dbiir</groupId>
+                <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-metaserver</artifactId>
                 <version>1.0-alpha1</version>
             </dependency>
             <dependency>
-                <groupId>cn.edu.ruc.dbiir</groupId>
+                <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-loader-producer</artifactId>
                 <version>1.0-alpha1</version>
             </dependency>
             <dependency>
-                <groupId>cn.edu.ruc.dbiir</groupId>
+                <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-loader-consumer</artifactId>
                 <version>1.0-alpha1</version>
             </dependency>
