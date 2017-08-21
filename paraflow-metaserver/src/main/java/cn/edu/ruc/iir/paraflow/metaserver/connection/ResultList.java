@@ -29,4 +29,9 @@ public class ResultList
     {
         return jdbcRecords.size();
     }
+
+    public boolean isEmpty()
+    {
+        return jdbcRecords.isEmpty();
+    }
 }

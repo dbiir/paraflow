@@ -9,6 +9,7 @@ import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import cn.edu.ruc.iir.paraflow.metaserver.service.MetaService;
 
+import cn.edu.ruc.iir.paraflow.metaserver.utils.CreateSQL;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
@@ -27,7 +28,8 @@ public class MetaServer
     private static final Logger logger = LogManager.getLogger(MetaServer.class);
 
     private Server server;
-    private final String metaConfigPath;
+    private String metaConfigPath = "";
+    private static MetaServer serverInstance = null;
     DBConnection dbConnection = DBConnection.getConnectionInstance();
 
     public MetaServer(String metaConfigPath)
@@ -35,10 +37,30 @@ public class MetaServer
         this.metaConfigPath = metaConfigPath;
     }
 
+    public MetaServer()
+    {
+    }
+
+    public static synchronized MetaServer getServerInstance(String metaConfigPath)
+    {
+        if (serverInstance == null) {
+            serverInstance = new MetaServer(metaConfigPath);
+        }
+        return serverInstance;
+    }
+
+    public static synchronized MetaServer getServerInstance()
+    {
+        if (serverInstance == null) {
+            serverInstance = new MetaServer();
+        }
+        return serverInstance;
+    }
+
     /**
      * Start meta server.
-     * 1. Start rpc server
-     * 2. Connect to database
+     * 1. Start rpc server;
+     * 2. Connect to database.
      *
      * @param port rpc server port
      * */
@@ -98,53 +120,44 @@ public class MetaServer
         }
         //no table then create all tables
         MetaProto.StatusType statusType;
-        if (!(result.contains("blockindex")) && !(result.contains("colmodel")) && !(result.contains("dbmodel"))
+        if (!(result.contains("blockindex")) && !(result.contains("colmodel"))
+                && !(result.contains("dbmodel"))
                 && !(result.contains("dbparammodel")) && !(result.contains("fiberfuncmodel"))
                 && !(result.contains("storageformatmodel")) && !(result.contains("tblmodel"))
                 && !(result.contains("tblparammodel")) && !(result.contains("tblprivmodel"))
                 && !(result.contains("usermodel")) && !(result.contains("vermodel"))) {
             //VerModel
-            String createVerModelSql = "CREATE TABLE vermodel (verid int);";
+            String createVerModelSql = CreateSQL.createVerModelSql;
             int resCreateVerModel = dbConnection.sqlUpdate(createVerModelSql);
             //UserModel
-            String createUserModelSql =
-                    "CREATE TABLE usermodel (userid SERIAL primary key,password varchar(50),username varchar(50),createtime int,lastvisittime int);";
+            String createUserModelSql = CreateSQL.createUserModelSql;
             int resCreateUserModel = dbConnection.sqlUpdate(createUserModelSql);
             //DbModel
-            String createDbModelSql =
-                    "CREATE TABLE dbmodel (dbid SERIAL primary key,dbname varchar(20),userid int REFERENCES usermodel(userid),locationurl varchar(200));";
+            String createDbModelSql = CreateSQL.createDbModelSql;
             int resCreateDbModel = dbConnection.sqlUpdate(createDbModelSql);
             //TblModel
-            String createTblModelSql =
-                    "CREATE TABLE tblmodel (tblid SERIAL primary key,dbid int REFERENCES dbmodel(dbid),tblname varchar(50),tbltype int,userid int REFERENCES usermodel(userid),createtime int,lastaccesstime int,locationUrl varchar(100),storageformatid int,fiberColId int,fiberfuncid int);";
+            String createTblModelSql = CreateSQL.createTblModelSql;
             int resCreateTblModel = dbConnection.sqlUpdate(createTblModelSql);
             //ColModel
-            String createColModelSql =
-                    "CREATE TABLE colmodel (colid SERIAL primary key,colIndex int,dbid int REFERENCES dbmodel(dbid),tblid int REFERENCES tblmodel(tblid),colName varchar(50),colType varchar(50),dataType varchar(50));";
+            String createColModelSql = CreateSQL.createColModelSql;
             int resCreateColModel = dbConnection.sqlUpdate(createColModelSql);
             //DbParamModel
-            String createDbParamModelSql =
-                    "CREATE TABLE dbparammodel (dbid int REFERENCES dbmodel(dbid),paramkey varchar(100),paramvalue varchar(200));";
+            String createDbParamModelSql = CreateSQL.createDbParamModelSql;
             int resCreateDbParamModel = dbConnection.sqlUpdate(createDbParamModelSql);
             //TblParamModel
-            String createTblParamModelSql =
-                    "CREATE TABLE tblparammodel (tblid int REFERENCES tblmodel(tblid),paramkey varchar(100),paramvalue varchar(200));";
+            String createTblParamModelSql = CreateSQL.createTblParamModelSql;
             int resCreateTblParamModel = dbConnection.sqlUpdate(createTblParamModelSql);
             //TblPrivModel
-            String createTblPrivModelSql =
-                    "CREATE TABLE tblprivmodel (tblprivid SERIAL primary key,tblid int REFERENCES tblmodel(tblid),userid int REFERENCES usermodel(userid),privtype int,granttime int);";
+            String createTblPrivModelSql = CreateSQL.createTblPrivModelSql;
             int resCreateTblPrivModel = dbConnection.sqlUpdate(createTblPrivModelSql);
             //StorageFormatModel
-            String createStorageFormatModelSql =
-                    "CREATE TABLE storageformatmodel (storageformatid SERIAL primary key,storageformatname varchar(50),compression varchar(50),serialformat varchar(50));";
+            String createStorageFormatModelSql = CreateSQL.createStorageFormatModelSql;
             int resCreateStorageFormatModel = dbConnection.sqlUpdate(createStorageFormatModelSql);
             //FiberFuncModel
-            String createFiberFuncModelSql =
-                    "CREATE TABLE fiberfuncmodel (fiberfuncid SERIAL primary key,fiberfuncname varchar(50),fiberfunccontent bytea);";
+            String createFiberFuncModelSql = CreateSQL.createFiberFuncModelSql;
             int resCreateFiberFuncModel = dbConnection.sqlUpdate(createFiberFuncModelSql);
             //BlockIndex
-            String createBlockIndexSql =
-                    "CREATE TABLE blockindex (blockindexid SERIAL primary key,tblid int REFERENCES tblmodel(tblid),fibervalue int,timebegin int,timeend int,timezone varchar(50),blockpath varchar(100));";
+            String createBlockIndexSql = CreateSQL.createBlockIndexSql;
             int resCreateBlockIndex = dbConnection.sqlUpdate(createBlockIndexSql);
             if (resCreateVerModel == 0 && resCreateDbModel == 0 && resCreateDbParamModel == 0
                     && resCreateTblModel == 0 && resCreateTblParamModel == 0

@@ -2,8 +2,10 @@ package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.LinkedList;
 
 /**
  * ParaFlow
@@ -33,10 +35,30 @@ public class DBConnection
         try {
             Class.forName(driver);
             connection = DriverManager.getConnection(host, user, password);
-            connection.setAutoCommit(false);
+            //connection.setAutoCommit(false);
         }
         catch (java.lang.ClassNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        catch (java.sql.SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+    }
+
+    public void autoCommitTrue()
+    {
+        try {
+            connection.setAutoCommit(true);
+        }
+        catch (java.sql.SQLException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+    }
+
+    public void autoCommitFalse()
+    {
+        try {
+            connection.setAutoCommit(false);
         }
         catch (java.sql.SQLException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -51,10 +73,8 @@ public class DBConnection
     {
         int rowNumber = 0;
         try {
-            PreparedStatement stmt = connection.prepareStatement(sqlStatement);
-            System.out.println("connection.createStatement");
-            rowNumber = stmt.executeUpdate();
-            System.out.println("stmt.executeUpdate");
+            Statement stmt = connection.createStatement();
+            rowNumber = stmt.executeUpdate(sqlStatement);
             stmt.close();
         }
         catch (java.sql.SQLException e) {
@@ -64,12 +84,22 @@ public class DBConnection
         return rowNumber;
     }
 
+    public int[] sqlBatch(LinkedList<String> batchSQLs) throws SQLException
+    {
+        Statement stmt = connection.createStatement();
+        int colCount = batchSQLs.size();
+        for (int i = 0; i < colCount; i++) {
+            stmt.addBatch(batchSQLs.get(i));
+        }
+        return stmt.executeBatch();
+    }
+
     public ResultList convert(ResultSet resultSet, int colCount)
     {
         ResultList resultList = new ResultList();
-        JDBCRecord jdbcRecord = new JDBCRecord(colCount);
         try {
             while (resultSet.next()) {
+                JDBCRecord jdbcRecord = new JDBCRecord(colCount);
                 for (int i = 0; i < colCount; i++) {
                     jdbcRecord.put(resultSet.getString(i + 1), i);
                 }
@@ -81,18 +111,16 @@ public class DBConnection
         }
         return resultList;
     }
-    // TODO close resultSet and statement locally. return an JDBCRecord
+
     // reference: https://github.com/dbiir/presto/blob/master/presto-hdfs/src/main/java/com/facebook/presto/hdfs/jdbc/JDBCDriver.java
     public ResultList sqlQuery(String sqlStatement, int colCount)
     {
-        System.out.println(sqlStatement);
-        ResultSet resultSet = null;
+        ResultSet resultSet;
         ResultList resultList = new ResultList();
         try {
-            PreparedStatement stmt = connection.prepareStatement(sqlStatement);
-            resultSet = stmt.executeQuery();
+            Statement stmt = connection.createStatement();
+            resultSet = stmt.executeQuery(sqlStatement);
             resultList = convert(resultSet, colCount);
-            // TODO convert ResultSet to ResultList
             resultSet.close();
             stmt.close();
         }

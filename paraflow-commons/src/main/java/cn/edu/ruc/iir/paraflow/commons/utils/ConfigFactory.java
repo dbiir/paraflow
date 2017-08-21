@@ -17,14 +17,27 @@ public class ConfigFactory
     private String configPath;
     private Properties properties;
     private Properties defaultProps;
+    private static ConfigFactory configInstance = null;
 
-    private ConfigFactory(String configPath)
+    private ConfigFactory()//with default config path
+    {
+        this.configPath = "morenlujing";
+        defaultProps = new Properties();
+    }
+
+    private ConfigFactory(String configPath)//user design config path
     {
         this.configPath = configPath;
         defaultProps = new Properties();
     }
 
-    private static ConfigFactory configInstance = null;
+    public static synchronized ConfigFactory getConfigInstance()
+    {
+        if (configInstance == null) {
+            configInstance = new ConfigFactory();
+        }
+        return configInstance;
+    }
 
     public static synchronized ConfigFactory getConfigInstance(String configPath)
     {
@@ -43,7 +56,6 @@ public class ConfigFactory
         catch (IOException e) {
             throw new ConfigFileNotFoundException(this.configPath);
         }
-
         return this;
     }
 
