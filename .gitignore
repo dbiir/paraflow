@@ -1,9 +1,9 @@
 .idea
 *.iml
-dist/paraflow-1.0-alpha1/lib
-dist/paraflow-1.0-alpha1/plugin
-dist/paraflow-1.0-alpha1/bin/launcher*
-dist/paraflow-1.0-alpha1/bin/procname
+dist/lib
+dist/plugin
+dist/bin/launcher*
+dist/bin/procname
 _site
 
 *.exp

@@ -15,7 +15,7 @@ public class TestParaFlowConfig
     @Test
     public void testConfig()
     {
-        ParaFlowConfig configInstance = ParaFlowConfig.getConfigInstance("")
+        ParaFlowConfig configInstance = new ParaFlowConfig("")
                 .setDefault("name", "jelly")
                 .setDefault("age", "23");
         try {
