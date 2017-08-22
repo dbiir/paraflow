@@ -16,11 +16,11 @@ package cn.edu.ruc.iir.paraflow.metaserver.utils;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public final class CreateSQL
+public final class SQL
 {
-    private CreateSQL()
-    {
-    }
+    private SQL()
+    {}
+
     public static String createVerModelSql = "CREATE TABLE vermodel (verid varchar(50),constraint unique_ver unique(verid));";
     public static String createUserModelSql = "CREATE TABLE usermodel (userid SERIAL primary key,username varchar(50),password varchar(50),createtime bigint,lastvisittime bigint,constraint unique_user unique(username));";
     public static String createDbModelSql = "CREATE TABLE dbmodel (dbid SERIAL primary key,dbname varchar(20),userid int REFERENCES usermodel(userid),locationurl varchar(200),constraint unique_db unique(dbname));";

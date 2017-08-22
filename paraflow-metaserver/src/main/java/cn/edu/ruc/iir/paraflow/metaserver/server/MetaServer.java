@@ -87,7 +87,7 @@ public class MetaServer
 
         // add meta data init hook
         pipeline.addStartupHook(
-                this::metadataInit
+                this::initMetadata
         );
 
         // add server running in loop hook
@@ -105,7 +105,7 @@ public class MetaServer
         }
     }
 
-    private void metadataInit()
+    private void initMetadata()
     {
         // TODO init meta data
 //        //find whether table exit
@@ -127,37 +127,37 @@ public class MetaServer
 //                && !(result.contains("tblparammodel")) && !(result.contains("tblprivmodel"))
 //                && !(result.contains("usermodel")) && !(result.contains("vermodel"))) {
 //            //VerModel
-//            String createVerModelSql = CreateSQL.createVerModelSql;
+//            String createVerModelSql = SQL.createVerModelSql;
 //            int resCreateVerModel = dbConnection.sqlUpdate(createVerModelSql);
 //            //UserModel
-//            String createUserModelSql = CreateSQL.createUserModelSql;
+//            String createUserModelSql = SQL.createUserModelSql;
 //            int resCreateUserModel = dbConnection.sqlUpdate(createUserModelSql);
 //            //DbModel
-//            String createDbModelSql = CreateSQL.createDbModelSql;
+//            String createDbModelSql = SQL.createDbModelSql;
 //            int resCreateDbModel = dbConnection.sqlUpdate(createDbModelSql);
 //            //TblModel
-//            String createTblModelSql = CreateSQL.createTblModelSql;
+//            String createTblModelSql = SQL.createTblModelSql;
 //            int resCreateTblModel = dbConnection.sqlUpdate(createTblModelSql);
 //            //ColModel
-//            String createColModelSql = CreateSQL.createColModelSql;
+//            String createColModelSql = SQL.createColModelSql;
 //            int resCreateColModel = dbConnection.sqlUpdate(createColModelSql);
 //            //DbParamModel
-//            String createDbParamModelSql = CreateSQL.createDbParamModelSql;
+//            String createDbParamModelSql = SQL.createDbParamModelSql;
 //            int resCreateDbParamModel = dbConnection.sqlUpdate(createDbParamModelSql);
 //            //TblParamModel
-//            String createTblParamModelSql = CreateSQL.createTblParamModelSql;
+//            String createTblParamModelSql = SQL.createTblParamModelSql;
 //            int resCreateTblParamModel = dbConnection.sqlUpdate(createTblParamModelSql);
 //            //TblPrivModel
-//            String createTblPrivModelSql = CreateSQL.createTblPrivModelSql;
+//            String createTblPrivModelSql = SQL.createTblPrivModelSql;
 //            int resCreateTblPrivModel = dbConnection.sqlUpdate(createTblPrivModelSql);
 //            //StorageFormatModel
-//            String createStorageFormatModelSql = CreateSQL.createStorageFormatModelSql;
+//            String createStorageFormatModelSql = SQL.createStorageFormatModelSql;
 //            int resCreateStorageFormatModel = dbConnection.sqlUpdate(createStorageFormatModelSql);
 //            //FiberFuncModel
-//            String createFiberFuncModelSql = CreateSQL.createFiberFuncModelSql;
+//            String createFiberFuncModelSql = SQL.createFiberFuncModelSql;
 //            int resCreateFiberFuncModel = dbConnection.sqlUpdate(createFiberFuncModelSql);
 //            //BlockIndex
-//            String createBlockIndexSql = CreateSQL.createBlockIndexSql;
+//            String createBlockIndexSql = SQL.createBlockIndexSql;
 //            int resCreateBlockIndex = dbConnection.sqlUpdate(createBlockIndexSql);
 //            if (resCreateVerModel == 0 && resCreateDbModel == 0 && resCreateDbParamModel == 0
 //                    && resCreateTblModel == 0 && resCreateTblParamModel == 0
