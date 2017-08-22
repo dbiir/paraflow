@@ -160,14 +160,14 @@ public class MetaClient
             catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                 MetaProto.StatusType statusError = MetaProto.StatusType.newBuilder()
-                        .setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR)
+                        .setStatus(MetaProto.StatusType.State.CREATE_COLUMN_ERROR)
                         .build();
                 return statusError;
             }
         }
         else {
             statusTable = MetaProto.StatusType.newBuilder()
-                    .setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR)
+                    .setStatus(MetaProto.StatusType.State.CREATE_COLUMN_ERROR)
                     .build();
         }
         logger.info("Create table status is : " + statusTable.getStatus());
@@ -259,7 +259,7 @@ public class MetaClient
                 catch (StatusRuntimeException e) {
                     logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                     statusTable = MetaProto.StatusType.newBuilder()
-                            .setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR)
+                            .setStatus(MetaProto.StatusType.State.CREATE_COLUMN_ERROR)
                             .build();
                     return statusTable;
                 }
@@ -267,7 +267,7 @@ public class MetaClient
         }
         else  {
             statusTable = MetaProto.StatusType.newBuilder()
-                    .setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR)
+                    .setStatus(MetaProto.StatusType.State.CREATE_COLUMN_ERROR)
                     .build();
         }
         logger.info("Create table status is : " + statusTable.getStatus());
