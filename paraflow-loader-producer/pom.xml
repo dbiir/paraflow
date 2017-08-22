@@ -4,12 +4,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>paraflow</artifactId>
-        <groupId>cn.edu.ruc.dbiir</groupId>
+        <groupId>cn.edu.ruc.iir</groupId>
         <version>1.0-alpha1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>paraflow-loader-producer</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.edu.ruc.iir</groupId>
+            <artifactId>paraflow-commons</artifactId>
+        </dependency>
+    </dependencies>
 
     <build>
         <plugins>
