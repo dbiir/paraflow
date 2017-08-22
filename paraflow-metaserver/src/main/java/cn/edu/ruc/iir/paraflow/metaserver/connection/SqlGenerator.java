@@ -263,4 +263,9 @@ public class SqlGenerator
     {
         return String.format("SELECT storageformatname FROM storageformatmodel WHERE storageformatid = '%d';", storageFormatId);
     }
+
+    public String insertVerModel(String verName)
+    {
+        return String.format("INSERT INTO vermodel (vername) VALUES('%s)");
+    }
 }

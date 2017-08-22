@@ -223,6 +223,12 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (UserNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.USER_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitTrue();
     }
@@ -236,19 +242,23 @@ public class MetaService extends MetaGrpc.MetaImplBase
             MetaProto.StatusType statusType;
             //find database id
             int dbId = findDbId(tblParam.getDbName());
+            System.out.println("********dbId : dbId : dbId : dbId :" + dbId);
             //find user id
             int userId = findUserId(tblParam.getUserName());
+            System.out.println("********userId : userId : userId : userId : " + userId);
             String locationUrl = tblParam.getLocationUrl();
+            System.out.println("********locationUrl : locationUrl : locationUrl : locationUrl : " + locationUrl);
             if (locationUrl.equals("")) {
                 metaConfig = new MetaConfig();
                 String url = metaConfig.getHDFSWarehouse();
                 if (url.endsWith("/")) {
-                    locationUrl = String.format("%s%s", url, tblParam.getDbName());
+                    locationUrl = String.format("%s%s/%s", url, tblParam.getDbName(), tblParam.getTblName());
                 }
                 else {
-                    locationUrl = String.format("%s/%s", url, tblParam.getDbName());
+                    locationUrl = String.format("%s/%s/%s", url, tblParam.getDbName(), tblParam.getTblName());
                 }
             }
+            System.out.println("********locationUrl : locationUrl : locationUrl : locationUrl : " + locationUrl);
             //regular table
             int fiberFuncId;
             int fiberColId;
@@ -260,19 +270,19 @@ public class MetaService extends MetaGrpc.MetaImplBase
                 fiberFuncId = findFiberFuncId(tblParam.getFiberFuncName());
                 fiberColId = tblParam.getFiberColId();
             }
-            System.out.println("MetaService : fiberFuncId : " + fiberFuncId);
-            System.out.println("MetaService : fiberColId : " + fiberColId);
+            System.out.println("********MetaService : fiberFuncId : " + fiberFuncId);
+            System.out.println("********MetaService : fiberColId : " + fiberColId);
             //create table
             int storageFormatId = findStorageFormatId(tblParam.getStorageFormatName());
-            System.out.println("MetaService : storageFormatId : " + storageFormatId);
+            System.out.println("********MetaService : storageFormatId : " + storageFormatId);
             String createTblSql = sqlGenerator.createTable(dbId,
                     tblParam.getTblName(), tblParam.getTblType(),
                     userId, System.currentTimeMillis(), System.currentTimeMillis(),
                     locationUrl, storageFormatId,
                     fiberColId, fiberFuncId);
-            System.out.println("createTblSql : " + createTblSql);
+            System.out.println("********createTblSql : " + createTblSql);
             int resCreateTbl = dbConnection.sqlUpdate(createTblSql);
-            System.out.println("resCreateTbl : " + resCreateTbl);
+            System.out.println("********resCreateTbl : " + resCreateTbl);
             //result
             if (resCreateTbl == 1) {
                 //create columns
@@ -283,7 +293,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
                 MetaProto.ColParam colParam = columns.get(0);
                 //find table id
                 int tblId = findTblId(dbId, colParam.getTblName());
-                System.out.println("tblId : " + tblId);
+                System.out.println("********tblId : " + tblId);
                 //loop for every column to insert them
                 LinkedList<String> batchSQLs = new LinkedList<>();
                 for (int i = 0; i < colCount; i++) {
@@ -298,12 +308,12 @@ public class MetaService extends MetaGrpc.MetaImplBase
                 }
                 int[] colExecute = dbConnection.sqlBatch(batchSQLs);
                 int sizeexecute = colExecute.length;
-                System.out.println("sizeexecute = " + sizeexecute);
+                System.out.println("********sizeexecute = " + sizeexecute);
                 for (int j = 0; j < sizeexecute; j++) {
                     if (colExecute[0] == 0) {
-                        System.out.println("CREAT_COLUMN_ERROR");
+                        System.out.println("******CREATE_COLUMN_ERROR");
                         statusType = MetaProto.StatusType.newBuilder()
-                                .setStatus(MetaProto.StatusType.State.CREAT_COLUMN_ERROR)
+                                .setStatus(MetaProto.StatusType.State.CREATE_COLUMN_ERROR)
                                 .build();
                         dbConnection.rollback();
                         responseStreamObserver.onNext(statusType);
@@ -314,7 +324,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
                 statusType = MetaProto.StatusType.newBuilder()
                         .setStatus(MetaProto.StatusType.State.OK)
                         .build();
-                System.out.println("OK : " + statusType.getStatus());
+                System.out.println("********OK : " + statusType.getStatus());
                 responseStreamObserver.onNext(statusType);
                 responseStreamObserver.onCompleted();
                 dbConnection.commit();
@@ -323,7 +333,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
                 statusType = MetaProto.StatusType.newBuilder()
                         .setStatus(MetaProto.StatusType.State.TABLE_ALREADY_EXISTS)
                         .build();
-                System.out.println("TABLE_ALREADY_EXISTS");
+                System.out.println("******TABLE_ALREADY_EXISTS");
                 dbConnection.rollback();
                 responseStreamObserver.onNext(statusType);
                 responseStreamObserver.onCompleted();
@@ -340,18 +350,48 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusDbNf = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusDbNf);
+            responseStreamObserver.onCompleted();
         }
         catch (UserNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.USER_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         catch (TableNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         catch (StorageFormatNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.STORAGE_FORMAT_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         catch (FiberFuncNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.FIBER_FUNCTION_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitTrue();
     }
@@ -432,6 +472,12 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StringListType stringListType = MetaProto.StringListType.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(stringListType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitFalse();
     }
@@ -526,15 +572,39 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.TblParam tblParam = MetaProto.TblParam.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(tblParam);
+            responseStreamObserver.onCompleted();
         }
         catch (UserNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.TblParam tblParam = MetaProto.TblParam.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(tblParam);
+            responseStreamObserver.onCompleted();
         }
         catch (StorageFormatNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.TblParam tblParam = MetaProto.TblParam.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(tblParam);
+            responseStreamObserver.onCompleted();
         }
         catch (FiberFuncNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.TblParam tblParam = MetaProto.TblParam.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(tblParam);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitFalse();
     }
@@ -580,9 +650,21 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.ColParam colParam = MetaProto.ColParam.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(colParam);
+            responseStreamObserver.onCompleted();
         }
         catch (TableNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.ColParam colParam = MetaProto.ColParam.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(colParam);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitFalse();
     }
@@ -627,9 +709,21 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         catch (TableNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitTrue();
     }
@@ -672,6 +766,12 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitTrue();
     }
@@ -812,9 +912,21 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         catch (TableNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitTrue();
     }
@@ -859,6 +971,12 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitTrue();
     }
@@ -902,6 +1020,12 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitTrue();
     }
@@ -947,9 +1071,21 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         catch (TableNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitTrue();
     }
@@ -998,12 +1134,30 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         catch (TableNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         catch (UserNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.USER_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitTrue();
     }
@@ -1127,9 +1281,21 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.DATABASE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         catch (TableNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StatusType statusType = MetaProto.StatusType.newBuilder()
+                    .setStatus(MetaProto.StatusType.State.TABLE_NOT_FOUND)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(statusType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitTrue();
     }
@@ -1172,6 +1338,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
                         filterBlockIndexParam.getTimeBegin(),
                         filterBlockIndexParam.getTimeEnd());
             }
+            System.out.println("******filterBlockIndexSql : " + filterBlockIndexSql);
             ResultList resfilterBlockIndex = dbConnection.sqlQuery(filterBlockIndexSql, 1);
             int size = resfilterBlockIndex.size();
             for (int i = 0; i < size; i++) {
@@ -1190,9 +1357,21 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StringListType stringListType = MetaProto.StringListType.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(stringListType);
+            responseStreamObserver.onCompleted();
         }
         catch (TableNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StringListType stringListType = MetaProto.StringListType.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(stringListType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitFalse();
     }
@@ -1258,9 +1437,21 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (DatabaseNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StringListType stringListType = MetaProto.StringListType.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(stringListType);
+            responseStreamObserver.onCompleted();
         }
         catch (TableNotFoundException e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            MetaProto.StringListType stringListType = MetaProto.StringListType.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            dbConnection.rollback();
+            responseStreamObserver.onNext(stringListType);
+            responseStreamObserver.onCompleted();
         }
         dbConnection.autoCommitFalse();
     }
