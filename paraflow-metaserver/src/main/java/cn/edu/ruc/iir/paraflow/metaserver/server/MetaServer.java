@@ -2,7 +2,11 @@ package cn.edu.ruc.iir.paraflow.metaserver.server;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.RPCServerIOException;
+import cn.edu.ruc.iir.paraflow.metaserver.action.CreateMetaTablesAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.GetMetaTablesAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.InitMetaTablesAction;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ConnectionPool;
+import cn.edu.ruc.iir.paraflow.metaserver.connection.TransactionController;
 import cn.edu.ruc.iir.paraflow.metaserver.service.MetaService;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
 import io.grpc.Server;
@@ -12,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Optional;
 
 /**
  * ParaFlow
@@ -87,7 +92,7 @@ public class MetaServer
 
         // add meta data init hook
         pipeline.addStartupHook(
-                this::initMetadata
+                this::initMeta
         );
 
         // add server running in loop hook
@@ -105,90 +110,18 @@ public class MetaServer
         }
     }
 
-    private void initMetadata()
+    private void initMeta() throws ParaFlowException
     {
-        // TODO init meta data
-//        //find whether table exit
-//        String allTableSql =
-//                "SELECT tablename FROM pg_tables WHERE tablename NOT LIKE 'pg%' AND tablename NOT LIKE 'sql_%' ORDER BY tablename;";
-//        ResultList resAllTable = dbConnection.sqlQuery(allTableSql, 1);
-//        //result
-//        ArrayList<String> result = new ArrayList<>();
-//        int size = resAllTable.size();
-//        for (int i = 0; i < size; i++) {
-//            result.add(resAllTable.get(i).get(0));
-//        }
-//        //no table then create all tables
-//        MetaProto.StatusType statusType;
-//        if (!(result.contains("blockindex")) && !(result.contains("colmodel"))
-//                && !(result.contains("dbmodel"))
-//                && !(result.contains("dbparammodel")) && !(result.contains("fiberfuncmodel"))
-//                && !(result.contains("storageformatmodel")) && !(result.contains("tblmodel"))
-//                && !(result.contains("tblparammodel")) && !(result.contains("tblprivmodel"))
-//                && !(result.contains("usermodel")) && !(result.contains("vermodel"))) {
-//            //VerModel
-//            String createVerModelSql = SQL.createVerModelSql;
-//            int resCreateVerModel = dbConnection.sqlUpdate(createVerModelSql);
-//            //UserModel
-//            String createUserModelSql = SQL.createUserModelSql;
-//            int resCreateUserModel = dbConnection.sqlUpdate(createUserModelSql);
-//            //DbModel
-//            String createDbModelSql = SQL.createDbModelSql;
-//            int resCreateDbModel = dbConnection.sqlUpdate(createDbModelSql);
-//            //TblModel
-//            String createTblModelSql = SQL.createTblModelSql;
-//            int resCreateTblModel = dbConnection.sqlUpdate(createTblModelSql);
-//            //ColModel
-//            String createColModelSql = SQL.createColModelSql;
-//            int resCreateColModel = dbConnection.sqlUpdate(createColModelSql);
-//            //DbParamModel
-//            String createDbParamModelSql = SQL.createDbParamModelSql;
-//            int resCreateDbParamModel = dbConnection.sqlUpdate(createDbParamModelSql);
-//            //TblParamModel
-//            String createTblParamModelSql = SQL.createTblParamModelSql;
-//            int resCreateTblParamModel = dbConnection.sqlUpdate(createTblParamModelSql);
-//            //TblPrivModel
-//            String createTblPrivModelSql = SQL.createTblPrivModelSql;
-//            int resCreateTblPrivModel = dbConnection.sqlUpdate(createTblPrivModelSql);
-//            //StorageFormatModel
-//            String createStorageFormatModelSql = SQL.createStorageFormatModelSql;
-//            int resCreateStorageFormatModel = dbConnection.sqlUpdate(createStorageFormatModelSql);
-//            //FiberFuncModel
-//            String createFiberFuncModelSql = SQL.createFiberFuncModelSql;
-//            int resCreateFiberFuncModel = dbConnection.sqlUpdate(createFiberFuncModelSql);
-//            //BlockIndex
-//            String createBlockIndexSql = SQL.createBlockIndexSql;
-//            int resCreateBlockIndex = dbConnection.sqlUpdate(createBlockIndexSql);
-//            if (resCreateVerModel == 0 && resCreateDbModel == 0 && resCreateDbParamModel == 0
-//                    && resCreateTblModel == 0 && resCreateTblParamModel == 0
-//                    && resCreateTblPrivModel == 0 && resCreateStorageFormatModel == 0
-//                    && resCreateColModel == 0 && resCreateFiberFuncModel == 0
-//                    && resCreateBlockIndex == 0 && resCreateUserModel == 0) {
-//                statusType = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-//                System.out.println("Meta table create status is : " + statusType.getStatus());
-//            }
-//            else {
-//                statusType = MetaProto.StatusType.newBuilder().setStatus(
-//                        MetaProto.StatusType.State.META_TABLE_CREATE_FAIL).build();
-//                System.err.println(statusType.getClass().getName() + ": " + statusType.getStatus());
-//                System.exit(0);
-//            }
-//        }
-//        else if (result.contains("blockindex")
-//                && result.contains("colmodel") && result.contains("dbmodel")
-//                && result.contains("dbparammodel") && result.contains("fiberfuncmodel")
-//                && result.contains("storageformatmodel") && result.contains("tblmodel")
-//                && result.contains("tblparammodel") && result.contains("tblprivmodel")
-//                && result.contains("usermodel") && result.contains("vermodel")) {
-//            statusType = MetaProto.StatusType.newBuilder().setStatus(
-//                    MetaProto.StatusType.State.META_TABLE_ALREADY_EXISTS).build();
-//            System.out.println("Meta table status is : " + statusType.getStatus());
-//        }
-//        else {
-//            statusType = MetaProto.StatusType.newBuilder().setStatus(
-//                    MetaProto.StatusType.State.META_TABLE_BROKEN).build();
-//            System.out.println("Meta table create status is : " + statusType.getStatus());
-//        }
+        TransactionController txController = ConnectionPool.INSTANCE().getTxController();
+        txController.setAutoCommit(false);
+        txController.addAction(new GetMetaTablesAction());
+        txController.addAction(new CreateMetaTablesAction());
+        txController.addAction(new InitMetaTablesAction());
+        Optional<ParaFlowException> exceptionOptional = txController.commit();
+        // deal with exception
+        if (exceptionOptional.isPresent()) {
+            throw exceptionOptional.get();
+        }
     }
 
     /**

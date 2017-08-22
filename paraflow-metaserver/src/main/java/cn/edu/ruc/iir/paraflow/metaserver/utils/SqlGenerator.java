@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.ruc.iir.paraflow.metaserver.connection;
+package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
 import com.google.protobuf.ByteString;
 
@@ -164,7 +164,7 @@ public class SqlGenerator
         return String.format("INSERT INTO blockindex (tblid,fibervalue,timebegin,timeend,timezone,blockpath) VALUES(%d,%d,%d,%d,'%s','%s');", tblId, value, timeBegin, timeEnd, timeZone, blockPath);
     }
 
-    public String findParamKey(int tblId)
+    public String findTblParamKey(int tblId)
     {
         return String.format("SELECT paramkey FROM tblparammodel WHERE tblid = %d;", tblId);
     }
@@ -192,6 +192,16 @@ public class SqlGenerator
     public String deleteBlockIndex(int tblId)
     {
         return String.format("DELETE FROM BlockIndex WHERE tblid = %d;", tblId);
+    }
+
+    public String findDbParamKey(int dbId)
+    {
+        return String.format("SELECT paramkey FROM dbparammodel WHERE dbid = %d;", dbId);
+    }
+
+    public String deleteDbParam(int dbId)
+    {
+        return String.format("DELETE FROM dbparammodel WHERE dbid = %d;", dbId);
     }
 
     public String filterBlockIndexBeginEnd(int tblId, long timeBegin, long timeEnd)
@@ -232,5 +242,25 @@ public class SqlGenerator
     public String filterBlockIndexByFiber(int tblId, long value)
     {
         return String.format("SELECT blockPath FROM BlockIndex WHERE tblid = %d AND fiberValue = %d;", tblId, value);
+    }
+
+    public String findFiberFuncId(String fiberColName)
+    {
+        return String.format("SELECT fiberfuncid FROM fiberfuncmodel WHERE fiberfuncname = '%s';", fiberColName);
+    }
+
+    public String findStorageFormatId(String storageFormatName)
+    {
+        return String.format("SELECT storageformatid FROM storageformatmodel WHERE storageformatname = '%s';", storageFormatName);
+    }
+
+    public String findFiberFuncName(int fiberColId)
+    {
+        return String.format("SELECT fiberfuncname FROM fiberfuncmodel WHERE fiberfuncid = '%d';", fiberColId);
+    }
+
+    public String findStorageFormatName(int storageFormatId)
+    {
+        return String.format("SELECT storageformatname FROM storageformatmodel WHERE storageformatid = '%d';", storageFormatId);
     }
 }

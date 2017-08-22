@@ -1,7 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
-import cn.edu.ruc.iir.paraflow.metaserver.action.Action;
-import cn.edu.ruc.iir.paraflow.metaserver.action.ActionResponse;
+import java.util.List;
 
 /**
  * paraflow
@@ -10,9 +9,10 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.ActionResponse;
  */
 public abstract class Connection
 {
-    public abstract <T> ActionResponse<T> execute(Action action);
-
+    public abstract int executeUpdate(String statement);
+    public abstract List<Integer> executeUpdateInBatch(String[] statements);
+    public abstract ResultList executeQuery(String statement);
     public abstract void setAutoCommit(boolean autoCommit);
-
     public abstract void commit();
+    public abstract void rollback();
 }

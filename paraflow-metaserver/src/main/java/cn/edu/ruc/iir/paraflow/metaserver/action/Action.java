@@ -1,7 +1,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
-import java.util.ArrayList;
-import java.util.List;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
+import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 
 /**
  * paraflow
@@ -10,25 +10,5 @@ import java.util.List;
  */
 public abstract class Action
 {
-    private final List<Action> dependentActions;
-
-    public Action()
-    {
-        dependentActions = new ArrayList<>();
-    }
-
-    public void run()
-    {
-        for (Action action : dependentActions) {
-            action.run();
-        }
-        act();
-    }
-
-    abstract void act();
-
-    public void addDependentAction(Action action)
-    {
-        dependentActions.add(action);
-    }
+    public abstract ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException;
 }

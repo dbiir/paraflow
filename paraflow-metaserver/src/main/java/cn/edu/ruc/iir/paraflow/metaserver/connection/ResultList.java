@@ -17,7 +17,12 @@ public class ResultList
 
     public JDBCRecord get(int index)
     {
-        return jdbcRecords.get(index);
+        if (index < jdbcRecords.size()) {
+            return jdbcRecords.get(index);
+        }
+        else {
+            return null;
+        }
     }
 
     public void add(JDBCRecord jdbcRecord)

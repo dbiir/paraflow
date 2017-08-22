@@ -16,13 +16,13 @@ package cn.edu.ruc.iir.paraflow.metaserver.utils;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public enum Version
+public enum MetaVersion
 {
-    CURRENT("1.0-alpha1");
+    ONE_ALPHA_ONE("1.0-alpha1");
 
     private String versionId;
 
-    Version(String versionId)
+    MetaVersion(String versionId)
     {
         this.versionId = versionId;
     }

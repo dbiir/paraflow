@@ -6,6 +6,7 @@ package cn.edu.ruc.iir.paraflow.metaserver.connection;
  */
 public class ConnectionPool
 {
+    // todo implement simple connection pool
     private TransactionController curTxController = null;
 
     private static class ConnectionPoolHolder

@@ -1,6 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.server;
 
-import cn.edu.ruc.iir.paraflow.commons.exceptions.RPCServerIOException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class StartupPipeline
         hooks.add(hook);
     }
 
-    public void startUp() throws RPCServerIOException
+    public void startUp() throws ParaFlowException
     {
         for (StartupHook hook : hooks) {
             hook.run();

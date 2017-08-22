@@ -1,6 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.server;
 
-import cn.edu.ruc.iir.paraflow.commons.exceptions.RPCServerIOException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 
 /**
  * paraflow
@@ -9,5 +9,5 @@ import cn.edu.ruc.iir.paraflow.commons.exceptions.RPCServerIOException;
  */
 public interface StartupHook
 {
-    void run() throws RPCServerIOException;
+    void run() throws ParaFlowException;
 }

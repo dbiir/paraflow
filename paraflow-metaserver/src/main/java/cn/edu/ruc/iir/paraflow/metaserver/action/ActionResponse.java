@@ -1,21 +1,34 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
+import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
+
 /**
  * paraflow
  *
  * @author guodong
  */
-public class ActionResponse<T>
+public class ActionResponse
 {
-    private final T response;
+    private int responseInt;
+    private ResultList responseResultList;
 
-    public ActionResponse(T response)
+    public void setResponseInt(int r)
     {
-        this.response = response;
+        this.responseInt = r;
     }
 
-    public T getResponse()
+    public void setResponseResultList(ResultList res)
     {
-        return response;
+        this.responseResultList = res;
+    }
+
+    public int getResponseInt()
+    {
+        return responseInt;
+    }
+
+    public ResultList getResponseResultList()
+    {
+        return responseResultList;
     }
 }

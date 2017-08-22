@@ -1,9 +1,12 @@
 package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.action.Action;
+import cn.edu.ruc.iir.paraflow.metaserver.action.ActionResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * paraflow
@@ -32,10 +35,19 @@ public class TransactionController
         actions.add(action);
     }
 
-    public void commit()
+    public Optional<ParaFlowException> commit()
     {
-        connection.setAutoCommit(autoCommit);
-        actions.forEach(connection::execute);
-        connection.commit();
+        ActionResponse response = new ActionResponse();
+        try {
+            connection.setAutoCommit(autoCommit);
+            for (Action action : actions) {
+                response = action.act(response, this.connection);
+            }
+            connection.commit();
+        }
+        catch (ParaFlowException e) {
+            return Optional.of(e);
+        }
+        return Optional.empty();
     }
 }
