@@ -1,7 +1,7 @@
  #### 1. VerModel (metadata version corresponding to MetaServer)
- | NAME           | TYPE             | COMMENT              |
- |----------------|------------------|----------------------|
- | verId          | int32            | version of MetaServer|
+ | NAME              | TYPE             | COMMENT               |
+ |------------------|------------------|-----------------------|
+ | verName          | string            | version of MetaServer|
  
  #### 2. UserModel
  | NAME           | TYPE             | COMMENT                                               |
@@ -20,19 +20,19 @@
  | locationUrl    | string           | path in filesystem                                     |
  
  #### 4. TblModel (table information)
- | NAME           | TYPE             | COMMENT                                                       |
- |----------------|------------------|---------------------------------------------------------------|
- | tblId          | int64            | unique table id //Auto-add Primary Key                        | 
- | dbId           | int64            | database belonging to //Forign Key：DbModel：dbId    ///unique |   
- | tblName        | string           | table name                                          ///unique |
- | tblType        | int32            | 0 represents regular, 1 represents fiber                      |
- | userId         | int64            | user_id is owner's  //Forign Key：UserModel：userId            |  
- | createTime     | int64            | timestamp stored as long                                      |
- | lastAccessTime | int64            | timestamp stored as long                                      |
- | locationUrl    | string           | path in filesystem                                            |
- | storageFormatId| int32            |                                                               |
- | fiberColId     | int64            | -1 means no fiber column                                      |
- | fiberFuncId    | int64            | table partition function                                      |
+ | NAME           | TYPE             | COMMENT                                                            |
+ |----------------|------------------|--------------------------------------------------------------------|
+ | tblId          | int64            | unique table id //Auto-add Primary Key                             | 
+ | dbId           | int64            | database belonging to //Forign Key：DbModel：dbId    ///unique      |   
+ | tblName        | string           | table name                                          ///unique      |
+ | tblType        | int32            | 0 represents regular, 1 represents fiber                           |
+ | userId         | int64            | user_id is owner's  //Forign Key：UserModel：userId                 |  
+ | createTime     | int64            | timestamp stored as long                                           |
+ | lastAccessTime | int64            | timestamp stored as long                                           |
+ | locationUrl    | string           | path in filesystem                                                 |
+ | storageFormatId| int32            |            //Forign Key：StorageFormatModel：StorageFormatId        |
+ | fiberColId     | int64            | -1 means no fiber column                                           |
+ | fiberFuncId    | int64            | table partition function //Forign Key：FiberFuncModel：FiberFuncId  |
  
  #### 5. ColModel (column information)
  | NAME           | TYPE             | COMMENT                                                   |

@@ -27,7 +27,12 @@ public class JDBCRecord
 
     public String get(int index)
     {
-        return stringList[index];
+        if (index < stringList.length) {
+            return stringList[index];
+        }
+        else {
+            return null;
+        }
     }
 
     public void put(String string, int index)
