@@ -18,6 +18,7 @@ import java.util.LinkedList;
 
 public class DBConnection
 {
+    // todo refactor DBConnection to be subclass of Connection
     private Connection connection;
     private static DBConnection connectionInstance = null;
 

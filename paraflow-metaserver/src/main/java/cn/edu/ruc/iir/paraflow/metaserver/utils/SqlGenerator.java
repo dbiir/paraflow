@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.ruc.iir.paraflow.metaserver.connection;
+package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
 import com.google.protobuf.ByteString;
 

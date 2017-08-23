@@ -7,16 +7,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  *
  * @author guodong
  */
-public final class MethodNotImplementedException extends ParaFlowException
+public class MetaTableCorruptedException extends ParaFlowException
 {
-    private static final long serialVersionUID = 2492705799817499827L;
-    private final String methodName;
-
-    public MethodNotImplementedException(String methodName)
-    {
-        this.methodName = methodName;
-    }
-
     /**
      * get error message.
      *
@@ -25,7 +17,7 @@ public final class MethodNotImplementedException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return String.format("Method %s not implemented", methodName);
+        return null;
     }
 
     @Override
@@ -42,7 +34,7 @@ public final class MethodNotImplementedException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return "Please define method implementation.";
+        return null;
     }
 
     /**
@@ -53,6 +45,6 @@ public final class MethodNotImplementedException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return ParaFlowExceptionLevel.INFO;
+        return null;
     }
 }

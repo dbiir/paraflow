@@ -4,7 +4,9 @@ option java_package = "cn.edu.ruc.iir.paraflow.metaserver.proto";
 option java_outer_classname = "MetaProto";
 option objc_class_prefix = "META";
 
-package meta;
+import "status.proto";
+
+package paraflow;
 
 service Meta {
     rpc listDatabases(NoneType) returns (StringListType) {}
@@ -12,21 +14,21 @@ service Meta {
     rpc getDatabase(DbNameParam) returns (DbParam) {}
     rpc getTable(DbTblParam) returns (TblParam) {}
     rpc getColumn(DbTblColParam) returns (ColParam) {}
-    rpc createDatabase(DbParam) returns (StatusType) {}
-    rpc createTable(TblParam) returns (StatusType) {}
-    rpc createColumn(ColListType) returns (StatusType) {}
-    rpc deleteDatabase(DbNameParam) returns (StatusType) {}
-    rpc deleteTable(DbTblParam) returns (StatusType) {}
-    rpc renameDatabase(RenameDbParam) returns (StatusType) {}
-    rpc renameTable(RenameTblParam) returns (StatusType) {}
-    rpc renameColumn(RenameColParam) returns (StatusType) {}
-    rpc createDbParam(DbParamParam) returns (StatusType) {}
-    rpc createTblParam(TblParamParam) returns (StatusType) {}
-    rpc createTblPriv(TblPrivParam) returns (StatusType) {}
-    rpc createStorageFormat(StorageFormatParam) returns (StatusType) {}
-    rpc createFiberFunc(FiberFuncParam) returns (StatusType) {}
-    rpc createBlockIndex(BlockIndexParam) returns (StatusType) {}
-    rpc createUser(UserParam) returns (StatusType) {}
+    rpc createDatabase(DbParam) returns (ResponseStatus) {}
+    rpc createTable(TblParam) returns (ResponseStatus) {}
+    rpc createColumn(ColListType) returns (ResponseStatus) {}
+    rpc deleteDatabase(DbNameParam) returns (ResponseStatus) {}
+    rpc deleteTable(DbTblParam) returns (ResponseStatus) {}
+    rpc renameDatabase(RenameDbParam) returns (ResponseStatus) {}
+    rpc renameTable(RenameTblParam) returns (ResponseStatus) {}
+    rpc renameColumn(RenameColParam) returns (ResponseStatus) {}
+    rpc createDbParam(DbParamParam) returns (ResponseStatus) {}
+    rpc createTblParam(TblParamParam) returns (ResponseStatus) {}
+    rpc createTblPriv(TblPrivParam) returns (ResponseStatus) {}
+    rpc createStorageFormat(StorageFormatParam) returns (ResponseStatus) {}
+    rpc createFiberFunc(FiberFuncParam) returns (ResponseStatus) {}
+    rpc createBlockIndex(BlockIndexParam) returns (ResponseStatus) {}
+    rpc createUser(UserParam) returns (ResponseStatus) {}
     rpc filterBlockIndex(FilterBlockIndexParam) returns (StringListType) {}
     rpc filterBlockIndexByFiber(FilterBlockIndexByFiberParam) returns (StringListType) {}
     rpc stopServer(NoneType) returns (NoneType) {}
@@ -82,14 +84,6 @@ message DbParamModel {
     string paramKey = 2;
     string paramValue = 3;
 }
-
-//message DbPrivsModel {
-//    int64 dbPrivId = 1;
-//    int64 grantTime = 2;
-//    int64 userId = 3;
-//    int32 privType = 4;
-//    int64 dbId = 5;
-//}
 
 message TblParamModel {
     int64 tblId = 1;
@@ -149,36 +143,36 @@ message FiberValueType {
     int64 value = 1;
 }
 
-message StatusType {
-    enum State {
-        OK = 0;
-        DATABASE_ALREADY_EXISTS = 1;
-        DATABASE_NOT_FOUND = 2;
-        TABLE_ALREADY_EXISTS = 3;
-        TABLE_NOT_FOUND = 4;
-        COLUMN_ALREADY_EXISTS = 5;
-        COLUMN_NOT_FOUND = 6;
-        FIBER_ALREADY_EXISTS = 7;
-        BLOCK_INDEX_ERROR = 8;
-        CREAT_COLUMN_ERROR = 9;
-        META_TABLE_CREATE_FAIL = 10;
-        META_TABLE_ALREADY_EXISTS = 11;
-        META_TABLE_BROKEN = 12;
-        USER_NOT_FOUND = 13;
-        CREATE_TABLE_ERROR = 14;
-        DELETE_COLUMN_ERROR = 15;
-        DELETE_TABLE_ERROR = 16;
-        DELETE_DATABASE_ERROR = 17;
-        USER_ALREADY_EXISTS = 18;
-        DATABASE_PARAM_ALREADY_EXISTS = 19;
-        TABLE_PARAM_ALREADY_EXISTS = 20;
-        TABLE_PRIV_ALREADY_EXISTS = 21;
-        STORAGE_FORMAT_ALREADY_EXISTS = 22;
-        FIBER_FUNCTION_ALREADY_EXISTS = 23;
-        BLOCK_INDEX_ALREADY_EXISTS = 24;
-    }
-    State status = 1;
-}
+//message ResponseStatus {
+//    enum State {
+//        OK = 0;
+//        DATABASE_ALREADY_EXISTS = 1;
+//        DATABASE_NOT_FOUND = 2;
+//        TABLE_ALREADY_EXISTS = 3;
+//        TABLE_NOT_FOUND = 4;
+//        COLUMN_ALREADY_EXISTS = 5;
+//        COLUMN_NOT_FOUND = 6;
+//        FIBER_ALREADY_EXISTS = 7;
+//        BLOCK_INDEX_ERROR = 8;
+//        CREAT_COLUMN_ERROR = 9;
+//        META_TABLE_CREATE_FAIL = 10;
+//        META_TABLE_ALREADY_EXISTS = 11;
+//        META_TABLE_BROKEN = 12;
+//        USER_NOT_FOUND = 13;
+//        CREATE_TABLE_ERROR = 14;
+//        DELETE_COLUMN_ERROR = 15;
+//        DELETE_TABLE_ERROR = 16;
+//        DELETE_DATABASE_ERROR = 17;
+//        USER_ALREADY_EXISTS = 18;
+//        DATABASE_PARAM_ALREADY_EXISTS = 19;
+//        TABLE_PARAM_ALREADY_EXISTS = 20;
+//        TABLE_PRIV_ALREADY_EXISTS = 21;
+//        STORAGE_FORMAT_ALREADY_EXISTS = 22;
+//        FIBER_FUNCTION_ALREADY_EXISTS = 23;
+//        BLOCK_INDEX_ALREADY_EXISTS = 24;
+//    }
+//    State status = 1;
+//}
 
 // Customized paremeters
 message UserParam {
@@ -193,7 +187,7 @@ message DbParam {
     string dbName = 2;
     string locationUrl = 3;
     string userName = 4;
-    StatusType status = 5;
+    ResponseStatus status = 5;
 }
 
 message TblParam {
@@ -219,7 +213,7 @@ message ColParam {
     string colName = 5;
     string colType = 6;
     string dataType = 7;
-    StatusType status = 8;
+    ResponseStatus status = 8;
 }
 
 message DbNameParam {
@@ -293,13 +287,6 @@ message DbParamParam {
     string paramKey = 2;
     string paramValue = 3;
 }
-
-//message CreateDbPrivsParam {
-//    string dbName = 1;
-//    string userName = 2;
-//    int32 privType = 3;
-//    int64 grantTime = 4;
-//}
 
 message TblParamParam {
     string dbName = 1;

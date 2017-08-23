@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.client;
 
+import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.junit.After;
 import org.junit.Before;
@@ -30,24 +31,24 @@ public class TestMetaClient
     @Test
     public void step01_ClientCreateUserTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createUser("alice", "123456");
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.createUser("alice", "123456");
         assertEquals(expect, status);
     }
 
     @Test
     public void step02_ClientCreateDatabaseTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createDatabase("food", "hdfs://127.0.0.1:5432/metadata/food", "alice");
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.createDatabase("food", "hdfs://127.0.0.1:5432/metadata/food", "alice");
         assertEquals(expect, status);
     }
 
     @Test
     public void step03_ClientCreateDatabase2Test()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createDatabase("fruit", "alice");
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.createDatabase("fruit", "alice");
         assertEquals(expect, status);
     }
 
@@ -56,25 +57,25 @@ public class TestMetaClient
     @Test
     public void step04_ClientCreateStorageFormatTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createStorageFormat("StorageFormatName", "snappy", "serialFormat");
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.createStorageFormat("StorageFormatName", "snappy", "serialFormat");
         assertEquals(expect, status);
     }
 
     @Test
     public void step05_ClientCreateFiberFuncTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         String string = "I am a girl";
         byte[] fiberFuncContent = string.getBytes();
-        MetaProto.StatusType status = client.createFiberFunc("FiberFuncName", fiberFuncContent);
+        StatusProto.ResponseStatus status = client.createFiberFunc("FiberFuncName", fiberFuncContent);
         assertEquals(expect, status);
     }
 
     @Test
     public void step06_ClientCreateRegularTableTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         ArrayList<String> columnName = new ArrayList<>();
         columnName.add("smell");
         columnName.add("color");
@@ -87,7 +88,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
-        MetaProto.StatusType status = client.createRegularTable("food", "rice",
+        StatusProto.ResponseStatus status = client.createRegularTable("food", "rice",
                 "alice", "hdfs:/127.0.0.1/:5432/metadata/food/rice",
                 "StorageFormatName", columnName, columnType, dataType);
         assertEquals(expect, status);
@@ -96,7 +97,7 @@ public class TestMetaClient
     @Test
     public void step07_ClientCreateRegularTable2Test()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         ArrayList<String> columnName = new ArrayList<>();
         columnName.add("smell");
         columnName.add("color");
@@ -109,7 +110,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
-        MetaProto.StatusType status = client.createRegularTable("food", "noodles",
+        StatusProto.ResponseStatus status = client.createRegularTable("food", "noodles",
                 "alice", "StorageFormatName", columnName, columnType, dataType);
         assertEquals(expect, status);
     }
@@ -117,7 +118,7 @@ public class TestMetaClient
     @Test
     public void step08_ClientCreateFiberTableTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         ArrayList<String> columnName = new ArrayList<>();
         columnName.add("smell");
         columnName.add("color");
@@ -130,7 +131,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
-        MetaProto.StatusType status = client.createFiberTable("fruit", "grip",
+        StatusProto.ResponseStatus status = client.createFiberTable("fruit", "grip",
                 "alice", "StorageFormatName",
                 "smell", "FiberFuncName", columnName, columnType, dataType);
         assertEquals(expect, status);
@@ -139,7 +140,7 @@ public class TestMetaClient
     @Test
     public void step09_ClientCreateFiberTableTest2()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         ArrayList<String> columnName = new ArrayList<>();
         columnName.add("smell");
         columnName.add("color");
@@ -152,7 +153,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
-        MetaProto.StatusType status = client.createFiberTable("fruit", "banana",
+        StatusProto.ResponseStatus status = client.createFiberTable("fruit", "banana",
                 "alice", "StorageFormatName", "smell", "FiberFuncName", columnName, columnType, dataType);
         assertEquals(expect, status);
     }
@@ -202,24 +203,24 @@ public class TestMetaClient
     @Test
     public void step15_ClientCreateDbParamTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createDbParam("food", "She", "is beautiful and smart");
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.createDbParam("food", "She", "is beautiful and smart");
         assertEquals(expect, status);
     }
 
     @Test
     public void step16_ClientCreateTblParamTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createTblParam("food", "rice", "It", "is a good book");
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.createTblParam("food", "rice", "It", "is a good book");
         assertEquals(expect, status);
     }
 
     @Test
     public void step17_ClientCreateTblPrivTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.createTblPriv("food", "rice", "alice", 1);
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.createTblPriv("food", "rice", "alice", 1);
         assertEquals(expect, status);
     }
 
@@ -227,8 +228,8 @@ public class TestMetaClient
 //    public void clientCreateBlockIndexTest1()
 //    {
 //        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-//        MetaProto.StatusType status = client.createBlockIndex("food", "rice", 123, 20170814, 20170814, "hdfs:127.0.0.1");
+//        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+//        StatusProto.ResponseStatus status = client.createBlockIndex("food", "rice", 123, 20170814, 20170814, "hdfs:127.0.0.1");
 //        assertEquals(expect, status);
 //        try {
 //            client.shutdown(3);
@@ -242,8 +243,8 @@ public class TestMetaClient
 //    public void clientCreateBlockIndexTest2()
 //    {
 //        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-//        MetaProto.StatusType status = client.createBlockIndex("food", "rice", 234, 20170814, 20170814, "hdfs:127.0.0.1");
+//        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+//        StatusProto.ResponseStatus status = client.createBlockIndex("food", "rice", 234, 20170814, 20170814, "hdfs:127.0.0.1");
 //        assertEquals(expect, status);
 //        try {
 //            client.shutdown(3);
@@ -257,8 +258,8 @@ public class TestMetaClient
 //    public void clientCreateBlockIndexTest3()
 //    {
 //        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-//        MetaProto.StatusType status = client.createBlockIndex("food", "rice", 345, 20170814, 20170814, "hdfs:127.0.0.1");
+//        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+//        StatusProto.ResponseStatus status = client.createBlockIndex("food", "rice", 345, 20170814, 20170814, "hdfs:127.0.0.1");
 //        assertEquals(expect, status);
 //        try {
 //            client.shutdown(3);
@@ -272,8 +273,8 @@ public class TestMetaClient
 //    public void clientCreateBlockIndexTest4()
 //    {
 //        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-//        MetaProto.StatusType status = client.createBlockIndex("food", "rice", 456, 20170814, 20170814, "hdfs:127.0.0.1");
+//        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+//        StatusProto.ResponseStatus status = client.createBlockIndex("food", "rice", 456, 20170814, 20170814, "hdfs:127.0.0.1");
 //        assertEquals(expect, status);
 //        try {
 //            client.shutdown(3);
@@ -362,32 +363,32 @@ public class TestMetaClient
     @Test
     public void step18_ClientRenameColumnTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.renameColumn("food", "rice", "smell", "smellnew");
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.renameColumn("food", "rice", "smell", "smellnew");
         assertEquals(expect, status);
     }
 
     @Test
     public void step19_ClientRenameTableTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.renameTable("food", "rice", "ricenew");
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.renameTable("food", "rice", "ricenew");
         assertEquals(expect, status);
     }
 
     @Test
     public void step20_ClientRenameDatabaseTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.renameDatabase("food", "foodnew");
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.renameDatabase("food", "foodnew");
         assertEquals(expect, status);
     }
 
     @Test
     public void step21_ClientDeleteTableTest()
     {
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.deleteTable("foodnew", "ricenew");
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.deleteTable("foodnew", "ricenew");
         assertEquals(expect, status);
     }
 
@@ -395,8 +396,8 @@ public class TestMetaClient
     public void step22_ClientDeleteDatabaseTest()
     {
         MetaClient client = new MetaClient("127.0.0.1", 10012);
-        MetaProto.StatusType expect = MetaProto.StatusType.newBuilder().setStatus(MetaProto.StatusType.State.OK).build();
-        MetaProto.StatusType status = client.deleteDatabase("foodnew");
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.deleteDatabase("foodnew");
         assertEquals(expect, status);
     }
 

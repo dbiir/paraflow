@@ -13,6 +13,8 @@
  */
 package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
+import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+
 /**
  * @author jelly.guodong.jin@gmail.com
  */
@@ -37,6 +39,12 @@ public class TableNotFoundException extends ParaFlowException
         return String.format("Table %s is not found", this.tblName);
     }
 
+    @Override
+    public StatusProto.ResponseStatus getResponseStatus()
+    {
+        return null;
+    }
+
     /**
      * get system hint message for user on how to deal with this exception
      *
@@ -56,6 +64,6 @@ public class TableNotFoundException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return ParaFlowExceptionLevel.WARNING;
+        return ParaFlowExceptionLevel.WARN;
     }
 }

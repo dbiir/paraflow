@@ -1,11 +1,13 @@
 package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
+import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+
 /**
  * ParaFlow
  *
  * @author guodong
  */
-public class ConfigFileNotFoundException extends ParaFlowException
+public final class ConfigFileNotFoundException extends ParaFlowException
 {
     private static final long serialVersionUID = 6980171393859140121L;
 
@@ -24,6 +26,15 @@ public class ConfigFileNotFoundException extends ParaFlowException
     public String getMessage()
     {
         return String.format("Configuration file %s not found", this.configPath);
+    }
+
+    @Override
+    public StatusProto.ResponseStatus getResponseStatus()
+    {
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.STATUS_SERVER_FATAL_ERR)
+                .build();
     }
 
     /**
@@ -45,6 +56,6 @@ public class ConfigFileNotFoundException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return ParaFlowExceptionLevel.WARNING;
+        return ParaFlowExceptionLevel.FATAL;
     }
 }
