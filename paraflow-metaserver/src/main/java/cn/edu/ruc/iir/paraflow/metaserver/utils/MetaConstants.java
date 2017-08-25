@@ -13,6 +13,8 @@
  */
 package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
+import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+
 /**
  * @author jelly.guodong.jin@gmail.com
  */
@@ -22,6 +24,9 @@ public final class MetaConstants
     {}
     public static int metaTableNum = 11;
     public static MetaVersion currentVersion = MetaVersion.ONE_ALPHA_ONE;
+    public static StatusProto.ResponseStatus OKStatus = StatusProto.ResponseStatus.newBuilder()
+            .setStatus(StatusProto.ResponseStatus.State.STATUS_OK)
+            .build();
 
     public static String createVerModelSql = "CREATE TABLE meta_vermodel (vername varchar(50),constraint unique_ver unique(vername));";
     public static String createUserModelSql = "CREATE TABLE meta_usermodel (userid SERIAL primary key,username varchar(50),password varchar(50),createtime bigint,lastvisittime bigint,constraint unique_user unique(username));";

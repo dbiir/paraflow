@@ -143,37 +143,6 @@ message FiberValueType {
     int64 value = 1;
 }
 
-//message ResponseStatus {
-//    enum State {
-//        OK = 0;
-//        DATABASE_ALREADY_EXISTS = 1;
-//        DATABASE_NOT_FOUND = 2;
-//        TABLE_ALREADY_EXISTS = 3;
-//        TABLE_NOT_FOUND = 4;
-//        COLUMN_ALREADY_EXISTS = 5;
-//        COLUMN_NOT_FOUND = 6;
-//        FIBER_ALREADY_EXISTS = 7;
-//        BLOCK_INDEX_ERROR = 8;
-//        CREAT_COLUMN_ERROR = 9;
-//        META_TABLE_CREATE_FAIL = 10;
-//        META_TABLE_ALREADY_EXISTS = 11;
-//        META_TABLE_BROKEN = 12;
-//        USER_NOT_FOUND = 13;
-//        CREATE_TABLE_ERROR = 14;
-//        DELETE_COLUMN_ERROR = 15;
-//        DELETE_TABLE_ERROR = 16;
-//        DELETE_DATABASE_ERROR = 17;
-//        USER_ALREADY_EXISTS = 18;
-//        DATABASE_PARAM_ALREADY_EXISTS = 19;
-//        TABLE_PARAM_ALREADY_EXISTS = 20;
-//        TABLE_PRIV_ALREADY_EXISTS = 21;
-//        STORAGE_FORMAT_ALREADY_EXISTS = 22;
-//        FIBER_FUNCTION_ALREADY_EXISTS = 23;
-//        BLOCK_INDEX_ALREADY_EXISTS = 24;
-//    }
-//    State status = 1;
-//}
-
 // Customized paremeters
 message UserParam {
     string userName = 1;

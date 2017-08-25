@@ -46,14 +46,11 @@ public abstract class ParaFlowException extends Exception
                 return;
             case WARN:
                 logger.log(Level.WARN, toString());
-                logger.log(Level.WARN, getStackTraceMessage());
                 return;
             case ERROR:
-                logger.log(Level.ERROR, toString());
                 logger.log(Level.ERROR, getStackTraceMessage());
                 return;
             case FATAL:
-                logger.log(Level.FATAL, toString());
                 logger.log(Level.FATAL, getStackTraceMessage());
                 Runtime.getRuntime().exit(getResponseStatus().getStatusValue());
         }

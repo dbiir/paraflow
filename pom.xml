@@ -27,7 +27,7 @@
     <packaging>pom</packaging>
 
     <name>ParaFlow</name>
-    <url>http://dbiir.github.io/paraflow</url>
+    <url>https://dbiir.github.io/paraflow</url>
     <description>ParaFlow</description>
     <inceptionYear>2015</inceptionYear>
 
@@ -98,6 +98,11 @@
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
                 <version>0.11.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zaxxer</groupId>
+                <artifactId>HikariCP</artifactId>
+                <version>2.6.2</version>
             </dependency>
 
             <dependency>
