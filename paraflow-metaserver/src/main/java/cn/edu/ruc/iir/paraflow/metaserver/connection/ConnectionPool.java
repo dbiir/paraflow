@@ -1,13 +1,21 @@
 package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.SQLExecutionException;
+import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
 /**
  * This is a pool for connection.
  * Currently maintains only one connection instance.
  */
 public class ConnectionPool
 {
-    // todo implement simple connection pool
-    private TransactionController curTxController = null;
+    // todo implement connection pool with HikariCP
+    private HikariDataSource dataSource = null;
 
     private static class ConnectionPoolHolder
     {
@@ -20,17 +28,34 @@ public class ConnectionPool
     }
 
     private ConnectionPool()
-    {}
+    {
+    }
 
     public void initialize()
     {
+        HikariConfig config = new HikariConfig();
+        config.setDriverClassName(MetaConfig.INSTANCE().getDBDriver());
+        config.setJdbcUrl(MetaConfig.INSTANCE().getDBHost());
+        config.setUsername(MetaConfig.INSTANCE().getDBUser());
+        config.setPassword(MetaConfig.INSTANCE().getDBPassword());
+        dataSource = new HikariDataSource(config);
     }
 
-    public TransactionController getTxController()
+    public TransactionController getTxController() throws SQLExecutionException
     {
-        return curTxController;
+        Connection connection = null;
+        try
+        {
+            connection = dataSource.getConnection();
+            return new TransactionController(new DBConnection(connection));
+        } catch (SQLException e)
+        {
+            throw new SQLExecutionException();
+        }
     }
 
     public void close()
-    {}
+    {
+        dataSource.close();
+    }
 }

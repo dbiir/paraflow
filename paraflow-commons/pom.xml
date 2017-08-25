@@ -21,6 +21,10 @@
             <artifactId>log4j-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>

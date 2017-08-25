@@ -1,8 +1,11 @@
 package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.SQLExecutionException;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
@@ -14,154 +17,114 @@ import java.util.LinkedList;
  *
  * @author guodong
  */
-// ref: http://docs.oracle.com/javase/tutorial/jdbc/basics/transactions.html
-
-public class DBConnection
+public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.Connection
 {
     // todo refactor DBConnection to be subclass of Connection
     private Connection connection;
-    private static DBConnection connectionInstance = null;
 
-    public static DBConnection getConnectionInstance()
+    public DBConnection(Connection connection)
     {
-        if (connectionInstance == null) {
-            connectionInstance = new DBConnection();
-        }
-
-        return connectionInstance;
+        this.connection = connection;
     }
 
-    public void connect(String driver, String host, String user, String password)
+    public void setAutoCommit(boolean autoCommit) throws SQLExecutionException
     {
         try {
-            Class.forName(driver);
-            connection = DriverManager.getConnection(host, user, password);
-            //connection.setAutoCommit(false);
+            connection.setAutoCommit(autoCommit);
         }
-        catch (java.lang.ClassNotFoundException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        catch (SQLException e) {
+            throw new SQLExecutionException();
         }
     }
 
-    public void autoCommitTrue()
+    public int executeUpdate(String sqlStatement) throws SQLExecutionException
     {
-        try {
-            connection.setAutoCommit(true);
-        }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-    }
-
-    public void autoCommitFalse()
-    {
-        try {
-            connection.setAutoCommit(false);
-        }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-    }
-
-    private DBConnection()
-    {
-    }
-
-    public int sqlUpdate(String sqlStatement)
-    {
-        int rowNumber = 0;
+        int rowNumber;
         try {
             Statement stmt = connection.createStatement();
             rowNumber = stmt.executeUpdate(sqlStatement);
             stmt.close();
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        catch (SQLException e) {
+            throw new SQLExecutionException();
         }
-
         return rowNumber;
     }
 
-    public int[] sqlBatch(LinkedList<String> batchSQLs) throws SQLException
+    public int[] executeUpdateInBatch(String[] sqlStatements) throws SQLExecutionException
     {
-        Statement stmt = connection.createStatement();
-        int colCount = batchSQLs.size();
-        for (int i = 0; i < colCount; i++) {
-            stmt.addBatch(batchSQLs.get(i));
+        try {
+            Statement stmt = connection.createStatement();
+            for (String sqlStatement : sqlStatements)
+            {
+                stmt.addBatch(sqlStatement);
+            }
+            return stmt.executeBatch();
         }
-        return stmt.executeBatch();
+        catch (SQLException e) {
+            throw new SQLExecutionException();
+        }
     }
 
-    public ResultList convert(ResultSet resultSet, int colCount)
+    private ResultList convert(ResultSet resultSet, int colCount) throws SQLException
     {
         ResultList resultList = new ResultList();
-        try {
-            while (resultSet.next()) {
-                JDBCRecord jdbcRecord = new JDBCRecord(colCount);
-                for (int i = 0; i < colCount; i++) {
-                    jdbcRecord.put(resultSet.getString(i + 1), i);
-                }
-                resultList.add(jdbcRecord);
+        while (resultSet.next()) {
+            JDBCRecord jdbcRecord = new JDBCRecord(colCount);
+            for (int i = 0; i < colCount; i++) {
+                jdbcRecord.put(resultSet.getString(i + 1), i);
             }
-        }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            resultList.add(jdbcRecord);
         }
         return resultList;
     }
 
-    // reference: https://github.com/dbiir/presto/blob/master/presto-hdfs/src/main/java/com/facebook/presto/hdfs/jdbc/JDBCDriver.java
-    public ResultList sqlQuery(String sqlStatement, int colCount)
+    public ResultList executeQuery(String sqlStatement) throws SQLExecutionException
     {
         ResultSet resultSet;
-        ResultList resultList = new ResultList();
+        ResultList resultList;
         try {
             Statement stmt = connection.createStatement();
             resultSet = stmt.executeQuery(sqlStatement);
-            resultList = convert(resultSet, colCount);
+            ResultSetMetaData rsMetadata = resultSet.getMetaData();
+            resultList = convert(resultSet, rsMetadata.getColumnCount());
             resultSet.close();
             stmt.close();
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-        catch (NullPointerException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        catch (SQLException e) {
+            throw new SQLExecutionException();
         }
         return  resultList;
     }
 
-    public void commit()
+    public void commit() throws SQLExecutionException
     {
         try {
             connection.commit();
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        catch (SQLException e) {
+            throw new SQLExecutionException();
         }
     }
 
-    public void rollback()
+    public void rollback() throws SQLExecutionException
     {
         try {
             connection.rollback();
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        catch (SQLException e) {
+            throw new SQLExecutionException();
         }
     }
 
-    public void close()
+    public void close() throws SQLExecutionException
     {
         try {
             connection.commit();
             connection.close();
         }
-        catch (java.sql.SQLException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        catch (SQLException e) {
+            throw new SQLExecutionException();
         }
     }
 }

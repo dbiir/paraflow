@@ -1,7 +1,11 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.SQLExecutionException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
+
+import java.sql.SQLException;
 
 /**
  * paraflow
@@ -11,7 +15,7 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
 public class GetMetaTablesAction extends Action
 {
     @Override
-    public ActionResponse act(ActionResponse input, Connection connection)
+    public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
         ActionResponse response = new ActionResponse();
         response.setResponseResultList(

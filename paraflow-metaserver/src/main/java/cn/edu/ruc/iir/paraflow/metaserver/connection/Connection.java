@@ -1,6 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
-import java.util.List;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 
 /**
  * paraflow
@@ -9,10 +9,11 @@ import java.util.List;
  */
 public abstract class Connection
 {
-    public abstract int executeUpdate(String statement);
-    public abstract List<Integer> executeUpdateInBatch(String[] statements);
-    public abstract ResultList executeQuery(String statement);
-    public abstract void setAutoCommit(boolean autoCommit);
-    public abstract void commit();
-    public abstract void rollback();
+    public abstract int executeUpdate(String statement) throws ParaFlowException;
+    public abstract int[] executeUpdateInBatch(String[] statements) throws ParaFlowException;
+    public abstract ResultList executeQuery(String statement) throws ParaFlowException;
+    public abstract void setAutoCommit(boolean autoCommit) throws ParaFlowException;
+    public abstract void commit() throws ParaFlowException;
+    public abstract void rollback() throws ParaFlowException;
+    public abstract void close() throws ParaFlowException;
 }

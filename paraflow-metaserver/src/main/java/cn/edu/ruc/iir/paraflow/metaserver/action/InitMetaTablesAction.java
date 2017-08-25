@@ -5,6 +5,7 @@ import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -21,16 +22,16 @@ public class InitMetaTablesAction extends Action
         // 2. if has values, validate the ver
         // 3. if has no values, insert init values
         // todo deal with meta table init
-        String[] statements = new String[2];
-        statements[0] = MetaConstants.initVerTableSql;
-        statements[1] = MetaConstants.initFiberFuncSql;
-        List<Integer> results = connection.executeUpdateInBatch(statements);
+//        String[] statements = new String[2];
+//        statements[0] = MetaConstants.initVerTableSql;
+//        statements[1] = MetaConstants.initFiberFuncSql;
+//        int[] results = connection.executeUpdateInBatch(statements);
+//        for (int res : results) {
+//            if (res != 1) {
+//                throw new MetaTableInitException();
+//            }
+//        }
 
-        for (int res : results) {
-            if (res != 1) {
-                throw new MetaTableInitException();
-            }
-        }
         return new ActionResponse();
     }
 }

@@ -1,9 +1,11 @@
 package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.SQLExecutionException;
 import cn.edu.ruc.iir.paraflow.metaserver.action.Action;
 import cn.edu.ruc.iir.paraflow.metaserver.action.ActionResponse;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,19 +37,28 @@ public class TransactionController
         actions.add(action);
     }
 
-    public Optional<ParaFlowException> commit()
+    public void commit() throws ParaFlowException
     {
         ActionResponse response = new ActionResponse();
+        commit(response);
+    }
+
+    public void commit(ActionResponse response) throws ParaFlowException
+    {
+        connection.setAutoCommit(autoCommit);
+        for (Action action : actions) {
+            response = action.act(response, this.connection);
+        }
+        connection.commit();
+    }
+
+    public void close()
+    {
         try {
-            connection.setAutoCommit(autoCommit);
-            for (Action action : actions) {
-                response = action.act(response, this.connection);
-            }
-            connection.commit();
+            connection.close();
         }
         catch (ParaFlowException e) {
-            return Optional.of(e);
+            e.printStackTrace();
         }
-        return Optional.empty();
     }
 }

@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.server;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.MetaInitException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.RPCServerIOException;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateMetaTablesAction;
@@ -16,7 +17,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
-import java.util.Optional;
 
 /**
  * ParaFlow
@@ -110,17 +110,20 @@ public class MetaServer
         }
     }
 
-    private void initMeta() throws ParaFlowException
+    private void initMeta() throws MetaInitException
     {
-        TransactionController txController = ConnectionPool.INSTANCE().getTxController();
-        txController.setAutoCommit(false);
-        txController.addAction(new GetMetaTablesAction());
-        txController.addAction(new CreateMetaTablesAction());
-        txController.addAction(new InitMetaTablesAction());
-        Optional<ParaFlowException> exceptionOptional = txController.commit();
-        // deal with exception
-        if (exceptionOptional.isPresent()) {
-            throw exceptionOptional.get();
+        try {
+            TransactionController txController = ConnectionPool.INSTANCE().getTxController();
+            txController.setAutoCommit(false);
+            txController.addAction(new GetMetaTablesAction());
+            txController.addAction(new CreateMetaTablesAction());
+            txController.addAction(new InitMetaTablesAction());
+            txController.commit();
+        }
+        catch (ParaFlowException e)
+        {
+            e.printStackTrace();
+            throw new MetaInitException();
         }
     }
 
@@ -134,8 +137,8 @@ public class MetaServer
         if (server != null) {
             logger.info("****** MetaServer shutting down...");
             System.out.println("****** MetaServer shutting down...");
-            server.shutdown();
             ConnectionPool.INSTANCE().close();
+            server.shutdown();
             logger.info("****** MetaServer has shut down");
             System.out.println("****** MetaServer shutting down");
         }

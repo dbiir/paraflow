@@ -2,10 +2,13 @@ package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.MetaTableCorruptedException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.MetaTableCreationException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.SQLExecutionException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -14,11 +17,12 @@ import java.util.List;
 public class CreateMetaTablesAction extends Action
 {
     @Override
-    public ActionResponse act(ActionResponse input, Connection connection) throws MetaTableCorruptedException, MetaTableCreationException
+    public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
         ResultList metaTableList = input.getResponseResultList();
         // if meta data already exist
         if (metaTableList.size() == MetaConstants.metaTableNum) {
+            // todo validate meta data
             return new ActionResponse();
         }
 
@@ -36,9 +40,9 @@ public class CreateMetaTablesAction extends Action
             statements[9] = MetaConstants.createTblPrivModelSql;
             statements[10] = MetaConstants.createBlockIndexSql;
 
-            List<Integer> results = connection.executeUpdateInBatch(statements);
+            int[] results = connection.executeUpdateInBatch(statements);
             for (int res : results) {
-                if (res != 1) {
+                if (res != 0) {
                     throw new MetaTableCreationException();
                 }
             }

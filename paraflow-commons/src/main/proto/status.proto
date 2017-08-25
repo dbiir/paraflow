@@ -8,6 +8,7 @@ package paraflow;
 
 message ResponseStatus {
     enum State {
+        // todo: change code of error status to negative, code of info status to positive
         STATUS_OK = 0;
         STATUS_SERVER_FATAL_ERR = -1;
         DATABASE_ALREADY_EXISTS = 1;
