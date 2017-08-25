@@ -1,29 +1,17 @@
 package cn.edu.ruc.iir.paraflow.metaserver.service;
 
-//import cn.edu.ruc.iir.paraflow.commons.exceptions.DatabaseNotFoundException;
-//import cn.edu.ruc.iir.paraflow.commons.exceptions.FiberFuncNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
-//import cn.edu.ruc.iir.paraflow.commons.exceptions.StorageFormatNotFoundException;
-//import cn.edu.ruc.iir.paraflow.commons.exceptions.TableNotFoundException;
-//import cn.edu.ruc.iir.paraflow.commons.exceptions.UserNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.metaserver.action.ActionResponse;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateDatabaseAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateUserAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetUserIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ConnectionPool;
-//import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.TransactionController;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaGrpc;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
-//import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
-import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
 import io.grpc.stub.StreamObserver;
-
-//import java.util.ArrayList;
-//import java.util.LinkedList;
-//import java.util.List;
 
 /**
  * ParaFlow
@@ -32,93 +20,7 @@ import io.grpc.stub.StreamObserver;
  */
 public class MetaService extends MetaGrpc.MetaImplBase
 {
-    private SQLTemplate SQLTemplate = new SQLTemplate();
-
     //TODO if ResultList is empty throw exception
-
-//    private int findDbId(String dbName) throws DatabaseNotFoundException
-//    {
-//        String findDbIdSql = SQLTemplate.findDbId(dbName);
-//        ResultList resFindDbId = dbConnection.sqlQuery(findDbIdSql, 1);
-//        if (!resFindDbId.isEmpty()) {
-//            return Integer.parseInt(resFindDbId.get(0).get(0));
-//        }
-//        else {
-//            throw new DatabaseNotFoundException(dbName);
-//        }
-//    }
-
-//    private int findStorageFormatId(String storageFormatName) throws StorageFormatNotFoundException
-//    {
-//        String findStorageFormatIdSql = SQLTemplate.findStorageFormatId(storageFormatName);
-//        ResultList resfindStorageFormatId = dbConnection.sqlQuery(findStorageFormatIdSql, 1);
-//        if (!resfindStorageFormatId.isEmpty()) {
-//            return Integer.parseInt(resfindStorageFormatId.get(0).get(0));
-//        }
-//        else {
-//            throw new StorageFormatNotFoundException();
-//        }
-//    }
-
-//    private String findStorageFormatName(int storageFormatId) throws StorageFormatNotFoundException
-//    {
-//        String findStorageFormatNameSql = SQLTemplate.findStorageFormatName(storageFormatId);
-//        ResultList resfindStorageFormatName = dbConnection.sqlQuery(findStorageFormatNameSql, 1);
-//        if (!resfindStorageFormatName.isEmpty()) {
-//            return resfindStorageFormatName.get(0).get(0);
-//        }
-//        else {
-//            throw new StorageFormatNotFoundException();
-//        }
-//    }
-
-//    private int findFiberFuncId(String fiberColName) throws FiberFuncNotFoundException
-//    {
-//        String findFiberFuncIdSql = SQLTemplate.findFiberFuncId(fiberColName);
-//        ResultList resfindFiberFuncId = dbConnection.sqlQuery(findFiberFuncIdSql, 1);
-//        if (!resfindFiberFuncId.isEmpty()) {
-//            return Integer.parseInt(resfindFiberFuncId.get(0).get(0));
-//        }
-//        else {
-//            throw new FiberFuncNotFoundException();
-//        }
-//    }
-
-//    private String findFiberFuncName(int fiberFuncId) throws FiberFuncNotFoundException
-//    {
-//        String findFiberFuncNameSql = SQLTemplate.findFiberFuncName(fiberFuncId);
-//        ResultList resfindFiberFuncName = dbConnection.sqlQuery(findFiberFuncNameSql, 1);
-//        if (!resfindFiberFuncName.isEmpty()) {
-//            return resfindFiberFuncName.get(0).get(0);
-//        }
-//        else {
-//            throw new FiberFuncNotFoundException();
-//        }
-//    }
-
-//    private int findTblId(int dbId, String tblName) throws TableNotFoundException
-//    {
-//        String findTblIdSql = SQLTemplate.findTblId(dbId, tblName);
-//        ResultList resFindTblId = dbConnection.sqlQuery(findTblIdSql, 1);
-//        if (!resFindTblId.isEmpty()) {
-//            return Integer.parseInt(resFindTblId.get(0).get(0));
-//        }
-//        else {
-//            throw new TableNotFoundException(tblName);
-//        }
-//    }
-
-//    private String findUserName(int userId) throws UserNotFoundException
-//    {
-//        String findUserNameSql = SQLTemplate.findUserName(userId);
-//        ResultList resFindUserName = dbConnection.sqlQuery(findUserNameSql, 1);
-//        if (!resFindUserName.isEmpty()) {
-//            return resFindUserName.get(0).get(0);
-//        }
-//        else {
-//            throw new UserNotFoundException();
-//        }
-//    }
 
     @Override
     public void createUser(MetaProto.UserParam user,
@@ -135,8 +37,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             responseStreamObserver.onNext(MetaConstants.OKStatus);
             responseStreamObserver.onCompleted();
         }
-        catch (ParaFlowException e)
-        {
+        catch (ParaFlowException e) {
             responseStreamObserver.onNext(e.getResponseStatus());
             responseStreamObserver.onCompleted();
             e.handle();

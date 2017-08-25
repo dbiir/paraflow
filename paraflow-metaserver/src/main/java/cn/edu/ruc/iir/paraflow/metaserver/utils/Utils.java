@@ -12,6 +12,9 @@ import java.net.URISyntaxException;
  */
 public class Utils
 {
+    private Utils()
+    {}
+
     public static String formatUrl(String dbName) throws FormatUrlException
     {
         if (dbName.isEmpty()) {
@@ -24,11 +27,10 @@ public class Utils
         if (dbName.startsWith("/")) {
             dbName = dbName.substring(1, dbName.length());
         }
-        try
-        {
+        try {
             return new URI(base + dbName).toString();
-        } catch (URISyntaxException e)
-        {
+        }
+        catch (URISyntaxException e) {
             throw new FormatUrlException();
         }
     }
