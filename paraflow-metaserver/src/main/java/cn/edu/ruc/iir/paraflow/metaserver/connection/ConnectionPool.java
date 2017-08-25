@@ -44,12 +44,11 @@ public class ConnectionPool
     public TransactionController getTxController() throws SQLExecutionException
     {
         Connection connection = null;
-        try
-        {
+        try {
             connection = dataSource.getConnection();
             return new TransactionController(new DBConnection(connection));
-        } catch (SQLException e)
-        {
+        }
+        catch (SQLException e) {
             throw new SQLExecutionException();
         }
     }

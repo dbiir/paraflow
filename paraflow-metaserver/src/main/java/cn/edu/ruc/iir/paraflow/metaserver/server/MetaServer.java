@@ -120,8 +120,7 @@ public class MetaServer
             txController.addAction(new InitMetaTablesAction());
             txController.commit();
         }
-        catch (ParaFlowException e)
-        {
+        catch (ParaFlowException e) {
             e.printStackTrace();
             throw new MetaInitException();
         }

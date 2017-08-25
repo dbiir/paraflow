@@ -19,6 +19,9 @@ import com.google.protobuf.ByteString;
  */
 public class SQLTemplate
 {
+    private SQLTemplate()
+    {}
+
     public static String createUser(String userName, String password, long createTime, long lastVisitTime)
     {
         return String.format("INSERT INTO meta_usermodel (username, password, createtime, lastvisittime) VALUES('%s','%s',%d,%d);",

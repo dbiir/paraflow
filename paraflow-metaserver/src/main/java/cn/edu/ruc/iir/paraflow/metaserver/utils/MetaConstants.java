@@ -22,9 +22,9 @@ public final class MetaConstants
 {
     private MetaConstants()
     {}
-    public static int metaTableNum = 11;
-    public static MetaVersion currentVersion = MetaVersion.ONE_ALPHA_ONE;
-    public static StatusProto.ResponseStatus OKStatus = StatusProto.ResponseStatus.newBuilder()
+    public static final int metaTableNum = 11;
+    public static final MetaVersion currentVersion = MetaVersion.ONE_ALPHA_ONE;
+    public static final StatusProto.ResponseStatus OKStatus = StatusProto.ResponseStatus.newBuilder()
             .setStatus(StatusProto.ResponseStatus.State.STATUS_OK)
             .build();
 

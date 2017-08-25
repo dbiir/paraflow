@@ -1,12 +1,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
-import cn.edu.ruc.iir.paraflow.commons.exceptions.MetaTableInitException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
-import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
-
-import java.sql.SQLException;
-import java.util.List;
 
 /**
  * paraflow

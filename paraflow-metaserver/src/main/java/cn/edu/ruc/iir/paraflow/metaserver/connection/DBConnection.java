@@ -3,12 +3,10 @@ package cn.edu.ruc.iir.paraflow.metaserver.connection;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.SQLExecutionException;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.LinkedList;
 
 /**
  * ParaFlow
@@ -55,8 +53,7 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
     {
         try {
             Statement stmt = connection.createStatement();
-            for (String sqlStatement : sqlStatements)
-            {
+            for (String sqlStatement : sqlStatements) {
                 stmt.addBatch(sqlStatement);
             }
             return stmt.executeBatch();

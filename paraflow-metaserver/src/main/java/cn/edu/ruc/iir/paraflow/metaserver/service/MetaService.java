@@ -1,29 +1,17 @@
 package cn.edu.ruc.iir.paraflow.metaserver.service;
 
-//import cn.edu.ruc.iir.paraflow.commons.exceptions.DatabaseNotFoundException;
-//import cn.edu.ruc.iir.paraflow.commons.exceptions.FiberFuncNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
-//import cn.edu.ruc.iir.paraflow.commons.exceptions.StorageFormatNotFoundException;
-//import cn.edu.ruc.iir.paraflow.commons.exceptions.TableNotFoundException;
-//import cn.edu.ruc.iir.paraflow.commons.exceptions.UserNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.metaserver.action.ActionResponse;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateDatabaseAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateUserAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetUserIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ConnectionPool;
-//import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.TransactionController;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaGrpc;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
-//import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
-import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
 import io.grpc.stub.StreamObserver;
-
-//import java.util.ArrayList;
-//import java.util.LinkedList;
-//import java.util.List;
 
 /**
  * ParaFlow
@@ -32,8 +20,6 @@ import io.grpc.stub.StreamObserver;
  */
 public class MetaService extends MetaGrpc.MetaImplBase
 {
-    private SQLTemplate SQLTemplate = new SQLTemplate();
-
     //TODO if ResultList is empty throw exception
 
 //    private int findDbId(String dbName) throws DatabaseNotFoundException
@@ -135,8 +121,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             responseStreamObserver.onNext(MetaConstants.OKStatus);
             responseStreamObserver.onCompleted();
         }
-        catch (ParaFlowException e)
-        {
+        catch (ParaFlowException e) {
             responseStreamObserver.onNext(e.getResponseStatus());
             responseStreamObserver.onCompleted();
             e.handle();
