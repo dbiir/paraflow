@@ -12,11 +12,13 @@ import java.util.function.Function;
  *
  * @author guodong
  */
-public interface LoaderProducer
+public interface Producer
 {
-    int send(String database, String table, Message message);
+    void send(String database, String table, Message message);
 
-    StatusProto.ResponseStatus setTblTopicMapping(String database, String table, String host, String topic);
+    void createTopic(String topicName, int partitionsNum, short replicationFactor);
+
+    StatusProto.ResponseStatus createUser(String userName, String password);
 
     StatusProto.ResponseStatus createDatabase(String databaseName, String userName, String locationUrl);
 
@@ -33,7 +35,8 @@ public interface LoaderProducer
                                                 String tblName,
                                                 String userName,
                                                 String storageFormatName,
-                                                String fiberColName,
+                                                int fiberColIndex,
+                                                int timestampColIndex,
                                                 String fiberFuncName,
                                                 ArrayList<String> columnName,
                                                 ArrayList<String> columnType,
@@ -44,13 +47,14 @@ public interface LoaderProducer
                                                 String userName,
                                                 String locationUrl,
                                                 String storageFormatName,
-                                                String fiberColName,
+                                                int fiberColIndex,
+                                                int timestampColIndex,
                                                 String fiberFuncName,
                                                 ArrayList<String> columnName,
                                                 ArrayList<String> columnType,
                                                 ArrayList<String> dataType);
 
-    StatusProto.ResponseStatus createFiberFunc(String funcName, Function<Long, Integer> func) throws IOException;
+    StatusProto.ResponseStatus createFiberFunc(String funcName, Function<String, Long> func) throws IOException;
 
-    int registerFilter(String database, String table, Function<Message, Boolean> filterFunc);
+    void registerFilter(String database, String table, Function<Message, Boolean> filterFunc);
 }

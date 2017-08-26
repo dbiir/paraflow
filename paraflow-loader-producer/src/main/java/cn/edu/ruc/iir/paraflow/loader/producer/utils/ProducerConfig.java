@@ -37,13 +37,23 @@ public class ProducerConfig
         return true;
     }
 
-    public int getServerPort()
+    public int getMetaServerPort()
     {
         return Integer.parseInt(paraflowConfig.getProperty("meta.port"));
     }
 
-    public String getServerHost()
+    public String getMetaServerHost()
     {
         return paraflowConfig.getProperty("meta.host");
+    }
+
+    public long getBufferPollTimeout()
+    {
+        return Long.parseLong(paraflowConfig.getProperty("producer.buffer.poll.timeout"));
+    }
+
+    public long getBufferOfferTimeout()
+    {
+        return Long.parseLong(paraflowConfig.getProperty("producer.buffer.offer.timeout"));
     }
 }

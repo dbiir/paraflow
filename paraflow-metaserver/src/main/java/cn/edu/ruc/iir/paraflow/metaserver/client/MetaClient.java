@@ -20,6 +20,7 @@ import java.util.logging.Logger;
  */
 
 // TODO add security mechanism for rpc communication
+// todo add name pattern constraint
 public class MetaClient
 {
     private static final Logger logger = Logger.getLogger(MetaClient.class.getName());
