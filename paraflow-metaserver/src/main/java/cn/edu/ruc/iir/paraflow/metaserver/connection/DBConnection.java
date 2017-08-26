@@ -13,7 +13,7 @@ import java.sql.Statement;
  * This is a db connection instance.
  * This is NOT thread safe!!!
  *
- * @author guodong
+ *
  */
 public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.Connection
 {

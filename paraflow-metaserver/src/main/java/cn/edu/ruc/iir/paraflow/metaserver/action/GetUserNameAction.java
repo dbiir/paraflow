@@ -7,23 +7,21 @@ import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
 
-/**
- * paraflow
- *
- * @author guodong
- */
+import java.util.Optional;
+
 public class GetUserNameAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
-        ActionResponse response = new ActionResponse();
-        if (input.getProperties("userId").isPresent()) {
-            long userId = (Long) input.getProperties("userId").get();
+        Optional<Object> paramOp = input.getParam();
+        Optional<Object> userIdOp = input.getProperties("userId");
+        if (paramOp.isPresent() && userIdOp.isPresent()) {
+            long userId = (Long) userIdOp.get();
             String sqlStatement = SQLTemplate.findUserName(userId);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
-                response.setProperties("userName", resultList.get(0).get(0));
+                input.setProperties("userName", resultList.get(0).get(0));
             }
             else {
                 throw new UserNotFoundException();
@@ -32,6 +30,6 @@ public class GetUserNameAction extends Action
         else {
             throw new ActionParamNotValidException();
         }
-        return response;
+        return input;
     }
 }

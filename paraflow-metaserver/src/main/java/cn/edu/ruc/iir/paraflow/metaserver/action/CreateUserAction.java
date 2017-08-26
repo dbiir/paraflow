@@ -8,19 +8,14 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
 
 import java.util.Optional;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class CreateUserAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
-        Optional<Object> param = input.getParam();
-        if (param.isPresent()) {
-            MetaProto.UserParam userParam = (MetaProto.UserParam) param.get();
+        Optional<Object> paramOp = input.getParam();
+        if (paramOp.isPresent()) {
+            MetaProto.UserParam userParam = (MetaProto.UserParam) paramOp.get();
             String userStatement = SQLTemplate.createUser(
                     userParam.getUserName(),
                     userParam.getPassword(),
@@ -31,6 +26,6 @@ public class CreateUserAction extends Action
                 throw new UserCreationException();
             }
         }
-        return new ActionResponse();
+        return input;
     }
 }

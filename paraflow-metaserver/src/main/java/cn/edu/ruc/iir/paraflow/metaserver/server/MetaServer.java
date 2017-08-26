@@ -18,11 +18,6 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 
-/**
- * ParaFlow
- *
- * @author guodong
- */
 public class MetaServer
 {
     private static final Logger logger = LogManager.getLogger(MetaServer.class);

@@ -14,9 +14,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.utils;
 import java.util.logging.Logger;
 
-/**
- * @author jelly.guodong.jin@gmail.com
- */
 public class TestDBConnection
 {
     private static final Logger logger = Logger.getLogger(TestDBConnection.class.getName());
