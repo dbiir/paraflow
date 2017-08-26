@@ -7,11 +7,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-/**
- * ParaFlow
- *
- * @author guodong
- */
 public class ParaFlowConfig
 {
     private String configPath;

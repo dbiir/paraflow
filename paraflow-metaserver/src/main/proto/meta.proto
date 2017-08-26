@@ -180,7 +180,7 @@ message ColParam {
     string dbName = 3;
     string tblName = 4;
     string colName = 5;
-    string colType = 6;
+    int32 colType = 6;
     string dataType = 7;
     ResponseStatus status = 8;
 }

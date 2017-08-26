@@ -7,6 +7,8 @@ import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
 
+import java.util.Optional;
+
 /**
  * paraflow
  *
@@ -17,14 +19,18 @@ public class GetTableIdAction extends Action
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
-        ActionResponse response = new ActionResponse();
-        if (input.getProperties("dbId").isPresent() && input.getProperties("tblName").isPresent()) {
-            long dbId = (Long) input.getProperties("dbId").get();
-            String tblName = (String) input.getProperties("tblName").get();
+        Optional<Object> paramOp = input.getParam();
+        Optional<Object> dbIdOp = input.getProperties("dbId");
+        Optional<Object> tblNameOp = input.getProperties("tblName");
+        if (paramOp.isPresent()
+                && dbIdOp.isPresent()
+                && tblNameOp.isPresent()) {
+            long dbId = (Long) dbIdOp.get();
+            String tblName = tblNameOp.get().toString();
             String sqlStatement = SQLTemplate.findTblId(dbId, tblName);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
-                response.setProperties("tblId", resultList.get(0).get(0));
+                input.setProperties("tblId", resultList.get(0).get(0));
             }
             else {
                 throw new TableNotFoundException(tblName);
@@ -33,6 +39,6 @@ public class GetTableIdAction extends Action
         else {
             throw new ActionParamNotValidException();
         }
-        return response;
+        return input;
     }
 }

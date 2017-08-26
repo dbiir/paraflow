@@ -7,11 +7,6 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.ActionResponse;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class TransactionController
 {
     private final Connection connection;
@@ -34,19 +29,21 @@ public class TransactionController
         actions.add(action);
     }
 
-    public void commit() throws ParaFlowException
+    public ActionResponse commit() throws ParaFlowException
     {
         ActionResponse response = new ActionResponse();
         commit(response);
+        return response;
     }
 
-    public void commit(ActionResponse response) throws ParaFlowException
+    public ActionResponse commit(ActionResponse response) throws ParaFlowException
     {
         connection.setAutoCommit(autoCommit);
         for (Action action : actions) {
             response = action.act(response, this.connection);
         }
         connection.commit();
+        return response;
     }
 
     public void close()

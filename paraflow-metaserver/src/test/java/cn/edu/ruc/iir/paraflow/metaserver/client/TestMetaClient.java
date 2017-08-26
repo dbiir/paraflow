@@ -12,11 +12,6 @@ import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * ParaFlow
- *
- * @author guodong
- */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestMetaClient
 {
@@ -90,7 +85,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         StatusProto.ResponseStatus status = client.createRegularTable("food", "rice",
                 "alice", "hdfs:/127.0.0.1/:5432/metadata/food/rice",
-                "StorageFormatName", columnName, columnType, dataType);
+                "StorageFormatName", columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -111,7 +106,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         StatusProto.ResponseStatus status = client.createRegularTable("food", "noodles",
-                "alice", "StorageFormatName", columnName, columnType, dataType);
+                "alice", "StorageFormatName", columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -132,8 +127,8 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         StatusProto.ResponseStatus status = client.createFiberTable("fruit", "grip",
-                "alice", "StorageFormatName",
-                "smell", "FiberFuncName", columnName, columnType, dataType);
+                "alice", "StorageFormatName", 0,
+                "smell", 1, columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -154,7 +149,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         StatusProto.ResponseStatus status = client.createFiberTable("fruit", "banana",
-                "alice", "StorageFormatName", "smell", "FiberFuncName", columnName, columnType, dataType);
+                "alice", "StorageFormatName", 0, "smell", 1, columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -195,7 +190,7 @@ public class TestMetaClient
     @Test
     public void step14_ClientGetColumnTest()
     {
-        MetaProto.ColParam expect = MetaProto.ColParam.newBuilder().setColIndex(0).setTblName("rice").setColName("smell").setColType("regular").setDataType("varchar(20)").build();
+        MetaProto.ColParam expect = MetaProto.ColParam.newBuilder().setColIndex(0).setTblName("rice").setColName("smell").setColType(0).setDataType("varchar(20)").build();
         MetaProto.ColParam column = client.getColumn("food", "rice", "smell");
         assertEquals(expect, column);
     }

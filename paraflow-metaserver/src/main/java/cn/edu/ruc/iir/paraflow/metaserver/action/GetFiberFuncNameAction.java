@@ -9,24 +9,19 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
 
 import java.util.Optional;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class GetFiberFuncNameAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
-        ActionResponse response = new ActionResponse();
-        Optional<Object> paramOp = input.getProperties("funcId");
-        if (paramOp.isPresent()) {
+        Optional<Object> funcIdOp = input.getProperties("funcId");
+        Optional<Object> paramOp = input.getParam();
+        if (funcIdOp.isPresent() && paramOp.isPresent()) {
             long funcId = (Long) paramOp.get();
             String sqlStatement = SQLTemplate.findFiberFuncName(funcId);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
-                response.setProperties("funcName", resultList.get(0).get(0));
+                input.setProperties("funcName", resultList.get(0).get(0));
             }
             else {
                 throw new FiberFuncNotFoundException();
@@ -35,6 +30,6 @@ public class GetFiberFuncNameAction extends Action
         else {
             throw new ActionParamNotValidException();
         }
-        return response;
+        return input;
     }
 }

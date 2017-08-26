@@ -10,11 +10,6 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.Utils;
 
 import java.util.Optional;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class CreateDatabaseAction extends Action
 {
     @Override
@@ -26,7 +21,7 @@ public class CreateDatabaseAction extends Action
             MetaProto.DbParam dbParam = (MetaProto.DbParam) param.get();
             String locationUrl = dbParam.getLocationUrl();
             if (locationUrl.isEmpty()) {
-                locationUrl = Utils.formatUrl(dbParam.getDbName());
+                locationUrl = Utils.formatDbUrl(dbParam.getDbName());
             }
             String userStatement = SQLTemplate.createDatabase(
                     dbParam.getDbName(),
@@ -40,6 +35,6 @@ public class CreateDatabaseAction extends Action
         else {
             throw new ActionParamNotValidException();
         }
-        return new ActionResponse();
+        return input;
     }
 }

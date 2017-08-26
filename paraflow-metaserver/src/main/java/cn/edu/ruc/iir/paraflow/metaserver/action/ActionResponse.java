@@ -6,11 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class ActionResponse
 {
     private int responseInt;

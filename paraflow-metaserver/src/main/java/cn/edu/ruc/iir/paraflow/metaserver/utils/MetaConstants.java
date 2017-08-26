@@ -15,9 +15,6 @@ package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
-/**
- * @author jelly.guodong.jin@gmail.com
- */
 public final class MetaConstants
 {
     private MetaConstants()
@@ -34,7 +31,7 @@ public final class MetaConstants
     public static String createStorageFormatModelSql = "CREATE TABLE meta_storageformatmodel (storageformatid SERIAL primary key,storageformatname varchar(50),compression varchar(50),serialformat varchar(50),constraint unique_storageformat unique(storageformatname));";
     public static String createFiberFuncModelSql = "CREATE TABLE meta_fiberfuncmodel (fiberfuncid SERIAL primary key,fiberfuncname varchar(50),fiberfunccontent bytea,constraint unique_fiberfunc unique(fiberfuncname));";
     public static String createTblModelSql = "CREATE TABLE meta_tblmodel (tblid SERIAL primary key,dbid int REFERENCES meta_dbmodel(dbid),tblname varchar(50),tbltype int,userid int REFERENCES meta_usermodel(userid),createtime bigint,lastaccesstime bigint,locationUrl varchar(100),storageformatid int REFERENCES meta_storageformatmodel(storageformatid),fiberColId int,fiberfuncid int REFERENCES meta_fiberfuncmodel(fiberfuncid),constraint unique_tbl unique(dbid,tblname));";
-    public static String createColModelSql = "CREATE TABLE meta_colmodel (colid SERIAL primary key,colIndex int,dbid int REFERENCES meta_dbmodel(dbid),tblid int REFERENCES meta_tblmodel(tblid),colName varchar(50),colType varchar(50),dataType varchar(50),constraint unique_col unique(colIndex,tblid,colName),constraint unique_col2 unique(tblid,colName));";
+    public static String createColModelSql = "CREATE TABLE meta_colmodel (colid SERIAL primary key,colIndex int,dbid int REFERENCES meta_dbmodel(dbid),tblid int REFERENCES meta_tblmodel(tblid),colName varchar(50),colType int,dataType varchar(50),constraint unique_col unique(colIndex,tblid,colName),constraint unique_col2 unique(tblid,colName));";
     public static String createDbParamModelSql = "CREATE TABLE meta_dbparammodel (dbid int REFERENCES meta_dbmodel(dbid),paramkey varchar(100),paramvalue varchar(200),constraint unique_dbparam unique(dbid,paramkey));";
     public static String createTblParamModelSql = "CREATE TABLE meta_tblparammodel (tblid int REFERENCES meta_tblmodel(tblid),paramkey varchar(100),paramvalue varchar(200),constraint unique_tblparam unique(tblid,paramkey));";
     public static String createTblPrivModelSql = "CREATE TABLE meta_tblprivmodel (tblprivid SERIAL primary key,tblid int REFERENCES meta_tblmodel(tblid),userid int REFERENCES meta_usermodel(userid),privtype int,granttime bigint,constraint unique_tblpriv unique(tblid,userid,privtype));";

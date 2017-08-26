@@ -19,14 +19,14 @@ public class GetStorageFormatNameAction extends Action
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
-        ActionResponse response = new ActionResponse();
-        Optional<Object> paramOp = input.getProperties("sfId");
-        if (paramOp.isPresent()) {
-            long sfId = (Long) paramOp.get();
+        Optional<Object> sfIdOp = input.getProperties("sfId");
+        Optional<Object> paramOp = input.getParam();
+        if (paramOp.isPresent() && sfIdOp.isPresent()) {
+            long sfId = (Long) sfIdOp.get();
             String sqlStatement = SQLTemplate.findStorageFormatName(sfId);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
-                response.setProperties("sfName", resultList.get(0).get(0));
+                input.setProperties("sfName", resultList.get(0).get(0));
             }
             else {
                 throw new StorageFormatNotFoundException();
@@ -35,6 +35,6 @@ public class GetStorageFormatNameAction extends Action
         else {
             throw new ActionParamNotValidException();
         }
-        return response;
+        return input;
     }
 }

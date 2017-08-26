@@ -2,11 +2,6 @@ package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class UserCreationException extends ParaFlowException
 {
     private static final long serialVersionUID = 3073077438904348727L;
