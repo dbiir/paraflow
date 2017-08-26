@@ -5,11 +5,6 @@ import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class StartupPipeline
 {
     private final List<StartupHook> hooks;

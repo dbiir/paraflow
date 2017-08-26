@@ -15,9 +15,6 @@ package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
-/**
- * @author jelly.guodong.jin@gmail.com
- */
 public class StorageFormatNotFoundException extends ParaFlowException
 {
     private static final long serialVersionUID = 5600165987123353938L;

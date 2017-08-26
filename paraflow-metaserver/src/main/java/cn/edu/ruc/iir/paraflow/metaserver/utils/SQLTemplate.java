@@ -15,8 +15,6 @@ package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
 import com.google.protobuf.ByteString;
 
-/**
- */
 public class SQLTemplate
 {
     private SQLTemplate()
@@ -123,9 +121,9 @@ public class SQLTemplate
                 fiberFuncId);
     }
 
-    public static String createColumn(int colIndex, long dbId, String colName, long tblId, String colType, String dataType)
+    public static String createColumn(int colIndex, long dbId, String colName, long tblId, int colType, String dataType)
     {
-        return String.format("INSERT INTO meta_colmodel (colindex, dbid, colname, tblid, coltype, dataType) VALUES(%d,%d,'%s',%d,'%s','%s');",
+        return String.format("INSERT INTO meta_colmodel (colindex, dbid, colname, tblid, coltype, dataType) VALUES(%d,%d,'%s',%d,'%d','%s');",
                 colIndex,
                 dbId,
                 colName,
@@ -161,6 +159,11 @@ public class SQLTemplate
         return String.format("DELETE FROM meta_colmodel WHERE dbid = %d AND tblid = %d;", dbId, tblId);
     }
 
+    public static String findDbColumn(long dbId)
+    {
+        return String.format("SELECT * FROM meta_colmodel WHERE dbid = %d;", dbId);
+    }
+
     public static String deleteDbColumn(long dbId)
     {
         return String.format("DELETE FROM meta_colmodel WHERE dbid = %d;", dbId);
@@ -169,6 +172,11 @@ public class SQLTemplate
     public static String deleteTable(long dbId, String tblName)
     {
         return String.format("DELETE FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';", dbId, tblName);
+    }
+
+    public static String findDbTable(long dbId)
+    {
+        return String.format("SELECT * FROM meta_tblmodel WHERE dbid = %d;", dbId);
     }
 
     public static String deleteDbTable(long dbId)
@@ -310,9 +318,9 @@ public class SQLTemplate
         return String.format("SELECT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d;", tblId, value);
     }
 
-    public static String findFiberFuncId(String fiberColName)
+    public static String findFiberFuncId(String fiberFuncName)
     {
-        return String.format("SELECT fiberfuncid FROM meta_fiberfuncmodel WHERE fiberfuncname = '%s';", fiberColName);
+        return String.format("SELECT fiberfuncid FROM meta_fiberfuncmodel WHERE fiberfuncname = '%s';", fiberFuncName);
     }
 
     public static String findStorageFormatId(String storageFormatName)

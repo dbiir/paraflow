@@ -2,11 +2,6 @@ package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class SQLExecutionException extends ParaFlowException
 {
     private static final long serialVersionUID = 5939773817133884884L;

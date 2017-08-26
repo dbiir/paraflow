@@ -8,11 +8,6 @@ import org.apache.logging.log4j.Logger;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-/**
- * ParaFlow
- *
- * @author guodong
- */
 public abstract class ParaFlowException extends Exception
 {
     private static final long serialVersionUID = -6514778398567346776L;

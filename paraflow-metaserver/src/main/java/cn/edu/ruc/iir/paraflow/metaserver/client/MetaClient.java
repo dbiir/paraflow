@@ -3,6 +3,7 @@ package cn.edu.ruc.iir.paraflow.metaserver.client;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaGrpc;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
+import cn.edu.ruc.iir.paraflow.metaserver.utils.ColType;
 import com.google.protobuf.ByteString;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
@@ -12,12 +13,6 @@ import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-/**
- * ParaFlow
- *
- * @author guodong
- */
 
 // TODO add security mechanism for rpc communication
 // todo add name pattern constraint
@@ -101,7 +96,6 @@ public class MetaClient
             String userName,
             String storageFormatName,
             ArrayList<String> columnName,
-            ArrayList<String> columnType,
             ArrayList<String> dataType)
     {
         String locationUrl = "";
@@ -112,7 +106,6 @@ public class MetaClient
                 locationUrl,
                 storageFormatName,
                 columnName,
-                columnType,
                 dataType);
     }
 
@@ -123,15 +116,13 @@ public class MetaClient
             String locationUrl,
             String storageFormatName,
             ArrayList<String> columnName,
-            ArrayList<String> columnType,
             ArrayList<String> dataType)
     {
         int tblType = 0;
         int columnNameSize = columnName.size();
-        int columnTypeSize = columnType.size();
         int dataTypeSize = dataType.size();
         StatusProto.ResponseStatus statusTable;
-        if (columnNameSize == columnTypeSize && columnTypeSize == dataTypeSize) {
+        if (columnNameSize == dataTypeSize) {
             ArrayList<MetaProto.ColParam> columns = new ArrayList<>();
             for (int i = 0; i < columnNameSize; i++) {
                 MetaProto.ColParam column = MetaProto.ColParam.newBuilder()
@@ -139,7 +130,7 @@ public class MetaClient
                         .setDbName(dbName)
                         .setTblName(tblName)
                         .setColName(columnName.get(i))
-                        .setColType(columnType.get(i))
+                        .setColType(ColType.REGULAR.getColTypeId())
                         .setDataType(dataType.get(i))
                         .build();
                 columns.add(column);
@@ -154,6 +145,8 @@ public class MetaClient
                     .setTblType(tblType)
                     .setLocationUrl(locationUrl)
                     .setStorageFormatName(storageFormatName)
+                    .setFiberFuncName("none")
+                    .setFiberColId(-1)
                     .setColList(colList)
                     .build();
             try {
@@ -181,10 +174,10 @@ public class MetaClient
             String tblName,
             String userName,
             String storageFormatName,
-            String fiberColName,
+            int fiberColIndex,
             String fiberFuncName,
+            int timstampColIndex,
             ArrayList<String> columnName,
-            ArrayList<String> columnType,
             ArrayList<String> dataType)
     {
         String locationUrl = "";
@@ -194,10 +187,10 @@ public class MetaClient
                 userName,
                 locationUrl,
                 storageFormatName,
-                fiberColName,
+                fiberColIndex,
                 fiberFuncName,
+                timstampColIndex,
                 columnName,
-                columnType,
                 dataType);
     }
 
@@ -207,38 +200,47 @@ public class MetaClient
             String userName,
             String locationUrl,
             String storageFormatName,
-            String fiberColName,
+            int fiberColIndex,
             String fiberFuncName,
+            int timestampColIndex,
             ArrayList<String> columnName,
-            ArrayList<String> columnType,
             ArrayList<String> dataType)
     {
         int tblType = 1;
         int columnNameSize = columnName.size();
-        int columnTypeSize = columnType.size();
         int dataTypeSize = dataType.size();
         StatusProto.ResponseStatus statusTable;
-        if (columnNameSize == columnTypeSize && columnTypeSize == dataTypeSize) {
+        if (columnNameSize == dataTypeSize) {
             ArrayList<MetaProto.ColParam> columns = new ArrayList<>();
             for (int i = 0; i < columnNameSize; i++) {
-                MetaProto.ColParam column = MetaProto.ColParam.newBuilder()
-                        .setColIndex(i)
-                        .setDbName(dbName)
-                        .setTblName(tblName)
-                        .setColName(columnName.get(i))
-                        .setColType(columnType.get(i))
-                        .setDataType(dataType.get(i))
-                        .build();
+                MetaProto.ColParam column;
+                if (i == timestampColIndex) {
+                    column = MetaProto.ColParam.newBuilder()
+                            .setColIndex(i)
+                            .setDbName(dbName)
+                            .setTblName(tblName)
+                            .setColName(columnName.get(i))
+                            .setColType(ColType.TIMESTAMP.getColTypeId())
+                            .setDataType(dataType.get(i))
+                            .build();
+                }
+                else {
+                    column = MetaProto.ColParam.newBuilder()
+                            .setColIndex(i)
+                            .setDbName(dbName)
+                            .setTblName(tblName)
+                            .setColName(columnName.get(i))
+                            .setColType(ColType.FIBER.getColTypeId())
+                            .setDataType(dataType.get(i))
+                            .build();
+                }
                 columns.add(column);
             }
             MetaProto.ColListType colList = MetaProto.ColListType.newBuilder()
                     .addAllColumn(columns)
                     .build();
-            int fiberColId = columnName.indexOf(fiberColName);
-            System.out.println("fiberColName : " + fiberColName);
-            System.out.println("fiberColId : " + fiberColId);
-            if (fiberColId == -1) {
-                System.err.println("FiberColName is not exist!");
+            if (fiberColIndex >= columnNameSize) {
+                System.err.println("FiberColIndex out of boundary!");
                 statusTable = StatusProto.ResponseStatus.newBuilder()
                         .setStatus(StatusProto.ResponseStatus.State.CREATE_TABLE_ERROR)
                         .build();
@@ -251,7 +253,7 @@ public class MetaClient
                         .setTblType(tblType)
                         .setLocationUrl(locationUrl)
                         .setStorageFormatName(storageFormatName)
-                        .setFiberColId(fiberColId)
+                        .setFiberColId(fiberColIndex)
                         .setFiberFuncName(fiberFuncName)
                         .setColList(colList)
                         .build();

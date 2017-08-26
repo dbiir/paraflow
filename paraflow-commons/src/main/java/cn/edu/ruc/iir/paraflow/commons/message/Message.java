@@ -2,11 +2,6 @@ package cn.edu.ruc.iir.paraflow.commons.message;
 
 import java.util.Optional;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class Message
 {
     private int keyIndex;

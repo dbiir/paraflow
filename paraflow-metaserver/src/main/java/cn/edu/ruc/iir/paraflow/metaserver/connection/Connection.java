@@ -2,11 +2,6 @@ package cn.edu.ruc.iir.paraflow.metaserver.connection;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public abstract class Connection
 {
     public abstract int executeUpdate(String statement) throws ParaFlowException;
