@@ -14,8 +14,8 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.DatabaseNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.StorageFormatNotFoundException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
@@ -23,30 +23,29 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
 
 import java.util.Optional;
 
-/**
- * @author jelly.guodong.jin@gmail.com
- */
-public class GetDatabaseAction extends Action
+public class GetStorageFormatAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
+        Optional<Object> sfNameOp = input.getProperties("sfName");
         Optional<Object> paramOp = input.getParam();
-        Optional<Object> dbNameOp = input.getProperties("dbName");
-        if (paramOp.isPresent() && dbNameOp.isPresent()) {
-            String sqlStatement = SQLTemplate.getDatabase(dbNameOp.get().toString());
+        if (sfNameOp.isPresent() && paramOp.isPresent()) {
+            String sfName = sfNameOp.get().toString();
+            String sqlStatement = SQLTemplate.getStorageFormat(sfName);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
-                MetaProto.DbParam dbParam = MetaProto.DbParam.newBuilder()
+                MetaProto.StorageFormatParam storageFormatParam
+                        = MetaProto.StorageFormatParam.newBuilder()
+                        .setStorageFormatName(sfName)
+                        .setCompression(resultList.get(0).get(0))
+                        .setSerialFormat(resultList.get(0).get(1))
                         .setIsEmpty(false)
-                        .setDbName(resultList.get(0).get(0))
-                        .setLocationUrl(resultList.get(0).get(1))
                         .build();
-                input.setParam(dbParam);
-                input.setProperties("userId", Long.parseLong(resultList.get(0).get(2)));
+                input.setParam(storageFormatParam);
             }
             else {
-                throw new DatabaseNotFoundException(dbNameOp.get().toString());
+                throw new StorageFormatNotFoundException();
             }
         }
         else {

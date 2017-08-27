@@ -57,7 +57,7 @@ public class SQLTemplate
 
     public static String getTable(long dbId, String tblName)
     {
-        return String.format("SELECT tbltype, userid, createtime, lastaccesstime,l ocationurl, storageformatid, fibercolid, fiberfuncid FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
+        return String.format("SELECT tbltype,userid,createtime,lastaccesstime,locationurl,storageformatid,fibercolid,fiberfuncid FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
                 dbId,
                 tblName);
     }
@@ -260,7 +260,7 @@ public class SQLTemplate
 
     public static String findBlockIndex(long tblId)
     {
-        return String.format("SELECT blockindexid FROM meta_blockindex WHERE tblid = %d;", tblId);
+        return String.format("SELECT meta_blockindexid FROM meta_blockindex WHERE tblid = %d;", tblId);
     }
 
     public static String deleteBlockIndex(long tblId)
@@ -328,9 +328,19 @@ public class SQLTemplate
         return String.format("SELECT storageformatid FROM meta_storageformatmodel WHERE storageformatname = '%s';", storageFormatName);
     }
 
-    public static String findFiberFuncName(long fiberColId)
+    public static String getStorageFormat(String storageFormatName)
     {
-        return String.format("SELECT fiberfuncname FROM meta_fiberfuncmodel WHERE fiberfuncid = '%d';", fiberColId);
+        return String.format("SELECT compression,serialformat FROM meta_storageformatmodel WHERE storageformatname = '%s';", storageFormatName);
+    }
+
+    public static String findFiberFuncName(long fiberFuncId)
+    {
+        return String.format("SELECT fiberfuncname FROM meta_fiberfuncmodel WHERE fiberfuncid = '%d';", fiberFuncId);
+    }
+
+    public static String getFiberFunc(String fiberFuncName)
+    {
+        return String.format("SELECT fiberfunccontent FROM meta_fiberfuncmodel WHERE fiberfuncname = '%s';", fiberFuncName);
     }
 
     public static String findStorageFormatName(long storageFormatId)

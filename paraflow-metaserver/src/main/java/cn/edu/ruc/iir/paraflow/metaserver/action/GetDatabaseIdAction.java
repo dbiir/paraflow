@@ -20,7 +20,7 @@ public class GetDatabaseIdAction extends Action
             String sqlStatement = SQLTemplate.findDbId(dbNameOp.get().toString());
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
-                input.setProperties("dbId", resultList.get(0).get(0));
+                input.setProperties("dbId", Long.parseLong(resultList.get(0).get(0)));
             }
             else {
                 throw new DatabaseNotFoundException(dbNameOp.get().toString());

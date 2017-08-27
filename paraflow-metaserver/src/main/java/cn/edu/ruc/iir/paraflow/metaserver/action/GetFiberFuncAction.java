@@ -14,39 +14,43 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.DatabaseNotFoundException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.FiberFuncNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
+import com.google.protobuf.ByteString;
 
 import java.util.Optional;
 
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class GetDatabaseAction extends Action
+public class GetFiberFuncAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
+        Optional<Object> fiberFuncNameOp = input.getProperties("fiberFuncName");
         Optional<Object> paramOp = input.getParam();
-        Optional<Object> dbNameOp = input.getProperties("dbName");
-        if (paramOp.isPresent() && dbNameOp.isPresent()) {
-            String sqlStatement = SQLTemplate.getDatabase(dbNameOp.get().toString());
+        if (fiberFuncNameOp.isPresent() && paramOp.isPresent()) {
+            String fiberFuncName = fiberFuncNameOp.get().toString();
+            String sqlStatement = SQLTemplate.getFiberFunc(fiberFuncName);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
-                MetaProto.DbParam dbParam = MetaProto.DbParam.newBuilder()
+                byte[] bytes = resultList.get(0).get(0).getBytes();
+                ByteString byteString = ByteString.copyFrom(bytes);
+                MetaProto.FiberFuncParam fiberFuncParam
+                        = MetaProto.FiberFuncParam.newBuilder()
+                        .setFiberFuncName(fiberFuncName)
+                        .setFiberFuncContent(byteString)
                         .setIsEmpty(false)
-                        .setDbName(resultList.get(0).get(0))
-                        .setLocationUrl(resultList.get(0).get(1))
                         .build();
-                input.setParam(dbParam);
-                input.setProperties("userId", Long.parseLong(resultList.get(0).get(2)));
+                input.setParam(fiberFuncParam);
             }
             else {
-                throw new DatabaseNotFoundException(dbNameOp.get().toString());
+                throw new FiberFuncNotFoundException();
             }
         }
         else {

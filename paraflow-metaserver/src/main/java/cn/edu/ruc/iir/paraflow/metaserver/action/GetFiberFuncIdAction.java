@@ -25,7 +25,7 @@ public class GetFiberFuncIdAction extends Action
             String sqlStatement = SQLTemplate.findFiberFuncId(funcNameOp.get().toString());
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
-                input.setProperties("funcId", resultList.get(0).get(0));
+                input.setProperties("funcId", Long.parseLong(resultList.get(0).get(0)));
             }
             else {
                 throw new FiberFuncNotFoundException();
