@@ -117,7 +117,7 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
     public void close() throws SQLExecutionException
     {
         try {
-            connection.commit();
+//            connection.commit();
             connection.close();
         }
         catch (SQLException e) {

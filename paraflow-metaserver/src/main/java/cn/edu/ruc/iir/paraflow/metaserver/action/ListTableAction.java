@@ -37,7 +37,7 @@ public class ListTableAction extends Action
         if (paramOp.isPresent() && dbIdOp.isPresent()) {
             MetaProto.DbNameParam dbNameParam =
                     (MetaProto.DbNameParam) paramOp.get();
-            String sqlStatement = SQLTemplate.listTables((Integer) dbIdOp.get());
+            String sqlStatement = SQLTemplate.listTables((Long) dbIdOp.get());
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
                 MetaProto.StringListType stringList;

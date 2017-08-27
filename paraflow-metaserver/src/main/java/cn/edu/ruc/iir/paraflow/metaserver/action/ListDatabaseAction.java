@@ -46,6 +46,7 @@ public class ListDatabaseAction extends Action
                         .setIsEmpty(false)
                         .build();
                 input.setParam(stringList);
+                return input;
             }
             else {
                 throw new DatabasesNotExist();
@@ -54,6 +55,5 @@ public class ListDatabaseAction extends Action
         else {
             throw new ActionParamNotValidException();
         }
-        return input;
     }
 }

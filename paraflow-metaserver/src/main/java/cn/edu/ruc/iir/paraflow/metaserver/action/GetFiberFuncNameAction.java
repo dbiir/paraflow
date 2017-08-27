@@ -17,7 +17,7 @@ public class GetFiberFuncNameAction extends Action
         Optional<Object> funcIdOp = input.getProperties("funcId");
         Optional<Object> paramOp = input.getParam();
         if (funcIdOp.isPresent() && paramOp.isPresent()) {
-            long funcId = (Long) paramOp.get();
+            long funcId = (Long) funcIdOp.get();
             String sqlStatement = SQLTemplate.findFiberFuncName(funcId);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {

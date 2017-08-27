@@ -26,7 +26,7 @@ public class GetUserIdAction extends Action
             String sqlStatement = SQLTemplate.findUserId(userName);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
-                input.setProperties("userId", resultList.get(0).get(0));
+                input.setProperties("userId", Long.parseLong(resultList.get(0).get(0)));
             }
             else {
                 throw new UserNotFoundException();

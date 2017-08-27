@@ -16,6 +16,7 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.CreateUserAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.DeleteBlockIndexAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.DeleteColumnAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.DeleteDatabaseAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.DeleteDbBlockIndexAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.DeleteDbColumnAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.DeleteDbParamAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.DeleteDbTableAction;
@@ -31,8 +32,10 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.GetDatabaseAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDatabaseIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDbParamAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDbTblIdAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.GetFiberFuncAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetFiberFuncIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetFiberFuncNameAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.GetStorageFormatAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetStorageFormatIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetStorageFormatNameAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetTableAction;
@@ -261,7 +264,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             input.setParam(dbTblParam);
             input.setProperties("dbName", dbTblParam.getDatabase().getDatabase());
             input.setProperties("tblName", dbTblParam.getTable().getTable());
-            txController.setAutoCommit(true);
+            txController.setAutoCommit(false);
             txController.addAction(new GetDatabaseIdAction());
             txController.addAction(new GetTableAction());
             txController.addAction(new GetUserNameAction());
@@ -468,7 +471,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             txController.addAction(new GetDbTblIdAction());
             txController.addAction(new DeleteDbTblParamAction());
             txController.addAction(new DeleteDbTblPrivAction());
-            txController.addAction(new DeleteBlockIndexAction());
+            txController.addAction(new DeleteDbBlockIndexAction());
             txController.addAction(new DeleteDbColumnAction());
             txController.addAction(new DeleteDbTableAction());
             txController.addAction(new DeleteDbParamAction());
@@ -611,6 +614,40 @@ public class MetaService extends MetaGrpc.MetaImplBase
     }
 
     @Override
+    public void getStorageFormat(MetaProto.GetStorageFormatParam getStorageFormatParam,
+                                 StreamObserver<MetaProto.StorageFormatParam> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(getStorageFormatParam);
+            input.setProperties("sfName", getStorageFormatParam.getStorageFormatName());
+            txController.setAutoCommit(false);
+            txController.addAction(new GetStorageFormatAction());
+            ActionResponse actionResponse = txController.commit(input);
+            MetaProto.StorageFormatParam storageFormatParam
+                    = (MetaProto.StorageFormatParam) actionResponse.getParam().get();
+            responseStreamObserver.onNext(storageFormatParam);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            MetaProto.StorageFormatParam storageFormat
+                    = MetaProto.StorageFormatParam.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            responseStreamObserver.onNext(storageFormat);
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+
+    @Override
     public void createFiberFunc(MetaProto.FiberFuncParam fiberFunc,
                                 StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
     {
@@ -627,6 +664,38 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (ParaFlowException e) {
             responseStreamObserver.onNext(e.getResponseStatus());
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+
+    @Override
+    public void getFiberFunc(MetaProto.GetFiberFuncParam getFiberFuncParam,
+                             StreamObserver<MetaProto.FiberFuncParam> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(getFiberFuncParam);
+            input.setProperties("fiberFuncName", getFiberFuncParam.getFiberFuncName());
+            txController.setAutoCommit(false);
+            txController.addAction(new GetFiberFuncAction());
+            ActionResponse actionResponse = txController.commit(input);
+            MetaProto.FiberFuncParam fiberFuncParam
+                    = (MetaProto.FiberFuncParam) actionResponse.getParam().get();
+            responseStreamObserver.onNext(fiberFuncParam);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            MetaProto.FiberFuncParam fiberFuncParam
+                    = MetaProto.FiberFuncParam.newBuilder().setIsEmpty(true).build();
+            responseStreamObserver.onNext(fiberFuncParam);
             responseStreamObserver.onCompleted();
             e.handle();
         }

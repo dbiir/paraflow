@@ -16,6 +16,7 @@ package cn.edu.ruc.iir.paraflow.metaserver.action;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.BlockIndexDeleteException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.TblParamDeleteException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
@@ -31,24 +32,17 @@ public class DeleteBlockIndexAction extends Action
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
-        Optional<Object> stringListOp = input.getParam();
-        Optional<Object> sizeOp = input.getProperties("size");
-        if (stringListOp.isPresent() && sizeOp.isPresent()) {
-            int size = (int) sizeOp.get();
-            MetaProto.StringListType stringListType
-                    = (MetaProto.StringListType) stringListOp.get();
-            long tblId;
-            for (int i = 0; i < size; i++) {
-                tblId = Long.parseLong(stringListType.getStr(i));
-                String sqlStatement = SQLTemplate.findBlockIndex(tblId);
-                ResultList resultList = connection.executeQuery(sqlStatement);
-                if (!resultList.isEmpty()) {
-                    //result
-                    String sqlStatement2 = SQLTemplate.deleteBlockIndex(tblId);
-                    int status = connection.executeUpdate(sqlStatement2);
-                    if (status == 0) {
-                        throw new BlockIndexDeleteException();
-                    }
+        Optional<Object> tblIdOp = input.getProperties("tblId");
+        if (tblIdOp.isPresent()) {
+            long tblId = (long) tblIdOp.get();
+            String sqlStatement = SQLTemplate.findBlockIndex(tblId);
+            ResultList resultList = connection.executeQuery(sqlStatement);
+            if (!resultList.isEmpty()) {
+                //result
+                String sqlStatement2 = SQLTemplate.deleteBlockIndex(tblId);
+                int status = connection.executeUpdate(sqlStatement2);
+                if (status == 0) {
+                    throw new TblParamDeleteException();
                 }
             }
         }
