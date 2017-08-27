@@ -26,7 +26,9 @@ service Meta {
     rpc createTblParam(TblParamParam) returns (ResponseStatus) {}
     rpc createTblPriv(TblPrivParam) returns (ResponseStatus) {}
     rpc createStorageFormat(StorageFormatParam) returns (ResponseStatus) {}
+    rpc getStorageFormat(GetStorageFormatParam) returns (StorageFormatParam) {}
     rpc createFiberFunc(FiberFuncParam) returns (ResponseStatus) {}
+    rpc getFiberFunc(GetFiberFuncParam) returns (FiberFuncParam) {}
     rpc createBlockIndex(BlockIndexParam) returns (ResponseStatus) {}
     rpc createUser(UserParam) returns (ResponseStatus) {}
     rpc filterBlockIndex(FilterBlockIndexParam) returns (StringListType) {}
@@ -273,12 +275,22 @@ message TblPrivParam {
 }
 
 message StorageFormatParam {
-    string storageFormatName = 1;
-    string compression = 2;
-    string serialFormat = 3;
+    bool isEmpty = 1;
+    string storageFormatName = 2;
+    string compression = 3;
+    string serialFormat = 4;
 }
 
 message FiberFuncParam {
+    bool isEmpty = 1;
+    string fiberFuncName = 2;
+    bytes fiberFuncContent = 3;
+}
+
+message GetFiberFuncParam {
     string fiberFuncName = 1;
-    bytes fiberFuncContent = 2;
+}
+
+message GetStorageFormatParam {
+    string storageFormatName = 1;
 }

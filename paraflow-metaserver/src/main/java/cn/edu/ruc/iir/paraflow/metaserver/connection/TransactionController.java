@@ -42,7 +42,9 @@ public class TransactionController
         for (Action action : actions) {
             response = action.act(response, this.connection);
         }
-        connection.commit();
+        if (!autoCommit) {
+            connection.commit();
+        }
         return response;
     }
 

@@ -36,8 +36,12 @@ public class GetColumnAction extends Action
             String sqlStatement = SQLTemplate.getColumn(
                     tblId,
                     colName);
+            System.out.println("sqlStatement : " + sqlStatement);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
+                System.out.println("colIndex : " + Integer.parseInt(resultList.get(0).get(0)));
+                System.out.println("colType : " + Integer.parseInt(resultList.get(0).get(1)));
+                System.out.println("dataType : " + resultList.get(0).get(2));
                 MetaProto.ColParam column = MetaProto.ColParam.newBuilder()
                         .setColIndex(Integer.parseInt(resultList.get(0).get(0)))
                         .setTblName(input.getProperties("tblName").get().toString())
@@ -47,7 +51,6 @@ public class GetColumnAction extends Action
                         .setIsEmpty(false)
                         .build();
                 input.setParam(column);
-                input.setProperties("userId", resultList.get(0).get(2));
             }
             else {
                 throw new ColumnNotFoundException();

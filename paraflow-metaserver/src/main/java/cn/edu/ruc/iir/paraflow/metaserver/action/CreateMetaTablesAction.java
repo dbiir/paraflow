@@ -19,9 +19,8 @@ public class CreateMetaTablesAction extends Action
         // if meta data already exist
         if (metaTableList.size() == MetaConstants.metaTableNum) {
             // todo validate meta data
-            return new ActionResponse();
+            return input;
         }
-
         if (metaTableList.size() == 0) {
             String[] statements = new String[MetaConstants.metaTableNum];
             statements[0] = MetaConstants.createVerModelSql;
@@ -42,10 +41,8 @@ public class CreateMetaTablesAction extends Action
                     throw new MetaTableCreationException();
                 }
             }
-
-            return new ActionResponse();
+            return input;
         }
-
         // meta data is corrupted if this statement is reached
         throw new MetaTableCorruptedException();
     }

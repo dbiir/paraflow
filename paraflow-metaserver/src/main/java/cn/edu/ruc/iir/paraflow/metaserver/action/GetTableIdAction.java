@@ -25,12 +25,12 @@ public class GetTableIdAction extends Action
         if (paramOp.isPresent()
                 && dbIdOp.isPresent()
                 && tblNameOp.isPresent()) {
-            long dbId = (Long) dbIdOp.get();
+            long dbId = (long) dbIdOp.get();
             String tblName = tblNameOp.get().toString();
             String sqlStatement = SQLTemplate.findTblId(dbId, tblName);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
-                input.setProperties("tblId", resultList.get(0).get(0));
+                input.setProperties("tblId", Long.parseLong(resultList.get(0).get(0)));
             }
             else {
                 throw new TableNotFoundException(tblName);

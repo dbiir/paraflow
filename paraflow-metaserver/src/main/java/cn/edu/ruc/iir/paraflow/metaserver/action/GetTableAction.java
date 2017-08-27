@@ -15,7 +15,7 @@ package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.UserNotFoundException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.TableNotFoundException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
@@ -52,12 +52,12 @@ public class GetTableAction extends Action
                         .setIsEmpty(false)
                         .build();
                 input.setParam(tblParam);
-                input.setProperties("userId", resultList.get(0).get(1));
-                input.setProperties("sfId", resultList.get(0).get(5));
-                input.setProperties("funcId", resultList.get(0).get(7));
+                input.setProperties("userId", Long.parseLong(resultList.get(0).get(1)));
+                input.setProperties("sfId", Long.parseLong(resultList.get(0).get(5)));
+                input.setProperties("funcId", Long.parseLong(resultList.get(0).get(7)));
             }
             else {
-                throw new UserNotFoundException();
+                throw new TableNotFoundException(tblName);
             }
             return input;
         }

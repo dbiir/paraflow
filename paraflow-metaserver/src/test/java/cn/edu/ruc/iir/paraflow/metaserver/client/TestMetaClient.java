@@ -128,7 +128,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         StatusProto.ResponseStatus status = client.createFiberTable("fruit", "grip",
                 "alice", "StorageFormatName", 0,
-                "smell", 1, columnName, dataType);
+                "FiberFuncName", 1, columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -149,7 +149,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         StatusProto.ResponseStatus status = client.createFiberTable("fruit", "banana",
-                "alice", "StorageFormatName", 0, "smell", 1, columnName, dataType);
+                "alice", "StorageFormatName", 0, "FiberFuncName", 1, columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -219,144 +219,287 @@ public class TestMetaClient
         assertEquals(expect, status);
     }
 
-//    @Test
-//    public void clientCreateBlockIndexTest1()
-//    {
-//        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
-//        StatusProto.ResponseStatus status = client.createBlockIndex("food", "rice", 123, 20170814, 20170814, "hdfs:127.0.0.1");
-//        assertEquals(expect, status);
-//        try {
-//            client.shutdown(3);
-//        }
-//        catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    public void clientCreateBlockIndexTest2()
-//    {
-//        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
-//        StatusProto.ResponseStatus status = client.createBlockIndex("food", "rice", 234, 20170814, 20170814, "hdfs:127.0.0.1");
-//        assertEquals(expect, status);
-//        try {
-//            client.shutdown(3);
-//        }
-//        catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    public void clientCreateBlockIndexTest3()
-//    {
-//        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
-//        StatusProto.ResponseStatus status = client.createBlockIndex("food", "rice", 345, 20170814, 20170814, "hdfs:127.0.0.1");
-//        assertEquals(expect, status);
-//        try {
-//            client.shutdown(3);
-//        }
-//        catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    public void clientCreateBlockIndexTest4()
-//    {
-//        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
-//        StatusProto.ResponseStatus status = client.createBlockIndex("food", "rice", 456, 20170814, 20170814, "hdfs:127.0.0.1");
-//        assertEquals(expect, status);
-//        try {
-//            client.shutdown(3);
-//        }
-//        catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    public void clientFilterBlockIndexTest()
-//    {
-//        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder().addStr(" hdfs://127.0.0.1:9000/warehouse/default/employee/20170807123456").addStr("hdfs://127.0.0.1:9000/warehouse/default/employee/20170807234567").build();
-//        MetaProto.StringListType stringList = client.filterBlockIndex("default", "book", );
-//        assertEquals(expect, stringList);
-//        try {
-//            client.shutdown(3);
-//        }
-//        catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    public void clientFilterBlockIndexTestBegin()
-//    {
-//        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder().addStr(" hdfs://127.0.0.1:9000/warehouse/default/employee/20170807123456").addStr("hdfs://127.0.0.1:9000/warehouse/default/employee/20170807234567").build();
-//        MetaProto.StringListType stringList = client.filterBlockIndex("default", "book", );
-//        assertEquals(expect, stringList);
-//        try {
-//            client.shutdown(3);
-//        }
-//        catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    public void clientFilterBlockIndexTestEnd()
-//    {
-//        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder().addStr(" hdfs://127.0.0.1:9000/warehouse/default/employee/20170807123456").addStr("hdfs://127.0.0.1:9000/warehouse/default/employee/20170807234567").build();
-//        MetaProto.StringListType stringList = client.filterBlockIndex("default", "book", );
-//        assertEquals(expect, stringList);
-//        try {
-//            client.shutdown(3);
-//        }
-//        catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    @Test
-//    public void clientFilterBlockIndexTestBeginEnd()
-//    {
-//        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder().addStr(" hdfs://127.0.0.1:9000/warehouse/default/employee/20170807123456").addStr("hdfs://127.0.0.1:9000/warehouse/default/employee/20170807234567").build();
-//        MetaProto.StringListType stringList = client.filterBlockIndex("default", "book", );
-//        assertEquals(expect, stringList);
-//        try {
-//            client.shutdown(3);
-//        }
-//        catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
-
-//
-//    @Test
-//    public void clientFilterBlockIndexByFiberTest()
-//    {
-//        MetaClient client = new MetaClient("127.0.0.1", 10012);
-//        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder().addStr("hdfs://127.0.0.1:9000/warehouse/default/employee/123456").addStr("hdfs://127.0.0.1:9000/warehouse/default/employee/234567").build();
-//        MetaProto.StringListType stringList = client.filterBlockIndexByFiber();
-//        assertEquals(expect, stringList);
-//        try {
-//            client.shutdown(3);
-//        }
-//        catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
+    @Test
+    public void step18_ClientCreateBlockIndexTest1()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.STATUS_OK)
+                .build();
+        StatusProto.ResponseStatus status = client.createBlockIndex(
+                "food",
+                "rice",
+                123,
+                20170800,
+                20170802,
+                "hdfs://127.0.0.1:5432/metadata/food/rice/123");
+        assertEquals(expect, status);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
-    public void step18_ClientRenameColumnTest()
+    public void step19_ClientCreateBlockIndexTest2()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.STATUS_OK)
+                .build();
+        StatusProto.ResponseStatus status = client.createBlockIndex(
+                "food",
+                "rice",
+                234,
+                20170803,
+                20170805,
+                "hdfs://127.0.0.1:5432/metadata/food/rice/234");
+        assertEquals(expect, status);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void step20_ClientCreateBlockIndexTest3()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.STATUS_OK)
+                .build();
+        StatusProto.ResponseStatus status = client.createBlockIndex(
+                "food",
+                "rice",
+                345,
+                20170806,
+                20170808,
+                "hdfs://127.0.0.1:5432/metadata/food/rice/345");
+        assertEquals(expect, status);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void step21_ClientCreateBlockIndexTest4()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.STATUS_OK)
+                .build();
+        StatusProto.ResponseStatus status = client.createBlockIndex(
+                "food",
+                "rice",
+                456,
+                20170809,
+                20170811,
+                "hdfs://127.0.0.1:5432/metadata/food/rice/456");
+        assertEquals(expect, status);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void step22_ClientFilterBlockIndexTest()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder()
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/123")
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/234")
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/345")
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/456")
+                .build();
+        MetaProto.StringListType stringList =
+                client.filterBlockIndex(
+                        "food",
+                        "rice",
+                        -1,
+                        -1);
+        assertEquals(expect, stringList);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void step23_ClientFilterBlockIndexTestBegin()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder()
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/234")
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/345")
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/456")
+                .build();
+        MetaProto.StringListType stringList = client.filterBlockIndex(
+                "food",
+                "rice",
+                20170804,
+                -1);
+        assertEquals(expect, stringList);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void step24_ClientFilterBlockIndexTestEnd()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder()
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/123")
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/234")
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/345")
+                .build();
+        MetaProto.StringListType stringList = client.filterBlockIndex(
+                "food",
+                "rice",
+                -1,
+                20170807);
+        assertEquals(expect, stringList);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void step25_ClientFilterBlockIndexTestBeginEnd()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder()
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/123")
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/234")
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/345")
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/456")
+                .build();
+        MetaProto.StringListType stringList = client.filterBlockIndex(
+                "food",
+                "rice",
+                20170804,
+                20170807);
+        assertEquals(expect, stringList);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void step26_ClientFilterBlockIndexByFiberTest()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder()
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/123")
+                .build();
+        MetaProto.StringListType stringList = client.filterBlockIndexByFiber(
+                "food",
+                "rice",
+                123,
+                -1,
+                -1
+        );
+        assertEquals(expect, stringList);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void step27_ClientFilterBlockIndexByFiberBeginTest()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder()
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/123")
+                .build();
+        MetaProto.StringListType stringList = client.filterBlockIndexByFiber(
+                "food",
+                "rice",
+                123,
+                20170800,
+                -1
+        );
+        assertEquals(expect, stringList);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void step28_ClientFilterBlockIndexByFiberEndTest()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder()
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/123")
+                .build();
+        MetaProto.StringListType stringList = client.filterBlockIndexByFiber(
+                "food",
+                "rice",
+                123,
+                -1,
+                20170802
+        );
+        assertEquals(expect, stringList);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void step29_ClientFilterBlockIndexByFiberBeginEndTest()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder()
+                .addStr("hdfs://127.0.0.1:5432/metadata/food/rice/123")
+                .build();
+        MetaProto.StringListType stringList = client.filterBlockIndexByFiber(
+                "food",
+                "rice",
+                123,
+                20170800,
+                20170802
+        );
+        assertEquals(expect, stringList);
+        try {
+            client.shutdown(3);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void step30_Ctep18_ClientRenameColumnTest()
     {
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         StatusProto.ResponseStatus status = client.renameColumn("food", "rice", "smell", "smellnew");
@@ -364,7 +507,7 @@ public class TestMetaClient
     }
 
     @Test
-    public void step19_ClientRenameTableTest()
+    public void step31_ClientRenameTableTest()
     {
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         StatusProto.ResponseStatus status = client.renameTable("food", "rice", "ricenew");
@@ -372,7 +515,7 @@ public class TestMetaClient
     }
 
     @Test
-    public void step20_ClientRenameDatabaseTest()
+    public void step32_ClientRenameDatabaseTest()
     {
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         StatusProto.ResponseStatus status = client.renameDatabase("food", "foodnew");
@@ -380,7 +523,7 @@ public class TestMetaClient
     }
 
     @Test
-    public void step21_ClientDeleteTableTest()
+    public void step33_ClientDeleteTableTest()
     {
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         StatusProto.ResponseStatus status = client.deleteTable("foodnew", "ricenew");
@@ -388,7 +531,7 @@ public class TestMetaClient
     }
 
     @Test
-    public void step22_ClientDeleteDatabaseTest()
+    public void step34_ClientDeleteDatabaseTest()
     {
         MetaClient client = new MetaClient("127.0.0.1", 10012);
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();

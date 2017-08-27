@@ -20,7 +20,7 @@ public class GetStorageFormatIdAction extends Action
             String sqlStatement = SQLTemplate.findStorageFormatId(sfNameOp.get().toString());
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
-                input.setProperties("sfId", resultList.get(0).get(0));
+                input.setProperties("sfId", Long.parseLong(resultList.get(0).get(0)));
             }
             else {
                 throw new StorageFormatNotFoundException();

@@ -39,16 +39,16 @@ public class CreateTableAction extends Action
             }
             //create table SQL
             String userStatement = SQLTemplate.createTable(
-                    (Integer) dbIdOp.get(),
+                    (Long) dbIdOp.get(),
                     tblParam.getTblName(),
                     tblParam.getTblType(),
-                    (Integer) userIdOp.get(),
+                    (Long) userIdOp.get(),
                     System.currentTimeMillis(),
                     System.currentTimeMillis(),
                     locationUrl,
-                    (Integer) sfIdOp.get(),
+                    (Long) sfIdOp.get(),
                     tblParam.getFiberColId(),
-                    (Integer) funcIdOp.get());
+                    (Long) funcIdOp.get());
             int status = connection.executeUpdate(userStatement);
             if (status == 0) {
                 throw new TableCreationException();

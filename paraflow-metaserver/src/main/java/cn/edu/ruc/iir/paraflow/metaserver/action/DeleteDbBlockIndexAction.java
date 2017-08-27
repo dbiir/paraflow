@@ -14,7 +14,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.DatabaseNotFoundException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.BlockIndexDeleteException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
@@ -26,27 +26,30 @@ import java.util.Optional;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class GetDatabaseAction extends Action
+public class DeleteDbBlockIndexAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
-        Optional<Object> paramOp = input.getParam();
-        Optional<Object> dbNameOp = input.getProperties("dbName");
-        if (paramOp.isPresent() && dbNameOp.isPresent()) {
-            String sqlStatement = SQLTemplate.getDatabase(dbNameOp.get().toString());
-            ResultList resultList = connection.executeQuery(sqlStatement);
-            if (!resultList.isEmpty()) {
-                MetaProto.DbParam dbParam = MetaProto.DbParam.newBuilder()
-                        .setIsEmpty(false)
-                        .setDbName(resultList.get(0).get(0))
-                        .setLocationUrl(resultList.get(0).get(1))
-                        .build();
-                input.setParam(dbParam);
-                input.setProperties("userId", Long.parseLong(resultList.get(0).get(2)));
-            }
-            else {
-                throw new DatabaseNotFoundException(dbNameOp.get().toString());
+        Optional<Object> stringListOp = input.getParam();
+        Optional<Object> sizeOp = input.getProperties("size");
+        if (stringListOp.isPresent() && sizeOp.isPresent()) {
+            int size = (int) sizeOp.get();
+            MetaProto.StringListType stringListType
+                    = (MetaProto.StringListType) stringListOp.get();
+            long tblId;
+            for (int i = 0; i < size; i++) {
+                tblId = Long.parseLong(stringListType.getStr(i));
+                String sqlStatement = SQLTemplate.findBlockIndex(tblId);
+                ResultList resultList = connection.executeQuery(sqlStatement);
+                if (!resultList.isEmpty()) {
+                    //result
+                    String sqlStatement2 = SQLTemplate.deleteBlockIndex(tblId);
+                    int status = connection.executeUpdate(sqlStatement2);
+                    if (status == 0) {
+                        throw new BlockIndexDeleteException();
+                    }
+                }
             }
         }
         else {
