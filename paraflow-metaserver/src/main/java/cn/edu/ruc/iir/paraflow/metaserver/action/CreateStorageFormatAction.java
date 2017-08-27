@@ -13,6 +13,7 @@
  */
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.StorageFormatCreationException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
@@ -38,6 +39,9 @@ public class CreateStorageFormatAction extends Action
             if (status == 0) {
                 throw new StorageFormatCreationException();
             }
+        }
+        else {
+            throw new ActionParamNotValidException();
         }
         return input;
     }

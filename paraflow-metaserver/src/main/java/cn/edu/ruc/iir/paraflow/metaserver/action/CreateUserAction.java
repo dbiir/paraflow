@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.UserCreationException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
@@ -25,6 +26,9 @@ public class CreateUserAction extends Action
             if (status == 0) {
                 throw new UserCreationException();
             }
+        }
+        else {
+            throw new ActionParamNotValidException();
         }
         return input;
     }

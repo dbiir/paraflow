@@ -13,6 +13,7 @@
  */
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.BlockIndexCreationException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
@@ -43,6 +44,9 @@ public class CreateBlockIndexAction extends Action
             if (status == 0) {
                 throw new BlockIndexCreationException();
             }
+        }
+        else {
+            throw new ActionParamNotValidException();
         }
         return input;
     }

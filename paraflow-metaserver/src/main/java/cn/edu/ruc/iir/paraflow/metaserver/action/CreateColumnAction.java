@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ColumnCreationException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
@@ -50,6 +51,9 @@ public class CreateColumnAction extends Action
                     throw new ColumnCreationException();
                 }
             }
+        }
+        else {
+            throw new ActionParamNotValidException();
         }
         return input;
     }

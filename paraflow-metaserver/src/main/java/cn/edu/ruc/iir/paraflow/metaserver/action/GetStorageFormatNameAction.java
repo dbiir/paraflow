@@ -22,7 +22,7 @@ public class GetStorageFormatNameAction extends Action
         Optional<Object> sfIdOp = input.getProperties("sfId");
         Optional<Object> paramOp = input.getParam();
         if (paramOp.isPresent() && sfIdOp.isPresent()) {
-            long sfId = (Long) sfIdOp.get();
+            long sfId = (long) sfIdOp.get();
             String sqlStatement = SQLTemplate.findStorageFormatName(sfId);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
