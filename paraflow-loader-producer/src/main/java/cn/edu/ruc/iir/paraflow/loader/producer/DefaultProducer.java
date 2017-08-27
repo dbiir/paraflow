@@ -1,8 +1,10 @@
 package cn.edu.ruc.iir.paraflow.loader.producer;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.loader.producer.buffer.BlockingQueueBuffer;
+import cn.edu.ruc.iir.paraflow.loader.producer.threads.ThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.Utils;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
@@ -28,27 +30,53 @@ import java.util.function.Function;
  */
 public class DefaultProducer implements Producer
 {
+    private final String configPath;
     private final MetaClient metaClient;
     private final AdminClient kafkaAdminClient;
     private final Map<String, List<Function<Message, Boolean>>> filtersMap;
     private final BlockingQueueBuffer buffer = BlockingQueueBuffer.INSTANCE();
     private final long offerTimeout = ProducerConfig.INSTANCE().getBufferOfferTimeout();
 
-    public DefaultProducer()
+    public DefaultProducer(String configPath)
     {
-        metaClient = new MetaClient(ProducerConfig.INSTANCE().getServerHost(),
-                ProducerConfig.INSTANCE().getServerPort());
+        this.configPath = configPath;
+        // init meta client
+        metaClient = new MetaClient(ProducerConfig.INSTANCE().getMetaServerHost(),
+                ProducerConfig.INSTANCE().getMetaServerPort());
+        // init kafka admin client
         Properties properties = new Properties();
         // todo set kafka admin props
         kafkaAdminClient = AdminClient.create(properties);
         filtersMap = new HashMap<>();
+        init();
+    }
+
+    private void init()
+    {
+        // todo init configuration
+        try {
+            ProducerConfig.INSTANCE().init(configPath);
+            ProducerConfig.INSTANCE().validate();
+        }
+        catch (ConfigFileNotFoundException e) {
+            e.printStackTrace();
+        }
+        // todo init meta cache
+        // todo init thread manager
+        ThreadManager.INSTANCE().init();
+        // register shutdown hook
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(this::beforeShutdown)
+        );
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(ThreadManager.INSTANCE()::shutdown)
+        );
     }
 
     @Override
     public void send(String database, String table, Message message)
     {
-        // todo get message topic
-        message.setTopic("");
+        message.setTopic(Utils.formTopicName(database, table));
         List<Function<Message, Boolean>> filters = filtersMap.get(Utils.formTopicName(database, table));
         if (filters != null) {
             for (Function<Message, Boolean> func : filtersMap.get(database + "." + table)) {
@@ -87,9 +115,16 @@ public class DefaultProducer implements Producer
     }
 
     @Override
-    public StatusProto.ResponseStatus createRegularTable(String dbName, String tblName, String userName, String locationUrl, String storageFormatName, ArrayList<String> columnName, ArrayList<String> columnType, ArrayList<String> dataType)
+    public StatusProto.ResponseStatus createRegularTable(
+            String dbName,
+            String tblName,
+            String userName,
+            String locationUrl,
+            String storageFormatName,
+            List<String> columnName,
+            List<String> dataType)
     {
-        return metaClient.createRegularTable(dbName, tblName, userName, locationUrl, storageFormatName, columnName, columnType, dataType);
+        return metaClient.createRegularTable(dbName, tblName, userName, locationUrl, storageFormatName, columnName, dataType);
     }
 
     @Override
@@ -100,11 +135,10 @@ public class DefaultProducer implements Producer
                                                        int fiberColIndex,
                                                        int timestampColIndex,
                                                        String fiberFuncName,
-                                                       ArrayList<String> columnName,
-                                                       ArrayList<String> columnType,
-                                                       ArrayList<String> dataType)
+                                                       List<String> columnName,
+                                                       List<String> dataType)
     {
-        return metaClient.createFiberTable(dbName, tblName, userName, storageFormatName, fiberColName, fiberFuncName, columnName, columnType, dataType);
+        return metaClient.createFiberTable(dbName, tblName, userName, storageFormatName, fiberColIndex, fiberFuncName, timestampColIndex, columnName, dataType);
     }
 
     @Override
@@ -116,11 +150,10 @@ public class DefaultProducer implements Producer
                                                        int fiberColIndex,
                                                        int timestampColIndex,
                                                        String fiberFuncName,
-                                                       ArrayList<String> columnName,
-                                                       ArrayList<String> columnType,
-                                                       ArrayList<String> dataType)
+                                                       List<String> columnName,
+                                                       List<String> dataType)
     {
-        return metaClient.createFiberTable(dbName, tblName, userName, storageFormatName, fiberColName, fiberFuncName, columnName, columnType, dataType);
+        return metaClient.createFiberTable(dbName, tblName, userName, storageFormatName, fiberColIndex, fiberFuncName, timestampColIndex, columnName, dataType);
     }
 
     @Override
@@ -144,6 +177,28 @@ public class DefaultProducer implements Producer
             List<Function<Message, Boolean>> funcList = new ArrayList<>();
             funcList.add(filterFunc);
             filtersMap.put(key, funcList);
+        }
+    }
+
+    @Override
+    public void registerTransformer(String database, String table, Function<Message, Message> transformerFunc)
+    {
+        // todo register transformer
+    }
+
+    public void shutdown()
+    {
+        Runtime.getRuntime().exit(0);
+    }
+
+    private void beforeShutdown()
+    {
+        kafkaAdminClient.close();
+        try {
+            metaClient.shutdown(ProducerConfig.INSTANCE().getMetaClientShutdownTimeout());
+        }
+        catch (InterruptedException e) {
+            metaClient.shutdownNow();
         }
     }
 }

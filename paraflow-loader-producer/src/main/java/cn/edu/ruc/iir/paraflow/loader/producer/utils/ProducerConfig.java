@@ -39,12 +39,12 @@ public class ProducerConfig
 
     public int getMetaServerPort()
     {
-        return Integer.parseInt(paraflowConfig.getProperty("meta.port"));
+        return Integer.parseInt(paraflowConfig.getProperty("meta.server.port"));
     }
 
     public String getMetaServerHost()
     {
-        return paraflowConfig.getProperty("meta.host");
+        return paraflowConfig.getProperty("meta.server.host");
     }
 
     public long getBufferPollTimeout()
@@ -55,5 +55,20 @@ public class ProducerConfig
     public long getBufferOfferTimeout()
     {
         return Long.parseLong(paraflowConfig.getProperty("producer.buffer.offer.timeout"));
+    }
+
+    public int getKafkaThreadNum()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("producer.thread.num"));
+    }
+
+    public int getProducerShutdownTimeout()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("producer.shutdown.timeout"));
+    }
+
+    public int getMetaClientShutdownTimeout()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("meta.client.shutdown.timeout"));
     }
 }

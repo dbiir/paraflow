@@ -10,6 +10,7 @@ import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +43,11 @@ public class MetaClient
     public void shutdown(int pollSecs) throws InterruptedException
     {
         this.channel.shutdown().awaitTermination(pollSecs, TimeUnit.SECONDS);
+    }
+
+    public void shutdownNow()
+    {
+        this.channel.shutdownNow();
     }
 
     public StatusProto.ResponseStatus createUser(String userName, String password)
@@ -95,8 +101,8 @@ public class MetaClient
             String tblName,
             String userName,
             String storageFormatName,
-            ArrayList<String> columnName,
-            ArrayList<String> dataType)
+            List<String> columnName,
+            List<String> dataType)
     {
         String locationUrl = "";
         return createRegularTable(
@@ -115,8 +121,8 @@ public class MetaClient
             String userName,
             String locationUrl,
             String storageFormatName,
-            ArrayList<String> columnName,
-            ArrayList<String> dataType)
+            List<String> columnName,
+            List<String> dataType)
     {
         int tblType = 0;
         int columnNameSize = columnName.size();
@@ -177,8 +183,8 @@ public class MetaClient
             int fiberColIndex,
             String fiberFuncName,
             int timstampColIndex,
-            ArrayList<String> columnName,
-            ArrayList<String> dataType)
+            List<String> columnName,
+            List<String> dataType)
     {
         String locationUrl = "";
         return createFiberTable(
@@ -203,8 +209,8 @@ public class MetaClient
             int fiberColIndex,
             String fiberFuncName,
             int timestampColIndex,
-            ArrayList<String> columnName,
-            ArrayList<String> dataType)
+            List<String> columnName,
+            List<String> dataType)
     {
         int tblType = 1;
         int columnNameSize = columnName.size();

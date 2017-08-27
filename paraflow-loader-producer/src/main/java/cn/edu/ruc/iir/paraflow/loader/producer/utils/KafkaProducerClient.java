@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.producer.threads;
+package cn.edu.ruc.iir.paraflow.loader.producer.utils;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import org.apache.kafka.clients.producer.KafkaProducer;

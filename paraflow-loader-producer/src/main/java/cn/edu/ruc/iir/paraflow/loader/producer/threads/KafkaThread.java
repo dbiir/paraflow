@@ -2,6 +2,7 @@ package cn.edu.ruc.iir.paraflow.loader.producer.threads;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.loader.producer.buffer.BlockingQueueBuffer;
+import cn.edu.ruc.iir.paraflow.loader.producer.utils.KafkaProducerClient;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 
@@ -55,17 +56,29 @@ public class KafkaThread implements Runnable
                 return;
             }
             try {
-                Message msg = buffer.poll(ProducerConfig.INSTANCE().getBufferPollTimeout());
-                producerClient.send(msg.getTopic(), msg.getKey(), msg);
+                Message msg = buffer.poll(config.getBufferPollTimeout());
+                producerClient.send(msg.getTopic(), 0, msg);
             }
-            catch (InterruptedException e) {
-                // nothing to do
+            catch (InterruptedException ignored) {
+                // if poll nothing, enter next loop
             }
         }
     }
 
-    public void readyToStop()
+    private void readyToStop()
     {
         this.isReadyToStop = true;
+    }
+
+    public void shutdown()
+    {
+        try {
+            readyToStop();
+            metaClient.shutdown(config.getMetaClientShutdownTimeout());
+        }
+        catch (InterruptedException e) {
+            readyToStop();
+            metaClient.shutdownNow();
+        }
     }
 }

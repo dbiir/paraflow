@@ -4,7 +4,7 @@ import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -27,9 +27,8 @@ public interface Producer
                                                   String userName,
                                                   String locationUrl,
                                                   String storageFormatName,
-                                                  ArrayList<String> columnName,
-                                                  ArrayList<String> columnType,
-                                                  ArrayList<String> dataType);
+                                                  List<String> columnName,
+                                                  List<String> dataType);
 
     StatusProto.ResponseStatus createFiberTable(String dbName,
                                                 String tblName,
@@ -38,9 +37,8 @@ public interface Producer
                                                 int fiberColIndex,
                                                 int timestampColIndex,
                                                 String fiberFuncName,
-                                                ArrayList<String> columnName,
-                                                ArrayList<String> columnType,
-                                                ArrayList<String> dataType);
+                                                List<String> columnName,
+                                                List<String> dataType);
 
     StatusProto.ResponseStatus createFiberTable(String dbName,
                                                 String tblName,
@@ -50,11 +48,12 @@ public interface Producer
                                                 int fiberColIndex,
                                                 int timestampColIndex,
                                                 String fiberFuncName,
-                                                ArrayList<String> columnName,
-                                                ArrayList<String> columnType,
-                                                ArrayList<String> dataType);
+                                                List<String> columnName,
+                                                List<String> dataType);
 
     StatusProto.ResponseStatus createFiberFunc(String funcName, Function<String, Long> func) throws IOException;
 
     void registerFilter(String database, String table, Function<Message, Boolean> filterFunc);
+
+    void registerTransformer(String database, String table, Function<Message, Message> transformerFunc);
 }

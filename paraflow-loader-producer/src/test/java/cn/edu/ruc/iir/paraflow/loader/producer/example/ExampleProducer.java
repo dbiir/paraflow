@@ -16,7 +16,7 @@ import java.util.List;
  */
 public class ExampleProducer
 {
-    public static void main(String[] args)
+    public void exampleTest()
     {
         final Producer producer = new DefaultProducer();
         StatusProto.ResponseStatus userStat = producer.createUser("producer", "123456");
@@ -24,31 +24,37 @@ public class ExampleProducer
                 "producer",
                 "file://127.0.0.1/tmp/producerexample");
         producer.createTopic("example", 100, (short) 1);
-        try
-        {
-            StatusProto.ResponseStatus funStat = producer.createFiberFunc("examplefunc", mid -> {
-                return (int) (mid % 1000);
-            });
-        } catch (IOException e)
-        {
+        try {
+            StatusProto.ResponseStatus funStat = producer.createFiberFunc("examplefunc", sid -> Long.parseLong(sid) % 1000);
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
-        List<String> colNames = Arrays.asList("sid", "age", "name");
-        List<String> colTypes = Arrays.asList("int", "int", "varchar(20)");
-        StatusProto.ResponseStatus tblStat = producer.createFiberTable("producerexample",
+        List<String> colNames = Arrays.asList("sid", "age", "name", "timestamp");
+        List<String> colTypes = Arrays.asList("int", "int", "varchar(20)", "long");
+        StatusProto.ResponseStatus tblStat = producer.createFiberTable(
+                "producerexample",
                 "example",
                 "producer",
                 "file://127.0.0.1/tmp/producerexample/example",
                 "parquet",
-                "sid",
+                0,
+                3,
                 "examplefunc",
                 colNames,
                 colTypes);
 
         for (int i = 0; i < 10000; i++) {
-            String content = "hello" + i;
-            Message msg = new Message((long) i, content.getBytes(), System.currentTimeMillis());
+            long ts = System.currentTimeMillis();
+            String[] content = {String.valueOf(i), String.valueOf(i * 2), "alice" + i, String.valueOf(ts)};
+            Message msg = new Message(0, content, ts);
             producer.send("producerexample", "example", msg);
         }
+    }
+
+    public static void main(String[] args)
+    {
+        ExampleProducer producer = new ExampleProducer();
+        producer.exampleTest();
     }
 }
