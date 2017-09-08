@@ -26,7 +26,7 @@
     </modules>
     <packaging>pom</packaging>
 
-    <name>ParaFlow</name>
+    <name>paraflow</name>
     <url>https://dbiir.github.io/paraflow</url>
     <description>ParaFlow</description>
     <inceptionYear>2015</inceptionYear>

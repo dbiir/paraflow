@@ -57,8 +57,6 @@ import io.grpc.stub.StreamObserver;
 
 public class MetaService extends MetaGrpc.MetaImplBase
 {
-    //TODO if ResultList is empty throw exception
-
     @Override
     public void createUser(MetaProto.UserParam user,
                            StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)

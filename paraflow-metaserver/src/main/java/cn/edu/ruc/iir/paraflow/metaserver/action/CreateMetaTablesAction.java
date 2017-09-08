@@ -18,7 +18,6 @@ public class CreateMetaTablesAction extends Action
         ResultList metaTableList = input.getResponseResultList();
         // if meta data already exist
         if (metaTableList.size() == MetaConstants.metaTableNum) {
-            // todo validate meta data
             return input;
         }
         if (metaTableList.size() == 0) {

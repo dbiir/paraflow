@@ -25,7 +25,7 @@ public class CreateDatabaseAction extends Action
             }
             String userStatement = SQLTemplate.createDatabase(
                     dbParam.getDbName(),
-                    (Long) userIdOp.get(),
+                    (long) userIdOp.get(),
                     locationUrl);
             int status = connection.executeUpdate(userStatement);
             if (status == 0) {

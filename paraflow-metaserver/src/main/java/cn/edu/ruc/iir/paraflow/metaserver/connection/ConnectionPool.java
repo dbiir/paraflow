@@ -14,7 +14,6 @@ import java.sql.SQLException;
  */
 public class ConnectionPool
 {
-    // todo implement connection pool with HikariCP
     private HikariDataSource dataSource = null;
 
     private static class ConnectionPoolHolder

@@ -17,7 +17,6 @@ import java.sql.Statement;
  */
 public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.Connection
 {
-    // todo refactor DBConnection to be subclass of Connection
     private Connection connection;
 
     public DBConnection(Connection connection)

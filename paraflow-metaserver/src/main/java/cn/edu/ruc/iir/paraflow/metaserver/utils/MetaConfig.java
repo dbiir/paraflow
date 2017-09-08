@@ -32,7 +32,7 @@ public class MetaConfig
 
     public boolean validate()
     {
-        // TODO validate configuration content
+        // TODO alice: validate configuration content
         return true;
     }
 

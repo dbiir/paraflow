@@ -13,6 +13,7 @@
  */
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.DbParamCreationException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
@@ -42,6 +43,9 @@ public class CreateDbParamAction extends Action
             if (status == 0) {
                 throw new DbParamCreationException();
             }
+        }
+        else {
+            throw new ActionParamNotValidException();
         }
         return input;
     }
