@@ -16,7 +16,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 // TODO add security mechanism for rpc communication
-// todo add name pattern constraint
+// todo alice: add name pattern constraint
+//             name [a-zA-Z0-9]
+//             name and password length
+//             url
 public class MetaClient
 {
     private static final Logger logger = Logger.getLogger(MetaClient.class.getName());

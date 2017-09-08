@@ -18,7 +18,7 @@ public class ExampleProducer
 {
     public void exampleTest()
     {
-        final Producer producer = new DefaultProducer();
+        final Producer producer = new DefaultProducer("");
         StatusProto.ResponseStatus userStat = producer.createUser("producer", "123456");
         StatusProto.ResponseStatus dbStat = producer.createDatabase("producerexample",
                 "producer",

@@ -56,5 +56,5 @@ public class Message
         return topic;
     }
 
-    // TODO override equals, hashCode and toString
+    // todo override equals, hashCode and toString
 }
