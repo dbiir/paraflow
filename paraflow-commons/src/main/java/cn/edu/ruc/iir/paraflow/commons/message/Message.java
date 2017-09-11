@@ -4,42 +4,57 @@ import java.util.Optional;
 
 public class Message
 {
-    private long key = Long.MIN_VALUE;
-    private byte[] bytes;
+    private int keyIndex;
+    private String key;
+    private String[] values;
     private long timestamp = Long.MIN_VALUE;
+    private String topic;
 
-    public Message(byte[] bytes)
+    public Message(int keyIndex, String[] values)
     {
-        this.bytes = bytes;
+        this.keyIndex = keyIndex;
+        this.values = values;
     }
 
-    public Message(long key, byte[] bytes, long timestamp)
+    public Message(int keyIndex, String[] values, long timestamp)
     {
         this.key = key;
-        this.bytes = bytes;
+        this.values = values;
         this.timestamp = timestamp;
     }
 
-    public Optional<Long> getKey()
+    public void setKey(String key)
     {
-        if (key != Long.MIN_VALUE) {
-            return Optional.of(key);
-        }
-        return Optional.empty();
+        this.key = key;
     }
 
-    public byte[] getBytes()
+    public String getKey()
     {
-        return bytes;
+        return key;
+    }
+
+    public String[] getValues()
+    {
+        return values;
     }
 
     public Optional<Long> getTimestamp()
     {
-        if (key != Long.MIN_VALUE) {
+        if (timestamp != Long.MIN_VALUE) {
             return Optional.of(timestamp);
         }
         return Optional.empty();
     }
 
-    // TODO override equals, hashCode and toString
+    public void setTopic(String topic)
+    {
+        this.topic = topic;
+    }
+
+    public String getTopic()
+    {
+        return topic;
+    }
+
+    // todo override equals, hashCode and toString
 }

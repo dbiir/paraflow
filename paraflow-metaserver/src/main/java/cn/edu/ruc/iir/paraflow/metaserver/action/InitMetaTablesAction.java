@@ -16,14 +16,14 @@ public class InitMetaTablesAction extends Action
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
-        // 1. check if ver and func has values
+        // 1. check if ver has values
         // 2. if has values, validate the ver
         // 3. if has no values, insert init values
         // todo deal with meta table init
         ResultList metaTableList = input.getResponseResultList();
         // if meta data already exist
         if (metaTableList.size() == MetaConstants.metaTableNum) {
-            // todo validate meta data
+            // todo alice: validate meta data
             return new ActionResponse();
         }
         if (metaTableList.size() == 0) {

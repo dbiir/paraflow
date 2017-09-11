@@ -47,8 +47,6 @@ public class TestMetaClient
         assertEquals(expect, status);
     }
 
-    // TODO database already exist test
-
     @Test
     public void step04_ClientCreateStorageFormatTest()
     {
@@ -66,6 +64,8 @@ public class TestMetaClient
         StatusProto.ResponseStatus status = client.createFiberFunc("FiberFuncName", fiberFuncContent);
         assertEquals(expect, status);
     }
+
+    // todo get fiber func test
 
     @Test
     public void step06_ClientCreateRegularTableTest()
@@ -152,8 +152,6 @@ public class TestMetaClient
                 "alice", "StorageFormatName", 0, "FiberFuncName", 1, columnName, dataType);
         assertEquals(expect, status);
     }
-
-    //TODO table already exist test
 
     @Test
     public void step10_ClientListDatabasesTest()

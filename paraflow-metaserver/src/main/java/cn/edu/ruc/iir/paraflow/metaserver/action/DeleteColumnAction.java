@@ -13,6 +13,7 @@
  */
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ColumnDeleteException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
@@ -35,6 +36,9 @@ public class DeleteColumnAction extends Action
             if (status == 0) {
                 throw new ColumnDeleteException();
             }
+        }
+        else {
+            throw new ActionParamNotValidException();
         }
         return input;
     }

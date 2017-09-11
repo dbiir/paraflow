@@ -13,6 +13,7 @@
  */
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.TblParamCreationException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
@@ -39,6 +40,9 @@ public class CreateTblParamAction extends Action
             if (status == 0) {
                 throw new TblParamCreationException();
             }
+        }
+        else {
+            throw new ActionParamNotValidException();
         }
         return input;
     }
