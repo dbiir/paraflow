@@ -615,7 +615,8 @@ public class MetaClient
                     .build();
             try {
                 status = metaBlockingStub.createDbParam(dbParam);
-            } catch (StatusRuntimeException e) {
+            }
+            catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                 status = StatusProto.ResponseStatus.newBuilder().build();
                 return status;
@@ -648,7 +649,8 @@ public class MetaClient
                     .build();
             try {
                 status = metaBlockingStub.createTblParam(tblParam);
-            } catch (StatusRuntimeException e) {
+            }
+            catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                 status = StatusProto.ResponseStatus.newBuilder().build();
                 return status;
@@ -684,7 +686,8 @@ public class MetaClient
                     .build();
             try {
                 status = metaBlockingStub.createTblPriv(tblPriv);
-            } catch (StatusRuntimeException e) {
+            }
+            catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                 status = StatusProto.ResponseStatus.newBuilder().build();
                 return status;
@@ -713,7 +716,8 @@ public class MetaClient
                     .build();
             try {
                 status = metaBlockingStub.createStorageFormat(storageFormat);
-            } catch (StatusRuntimeException e) {
+            }
+            catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                 status = StatusProto.ResponseStatus.newBuilder().build();
                 return status;
@@ -739,7 +743,8 @@ public class MetaClient
                     .setFiberFuncContent(byteString).build();
             try {
                 status = metaBlockingStub.createFiberFunc(fiberFunc);
-            } catch (StatusRuntimeException e) {
+            }
+            catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                 status = StatusProto.ResponseStatus.newBuilder().build();
                 return status;
@@ -787,7 +792,8 @@ public class MetaClient
                     .build();
             try {
                 status = metaBlockingStub.createBlockIndex(blockIndex);
-            } catch (StatusRuntimeException e) {
+            }
+            catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                 status = StatusProto.ResponseStatus.newBuilder().build();
                 return status;
@@ -826,7 +832,8 @@ public class MetaClient
                     .build();
             try {
                 stringList = metaBlockingStub.filterBlockIndex(filterBlockIndex);
-            } catch (StatusRuntimeException e) {
+            }
+            catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                 stringList = MetaProto.StringListType.newBuilder().build();
                 return stringList;
@@ -871,7 +878,8 @@ public class MetaClient
                     .build();
             try {
                 stringList = metaBlockingStub.filterBlockIndexByFiber(filterBlockIndexByFiber);
-            } catch (StatusRuntimeException e) {
+            }
+            catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
                 stringList = MetaProto.StringListType.newBuilder().build();
                 return stringList;
