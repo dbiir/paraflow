@@ -3,6 +3,9 @@ package cn.edu.ruc.iir.paraflow.loader.producer.utils;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.utils.ParaFlowConfig;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * paraflow
  *
@@ -34,6 +37,25 @@ public class ProducerConfig
     public boolean validate()
     {
         // todo alice: validate configuration content
+        try {
+            String str = getMetaServerHost();
+            String regEx = "^[a-zA-Z]+://[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}:[0-9]{1,5}(/[a-zA-Z]+)+$";
+            Pattern p = Pattern.compile(regEx);
+            Matcher m = p.matcher(str);
+            boolean result = m.find();
+            if (!result) {
+                return false;
+            }
+            getMetaServerPort();
+            getBufferPollTimeout();
+            getBufferOfferTimeout();
+            getKafkaThreadNum();
+            getProducerShutdownTimeout();
+            getMetaClientShutdownTimeout();
+        }
+        catch (Exception e) {
+            return false;
+        }
         return true;
     }
 

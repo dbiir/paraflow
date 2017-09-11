@@ -35,6 +35,7 @@ message ResponseStatus {
         STORAGE_FORMAT_NOT_FOUND = 23;
         FIBER_FUNCTION_ALREADY_EXISTS = 24;
         BLOCK_INDEX_ALREADY_EXISTS = 25;
+        ACTION_PARAM_NOT_VALID = 26;
     }
     State status = 1;
 }

@@ -39,6 +39,8 @@ public final class MetaConstants
 
     public static String getMetaTablesSql = "SELECT tablename FROM pg_tables WHERE tablename LIKE 'meta_%' ORDER BY tablename;";
 
-    public static String initVerTableSql = String.format("INSERT INTO meta_vermodel (vername) VALUES('%s')", currentVersion);
-    public static String initFiberFuncSql = "INSERT INTO meta_fiberfuncmodel(fiberfuncname, fiberfunccontent) VALUES('none', 'none')";
+    public static String initVerTableSql = String.format("INSERT INTO meta_vermodel (vername) VALUES('%s');", currentVersion);
+    public static String initFiberFuncSql = "INSERT INTO meta_fiberfuncmodel(fiberfuncname, fiberfunccontent) VALUES('none', 'none');";
+    public static String getInitVerTableSql = "SELECT vername FROM meta_vermodel;";
+    public static String getInitFiberFuncSql = "SELECT fiberfunccontent FROM meta_fiberfuncmodel WHERE fiberfuncname='none';";
 }

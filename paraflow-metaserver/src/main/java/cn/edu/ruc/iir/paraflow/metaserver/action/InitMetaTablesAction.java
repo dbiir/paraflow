@@ -1,7 +1,9 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.FiberFuncInitError;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.MetaTableInitException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.VersionInitError;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
@@ -24,7 +26,29 @@ public class InitMetaTablesAction extends Action
         // if meta data already exist
         if (metaTableList.size() == MetaConstants.metaTableNum) {
             // todo alice: validate meta data
-            return new ActionResponse();
+            String findVerSql = MetaConstants.getInitVerTableSql;
+            String findFiberFunc = MetaConstants.getInitFiberFuncSql;
+            ResultList resVer = connection.executeQuery(findVerSql);
+            ResultList resFiberFunc = connection.executeQuery(findFiberFunc);
+            String version = MetaConstants.currentVersion.getVersionId();
+            String fiberFunc = "none";
+            if (!resVer.isEmpty()) {
+                if (!version.equals(resVer.get(0).get(0))) {
+                    throw new VersionInitError();
+                }
+            }
+            else {
+                throw new VersionInitError();
+            }
+            if (!resFiberFunc.isEmpty()) {
+                if (!fiberFunc.equals(resFiberFunc.get(0).get(0))) {
+                    throw new FiberFuncInitError();
+                }
+            }
+            else {
+                throw new FiberFuncInitError();
+            }
+            return input;
         }
         if (metaTableList.size() == 0) {
             String[] statements = new String[2];
@@ -37,6 +61,6 @@ public class InitMetaTablesAction extends Action
                 }
             }
         }
-        return new ActionResponse();
+        return input;
     }
 }

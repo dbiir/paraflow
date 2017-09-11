@@ -10,16 +10,20 @@ public class ActionParamNotValidException extends ParaFlowException
      *
      * @return error message
      */
+    private static final long serialVersionUID = 6980171393859140122L;
     @Override
     public String getMessage()
     {
-        return null;
+        return String.format("Action param not valid !");
     }
 
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.ACTION_PARAM_NOT_VALID)
+                .build();
     }
 
     /**
@@ -30,7 +34,7 @@ public class ActionParamNotValidException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Action param not valid !";
     }
 
     /**
@@ -41,6 +45,6 @@ public class ActionParamNotValidException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return null;
+        return ParaFlowExceptionLevel.FATAL;
     }
 }
