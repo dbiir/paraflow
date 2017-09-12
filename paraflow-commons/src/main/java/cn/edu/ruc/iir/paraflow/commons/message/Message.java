@@ -4,38 +4,36 @@ import java.util.Optional;
 
 public class Message
 {
-    private int keyIndex;
-    private String key;
-    private String[] values;
-    private long timestamp = Long.MIN_VALUE;
+    private final int keyIndex;
+    private final String[] values;
+    private final long timestamp;
     private String topic;
 
     public Message(int keyIndex, String[] values)
     {
-        this.keyIndex = keyIndex;
-        this.values = values;
+        this(keyIndex, values, Long.MIN_VALUE);
     }
 
     public Message(int keyIndex, String[] values, long timestamp)
     {
-        this.key = key;
+        this.keyIndex = keyIndex;
         this.values = values;
         this.timestamp = timestamp;
     }
 
-    public void setKey(String key)
-    {
-        this.key = key;
-    }
-
     public String getKey()
     {
-        return key;
+        return this.values[keyIndex];
+    }
+
+    public int getKeyIndex()
+    {
+        return this.keyIndex;
     }
 
     public String[] getValues()
     {
-        return values;
+        return this.values;
     }
 
     public Optional<Long> getTimestamp()
@@ -51,9 +49,12 @@ public class Message
         this.topic = topic;
     }
 
-    public String getTopic()
+    public Optional<String> getTopic()
     {
-        return topic;
+        if (topic != null) {
+            return Optional.of(topic);
+        }
+        return Optional.empty();
     }
 
     // todo override equals, hashCode and toString

@@ -599,6 +599,8 @@ public class MetaClient
         return status;
     }
 
+    // todo get storage format
+
     public StatusProto.ResponseStatus createFiberFunc(String fiberFuncName, byte[] fiberFuncContent)
     {
         ByteString byteString = ByteString.copyFrom(fiberFuncContent);
@@ -616,6 +618,24 @@ public class MetaClient
         }
         logger.info("Create fiber function status is : " + status.getStatus());
         return status;
+    }
+
+    public MetaProto.FiberFuncParam getFiberFunc(String fiberFuncName)
+    {
+        MetaProto.GetFiberFuncParam fiberFuncParam
+                = MetaProto.GetFiberFuncParam.newBuilder()
+                .setFiberFuncName(fiberFuncName)
+                .build();
+        MetaProto.FiberFuncParam fiberFunc;
+        try {
+            fiberFunc = metaBlockingStub.getFiberFunc(fiberFuncParam);
+        }
+        catch (StatusRuntimeException e) {
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            fiberFunc = MetaProto.FiberFuncParam.newBuilder().build();
+            return fiberFunc;
+        }
+        return fiberFunc;
     }
 
     public StatusProto.ResponseStatus createBlockIndex(String dbName,

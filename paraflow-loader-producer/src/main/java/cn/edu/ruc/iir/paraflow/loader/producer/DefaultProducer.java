@@ -15,11 +15,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 
@@ -30,39 +27,39 @@ import java.util.function.Function;
  */
 public class DefaultProducer implements Producer
 {
-    private final String configPath;
     private final MetaClient metaClient;
     private final AdminClient kafkaAdminClient;
-    private final Map<String, List<Function<Message, Boolean>>> filtersMap;
+    private final ProducerConfig config = ProducerConfig.INSTANCE();
+//    private final Map<String, List<Function<Message, Boolean>>> filtersMap;
     private final BlockingQueueBuffer buffer = BlockingQueueBuffer.INSTANCE();
-    private final long offerTimeout = ProducerConfig.INSTANCE().getBufferOfferTimeout();
+    private final long offerTimeout;
 
     public DefaultProducer(String configPath)
     {
-        this.configPath = configPath;
+        try {
+            config.init(configPath);
+            config.validate();
+        }
+        catch (ConfigFileNotFoundException e) {
+            e.printStackTrace();
+        }
+        this.offerTimeout = config.getBufferOfferTimeout();
         // init meta client
-        metaClient = new MetaClient(ProducerConfig.INSTANCE().getMetaServerHost(),
-                ProducerConfig.INSTANCE().getMetaServerPort());
+        metaClient = new MetaClient(config.getMetaServerHost(),
+                config.getMetaServerPort());
         // init kafka admin client
         Properties properties = new Properties();
         // todo set kafka admin props
+        properties.setProperty("bootstrap.servers", config.getKafkaBootstrapServers());
+        properties.setProperty("client.id", "producerAdmin");
         kafkaAdminClient = AdminClient.create(properties);
-        filtersMap = new HashMap<>();
+//        filtersMap = new HashMap<>();
         init();
     }
 
     private void init()
     {
-        // todo init configuration
-        try {
-            ProducerConfig.INSTANCE().init(configPath);
-            ProducerConfig.INSTANCE().validate();
-        }
-        catch (ConfigFileNotFoundException e) {
-            e.printStackTrace();
-        }
         // todo init meta cache
-        // todo init thread manager
         ThreadManager.INSTANCE().init();
         // register shutdown hook
         Runtime.getRuntime().addShutdownHook(
@@ -71,20 +68,21 @@ public class DefaultProducer implements Producer
         Runtime.getRuntime().addShutdownHook(
                 new Thread(ThreadManager.INSTANCE()::shutdown)
         );
+        ThreadManager.INSTANCE().run();
     }
 
     @Override
     public void send(String database, String table, Message message)
     {
         message.setTopic(Utils.formTopicName(database, table));
-        List<Function<Message, Boolean>> filters = filtersMap.get(Utils.formTopicName(database, table));
-        if (filters != null) {
-            for (Function<Message, Boolean> func : filtersMap.get(database + "." + table)) {
-                if (func.apply(message)) {
-                    return;
-                }
-            }
-        }
+//        List<Function<Message, Boolean>> filters = filtersMap.get(Utils.formTopicName(database, table));
+//        if (filters != null) {
+//            for (Function<Message, Boolean> func : filtersMap.get(database + "." + table)) {
+//                if (func.apply(message)) {
+//                    return;
+//                }
+//            }
+//        }
         while (true) {
             try {
                 buffer.offer(message, offerTimeout);
@@ -169,21 +167,21 @@ public class DefaultProducer implements Producer
     @Override
     public void registerFilter(String database, String table, Function<Message, Boolean> filterFunc)
     {
-        String key = Utils.formTopicName(database, table);
-        if (filtersMap.containsKey(key)) {
-            filtersMap.get(key).add(filterFunc);
-        }
-        else {
-            List<Function<Message, Boolean>> funcList = new ArrayList<>();
-            funcList.add(filterFunc);
-            filtersMap.put(key, funcList);
-        }
+//        String key = Utils.formTopicName(database, table);
+//        if (filtersMap.containsKey(key)) {
+//            filtersMap.get(key).add(filterFunc);
+//        }
+//        else {
+//            List<Function<Message, Boolean>> funcList = new ArrayList<>();
+//            funcList.add(filterFunc);
+//            filtersMap.put(key, funcList);
+//        }
     }
 
     @Override
     public void registerTransformer(String database, String table, Function<Message, Message> transformerFunc)
     {
-        // todo register transformer
+        // todo register transformer currently not supported
     }
 
     public void shutdown()

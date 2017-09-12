@@ -62,6 +62,36 @@ public class ProducerConfig
         return Integer.parseInt(paraflowConfig.getProperty("producer.thread.num"));
     }
 
+    public String getKafkaBootstrapServers()
+    {
+        return paraflowConfig.getProperty("kafka.bootstrap.servers");
+    }
+
+    public String getKafkaAcks()
+    {
+        return paraflowConfig.getProperty("kafka.acks");
+    }
+
+    public int getKafkaRetries()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("kafka.retries"));
+    }
+
+    public int getKafkaBatchSize()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("kafka.batch.size"));
+    }
+
+    public int getKafkaLingerMs()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("kafka.linger.ms"));
+    }
+
+    public int getKafkaBufferMem()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("kafka.buffer.memory"));
+    }
+
     public int getProducerShutdownTimeout()
     {
         return Integer.parseInt(paraflowConfig.getProperty("producer.shutdown.timeout"));
