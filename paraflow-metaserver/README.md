@@ -88,12 +88,14 @@
  | compression      | string           | uncompressed \| snappy \| etc              |
  | serialFormat     | string           | serial class name                          |
  
- #### 11. FiberFuncModel
+ #### 11. FuncModel
  | NAME               | TYPE             | COMMENT                                         |
  |----------------    |------------------|-------------------------------------------------|
- | fiberFuncId        | int64            | function id  //Auto-add Primary Key             |
- | fiberFuncName      | string           | function name                         ///unique |
- | fiberFuncContent   | bytes            | function template id                            |
+ | funcId             | int64            | function id  //Auto-add Primary Key             |
+ | tblId              | int64            | table id //Forign Key：TblModel：tblId ///unique |
+ | funcName           | string           | function name                         ///unique |
+ | funcType           | int              | 0:fiber;  1:filter;  2:transformer              |
+ | funcContent        | bytes            | function template id                            |
  
  #### 12. BlockIndex
  | NAME            | TYPE             | COMMENT                               |
