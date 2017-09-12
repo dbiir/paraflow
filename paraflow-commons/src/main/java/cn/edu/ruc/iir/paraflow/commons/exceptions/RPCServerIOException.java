@@ -33,7 +33,7 @@ public final class RPCServerIOException extends ParaFlowException
     {
         return StatusProto.ResponseStatus
                 .newBuilder()
-                .setStatus(StatusProto.ResponseStatus.State.STATUS_SERVER_FATAL_ERR)
+                .setStatus(StatusProto.ResponseStatus.State.RPC_SERVER_IO_FATAL)
                 .build();
     }
 

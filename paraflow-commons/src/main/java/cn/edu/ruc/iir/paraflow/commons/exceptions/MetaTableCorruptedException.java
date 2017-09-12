@@ -18,7 +18,9 @@ public class MetaTableCorruptedException extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus.newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.META_TABLE_CORRUPTED_FATAL)
+                .build();
     }
 
     /**
@@ -40,6 +42,6 @@ public class MetaTableCorruptedException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return null;
+        return ParaFlowExceptionLevel.FATAL;
     }
 }

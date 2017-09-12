@@ -46,7 +46,7 @@ public class MetaConfig
             boolean driver = mDriver.find();
             //dbHost format check
             String dbHost = getDBHost();
-            String regExHost = "^[a-zA-Z]+:[a-zA-Z]+://[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}:[0-9]{1,5}(/[a-zA-Z]+)+$";
+            String regExHost = "^[a-zA-Z]+:[a-zA-Z]+://(([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})|[a-zA-Z]+):[0-9]]{0,5}(/[a-zA-Z]+)+$";
             Pattern pHost = Pattern.compile(regExHost);
             Matcher mHost = pHost.matcher(dbHost);
             boolean host = mHost.find();
@@ -58,7 +58,7 @@ public class MetaConfig
             boolean user = mUser.find();
             //HDFSWarehouse format check
             String hdfsWarehouse = getHDFSWarehouse();
-            String regExWarehouse = "^[a-zA-Z]+://[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}:[0-9]{1,5}(/[a-zA-Z]+)+$";
+            String regExWarehouse = "^[a-zA-Z]+://(([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})|[a-zA-Z]+):[0-9]]{0,5}(/[a-zA-Z]+)+$";
             Pattern pWarehouse = Pattern.compile(regExWarehouse);
             Matcher mWarehouse = pWarehouse.matcher(hdfsWarehouse);
             boolean warehouse = mWarehouse.find();

@@ -14,7 +14,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.DatabasesNotExist;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.DatabasesNotExistException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
@@ -49,7 +49,7 @@ public class ListDatabaseAction extends Action
                 return input;
             }
             else {
-                throw new DatabasesNotExist();
+                throw new DatabasesNotExistException();
             }
         }
         else {

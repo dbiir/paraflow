@@ -39,7 +39,10 @@ public class FiberFuncNotFoundException extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.FIBER_FUNCTION_NOT_FOUND_WARN)
+                .build();
     }
 
     /**
@@ -50,7 +53,7 @@ public class FiberFuncNotFoundException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return String.format("Please create the fiberFunc first.");
+        return "Please create the fiberFunc first.";
     }
 
     /**

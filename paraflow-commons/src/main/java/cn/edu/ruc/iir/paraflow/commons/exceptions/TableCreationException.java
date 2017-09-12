@@ -39,7 +39,9 @@ public class TableCreationException extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus.newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.TABLE_CREATION_ERROR
+                        .build();
     }
 
     /**
@@ -50,7 +52,7 @@ public class TableCreationException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return String.format("Please create the storageFormat first.");
+        return "";
     }
 
     /**
@@ -61,6 +63,6 @@ public class TableCreationException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return ParaFlowExceptionLevel.WARN;
+        return ParaFlowExceptionLevel.ERROR;
     }
 }

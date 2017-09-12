@@ -1,9 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
-import cn.edu.ruc.iir.paraflow.commons.exceptions.FiberFuncInitError;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.MetaTableInitException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.VersionInitError;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.*;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
@@ -34,19 +31,19 @@ public class InitMetaTablesAction extends Action
             String fiberFunc = "none";
             if (!resVer.isEmpty()) {
                 if (!version.equals(resVer.get(0).get(0))) {
-                    throw new VersionInitError();
+                    throw new MetaInitException();
                 }
             }
             else {
-                throw new VersionInitError();
+                throw new MetaInitException();
             }
             if (!resFiberFunc.isEmpty()) {
                 if (!fiberFunc.equals(resFiberFunc.get(0).get(0))) {
-                    throw new FiberFuncInitError();
+                    throw new MetaInitException();
                 }
             }
             else {
-                throw new FiberFuncInitError();
+                throw new MetaInitException();
             }
             return input;
         }
@@ -57,7 +54,7 @@ public class InitMetaTablesAction extends Action
             int[] results = connection.executeUpdateInBatch(statements);
             for (int res : results) {
                 if (res != 1) {
-                    throw new MetaTableInitException();
+                    throw new MetaInitException();
                 }
             }
         }

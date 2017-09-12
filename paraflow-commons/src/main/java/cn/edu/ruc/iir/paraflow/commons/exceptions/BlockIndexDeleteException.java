@@ -30,7 +30,10 @@ public class BlockIndexDeleteException extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.BLOCK_INDEX_DELETE_ERROR)
+                .build();
     }
 
     /**
@@ -52,6 +55,6 @@ public class BlockIndexDeleteException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return null;
+        return ParaFlowExceptionLevel.ERROR;
     }
 }

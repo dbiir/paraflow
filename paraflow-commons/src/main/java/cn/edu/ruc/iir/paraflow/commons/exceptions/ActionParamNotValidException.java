@@ -22,7 +22,7 @@ public class ActionParamNotValidException extends ParaFlowException
     {
         return StatusProto.ResponseStatus
                 .newBuilder()
-                .setStatus(StatusProto.ResponseStatus.State.ACTION_PARAM_NOT_VALID)
+                .setStatus(StatusProto.ResponseStatus.State.ACTION_PARAM_INVALID_ERROR)
                 .build();
     }
 
@@ -45,6 +45,6 @@ public class ActionParamNotValidException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return ParaFlowExceptionLevel.FATAL;
+        return ParaFlowExceptionLevel.ERROR;
     }
 }

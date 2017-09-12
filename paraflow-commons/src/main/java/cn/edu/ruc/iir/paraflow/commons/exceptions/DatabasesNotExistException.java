@@ -18,14 +18,12 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class TablesNotExist extends ParaFlowException
+public class DatabasesNotExistException extends ParaFlowException
 {
     private static final long serialVersionUID = 5600165987123353938L;
 
-    String dbName;
-    public TablesNotExist(String dbName)
+    public DatabasesNotExistException()
     {
-        this.dbName = dbName;
     }
     /**
      * get error message.
@@ -41,7 +39,10 @@ public class TablesNotExist extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.DATABASES_NOT_EXIST_WARN)
+                .build();
     }
 
     /**

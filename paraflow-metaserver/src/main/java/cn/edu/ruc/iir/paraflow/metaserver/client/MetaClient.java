@@ -55,15 +55,15 @@ public class MetaClient
         this.channel.shutdownNow();
     }
 
-    private boolean nameFormat(String userName)
+    private boolean nameValidate(String userName)
     {
-        String regEx = "^[a-zA-Z][a-zA-Z0-9]*$"; //表示a或f
+        String regEx = "^[a-zA-Z][a-zA-Z0-9]*$";
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(userName);
         return m.find();
     }
 
-    private boolean length(String name)
+    private boolean lengthValidate(String name)
     {
         int length = name.length();
         boolean len = true;
@@ -73,9 +73,9 @@ public class MetaClient
         return len;
     }
 
-    private boolean urlFormat(String url)
+    private boolean urlValidate(String url)
     {
-        String regEx = "^[a-zA-Z]+://[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}:[0-9]{1,5}(/[a-zA-Z]+)+$"; //表示a或f
+        String regEx = "^[a-zA-Z]+://(([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})|[a-zA-Z]+):[0-9]]{0,5}(/[a-zA-Z]+)+$"; //表示a或f
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(url);
         return m.find();
@@ -83,9 +83,9 @@ public class MetaClient
 
     public StatusProto.ResponseStatus createUser(String userName, String password)
     {
-        boolean nameFormat = nameFormat(userName);
-        boolean nameLen = length(userName);
-        boolean passLen = length(password);
+        boolean nameFormat = nameValidate(userName);
+        boolean nameLen = lengthValidate(userName);
+        boolean passLen = lengthValidate(password);
         StatusProto.ResponseStatus status;
         if (nameFormat & nameLen & passLen) {
             MetaProto.UserParam user =
@@ -117,13 +117,13 @@ public class MetaClient
 
     public StatusProto.ResponseStatus createDatabase(String dbName, String locationUrl, String userName)
     {
-        boolean dbNameFormat = nameFormat(dbName);
-        boolean userNameFormat = nameFormat(userName);
-        boolean dbNameLen = length(dbName);
-        boolean userNameLen = length(userName);
+        boolean dbNameFormat = nameValidate(dbName);
+        boolean userNameFormat = nameValidate(userName);
+        boolean dbNameLen = lengthValidate(dbName);
+        boolean userNameLen = lengthValidate(userName);
         boolean locationUrlFormat = true;
         if (!locationUrl.equals("")) {
-            locationUrlFormat = urlFormat(locationUrl);
+            locationUrlFormat = urlValidate(locationUrl);
         }
         StatusProto.ResponseStatus status;
         if (dbNameFormat & userNameFormat & dbNameLen & userNameLen & locationUrlFormat) {
@@ -176,15 +176,15 @@ public class MetaClient
             List<String> columnName,
             List<String> dataType)
     { //todo datatype should write to a enum type??????
-        boolean dbNameFormat = nameFormat(dbName);
-        boolean dbNameLen = length(dbName);
-        boolean tblNameFormat = nameFormat(tblName);
-        boolean tblNameLen = length(tblName);
-        boolean userNameFormat = nameFormat(userName);
-        boolean userNameLen = length(userName);
-        boolean locationUrlFormat = urlFormat(locationUrl);
-        boolean storageFormatNameFormat = nameFormat(storageFormatName);
-        boolean storageFormatNameLen = length(storageFormatName);
+        boolean dbNameFormat = nameValidate(dbName);
+        boolean dbNameLen = lengthValidate(dbName);
+        boolean tblNameFormat = nameValidate(tblName);
+        boolean tblNameLen = lengthValidate(tblName);
+        boolean userNameFormat = nameValidate(userName);
+        boolean userNameLen = lengthValidate(userName);
+        boolean locationUrlFormat = urlValidate(locationUrl);
+        boolean storageFormatNameFormat = nameValidate(storageFormatName);
+        boolean storageFormatNameLen = lengthValidate(storageFormatName);
         StatusProto.ResponseStatus status;
         if (dbNameFormat & dbNameLen
                 & tblNameFormat & tblNameLen
@@ -284,17 +284,17 @@ public class MetaClient
             List<String> columnName,
             List<String> dataType)
     {
-        boolean dbNameFormat = nameFormat(dbName);
-        boolean dbNameLen = length(dbName);
-        boolean tblNameFormat = nameFormat(tblName);
-        boolean tblNameLen = length(tblName);
-        boolean userNameFormat = nameFormat(userName);
-        boolean userNameLen = length(userName);
-        boolean locationUrlFormat = urlFormat(locationUrl);
-        boolean storageFormatNameFormat = nameFormat(storageFormatName);
-        boolean storageFormatNameLen = length(storageFormatName);
-        boolean fiberFuncNameFormat = nameFormat(fiberFuncName);
-        boolean fiberFuncNameLen = length(fiberFuncName);
+        boolean dbNameFormat = nameValidate(dbName);
+        boolean dbNameLen = lengthValidate(dbName);
+        boolean tblNameFormat = nameValidate(tblName);
+        boolean tblNameLen = lengthValidate(tblName);
+        boolean userNameFormat = nameValidate(userName);
+        boolean userNameLen = lengthValidate(userName);
+        boolean locationUrlFormat = urlValidate(locationUrl);
+        boolean storageFormatNameFormat = nameValidate(storageFormatName);
+        boolean storageFormatNameLen = lengthValidate(storageFormatName);
+        boolean fiberFuncNameFormat = nameValidate(fiberFuncName);
+        boolean fiberFuncNameLen = lengthValidate(fiberFuncName);
         StatusProto.ResponseStatus status;
         if (dbNameFormat & dbNameLen
                 & tblNameFormat & tblNameLen
@@ -604,8 +604,8 @@ public class MetaClient
                                                     String paramKey,
                                                     String paramValue)
     {
-        boolean dbNameFormat = nameFormat(dbName);
-        boolean dbNameLen = length(dbName);
+        boolean dbNameFormat = nameValidate(dbName);
+        boolean dbNameLen = lengthValidate(dbName);
         StatusProto.ResponseStatus status;
         if (dbNameFormat & dbNameLen) {
             MetaProto.DbParamParam dbParam = MetaProto.DbParamParam.newBuilder()
@@ -634,10 +634,10 @@ public class MetaClient
                                                String paramKey,
                                                String paramValue)
     {
-        boolean dbNameFormat = nameFormat(dbName);
-        boolean dbNameLen = length(dbName);
-        boolean tblNameFormat = nameFormat(tblName);
-        boolean tblNameLen = length(tblName);
+        boolean dbNameFormat = nameValidate(dbName);
+        boolean dbNameLen = lengthValidate(dbName);
+        boolean tblNameFormat = nameValidate(tblName);
+        boolean tblNameLen = lengthValidate(tblName);
         StatusProto.ResponseStatus status;
         if (dbNameFormat & dbNameLen
                 & tblNameFormat & tblNameLen) {
@@ -668,12 +668,12 @@ public class MetaClient
                                               String userName,
                                               int privType)
     {
-        boolean dbNameFormat = nameFormat(dbName);
-        boolean dbNameLen = length(dbName);
-        boolean tblNameFormat = nameFormat(tblName);
-        boolean tblNameLen = length(tblName);
-        boolean userNameFormat = nameFormat(userName);
-        boolean userNameLen = length(userName);
+        boolean dbNameFormat = nameValidate(dbName);
+        boolean dbNameLen = lengthValidate(dbName);
+        boolean tblNameFormat = nameValidate(tblName);
+        boolean tblNameLen = lengthValidate(tblName);
+        boolean userNameFormat = nameValidate(userName);
+        boolean userNameLen = lengthValidate(userName);
         StatusProto.ResponseStatus status;
         if (dbNameFormat & dbNameLen
                 & tblNameFormat & tblNameLen
@@ -704,8 +704,8 @@ public class MetaClient
                                                     String compression,
                                                     String serialFormat)
     {
-        boolean storageFormatNameFormat = nameFormat(storageFormatName);
-        boolean storageFormatNameLen = length(storageFormatName);
+        boolean storageFormatNameFormat = nameValidate(storageFormatName);
+        boolean storageFormatNameLen = lengthValidate(storageFormatName);
         StatusProto.ResponseStatus status;
         if (storageFormatNameFormat & storageFormatNameLen) {
             MetaProto.StorageFormatParam storageFormat
@@ -733,8 +733,8 @@ public class MetaClient
     public StatusProto.ResponseStatus createFiberFunc(String fiberFuncName,
                                                       byte[] fiberFuncContent)
     {
-        boolean fiberFuncNameFormat = nameFormat(fiberFuncName);
-        boolean fiberFuncNameLen = length(fiberFuncName);
+        boolean fiberFuncNameFormat = nameValidate(fiberFuncName);
+        boolean fiberFuncNameLen = lengthValidate(fiberFuncName);
         StatusProto.ResponseStatus status;
         if (fiberFuncNameFormat & fiberFuncNameLen) {
             ByteString byteString = ByteString.copyFrom(fiberFuncContent);
@@ -764,11 +764,11 @@ public class MetaClient
                                                  long timeEnd,
                                                  String path)
     {
-        boolean dbNameFormat = nameFormat(dbName);
-        boolean dbNameLen = length(dbName);
-        boolean tblNameFormat = nameFormat(tblName);
-        boolean tblNameLen = length(tblName);
-        boolean pathFormat = urlFormat(path);
+        boolean dbNameFormat = nameValidate(dbName);
+        boolean dbNameLen = lengthValidate(dbName);
+        boolean tblNameFormat = nameValidate(tblName);
+        boolean tblNameLen = lengthValidate(tblName);
+        boolean pathFormat = urlValidate(path);
         StatusProto.ResponseStatus status;
         if (dbNameFormat & dbNameLen
                 & tblNameFormat & tblNameLen
@@ -811,10 +811,10 @@ public class MetaClient
                                                      long timeBegin,
                                                      long timeEnd)
     {
-        boolean dbNameFormat = nameFormat(dbName);
-        boolean dbNameLen = length(dbName);
-        boolean tblNameFormat = nameFormat(tblName);
-        boolean tblNameLen = length(tblName);
+        boolean dbNameFormat = nameValidate(dbName);
+        boolean dbNameLen = lengthValidate(dbName);
+        boolean tblNameFormat = nameValidate(tblName);
+        boolean tblNameLen = lengthValidate(tblName);
         MetaProto.StringListType stringList;
         if (dbNameFormat & dbNameLen
                 & tblNameFormat & tblNameLen) {
@@ -852,10 +852,10 @@ public class MetaClient
                                                             long timeBegin,
                                                             long timeEnd)
     {
-        boolean dbNameFormat = nameFormat(dbName);
-        boolean dbNameLen = length(dbName);
-        boolean tblNameFormat = nameFormat(tblName);
-        boolean tblNameLen = length(tblName);
+        boolean dbNameFormat = nameValidate(dbName);
+        boolean dbNameLen = lengthValidate(dbName);
+        boolean tblNameFormat = nameValidate(tblName);
+        boolean tblNameLen = lengthValidate(tblName);
         MetaProto.StringListType stringList;
         if (dbNameFormat & dbNameLen
                 & tblNameFormat & tblNameLen) {
