@@ -17,6 +17,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
 public class TableRenameException extends ParaFlowException
 {
+    private static final long serialVersionUID = -8022436969319033821L;
+
     @Override
     public String getMessage()
     {

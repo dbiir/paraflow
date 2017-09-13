@@ -1,6 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader.producer;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
+import cn.edu.ruc.iir.paraflow.commons.func.SerializableFunction;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.loader.producer.buffer.BlockingQueueBuffer;
@@ -11,10 +12,7 @@ import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.NewTopic;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -49,7 +47,6 @@ public class DefaultProducer implements Producer
                 config.getMetaServerPort());
         // init kafka admin client
         Properties properties = new Properties();
-        // todo set kafka admin props
         properties.setProperty("bootstrap.servers", config.getKafkaBootstrapServers());
         properties.setProperty("client.id", "producerAdmin");
         kafkaAdminClient = AdminClient.create(properties);
@@ -155,13 +152,9 @@ public class DefaultProducer implements Producer
     }
 
     @Override
-    public StatusProto.ResponseStatus createFiberFunc(String funcName, Function<String, Long> func) throws IOException
+    public StatusProto.ResponseStatus createFiberFunc(String funcName, SerializableFunction<String, Long> func) throws IOException
     {
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutput objOutput = new ObjectOutputStream(bos);
-        objOutput.writeObject(func);
-        objOutput.flush();
-        return metaClient.createFiberFunc(funcName, bos.toByteArray());
+        return metaClient.createFiberFunc(funcName, func);
     }
 
     @Override

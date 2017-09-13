@@ -1,12 +1,12 @@
 package cn.edu.ruc.iir.paraflow.loader.producer.example;
 
+import cn.edu.ruc.iir.paraflow.commons.func.SerializableFunction;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.loader.producer.DefaultProducer;
 import cn.edu.ruc.iir.paraflow.loader.producer.Producer;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class ExampleProducer
 {
-    public void exampleTest()
+    private void exampleTest()
     {
         final Producer producer = new DefaultProducer("");
         StatusProto.ResponseStatus userStat = producer.createUser("producer", "123456");
@@ -27,7 +27,8 @@ public class ExampleProducer
         producer.createTopic("example", 100, (short) 1);
         try {
             // todo add an interface for fiber func lambda in paraflow-commons
-            StatusProto.ResponseStatus funStat = producer.createFiberFunc("examplefunc", (Serializable) () -> Long.parseLong("") % 1000);
+            SerializableFunction<String, Long> func = (v) -> Long.parseLong(v) % 1000;
+            StatusProto.ResponseStatus funStat = producer.createFiberFunc("examplefunc", func);
         }
         catch (IOException e) {
             e.printStackTrace();

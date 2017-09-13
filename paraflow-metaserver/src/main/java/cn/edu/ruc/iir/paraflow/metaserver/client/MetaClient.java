@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.client;
 
+import cn.edu.ruc.iir.paraflow.commons.func.SerializableFunction;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaGrpc;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
@@ -9,6 +10,11 @@ import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -601,18 +607,27 @@ public class MetaClient
 
     // todo get storage format
 
-    public StatusProto.ResponseStatus createFiberFunc(String fiberFuncName, byte[] fiberFuncContent)
+    public StatusProto.ResponseStatus createFiberFunc(String fiberFuncName, SerializableFunction fiberFunc)
     {
-        ByteString byteString = ByteString.copyFrom(fiberFuncContent);
-        MetaProto.FiberFuncParam fiberFunc = MetaProto.FiberFuncParam.newBuilder()
-                .setFiberFuncName(fiberFuncName)
-                .setFiberFuncContent(byteString).build();
         StatusProto.ResponseStatus status;
         try {
-            status = metaBlockingStub.createFiberFunc(fiberFunc);
+            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+            ObjectOutput objOutput = new ObjectOutputStream(bos);
+            objOutput.writeObject(fiberFunc);
+            objOutput.flush();
+            ByteString byteString = ByteString.copyFrom(bos.toByteArray());
+            MetaProto.FiberFuncParam fiberFuncParam = MetaProto.FiberFuncParam.newBuilder()
+                    .setFiberFuncName(fiberFuncName)
+                    .setFiberFuncContent(byteString).build();
+            status = metaBlockingStub.createFiberFunc(fiberFuncParam);
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            status = StatusProto.ResponseStatus.newBuilder().build();
+            return status;
+        }
+        catch (IOException e) {
+            logger.log(Level.WARNING, "function serialization failed: {0}", e.getMessage());
             status = StatusProto.ResponseStatus.newBuilder().build();
             return status;
         }
@@ -620,22 +635,26 @@ public class MetaClient
         return status;
     }
 
-    public MetaProto.FiberFuncParam getFiberFunc(String fiberFuncName)
+    public SerializableFunction getFiberFunc(String fiberFuncName)
     {
-        MetaProto.GetFiberFuncParam fiberFuncParam
+        MetaProto.GetFiberFuncParam getFiberFuncParam
                 = MetaProto.GetFiberFuncParam.newBuilder()
                 .setFiberFuncName(fiberFuncName)
                 .build();
-        MetaProto.FiberFuncParam fiberFunc;
+        SerializableFunction function = null;
         try {
-            fiberFunc = metaBlockingStub.getFiberFunc(fiberFuncParam);
+            MetaProto.FiberFuncParam fiberFuncParam = metaBlockingStub.getFiberFunc(getFiberFuncParam);
+            ObjectInputStream ois = new ObjectInputStream(fiberFuncParam.getFiberFuncContent().newInput());
+            function = (SerializableFunction) ois.readObject();
+            ois.close();
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            fiberFunc = MetaProto.FiberFuncParam.newBuilder().build();
-            return fiberFunc;
         }
-        return fiberFunc;
+        catch (IOException | ClassNotFoundException e) {
+            logger.log(Level.WARNING, "DeSerialization failed");
+        }
+        return function;
     }
 
     public StatusProto.ResponseStatus createBlockIndex(String dbName,
