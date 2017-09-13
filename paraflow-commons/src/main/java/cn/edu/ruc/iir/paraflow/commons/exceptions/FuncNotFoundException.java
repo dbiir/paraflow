@@ -18,11 +18,11 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class FiberFuncNotFoundException extends ParaFlowException
+public class FuncNotFoundException extends ParaFlowException
 {
     private static final long serialVersionUID = 5600165943587655248L;
 
-    public FiberFuncNotFoundException()
+    public FuncNotFoundException()
     {
     }
     /**

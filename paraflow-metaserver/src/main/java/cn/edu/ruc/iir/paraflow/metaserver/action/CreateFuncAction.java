@@ -14,7 +14,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.FiberFuncCreationException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.FuncCreationException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
@@ -22,21 +22,21 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
 
 import java.util.Optional;
 
-public class CreateFiberFuncAction extends Action
+public class CreateFuncAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
         Optional<Object> paramOp = input.getParam();
         if (paramOp.isPresent()) {
-            MetaProto.FiberFuncParam fiberFuncParam
-                    = (MetaProto.FiberFuncParam) paramOp.get();
-            String userStatement = SQLTemplate.createFiberFunc(
-                    fiberFuncParam.getFiberFuncName(),
-                    fiberFuncParam.getFiberFuncContent());
+            MetaProto.FuncParam funcParam
+                    = (MetaProto.FuncParam) paramOp.get();
+            String userStatement = SQLTemplate.createFunc(
+                    funcParam.getFuncName(),
+                    funcParam.getFuncContent());
             int status = connection.executeUpdate(userStatement);
             if (status == 0) {
-                throw new FiberFuncCreationException();
+                throw new FuncCreationException();
             }
         }
         else {

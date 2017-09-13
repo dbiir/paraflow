@@ -2,6 +2,7 @@ package cn.edu.ruc.iir.paraflow.metaserver.client;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
+import com.google.protobuf.ByteString;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -56,16 +57,42 @@ public class TestMetaClient
     }
 
     @Test
-    public void step05_ClientCreateFiberFuncTest()
+    public void step05_ClientGetStorageFormatTest()
+    {
+        MetaProto.StorageFormatParam expect =
+                MetaProto.StorageFormatParam.newBuilder()
+                .setStorageFormatName("StorageFormatName")
+                .setCompression("snappy")
+                .setSerialFormat("serialFormat")
+                .build();
+        MetaProto.StorageFormatParam storageFormat =
+                client.getStorageFormat("StorageFormatName");
+        assertEquals(expect, storageFormat);
+    }
+
+    @Test
+    public void step06_ClientCreateFuncTest()
     {
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         String string = "I am a girl";
-        byte[] fiberFuncContent = string.getBytes();
-        StatusProto.ResponseStatus status = client.createFiberFunc("FiberFuncName", fiberFuncContent);
+        byte[] funcContent = string.getBytes();
+        StatusProto.ResponseStatus status = client.createFunc("FuncName", funcContent);
         assertEquals(expect, status);
     }
 
-    // todo get fiber func test
+    @Test
+    public void step07_ClientGetFuncTest()
+    {
+        String string = "I am a girl";
+        byte[] funcContent = string.getBytes();
+        ByteString byteString = ByteString.copyFrom(funcContent);
+        MetaProto.FuncParam expect = MetaProto.FuncParam.newBuilder()
+                .setFuncName("FuncName")
+                .setFuncContent(byteString)
+                .build();
+        MetaProto.FuncParam funcParam = client.getFunc("FuncName");
+        assertEquals(expect, funcParam);
+    }
 
     @Test
     public void step06_ClientCreateRegularTableTest()
@@ -128,7 +155,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         StatusProto.ResponseStatus status = client.createFiberTable("fruit", "grip",
                 "alice", "StorageFormatName", 0,
-                "FiberFuncName", 1, columnName, dataType);
+                "FuncName", 1, columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -149,7 +176,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         StatusProto.ResponseStatus status = client.createFiberTable("fruit", "banana",
-                "alice", "StorageFormatName", 0, "FiberFuncName", 1, columnName, dataType);
+                "alice", "StorageFormatName", 0, "FuncName", 1, columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -180,7 +207,7 @@ public class TestMetaClient
     @Test
     public void step13_ClientGetTableTest()
     {
-        //MetaProto.TblParam expect = MetaProto.TblParam.newBuilder().setDbName("food").setTblName("rice").setTblType(0).setUserName("alice").setCreateTime(1503237074296).setLastAccessTime(1503237074296).setLocationUrl("hdfs://127.0.0.1:9000/metadata/food/rice").setStorageFormatId(1).setFiberColId(-1).setFiberFuncId(1).build();
+        //MetaProto.TblParam expect = MetaProto.TblParam.newBuilder().setDbName("food").setTblName("rice").setTblType(0).setUserName("alice").setCreateTime(1503237074296).setLastAccessTime(1503237074296).setLocationUrl("hdfs://127.0.0.1:9000/metadata/food/rice").setStorageFormatId(1).setFiberColId(-1).setFuncId(1).build();
         MetaProto.TblParam table = client.getTable("food", "rice");
         //assertEquals(expect, table);
     }

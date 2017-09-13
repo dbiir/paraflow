@@ -7,9 +7,10 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.CreateBlockIndexAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateColumnAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateDatabaseAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateDbParamAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.CreateFiberFuncAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.CreateFuncAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateStorageFormatAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateTableAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.CreateTblFuncAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateTblParamAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateTblPrivAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateUserAction;
@@ -32,9 +33,9 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.GetDatabaseAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDatabaseIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDbParamAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDbTblIdAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.GetFiberFuncAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.GetFiberFuncIdAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.GetFiberFuncNameAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.GetFuncAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.GetFuncIdAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.GetFuncNameAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetStorageFormatAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetStorageFormatIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetStorageFormatNameAction;
@@ -125,15 +126,16 @@ public class MetaService extends MetaGrpc.MetaImplBase
             input.setProperties("userName", tblParam.getUserName());
             input.setProperties("dbName", tblParam.getDbName());
             input.setProperties("sfName", tblParam.getStorageFormatName());
-            input.setProperties("funcName", tblParam.getFiberFuncName());
+            input.setProperties("funcName", tblParam.getFuncName());
             txController.setAutoCommit(false);
             txController.addAction(new GetUserIdAction());
             txController.addAction(new GetDatabaseIdAction());
             txController.addAction(new GetStorageFormatIdAction());
-            txController.addAction(new GetFiberFuncIdAction());
+            txController.addAction(new GetFuncIdAction());
             txController.addAction(new CreateTableAction());
             txController.addAction(new GetTableIdAction());
             txController.addAction(new CreateColumnAction());
+            txController.addAction(new CreateTblFuncAction());
             txController.commit(input);
             responseStreamObserver.onNext(MetaConstants.OKStatus);
             responseStreamObserver.onCompleted();
@@ -267,7 +269,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             txController.addAction(new GetTableAction());
             txController.addAction(new GetUserNameAction());
             txController.addAction(new GetStorageFormatNameAction());
-            txController.addAction(new GetFiberFuncNameAction());
+            txController.addAction(new GetFuncNameAction());
             txController.addAction(new GetTblParamAction());
             ActionResponse result = txController.commit(input);
             MetaProto.TblParam tblParam =
@@ -646,16 +648,16 @@ public class MetaService extends MetaGrpc.MetaImplBase
     }
 
     @Override
-    public void createFiberFunc(MetaProto.FiberFuncParam fiberFunc,
+    public void createFunc(MetaProto.FuncParam func,
                                 StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
     {
         TransactionController txController = null;
         try {
             txController = ConnectionPool.INSTANCE().getTxController();
             ActionResponse input = new ActionResponse();
-            input.setParam(fiberFunc);
+            input.setParam(func);
             txController.setAutoCommit(false);
-            txController.addAction(new CreateFiberFuncAction());
+            txController.addAction(new CreateFuncAction());
             txController.commit(input);
             responseStreamObserver.onNext(MetaConstants.OKStatus);
             responseStreamObserver.onCompleted();
@@ -673,27 +675,27 @@ public class MetaService extends MetaGrpc.MetaImplBase
     }
 
     @Override
-    public void getFiberFunc(MetaProto.GetFiberFuncParam getFiberFuncParam,
-                             StreamObserver<MetaProto.FiberFuncParam> responseStreamObserver)
+    public void getFunc(MetaProto.GetFuncParam getFuncParam,
+                             StreamObserver<MetaProto.FuncParam> responseStreamObserver)
     {
         TransactionController txController = null;
         try {
             txController = ConnectionPool.INSTANCE().getTxController();
             ActionResponse input = new ActionResponse();
-            input.setParam(getFiberFuncParam);
-            input.setProperties("fiberFuncName", getFiberFuncParam.getFiberFuncName());
+            input.setParam(getFuncParam);
+            input.setProperties("funcName", getFuncParam.getFuncName());
             txController.setAutoCommit(false);
-            txController.addAction(new GetFiberFuncAction());
+            txController.addAction(new GetFuncAction());
             ActionResponse actionResponse = txController.commit(input);
-            MetaProto.FiberFuncParam fiberFuncParam
-                    = (MetaProto.FiberFuncParam) actionResponse.getParam().get();
-            responseStreamObserver.onNext(fiberFuncParam);
+            MetaProto.FuncParam funcParam
+                    = (MetaProto.FuncParam) actionResponse.getParam().get();
+            responseStreamObserver.onNext(funcParam);
             responseStreamObserver.onCompleted();
         }
         catch (ParaFlowException e) {
-            MetaProto.FiberFuncParam fiberFuncParam
-                    = MetaProto.FiberFuncParam.newBuilder().setIsEmpty(true).build();
-            responseStreamObserver.onNext(fiberFuncParam);
+            MetaProto.FuncParam funcParam
+                    = MetaProto.FuncParam.newBuilder().setIsEmpty(true).build();
+            responseStreamObserver.onNext(funcParam);
             responseStreamObserver.onCompleted();
             e.handle();
         }

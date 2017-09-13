@@ -37,7 +37,7 @@ public class StorageFormatNotFoundException extends ParaFlowException
     public StatusProto.ResponseStatus getResponseStatus()
     {
         return StatusProto.ResponseStatus.newBuilder()
-                .setStatus(StatusProto.ResponseStatus.State.STORAGE_FORMAT_NOT_FOUND_ERROR
+                .setStatus(StatusProto.ResponseStatus.State.STORAGE_FORMAT_NOT_FOUND_ERROR)
                         .build();
     }
 

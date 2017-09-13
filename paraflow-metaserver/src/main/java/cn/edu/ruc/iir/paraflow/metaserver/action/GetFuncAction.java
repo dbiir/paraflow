@@ -14,7 +14,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.FiberFuncNotFoundException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.FuncNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
@@ -27,7 +27,7 @@ import java.util.Optional;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class GetFiberFuncAction extends Action
+public class GetFuncAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
@@ -36,21 +36,21 @@ public class GetFiberFuncAction extends Action
         Optional<Object> paramOp = input.getParam();
         if (fiberFuncNameOp.isPresent() && paramOp.isPresent()) {
             String fiberFuncName = fiberFuncNameOp.get().toString();
-            String sqlStatement = SQLTemplate.getFiberFunc(fiberFuncName);
+            String sqlStatement = SQLTemplate.getFunc(fiberFuncName);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
                 byte[] bytes = resultList.get(0).get(0).getBytes();
                 ByteString byteString = ByteString.copyFrom(bytes);
-                MetaProto.FiberFuncParam fiberFuncParam
-                        = MetaProto.FiberFuncParam.newBuilder()
-                        .setFiberFuncName(fiberFuncName)
-                        .setFiberFuncContent(byteString)
+                MetaProto.FuncParam fiberFuncParam
+                        = MetaProto.FuncParam.newBuilder()
+                        .setFuncName(fiberFuncName)
+                        .setFuncContent(byteString)
                         .setIsEmpty(false)
                         .build();
                 input.setParam(fiberFuncParam);
             }
             else {
-                throw new FiberFuncNotFoundException();
+                throw new FuncNotFoundException();
             }
         }
         else {

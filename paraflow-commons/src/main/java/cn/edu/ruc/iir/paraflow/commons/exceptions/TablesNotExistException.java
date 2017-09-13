@@ -22,7 +22,8 @@ public class TablesNotExistException extends ParaFlowException
 {
     private static final long serialVersionUID = 5600165987123353938L;
 
-    String dbName;
+    private final String dbName;
+
     public TablesNotExistException(String dbName)
     {
         this.dbName = dbName;
@@ -42,7 +43,7 @@ public class TablesNotExistException extends ParaFlowException
     public StatusProto.ResponseStatus getResponseStatus()
     {
         return StatusProto.ResponseStatus.newBuilder()
-                .setStatus(StatusProto.ResponseStatus.State.TABLES_NOT_EXIST_WARN
+                .setStatus(StatusProto.ResponseStatus.State.TABLES_NOT_EXIST_WARN)
                         .build();
     }
 
