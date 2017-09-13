@@ -32,7 +32,7 @@ public class TblPrivCreationException extends ParaFlowException
     public StatusProto.ResponseStatus getResponseStatus()
     {
         return StatusProto.ResponseStatus.newBuilder()
-                .setStatus(StatusProto.ResponseStatus.State.TBLPRIV_CREATION_ERROR
+                .setStatus(StatusProto.ResponseStatus.State.TBLPRIV_CREATION_ERROR)
                         .build();
     }
 

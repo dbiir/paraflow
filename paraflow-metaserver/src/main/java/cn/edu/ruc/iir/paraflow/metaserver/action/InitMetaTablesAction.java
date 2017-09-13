@@ -1,6 +1,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
-import cn.edu.ruc.iir.paraflow.commons.exceptions.*;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.MetaInitException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
@@ -50,7 +51,7 @@ public class InitMetaTablesAction extends Action
         if (metaTableList.size() == 0) {
             String[] statements = new String[2];
             statements[0] = MetaConstants.initVerTableSql;
-            statements[1] = MetaConstants.initFiberFuncSql;
+            statements[1] = MetaConstants.initFuncSql;
             int[] results = connection.executeUpdateInBatch(statements);
             for (int res : results) {
                 if (res != 1) {

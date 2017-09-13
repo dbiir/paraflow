@@ -27,7 +27,7 @@ public class TableRenameException extends ParaFlowException
     public StatusProto.ResponseStatus getResponseStatus()
     {
         return StatusProto.ResponseStatus.newBuilder()
-                .setStatus(StatusProto.ResponseStatus.State.TABLE_RENAME_ERROR
+                .setStatus(StatusProto.ResponseStatus.State.TABLE_RENAME_ERROR)
                         .build();
     }
 

@@ -75,7 +75,7 @@ public class MetaClient
 
     private boolean urlValidate(String url)
     {
-        String regEx = "^[a-zA-Z]+://(([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})|[a-zA-Z]+)(:[0-9]{0,5})?(/[a-zA-Z]+)+$"; //表示a或f
+        String regEx = "^[a-zA-Z]+://(([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})|[a-zA-Z0-9]+)(:[0-9]{0,5})?(/[a-zA-Z]+)+$";
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(url);
         return m.find();
@@ -217,7 +217,7 @@ public class MetaClient
                         .setTblType(tblType)
                         .setLocationUrl(locationUrl)
                         .setStorageFormatName(storageFormatName)
-                        .setFiberFuncName("none")
+                        .setFuncName("none")
                         .setFiberColId(-1)
                         .setColList(colList)
                         .build();
@@ -253,7 +253,7 @@ public class MetaClient
             String userName,
             String storageFormatName,
             int fiberColIndex,
-            String fiberFuncName,
+            String funcName,
             int timstampColIndex,
             List<String> columnName,
             List<String> dataType)
@@ -266,7 +266,7 @@ public class MetaClient
                 locationUrl,
                 storageFormatName,
                 fiberColIndex,
-                fiberFuncName,
+                funcName,
                 timstampColIndex,
                 columnName,
                 dataType);
@@ -279,7 +279,7 @@ public class MetaClient
             String locationUrl,
             String storageFormatName,
             int fiberColIndex,
-            String fiberFuncName,
+            String funcName,
             int timestampColIndex,
             List<String> columnName,
             List<String> dataType)
@@ -293,15 +293,15 @@ public class MetaClient
         boolean locationUrlFormat = urlValidate(locationUrl);
         boolean storageFormatNameFormat = nameValidate(storageFormatName);
         boolean storageFormatNameLen = lengthValidate(storageFormatName);
-        boolean fiberFuncNameFormat = nameValidate(fiberFuncName);
-        boolean fiberFuncNameLen = lengthValidate(fiberFuncName);
+        boolean funcNameFormat = nameValidate(funcName);
+        boolean funcNameLen = lengthValidate(funcName);
         StatusProto.ResponseStatus status;
         if (dbNameFormat & dbNameLen
                 & tblNameFormat & tblNameLen
                 & userNameFormat & userNameLen
                 & locationUrlFormat
                 & storageFormatNameFormat & storageFormatNameLen
-                & fiberFuncNameFormat & fiberFuncNameLen) {
+                & funcNameFormat & funcNameLen) {
             int tblType = 1;
             int columnNameSize = columnName.size();
             int dataTypeSize = dataType.size();
@@ -349,7 +349,7 @@ public class MetaClient
                             .setLocationUrl(locationUrl)
                             .setStorageFormatName(storageFormatName)
                             .setFiberColId(fiberColIndex)
-                            .setFiberFuncName(fiberFuncName)
+                            .setFuncName(funcName)
                             .setColList(colList)
                             .build();
                     try {
@@ -730,19 +730,42 @@ public class MetaClient
         return status;
     }
 
-    public StatusProto.ResponseStatus createFiberFunc(String fiberFuncName,
-                                                      byte[] fiberFuncContent)
+    public MetaProto.StorageFormatParam getStorageFormat(String storageFormatName)
     {
-        boolean fiberFuncNameFormat = nameValidate(fiberFuncName);
-        boolean fiberFuncNameLen = lengthValidate(fiberFuncName);
-        StatusProto.ResponseStatus status;
-        if (fiberFuncNameFormat & fiberFuncNameLen) {
-            ByteString byteString = ByteString.copyFrom(fiberFuncContent);
-            MetaProto.FiberFuncParam fiberFunc = MetaProto.FiberFuncParam.newBuilder()
-                    .setFiberFuncName(fiberFuncName)
-                    .setFiberFuncContent(byteString).build();
+        MetaProto.StorageFormatParam storageFormat;
+        if (nameValidate(storageFormatName)) {
+            MetaProto.GetStorageFormatParam getStorageFormatParam =
+                    MetaProto.GetStorageFormatParam.newBuilder()
+                    .setStorageFormatName(storageFormatName)
+                    .build();
             try {
-                status = metaBlockingStub.createFiberFunc(fiberFunc);
+                storageFormat = metaBlockingStub.getStorageFormat(getStorageFormatParam);
+            }
+            catch (StatusRuntimeException e) {
+                storageFormat = MetaProto.StorageFormatParam.newBuilder().setIsEmpty(true).build();
+                return storageFormat;
+            }
+        }
+        else {
+            storageFormat = MetaProto.StorageFormatParam.newBuilder().setIsEmpty(true).build();
+        }
+        logger.info("Create storage format status is : " + storageFormat);
+        return storageFormat;
+    }
+
+    public StatusProto.ResponseStatus createFunc(String funcName,
+                                                      byte[] funcContent)
+    {
+        boolean funcNameFormat = nameValidate(funcName);
+        boolean funcNameLen = lengthValidate(funcName);
+        StatusProto.ResponseStatus status;
+        if (funcNameFormat & funcNameLen) {
+            ByteString byteString = ByteString.copyFrom(funcContent);
+            MetaProto.FuncParam func = MetaProto.FuncParam.newBuilder()
+                    .setFuncName(funcName)
+                    .setFuncContent(byteString).build();
+            try {
+                status = metaBlockingStub.createFunc(func);
             }
             catch (StatusRuntimeException e) {
                 logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
@@ -755,6 +778,29 @@ public class MetaClient
         }
         logger.info("Create fiber function status is : " + status.getStatus());
         return status;
+    }
+
+    public MetaProto.FuncParam getFunc(String funcName)
+    {
+        MetaProto.FuncParam funcParam;
+        if (nameValidate(funcName)) {
+            MetaProto.GetFuncParam getFuncParam =
+                    MetaProto.GetFuncParam.newBuilder()
+                    .setFuncName(funcName)
+                    .build();
+            try {
+                funcParam = metaBlockingStub.getFunc(getFuncParam);
+            }
+            catch (StatusRuntimeException e) {
+                funcParam = MetaProto.FuncParam.newBuilder().build();
+                return funcParam;
+            }
+        }
+        else {
+            funcParam = MetaProto.FuncParam.newBuilder().setIsEmpty(true).build();
+        }
+        logger.info("Create storage format status is : " + funcParam);
+        return funcParam;
     }
 
     public StatusProto.ResponseStatus createBlockIndex(String dbName,

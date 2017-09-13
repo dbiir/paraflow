@@ -47,7 +47,7 @@ public class GetTblParamAction extends Action
                     .setLocationUrl(tblParam.getLocationUrl())
                     .setStorageFormatName(sfName)
                     .setFiberColId(tblParam.getFiberColId())
-                    .setFiberFuncName(funcName)
+                    .setFuncName(funcName)
                     .setIsEmpty(false)
                     .build();
             input.setParam(tblParamLast);

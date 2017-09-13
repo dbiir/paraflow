@@ -1,7 +1,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.FiberFuncNotFoundException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.FuncNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
@@ -14,7 +14,7 @@ import java.util.Optional;
  *
  * @author guodong
  */
-public class GetFiberFuncIdAction extends Action
+public class GetFuncIdAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
@@ -22,13 +22,13 @@ public class GetFiberFuncIdAction extends Action
         Optional<Object> paramOp = input.getParam();
         Optional<Object> funcNameOp = input.getProperties("funcName");
         if (paramOp.isPresent() && funcNameOp.isPresent()) {
-            String sqlStatement = SQLTemplate.findFiberFuncId(funcNameOp.get().toString());
+            String sqlStatement = SQLTemplate.findFuncId(funcNameOp.get().toString());
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
                 input.setProperties("funcId", Long.parseLong(resultList.get(0).get(0)));
             }
             else {
-                throw new FiberFuncNotFoundException();
+                throw new FuncNotFoundException();
             }
         }
         else {

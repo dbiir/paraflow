@@ -27,8 +27,8 @@ service Meta {
     rpc createTblPriv(TblPrivParam) returns (ResponseStatus) {}
     rpc createStorageFormat(StorageFormatParam) returns (ResponseStatus) {}
     rpc getStorageFormat(GetStorageFormatParam) returns (StorageFormatParam) {}
-    rpc createFiberFunc(FiberFuncParam) returns (ResponseStatus) {}
-    rpc getFiberFunc(GetFiberFuncParam) returns (FiberFuncParam) {}
+    rpc createFunc(FuncParam) returns (ResponseStatus) {}
+    rpc getFunc(GetFuncParam) returns (FuncParam) {}
     rpc createBlockIndex(BlockIndexParam) returns (ResponseStatus) {}
     rpc createUser(UserParam) returns (ResponseStatus) {}
     rpc filterBlockIndex(FilterBlockIndexParam) returns (StringListType) {}
@@ -68,7 +68,7 @@ message TblModel {
     int64 fiberColId = 8;
     string locationUrl = 9;
     int32 storageFormatId = 10;
-    int64 fiberFuncId = 11;
+    int64 funcId = 11;
 }
 
 message ColModel {
@@ -106,10 +106,10 @@ message StorageFormatModel {
     string serialFormat = 3;
 }
 
-message FiberFuncNodel {
-    int64 fiberFuncId = 1;
-    string fiberFuncName = 2;
-    bytes fiberFuncContent = 3;
+message FuncModel {
+    int64 funcId = 1;
+    string funcName = 2;
+    bytes funcContent = 3;
 }
 
 message BlockIndex {
@@ -172,7 +172,7 @@ message TblParam {
     string locationUrl = 8;
     string storageFormatName = 9;
     int32 fiberColId = 11;
-    string fiberFuncName = 12;
+    string funcName = 12;
     ColListType colList = 13;
 }
 
@@ -281,14 +281,14 @@ message StorageFormatParam {
     string serialFormat = 4;
 }
 
-message FiberFuncParam {
+message FuncParam {
     bool isEmpty = 1;
-    string fiberFuncName = 2;
-    bytes fiberFuncContent = 3;
+    string funcName = 2;
+    bytes funcContent = 3;
 }
 
-message GetFiberFuncParam {
-    string fiberFuncName = 1;
+message GetFuncParam {
+    string funcName = 1;
 }
 
 message GetStorageFormatParam {

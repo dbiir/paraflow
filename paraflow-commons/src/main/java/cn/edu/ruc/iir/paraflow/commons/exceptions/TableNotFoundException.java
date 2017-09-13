@@ -43,7 +43,7 @@ public class TableNotFoundException extends ParaFlowException
     public StatusProto.ResponseStatus getResponseStatus()
     {
         return StatusProto.ResponseStatus.newBuilder()
-                .setStatus(StatusProto.ResponseStatus.State.TABLE_NOT_FOUND_WARN
+                .setStatus(StatusProto.ResponseStatus.State.TABLE_NOT_FOUND_WARN)
                         .build();
     }
 

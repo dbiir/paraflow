@@ -57,7 +57,7 @@ public class SQLTemplate
 
     public static String getTable(long dbId, String tblName)
     {
-        return String.format("SELECT tbltype,userid,createtime,lastaccesstime,locationurl,storageformatid,fibercolid,fiberfuncid FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
+        return String.format("SELECT tbltype,userid,createtime,lastaccesstime,locationurl,storageformatid,fibercolid,funcid FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
                 dbId,
                 tblName);
     }
@@ -106,9 +106,9 @@ public class SQLTemplate
                                      String locationUrl,
                                      long storageFormatId,
                                      long fiberColId,
-                                     long fiberFuncId)
+                                     long funcId)
     {
-        return String.format("INSERT INTO meta_tblmodel (dbid, tblname, tbltype, userid, createtime, lastaccesstime, locationurl, storageformatid, fibercolid, fiberfuncid) VALUES(%d,'%s',%d,%d,%d,%d,'%s',%d,%d,%d);",
+        return String.format("INSERT INTO meta_tblmodel (dbid, tblname, tbltype, userid, createtime, lastaccesstime, locationurl, storageformatid, fibercolid, funcid) VALUES(%d,'%s',%d,%d,%d,%d,'%s',%d,%d,%d);",
                 dbId,
                 tblName,
                 tblType,
@@ -118,7 +118,7 @@ public class SQLTemplate
                 locationUrl,
                 storageFormatId,
                 fiberColId,
-                fiberFuncId);
+                funcId);
     }
 
     public static String createColumn(int colIndex, long dbId, String colName, long tblId, int colType, String dataType)
@@ -222,9 +222,9 @@ public class SQLTemplate
                 serialFormat);
     }
 
-    public static String createFiberFunc(String fiberFuncName, ByteString fiberFuncContent)
+    public static String createFunc(String funcName, ByteString funcContent)
     {
-        return String.format("INSERT INTO meta_fiberfuncmodel (fiberfuncname,fiberfunccontent) VALUES('%s','%s');", fiberFuncName, fiberFuncContent);
+        return String.format("INSERT INTO meta_funcmodel (funcname,funccontent) VALUES('%s','%s');", funcName, funcContent);
     }
 
     public static String createBlockIndex(long tblId, long value, long timeBegin, long timeEnd, String timeZone, String blockPath)
@@ -318,9 +318,9 @@ public class SQLTemplate
         return String.format("SELECT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d;", tblId, value);
     }
 
-    public static String findFiberFuncId(String fiberFuncName)
+    public static String findFuncId(String funcName)
     {
-        return String.format("SELECT fiberfuncid FROM meta_fiberfuncmodel WHERE fiberfuncname = '%s';", fiberFuncName);
+        return String.format("SELECT funcid FROM meta_funcmodel WHERE funcname = '%s';", funcName);
     }
 
     public static String findStorageFormatId(String storageFormatName)
@@ -333,18 +333,23 @@ public class SQLTemplate
         return String.format("SELECT compression,serialformat FROM meta_storageformatmodel WHERE storageformatname = '%s';", storageFormatName);
     }
 
-    public static String findFiberFuncName(long fiberFuncId)
+    public static String findFuncName(long funcId)
     {
-        return String.format("SELECT fiberfuncname FROM meta_fiberfuncmodel WHERE fiberfuncid = '%d';", fiberFuncId);
+        return String.format("SELECT funcname FROM meta_funcmodel WHERE funcid = '%d';", funcId);
     }
 
-    public static String getFiberFunc(String fiberFuncName)
+    public static String getFunc(String funcName)
     {
-        return String.format("SELECT fiberfunccontent FROM meta_fiberfuncmodel WHERE fiberfuncname = '%s';", fiberFuncName);
+        return String.format("SELECT funccontent FROM meta_funcmodel WHERE funcname = '%s';", funcName);
     }
 
     public static String findStorageFormatName(long storageFormatId)
     {
         return String.format("SELECT storageformatname FROM meta_storageformatmodel WHERE storageformatid = '%d';", storageFormatId);
+    }
+
+    public static String createTblFunc(long tblId, long funcId)
+    {
+        return String.format("INSERT INTO meta_tblfuncmodel (tblid,funcid) VALUES('%d','%d');", tblId, funcId);
     }
 }

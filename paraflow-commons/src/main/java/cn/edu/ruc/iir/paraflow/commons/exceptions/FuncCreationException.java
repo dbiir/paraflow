@@ -15,7 +15,7 @@ package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
-public class FiberFuncCreationException extends ParaFlowException
+public class FuncCreationException extends ParaFlowException
 {
     /**
      * get error message.

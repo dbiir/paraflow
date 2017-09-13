@@ -48,6 +48,7 @@ message ResponseStatus {
         TBLPRIV_DELETE_ERROR = -36;
         USER_CREATION_ERROR = -37;
         USER_NOT_FOUND_ERROR = -38;
+        TBL_FUNC_CREATION_ERROR = -39;
 
         DATABASE_ALREADY_EXISTS = 1;
         DATABASE_NOT_FOUND = 2;
