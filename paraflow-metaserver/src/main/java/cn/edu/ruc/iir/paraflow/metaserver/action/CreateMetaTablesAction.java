@@ -26,7 +26,7 @@ public class CreateMetaTablesAction extends Action
             statements[1] = MetaConstants.createUserModelSql;
             statements[2] = MetaConstants.createDbModelSql;
             statements[3] = MetaConstants.createStorageFormatModelSql;
-            statements[4] = MetaConstants.createFiberFuncModelSql;
+            statements[4] = MetaConstants.createFuncModelSql;
             statements[5] = MetaConstants.createTblModelSql;
             statements[6] = MetaConstants.createColModelSql;
             statements[7] = MetaConstants.createDbParamModelSql;

@@ -39,7 +39,10 @@ public class DatabaseNotFoundException extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.DATABASE_NOT_FOUND_WARN)
+                .build();
     }
 
     /**

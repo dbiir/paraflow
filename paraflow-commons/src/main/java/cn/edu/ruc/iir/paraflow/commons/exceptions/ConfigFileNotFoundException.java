@@ -33,7 +33,7 @@ public final class ConfigFileNotFoundException extends ParaFlowException
     {
         return StatusProto.ResponseStatus
                 .newBuilder()
-                .setStatus(StatusProto.ResponseStatus.State.STATUS_SERVER_FATAL_ERR)
+                .setStatus(StatusProto.ResponseStatus.State.CONFIG_FILE_NOT_FOUND_FATAL)
                 .build();
     }
 

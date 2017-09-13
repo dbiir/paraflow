@@ -31,7 +31,10 @@ public class ColumnDeleteException extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.COLUMN_DELETE_ERROR)
+                .build();
     }
 
     /**
@@ -53,6 +56,6 @@ public class ColumnDeleteException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return null;
+        return ParaFlowExceptionLevel.ERROR;
     }
 }

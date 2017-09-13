@@ -18,7 +18,10 @@ public class DatabaseCreationException extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.DATABASE_CREATION_ERROR)
+                .build();
     }
 
     /**
@@ -40,6 +43,6 @@ public class DatabaseCreationException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return null;
+        return ParaFlowExceptionLevel.ERROR;
     }
 }

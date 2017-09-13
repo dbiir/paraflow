@@ -34,7 +34,10 @@ public class BlockIndexCreationException extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.BLOCK_INDEX_CREATION_ERROR)
+                .build();
     }
 
     /**
@@ -56,6 +59,6 @@ public class BlockIndexCreationException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return null;
+        return ParaFlowExceptionLevel.ERROR;
     }
 }

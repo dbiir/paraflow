@@ -15,16 +15,8 @@ package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
-/**
- * @author jelly.guodong.jin@gmail.com
- */
-public class DatabasesNotExist extends ParaFlowException
+public class FiberFuncCreationException extends ParaFlowException
 {
-    private static final long serialVersionUID = 5600165987123353938L;
-
-    public DatabasesNotExist()
-    {
-    }
     /**
      * get error message.
      *
@@ -33,13 +25,16 @@ public class DatabasesNotExist extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return String.format("StorageFormat is not found");
+        return null;
     }
 
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.FIBER_FUNCTION_CREATION_ERROR)
+                .build();
     }
 
     /**
@@ -50,7 +45,7 @@ public class DatabasesNotExist extends ParaFlowException
     @Override
     public String getHint()
     {
-        return String.format("Please create the storageFormat first.");
+        return null;
     }
 
     /**
@@ -61,6 +56,6 @@ public class DatabasesNotExist extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return ParaFlowExceptionLevel.WARN;
+        return ParaFlowExceptionLevel.ERROR;
     }
 }

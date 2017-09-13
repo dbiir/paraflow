@@ -15,7 +15,7 @@ package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.TablesNotExist;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.TablesNotExistException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
@@ -54,7 +54,7 @@ public class ListTableAction extends Action
                 input.setParam(stringList);
             }
             else {
-                throw new TablesNotExist(dbNameParam.getDatabase());
+                throw new TablesNotExistException(dbNameParam.getDatabase());
             }
         }
         else {

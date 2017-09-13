@@ -15,8 +15,18 @@ package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
-public class FilterBlockIndexByFiberNotFoundException extends ParaFlowException
+/**
+ * @author jelly.guodong.jin@gmail.com
+ */
+public class TablesNotExistException extends ParaFlowException
 {
+    private static final long serialVersionUID = 5600165987123353938L;
+
+    String dbName;
+    public TablesNotExistException(String dbName)
+    {
+        this.dbName = dbName;
+    }
     /**
      * get error message.
      *
@@ -25,13 +35,15 @@ public class FilterBlockIndexByFiberNotFoundException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return String.format("StorageFormat is not found");
     }
 
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus.newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.TABLES_NOT_EXIST_WARN
+                        .build();
     }
 
     /**
@@ -42,7 +54,7 @@ public class FilterBlockIndexByFiberNotFoundException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return String.format("Please create the storageFormat first.");
     }
 
     /**
@@ -53,6 +65,6 @@ public class FilterBlockIndexByFiberNotFoundException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return null;
+        return ParaFlowExceptionLevel.WARN;
     }
 }
