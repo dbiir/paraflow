@@ -75,7 +75,7 @@ public class MetaClient
 
     private boolean urlValidate(String url)
     {
-        String regEx = "^[a-zA-Z]+://(([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})|[a-zA-Z]+):[0-9]]{0,5}(/[a-zA-Z]+)+$"; //表示a或f
+        String regEx = "^[a-zA-Z]+://(([0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3})|[a-zA-Z]+)(:[0-9]{0,5})?(/[a-zA-Z]+)+$"; //表示a或f
         Pattern p = Pattern.compile(regEx);
         Matcher m = p.matcher(url);
         return m.find();
