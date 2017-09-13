@@ -98,6 +98,7 @@
  
  #### 12. TblFuncModel
  | NAME               | TYPE             | COMMENT                                         |
+ |----------------    |------------------|-------------------------------------------------|
  | tblFuncId          | int64            | tblFunc id //Auto-add Primary Key               |
  | funId              | int64            | function id //Forign Key：FuncModel：funcId     |
  | tblId              | int64            | table id //Forign Key：TblModel：tblId          |
