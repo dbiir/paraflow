@@ -93,15 +93,7 @@
  |----------------    |------------------|-------------------------------------------------|
  | funcId             | int64            | function id  //Auto-add Primary Key             |
  | funcName           | string           | function name                         ///unique |
- | funcType           | int              | 0:fiber;  1:filter;  2:transformer              |
  | funcContent        | bytes            | function template id                            |
- 
- #### 12. TblFuncModel
- | NAME               | TYPE             | COMMENT                                         |
- |----------------    |------------------|-------------------------------------------------|
- | tblFuncId          | int64            | tblFunc id //Auto-add Primary Key               |
- | funId              | int64            | function id //Forign Key：FuncModel：funcId     |
- | tblId              | int64            | table id //Forign Key：TblModel：tblId          |
  
  #### 13. BlockIndex
  | NAME            | TYPE             | COMMENT                               |
