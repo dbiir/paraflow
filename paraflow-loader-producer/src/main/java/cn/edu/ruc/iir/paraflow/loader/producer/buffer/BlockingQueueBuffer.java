@@ -20,7 +20,7 @@ public class BlockingQueueBuffer
         queue = new LinkedBlockingQueue<>();
     }
 
-    private static class BlockingQueueBufferHolder<K>
+    private static class BlockingQueueBufferHolder
     {
         private static final BlockingQueueBuffer instance = new BlockingQueueBuffer();
     }

@@ -52,9 +52,11 @@ public interface Producer
                                                 List<String> columnName,
                                                 List<String> dataType);
 
-    StatusProto.ResponseStatus createFiberFunc(String funcName, SerializableFunction<String, Long> func) throws IOException;
+    void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc);
 
     void registerFilter(String database, String table, Function<Message, Boolean> filterFunc);
 
     void registerTransformer(String database, String table, Function<Message, Message> transformerFunc);
+
+    void shutdown();
 }

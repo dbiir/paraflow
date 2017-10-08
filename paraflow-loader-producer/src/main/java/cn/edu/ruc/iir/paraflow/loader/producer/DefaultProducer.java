@@ -1,21 +1,25 @@
 package cn.edu.ruc.iir.paraflow.loader.producer;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
-import cn.edu.ruc.iir.paraflow.commons.func.SerializableFunction;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.loader.producer.buffer.BlockingQueueBuffer;
+import cn.edu.ruc.iir.paraflow.loader.producer.buffer.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.loader.producer.threads.ThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.Utils;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.common.KafkaFuture;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 /**
@@ -27,20 +31,15 @@ public class DefaultProducer implements Producer
 {
     private final MetaClient metaClient;
     private final AdminClient kafkaAdminClient;
-    private final ProducerConfig config = ProducerConfig.INSTANCE();
-//    private final Map<String, List<Function<Message, Boolean>>> filtersMap;
     private final BlockingQueueBuffer buffer = BlockingQueueBuffer.INSTANCE();
+    private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();
     private final long offerTimeout;
 
-    public DefaultProducer(String configPath)
+    public DefaultProducer(String configPath) throws ConfigFileNotFoundException
     {
-        try {
+        ProducerConfig config = ProducerConfig.INSTANCE();
             config.init(configPath);
             config.validate();
-        }
-        catch (ConfigFileNotFoundException e) {
-            e.printStackTrace();
-        }
         this.offerTimeout = config.getBufferOfferTimeout();
         // init meta client
         metaClient = new MetaClient(config.getMetaServerHost(),
@@ -49,8 +48,8 @@ public class DefaultProducer implements Producer
         Properties properties = new Properties();
         properties.setProperty("bootstrap.servers", config.getKafkaBootstrapServers());
         properties.setProperty("client.id", "producerAdmin");
+        properties.setProperty("metadata.max.age.ms", "3000");
         kafkaAdminClient = AdminClient.create(properties);
-//        filtersMap = new HashMap<>();
         init();
     }
 
@@ -72,14 +71,6 @@ public class DefaultProducer implements Producer
     public void send(String database, String table, Message message)
     {
         message.setTopic(Utils.formTopicName(database, table));
-//        List<Function<Message, Boolean>> filters = filtersMap.get(Utils.formTopicName(database, table));
-//        if (filters != null) {
-//            for (Function<Message, Boolean> func : filtersMap.get(database + "." + table)) {
-//                if (func.apply(message)) {
-//                    return;
-//                }
-//            }
-//        }
         while (true) {
             try {
                 buffer.offer(message, offerTimeout);
@@ -91,10 +82,18 @@ public class DefaultProducer implements Producer
     }
 
     @Override
-    public void createTopic(String topicName, int partitionsNum, short replcationFactor)
+    public void createTopic(String topicName, int partitionsNum, short replicationFactor)
     {
-        NewTopic newTopic = new NewTopic(topicName, partitionsNum, replcationFactor);
-        kafkaAdminClient.createTopics(Collections.singletonList(newTopic));
+        NewTopic newTopic = new NewTopic(topicName, partitionsNum, replicationFactor);
+        CreateTopicsResult result = kafkaAdminClient.createTopics(Collections.singletonList(newTopic));
+        KafkaFuture future = result.values().get(topicName);
+        try
+        {
+            future.get();
+        } catch (InterruptedException | ExecutionException e)
+        {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -152,24 +151,22 @@ public class DefaultProducer implements Producer
     }
 
     @Override
-    public StatusProto.ResponseStatus createFiberFunc(String funcName, SerializableFunction<String, Long> func) throws IOException
+    public void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc)
     {
-//        return metaClient.createFiberFunc(funcName, func);
-        return StatusProto.ResponseStatus.newBuilder().build();
+        funcMapBuffer.put(Utils.formTopicName(database, table), fiberFunc);
     }
+
+//    @Override
+//    public StatusProto.ResponseStatus createFiberFunc(String funcName, SerializableFunction<String, Long> func) throws IOException
+//    {
+////        return metaClient.createFiberFunc(funcName, func);
+//        return StatusProto.ResponseStatus.newBuilder().build();
+//    }
 
     @Override
     public void registerFilter(String database, String table, Function<Message, Boolean> filterFunc)
     {
-//        String key = Utils.formTopicName(database, table);
-//        if (filtersMap.containsKey(key)) {
-//            filtersMap.get(key).add(filterFunc);
-//        }
-//        else {
-//            List<Function<Message, Boolean>> funcList = new ArrayList<>();
-//            funcList.add(filterFunc);
-//            filtersMap.put(key, funcList);
-//        }
+        // todo register filters currently not supported
     }
 
     @Override
@@ -178,6 +175,7 @@ public class DefaultProducer implements Producer
         // todo register transformer currently not supported
     }
 
+    @Override
     public void shutdown()
     {
         Runtime.getRuntime().exit(0);

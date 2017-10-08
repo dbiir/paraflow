@@ -114,6 +114,21 @@ public class ProducerConfig
         return Integer.parseInt(paraflowConfig.getProperty("kafka.buffer.memory"));
     }
 
+    public String getKafkaKeySerializerClass()
+    {
+        return paraflowConfig.getProperty("kafka.key.serializer");
+    }
+
+    public String getKafkaValueSerializerClass()
+    {
+        return paraflowConfig.getProperty("kafka.value.serializer");
+    }
+
+    public String getKafkaPartitionerClass()
+    {
+        return paraflowConfig.getProperty("kafka.partitioner");
+    }
+
     public int getProducerShutdownTimeout()
     {
         return Integer.parseInt(paraflowConfig.getProperty("producer.shutdown.timeout"));

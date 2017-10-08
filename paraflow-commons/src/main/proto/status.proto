@@ -50,6 +50,9 @@ message ResponseStatus {
         USER_NOT_FOUND_ERROR = -38;
         TBL_FUNC_CREATION_ERROR = -39;
 
+        MSG_SERIALIZE_ERROR = -100;
+        MSG_DESERIALIZE_ERROR = -101;
+
         DATABASE_ALREADY_EXISTS = 1;
         DATABASE_NOT_FOUND = 2;
         TABLE_ALREADY_EXISTS = 3;
