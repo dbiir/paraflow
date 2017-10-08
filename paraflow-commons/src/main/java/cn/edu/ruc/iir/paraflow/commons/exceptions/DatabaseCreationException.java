@@ -4,6 +4,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
 public class DatabaseCreationException extends ParaFlowException
 {
+    private static final long serialVersionUID = -8371247825004879423L;
+
     /**
      * get error message.
      *
@@ -12,7 +14,7 @@ public class DatabaseCreationException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "Database creation exception";
     }
 
     @Override
@@ -32,7 +34,7 @@ public class DatabaseCreationException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

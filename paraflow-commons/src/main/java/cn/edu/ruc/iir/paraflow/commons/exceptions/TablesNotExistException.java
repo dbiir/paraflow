@@ -36,7 +36,7 @@ public class TablesNotExistException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return String.format("StorageFormat is not found");
+        return String.format("Tables of database %s not exist exception", dbName);
     }
 
     @Override
@@ -55,7 +55,7 @@ public class TablesNotExistException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return String.format("Please create the storageFormat first.");
+        return String.format("Check tables of database %s existence first.", dbName);
     }
 
     /**

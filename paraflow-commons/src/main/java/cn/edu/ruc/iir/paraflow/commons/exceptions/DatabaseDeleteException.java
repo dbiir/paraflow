@@ -20,6 +20,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  */
 public class DatabaseDeleteException extends ParaFlowException
 {
+    private static final long serialVersionUID = 720902410015399776L;
+
     /**
      * get error message.
      *
@@ -28,7 +30,7 @@ public class DatabaseDeleteException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "Database delete exception";
     }
 
     @Override
@@ -48,7 +50,7 @@ public class DatabaseDeleteException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

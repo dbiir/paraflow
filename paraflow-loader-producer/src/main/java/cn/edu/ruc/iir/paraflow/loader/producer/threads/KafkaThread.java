@@ -21,7 +21,7 @@ public class KafkaThread implements Runnable
     private BlockingQueueBuffer buffer = BlockingQueueBuffer.INSTANCE();
     private KafkaProducerClient producerClient = new KafkaProducerClient();
     private final MetaClient metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
-    private final Function<String, Long> fiberFunc;
+    private Function<String, Long> fiberFunc = null;
 
     public KafkaThread()
     {

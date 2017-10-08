@@ -24,7 +24,7 @@ public class GetFuncNameAction extends Action
                 input.setProperties("funcName", resultList.get(0).get(0));
             }
             else {
-                throw new FuncNotFoundException();
+                throw new FuncNotFoundException(String.valueOf(funcId));
             }
         }
         else {

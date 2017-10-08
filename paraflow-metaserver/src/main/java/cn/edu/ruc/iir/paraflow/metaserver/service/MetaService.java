@@ -135,7 +135,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             txController.addAction(new CreateTableAction());
             txController.addAction(new GetTableIdAction());
             txController.addAction(new CreateColumnAction());
-            txController.addAction(new CreateTblFuncAction());
+//            txController.addAction(new CreateTblFuncAction());
             txController.commit(input);
             responseStreamObserver.onNext(MetaConstants.OKStatus);
             responseStreamObserver.onCompleted();

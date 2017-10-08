@@ -4,8 +4,6 @@ import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.ByteArraySerializer;
-import org.apache.kafka.common.serialization.LongSerializer;
 
 import java.util.Properties;
 
@@ -28,7 +26,7 @@ public class KafkaProducerClient
         props.put("batch.size", config.getKafkaBatchSize());
         props.put("linger.ms", config.getKafkaLingerMs());
         props.put("buffer.memory", config.getKafkaBufferMem());
-        producer = new KafkaProducer<Long, Message>(props, new LongSerializer(), new ByteArraySerializer());
+        producer = new KafkaProducer<Long, Message>(props);
     }
 
     public void send(String topic, long key, Message message)

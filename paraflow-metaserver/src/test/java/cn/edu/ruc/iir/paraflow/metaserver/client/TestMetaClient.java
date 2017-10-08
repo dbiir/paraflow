@@ -80,19 +80,19 @@ public class TestMetaClient
         assertEquals(expect, status);
     }
 
-    @Test
-    public void step07_ClientGetFuncTest()
-    {
-        String string = "I am a girl";
-        byte[] funcContent = string.getBytes();
-        ByteString byteString = ByteString.copyFrom(funcContent);
-        MetaProto.FuncParam expect = MetaProto.FuncParam.newBuilder()
-                .setFuncName("FuncName")
-                .setFuncContent(byteString)
-                .build();
-        MetaProto.FuncParam funcParam = client.getFunc("FuncName");
-        assertEquals(expect, funcParam);
-    }
+//    @Test
+//    public void step07_ClientGetFuncTest()
+//    {
+//        String string = "I am a girl";
+//        byte[] funcContent = string.getBytes();
+//        ByteString byteString = ByteString.copyFrom(funcContent);
+//        MetaProto.FuncParam expect = MetaProto.FuncParam.newBuilder()
+//                .setFuncName("FuncName")
+//                .setFuncContent(byteString)
+//                .build();
+//        MetaProto.FuncParam funcParam = client.getFunc("FuncName");
+//        assertEquals(expect, funcParam);
+//    }
 
     @Test
     public void step06_ClientCreateRegularTableTest()

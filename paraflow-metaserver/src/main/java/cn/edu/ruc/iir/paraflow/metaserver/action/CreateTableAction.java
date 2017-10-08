@@ -51,7 +51,7 @@ public class CreateTableAction extends Action
                     (long) funcIdOp.get());
             int status = connection.executeUpdate(userStatement);
             if (status == 0) {
-                throw new TableCreationException();
+                throw new TableCreationException(tblParam.getTblName());
             }
         }
         else {

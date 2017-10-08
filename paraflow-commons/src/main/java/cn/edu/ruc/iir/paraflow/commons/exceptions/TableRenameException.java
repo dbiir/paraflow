@@ -22,7 +22,7 @@ public class TableRenameException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "table rename exception";
     }
 
     @Override
@@ -41,7 +41,7 @@ public class TableRenameException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

@@ -21,9 +21,11 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 public class FuncNotFoundException extends ParaFlowException
 {
     private static final long serialVersionUID = 5600165943587655248L;
+    private final String funcName;
 
-    public FuncNotFoundException()
+    public FuncNotFoundException(String funcName)
     {
+        this.funcName = funcName;
     }
     /**
      * get error message.
@@ -33,7 +35,7 @@ public class FuncNotFoundException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return String.format("FiberFunc is not found");
+        return String.format("FiberFunc %s is not found", funcName);
     }
 
     @Override
@@ -53,7 +55,7 @@ public class FuncNotFoundException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return "Please create the fiberFunc first.";
+        return String.format("Please create the fiberFunc %s first.", funcName);
     }
 
     /**

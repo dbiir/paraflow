@@ -48,7 +48,7 @@ public class ConnectionPool
             return new TransactionController(new DBConnection(connection));
         }
         catch (SQLException e) {
-            throw new SQLExecutionException();
+            throw new SQLExecutionException("Get jdbc connection");
         }
     }
 

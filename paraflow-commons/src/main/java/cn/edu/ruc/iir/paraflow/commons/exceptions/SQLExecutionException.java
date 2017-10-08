@@ -5,6 +5,12 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 public class SQLExecutionException extends ParaFlowException
 {
     private static final long serialVersionUID = 5939773817133884884L;
+    private final String sql;
+
+    public SQLExecutionException(String sql)
+    {
+        this.sql = sql;
+    }
 
     /**
      * get error message.
@@ -14,7 +20,7 @@ public class SQLExecutionException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return "SQL execution error";
+        return String.format("SQL execution error [%s]", sql);
     }
 
     @Override

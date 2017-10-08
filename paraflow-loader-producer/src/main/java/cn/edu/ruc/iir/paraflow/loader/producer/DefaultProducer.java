@@ -154,7 +154,8 @@ public class DefaultProducer implements Producer
     @Override
     public StatusProto.ResponseStatus createFiberFunc(String funcName, SerializableFunction<String, Long> func) throws IOException
     {
-        return metaClient.createFiberFunc(funcName, func);
+//        return metaClient.createFiberFunc(funcName, func);
+        return StatusProto.ResponseStatus.newBuilder().build();
     }
 
     @Override

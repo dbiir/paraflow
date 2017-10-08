@@ -20,6 +20,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  */
 public class FilterBlockIndexNotFoundException extends ParaFlowException
 {
+    private static final long serialVersionUID = -9146284569119763113L;
+
     /**
      * get error message.
      *
@@ -28,7 +30,7 @@ public class FilterBlockIndexNotFoundException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "filter block index not found exception";
     }
 
     @Override
@@ -48,7 +50,7 @@ public class FilterBlockIndexNotFoundException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**
