@@ -18,11 +18,11 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class FiberFuncNotFoundException extends ParaFlowException
+public class DatabasesNotExistException extends ParaFlowException
 {
-    private static final long serialVersionUID = 5600165943587655248L;
+    private static final long serialVersionUID = 5600165987123353938L;
 
-    public FiberFuncNotFoundException()
+    public DatabasesNotExistException()
     {
     }
     /**
@@ -33,13 +33,16 @@ public class FiberFuncNotFoundException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return String.format("FiberFunc is not found");
+        return String.format("StorageFormat is not found");
     }
 
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.DATABASES_NOT_EXIST_WARN)
+                .build();
     }
 
     /**
@@ -50,7 +53,7 @@ public class FiberFuncNotFoundException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return String.format("Please create the fiberFunc first.");
+        return String.format("Please create the storageFormat first.");
     }
 
     /**

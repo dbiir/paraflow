@@ -21,7 +21,7 @@ public class SQLExecutionException extends ParaFlowException
     public StatusProto.ResponseStatus getResponseStatus()
     {
         return StatusProto.ResponseStatus.newBuilder()
-                .setStatus(StatusProto.ResponseStatus.State.UNRECOGNIZED)
+                .setStatus(StatusProto.ResponseStatus.State.SQL_EXECUTION_ERROR)
                 .build();
     }
 

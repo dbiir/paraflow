@@ -1,6 +1,6 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
-import cn.edu.ruc.iir.paraflow.commons.exceptions.MetaTableInitException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.MetaInitException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
@@ -24,19 +24,41 @@ public class InitMetaTablesAction extends Action
         // if meta data already exist
         if (metaTableList.size() == MetaConstants.metaTableNum) {
             // todo alice: validate meta data
-            return new ActionResponse();
+            String findVerSql = MetaConstants.getInitVerTableSql;
+            String findFiberFunc = MetaConstants.getInitFiberFuncSql;
+            ResultList resVer = connection.executeQuery(findVerSql);
+            ResultList resFiberFunc = connection.executeQuery(findFiberFunc);
+            String version = MetaConstants.currentVersion.getVersionId();
+            String fiberFunc = "none";
+            if (!resVer.isEmpty()) {
+                if (!version.equals(resVer.get(0).get(0))) {
+                    throw new MetaInitException();
+                }
+            }
+            else {
+                throw new MetaInitException();
+            }
+            if (!resFiberFunc.isEmpty()) {
+                if (!fiberFunc.equals(resFiberFunc.get(0).get(0))) {
+                    throw new MetaInitException();
+                }
+            }
+            else {
+                throw new MetaInitException();
+            }
+            return input;
         }
         if (metaTableList.size() == 0) {
             String[] statements = new String[2];
             statements[0] = MetaConstants.initVerTableSql;
-            statements[1] = MetaConstants.initFiberFuncSql;
+            statements[1] = MetaConstants.initFuncSql;
             int[] results = connection.executeUpdateInBatch(statements);
             for (int res : results) {
                 if (res != 1) {
-                    throw new MetaTableInitException();
+                    throw new MetaInitException();
                 }
             }
         }
-        return new ActionResponse();
+        return input;
     }
 }

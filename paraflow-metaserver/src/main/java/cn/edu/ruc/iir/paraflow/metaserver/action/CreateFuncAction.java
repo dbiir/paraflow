@@ -14,43 +14,29 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.FiberFuncNotFoundException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.FuncCreationException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
-import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
-import com.google.protobuf.ByteString;
 
 import java.util.Optional;
 
-/**
- * @author jelly.guodong.jin@gmail.com
- */
-public class GetFiberFuncAction extends Action
+public class CreateFuncAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
-        Optional<Object> fiberFuncNameOp = input.getProperties("fiberFuncName");
         Optional<Object> paramOp = input.getParam();
-        if (fiberFuncNameOp.isPresent() && paramOp.isPresent()) {
-            String fiberFuncName = fiberFuncNameOp.get().toString();
-            String sqlStatement = SQLTemplate.getFiberFunc(fiberFuncName);
-            ResultList resultList = connection.executeQuery(sqlStatement);
-            if (!resultList.isEmpty()) {
-                byte[] bytes = resultList.get(0).get(0).getBytes();
-                ByteString byteString = ByteString.copyFrom(bytes);
-                MetaProto.FiberFuncParam fiberFuncParam
-                        = MetaProto.FiberFuncParam.newBuilder()
-                        .setFiberFuncName(fiberFuncName)
-                        .setFiberFuncContent(byteString)
-                        .setIsEmpty(false)
-                        .build();
-                input.setParam(fiberFuncParam);
-            }
-            else {
-                throw new FiberFuncNotFoundException();
+        if (paramOp.isPresent()) {
+            MetaProto.FuncParam funcParam
+                    = (MetaProto.FuncParam) paramOp.get();
+            String userStatement = SQLTemplate.createFunc(
+                    funcParam.getFuncName(),
+                    funcParam.getFuncContent());
+            int status = connection.executeUpdate(userStatement);
+            if (status == 0) {
+                throw new FuncCreationException();
             }
         }
         else {

@@ -14,7 +14,7 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.FilterBlockIndexByFiberNotFoundException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.FilterBlockIndexNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
@@ -85,7 +85,7 @@ public class FilterBlockIndexByFiberAction extends Action
                 input.setParam(stringList);
             }
             else {
-                throw new FilterBlockIndexByFiberNotFoundException();
+                throw new FilterBlockIndexNotFoundException();
             }
         }
         else {

@@ -1,10 +1,5 @@
 package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
-import cn.edu.ruc.iir.paraflow.commons.exceptions.FormatUrlException;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-
 /**
  * paraflow
  *
@@ -15,11 +10,8 @@ public class Utils
     private Utils()
     {}
 
-    public static String formatDbUrl(String dbName) throws FormatUrlException
+    public static String formatDbUrl(String dbName)
     {
-        if (dbName.isEmpty()) {
-            throw new FormatUrlException();
-        }
         String base = MetaConfig.INSTANCE().getHDFSWarehouse();
         if (!base.endsWith("/")) {
             base = base + "/";
@@ -27,18 +19,10 @@ public class Utils
         if (dbName.startsWith("/")) {
             dbName = dbName.substring(1, dbName.length());
         }
-        try {
-            return new URI(base + dbName).toString();
-        }
-        catch (URISyntaxException e) {
-            throw new FormatUrlException();
-        }
+        return base + dbName;
     }
-    public static String formatTblUrl(String dbName, String tblName) throws FormatUrlException
+    public static String formatTblUrl(String dbName, String tblName)
     {
-        if (dbName.isEmpty() || tblName.isEmpty()) {
-            throw new FormatUrlException();
-        }
         String base = MetaConfig.INSTANCE().getHDFSWarehouse();
         if (!base.endsWith("/")) {
             base = base + "/";
@@ -49,11 +33,6 @@ public class Utils
         if (tblName.startsWith("/")) {
             tblName = tblName.substring(1, tblName.length());
         }
-        try {
-            return new URI(base + dbName + tblName).toString();
-        }
-        catch (URISyntaxException e) {
-            throw new FormatUrlException();
-        }
+        return base + dbName + tblName;
     }
 }

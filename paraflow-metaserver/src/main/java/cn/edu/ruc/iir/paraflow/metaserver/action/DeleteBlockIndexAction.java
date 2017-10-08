@@ -14,8 +14,8 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.BlockIndexDeleteException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.TblParamDeleteException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
@@ -40,7 +40,7 @@ public class DeleteBlockIndexAction extends Action
                 String sqlStatement2 = SQLTemplate.deleteBlockIndex(tblId);
                 int status = connection.executeUpdate(sqlStatement2);
                 if (status == 0) {
-                    throw new TblParamDeleteException();
+                    throw new BlockIndexDeleteException();
                 }
             }
         }

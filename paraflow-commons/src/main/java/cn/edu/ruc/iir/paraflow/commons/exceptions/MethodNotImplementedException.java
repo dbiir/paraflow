@@ -31,7 +31,9 @@ public final class MethodNotImplementedException extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus.newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.METHOD_NOT_IMPLEMENTED_INFO)
+                .build();
     }
 
     /**

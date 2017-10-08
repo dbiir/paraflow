@@ -21,7 +21,7 @@ public class UserCreationException extends ParaFlowException
     public StatusProto.ResponseStatus getResponseStatus()
     {
         return StatusProto.ResponseStatus.newBuilder()
-                .setStatus(StatusProto.ResponseStatus.State.USER_ALREADY_EXISTS)
+                .setStatus(StatusProto.ResponseStatus.State.USER_CREATION_ERROR)
                 .build();
     }
 

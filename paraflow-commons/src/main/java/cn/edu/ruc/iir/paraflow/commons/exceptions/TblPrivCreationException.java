@@ -31,7 +31,9 @@ public class TblPrivCreationException extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus.newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.TBLPRIV_CREATION_ERROR)
+                        .build();
     }
 
     /**
@@ -53,6 +55,6 @@ public class TblPrivCreationException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return null;
+        return ParaFlowExceptionLevel.ERROR;
     }
 }

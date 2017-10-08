@@ -14,29 +14,43 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.FiberFuncCreationException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.FuncNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
+import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
+import com.google.protobuf.ByteString;
 
 import java.util.Optional;
 
-public class CreateFiberFuncAction extends Action
+/**
+ * @author jelly.guodong.jin@gmail.com
+ */
+public class GetFuncAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
+        Optional<Object> fiberFuncNameOp = input.getProperties("fiberFuncName");
         Optional<Object> paramOp = input.getParam();
-        if (paramOp.isPresent()) {
-            MetaProto.FiberFuncParam fiberFuncParam
-                    = (MetaProto.FiberFuncParam) paramOp.get();
-            String userStatement = SQLTemplate.createFiberFunc(
-                    fiberFuncParam.getFiberFuncName(),
-                    fiberFuncParam.getFiberFuncContent());
-            int status = connection.executeUpdate(userStatement);
-            if (status == 0) {
-                throw new FiberFuncCreationException();
+        if (fiberFuncNameOp.isPresent() && paramOp.isPresent()) {
+            String fiberFuncName = fiberFuncNameOp.get().toString();
+            String sqlStatement = SQLTemplate.getFunc(fiberFuncName);
+            ResultList resultList = connection.executeQuery(sqlStatement);
+            if (!resultList.isEmpty()) {
+                byte[] bytes = resultList.get(0).get(0).getBytes();
+                ByteString byteString = ByteString.copyFrom(bytes);
+                MetaProto.FuncParam fiberFuncParam
+                        = MetaProto.FuncParam.newBuilder()
+                        .setFuncName(fiberFuncName)
+                        .setFuncContent(byteString)
+                        .setIsEmpty(false)
+                        .build();
+                input.setParam(fiberFuncParam);
+            }
+            else {
+                throw new FuncNotFoundException();
             }
         }
         else {

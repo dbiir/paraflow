@@ -34,7 +34,10 @@ public class FilterBlockIndexNotFoundException extends ParaFlowException
     @Override
     public StatusProto.ResponseStatus getResponseStatus()
     {
-        return null;
+        return StatusProto.ResponseStatus
+                .newBuilder()
+                .setStatus(StatusProto.ResponseStatus.State.FILTER_BLOCK_INDEX_NOT_FOUND_WARN)
+                .build();
     }
 
     /**
@@ -56,6 +59,6 @@ public class FilterBlockIndexNotFoundException extends ParaFlowException
     @Override
     public ParaFlowExceptionLevel getLevel()
     {
-        return null;
+        return ParaFlowExceptionLevel.WARN;
     }
 }

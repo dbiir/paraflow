@@ -26,7 +26,7 @@ public class MetaInitException extends ParaFlowException
     public StatusProto.ResponseStatus getResponseStatus()
     {
         return StatusProto.ResponseStatus.newBuilder()
-                .setStatus(StatusProto.ResponseStatus.State.STATUS_SERVER_FATAL_ERR)
+                .setStatus(StatusProto.ResponseStatus.State.META_INIT_FATAL)
                 .build();
     }
 
