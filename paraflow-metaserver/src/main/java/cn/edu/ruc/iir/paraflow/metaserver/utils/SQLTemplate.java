@@ -108,7 +108,7 @@ public class SQLTemplate
                                      long fiberColId,
                                      long funcId)
     {
-        return String.format("INSERT INTO meta_tblmodel (dbid, tblname, tbltype, userid, createtime, lastaccesstime, locationurl, storageformatid, fibercolid, funcid) VALUES(%d,'%s',%d,%d,%d,%d,'%s',%d,%d,%d);",
+        return String.format("INSERT INTO meta_tblmodel (dbid, tblname, tbltype, userid, createtime, lastaccesstime, locationurl, storageformatid, fibercolid, fiberfuncid) VALUES(%d,'%s',%d,%d,%d,%d,'%s',%d,%d,%d);",
                 dbId,
                 tblName,
                 tblType,

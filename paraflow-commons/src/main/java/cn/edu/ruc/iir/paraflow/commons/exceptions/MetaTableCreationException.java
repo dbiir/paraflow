@@ -9,6 +9,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  */
 public class MetaTableCreationException extends ParaFlowException
 {
+    private static final long serialVersionUID = -4915701495568826208L;
+
     /**
      * get error message.
      *
@@ -17,7 +19,7 @@ public class MetaTableCreationException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "meta table creation exception";
     }
 
     @Override
@@ -36,7 +38,7 @@ public class MetaTableCreationException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

@@ -6,6 +6,8 @@ import cn.edu.ruc.iir.paraflow.loader.producer.utils.KafkaProducerClient;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 
+import java.util.function.Function;
+
 /**
  * paraflow
  *
@@ -19,6 +21,7 @@ public class KafkaThread implements Runnable
     private BlockingQueueBuffer buffer = BlockingQueueBuffer.INSTANCE();
     private KafkaProducerClient producerClient = new KafkaProducerClient();
     private final MetaClient metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
+    private Function<String, Long> fiberFunc = null;
 
     public KafkaThread()
     {
@@ -57,7 +60,11 @@ public class KafkaThread implements Runnable
             }
             try {
                 Message msg = buffer.poll(config.getBufferPollTimeout());
-                producerClient.send(msg.getTopic(), 0, msg);
+                if (msg.getTopic().isPresent()) {
+                    // todo get fiber func and apply it
+                    producerClient.send(msg.getTopic().get(), 0, msg);
+                }
+                // else ignore this message
             }
             catch (InterruptedException ignored) {
                 // if poll nothing, enter next loop

@@ -20,6 +20,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  */
 public class DbTableDeleteException extends ParaFlowException
 {
+    private static final long serialVersionUID = -1017931786887881282L;
+
     /**
      * get error message.
      *
@@ -28,7 +30,7 @@ public class DbTableDeleteException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "table delete exception";
     }
 
     @Override
@@ -48,7 +50,7 @@ public class DbTableDeleteException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

@@ -17,6 +17,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
 public class DbParamDeleteException extends ParaFlowException
 {
+    private static final long serialVersionUID = -4974329141531161024L;
+
     /**
      * get error message.
      *
@@ -25,7 +27,7 @@ public class DbParamDeleteException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "db param delete exception";
     }
 
     @Override
@@ -45,7 +47,7 @@ public class DbParamDeleteException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

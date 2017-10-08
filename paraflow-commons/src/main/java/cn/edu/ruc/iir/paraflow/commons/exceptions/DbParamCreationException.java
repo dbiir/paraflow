@@ -20,6 +20,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  */
 public class DbParamCreationException extends ParaFlowException
 {
+    private static final long serialVersionUID = -998020573675242949L;
+
     /**
      * get error message.
      *
@@ -28,7 +30,7 @@ public class DbParamCreationException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "db param creation exception";
     }
 
     @Override
@@ -48,7 +50,7 @@ public class DbParamCreationException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "check and try again";
     }
 
     /**

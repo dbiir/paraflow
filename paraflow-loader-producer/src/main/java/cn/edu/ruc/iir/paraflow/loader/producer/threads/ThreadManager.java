@@ -42,7 +42,6 @@ public class ThreadManager
 
     public void run()
     {
-        //
         for (KafkaThread thread : threads) {
             executorService.submit(thread);
         }
@@ -50,7 +49,6 @@ public class ThreadManager
 
     public void shutdown()
     {
-        //
         for (KafkaThread thread : threads) {
             thread.shutdown();
         }

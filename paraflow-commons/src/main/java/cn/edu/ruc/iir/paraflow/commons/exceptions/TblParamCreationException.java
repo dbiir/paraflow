@@ -17,6 +17,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
 public class TblParamCreationException extends ParaFlowException
 {
+    private static final long serialVersionUID = -3602113853214471968L;
+
     /**
      * get error message.
      *
@@ -25,7 +27,7 @@ public class TblParamCreationException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "table params creation exception";
     }
 
     @Override
@@ -44,7 +46,7 @@ public class TblParamCreationException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

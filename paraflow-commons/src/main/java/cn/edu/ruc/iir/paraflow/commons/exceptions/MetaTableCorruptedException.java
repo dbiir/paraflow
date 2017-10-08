@@ -4,6 +4,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
 public class MetaTableCorruptedException extends ParaFlowException
 {
+    private static final long serialVersionUID = -6160322841066723567L;
+
     /**
      * get error message.
      *
@@ -12,7 +14,7 @@ public class MetaTableCorruptedException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "Meta table corrupted";
     }
 
     @Override
@@ -31,7 +33,7 @@ public class MetaTableCorruptedException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Clean meta data and try again";
     }
 
     /**

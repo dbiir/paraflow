@@ -29,7 +29,7 @@ public class GetStorageFormatNameAction extends Action
                 input.setProperties("sfName", resultList.get(0).get(0));
             }
             else {
-                throw new StorageFormatNotFoundException();
+                throw new StorageFormatNotFoundException(String.valueOf(sfId));
             }
         }
         else {

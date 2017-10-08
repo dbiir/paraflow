@@ -20,6 +20,14 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  */
 public class ColumnCreationException extends ParaFlowException
 {
+    private static final long serialVersionUID = -4831601491539342979L;
+    private final String colName;
+
+    public ColumnCreationException(String colName)
+    {
+        this.colName = colName;
+    }
+
     /**
      * get error message.
      *
@@ -28,7 +36,7 @@ public class ColumnCreationException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return String.format("Column %s creation exception", colName);
     }
 
     @Override
@@ -48,7 +56,7 @@ public class ColumnCreationException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check column information and try again";
     }
 
     /**

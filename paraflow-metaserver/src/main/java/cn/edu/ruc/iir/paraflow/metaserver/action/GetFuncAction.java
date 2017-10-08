@@ -32,7 +32,7 @@ public class GetFuncAction extends Action
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
-        Optional<Object> fiberFuncNameOp = input.getProperties("fiberFuncName");
+        Optional<Object> fiberFuncNameOp = input.getProperties("funcName");
         Optional<Object> paramOp = input.getParam();
         if (fiberFuncNameOp.isPresent() && paramOp.isPresent()) {
             String fiberFuncName = fiberFuncNameOp.get().toString();
@@ -50,7 +50,7 @@ public class GetFuncAction extends Action
                 input.setParam(fiberFuncParam);
             }
             else {
-                throw new FuncNotFoundException();
+                throw new FuncNotFoundException(fiberFuncName);
             }
         }
         else {

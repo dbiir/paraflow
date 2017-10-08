@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
 
 /**
  * ParaFlow
@@ -30,7 +31,7 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
             connection.setAutoCommit(autoCommit);
         }
         catch (SQLException e) {
-            throw new SQLExecutionException();
+            throw new SQLExecutionException("auto commit setup");
         }
     }
 
@@ -43,7 +44,7 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
             stmt.close();
         }
         catch (SQLException e) {
-            throw new SQLExecutionException();
+            throw new SQLExecutionException(sqlStatement);
         }
         return rowNumber;
     }
@@ -58,7 +59,7 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
             return stmt.executeBatch();
         }
         catch (SQLException e) {
-            throw new SQLExecutionException();
+            throw new SQLExecutionException(Arrays.toString(sqlStatements));
         }
     }
 
@@ -88,7 +89,7 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
             stmt.close();
         }
         catch (SQLException e) {
-            throw new SQLExecutionException();
+            throw new SQLExecutionException(sqlStatement);
         }
         return  resultList;
     }
@@ -99,7 +100,7 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
             connection.commit();
         }
         catch (SQLException e) {
-            throw new SQLExecutionException();
+            throw new SQLExecutionException("commit");
         }
     }
 
@@ -109,7 +110,7 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
             connection.rollback();
         }
         catch (SQLException e) {
-            throw new SQLExecutionException();
+            throw new SQLExecutionException("rollback");
         }
     }
 
@@ -120,7 +121,7 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
             connection.close();
         }
         catch (SQLException e) {
-            throw new SQLExecutionException();
+            throw new SQLExecutionException("connection close");
         }
     }
 }

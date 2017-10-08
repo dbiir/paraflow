@@ -20,6 +20,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  */
 public class BlockIndexCreationException extends ParaFlowException
 {
+    private static final long serialVersionUID = -9039855935801201287L;
+
     /**
      * get error message.
      *
@@ -28,7 +30,7 @@ public class BlockIndexCreationException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "Add index exception";
     }
 
     @Override
@@ -48,7 +50,7 @@ public class BlockIndexCreationException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

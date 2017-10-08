@@ -4,10 +4,12 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
 public class TblFuncCreationException extends ParaFlowException
 {
+    private static final long serialVersionUID = 2586643482592134064L;
+
     @Override
     public String getMessage()
     {
-        return null;
+        return "Table function creation exception";
     }
 
     @Override
@@ -21,7 +23,7 @@ public class TblFuncCreationException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     @Override

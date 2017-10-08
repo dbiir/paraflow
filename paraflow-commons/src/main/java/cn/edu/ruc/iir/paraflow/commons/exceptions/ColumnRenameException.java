@@ -17,10 +17,12 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
 public class ColumnRenameException extends ParaFlowException
 {
+    private static final long serialVersionUID = -7288943929416471257L;
+
     @Override
     public String getMessage()
     {
-        return null;
+        return "Column rename exception";
     }
 
     @Override
@@ -40,7 +42,7 @@ public class ColumnRenameException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

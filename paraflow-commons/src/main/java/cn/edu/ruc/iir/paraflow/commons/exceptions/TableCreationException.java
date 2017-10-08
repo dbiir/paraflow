@@ -21,9 +21,11 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 public class TableCreationException extends ParaFlowException
 {
     private static final long serialVersionUID = 5600165987123353938L;
+    private final String tblName;
 
-    public TableCreationException()
+    public TableCreationException(String tblName)
     {
+        this.tblName = tblName;
     }
     /**
      * get error message.
@@ -33,7 +35,7 @@ public class TableCreationException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return String.format("StorageFormat is not found");
+        return String.format("Table %s is not found", tblName);
     }
 
     @Override
@@ -52,7 +54,7 @@ public class TableCreationException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return "";
+        return "Check and try again";
     }
 
     /**

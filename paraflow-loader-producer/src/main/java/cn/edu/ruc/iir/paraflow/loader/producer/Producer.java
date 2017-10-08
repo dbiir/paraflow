@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader.producer;
 
+import cn.edu.ruc.iir.paraflow.commons.func.SerializableFunction;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
@@ -51,7 +52,7 @@ public interface Producer
                                                 List<String> columnName,
                                                 List<String> dataType);
 
-    StatusProto.ResponseStatus createFiberFunc(String funcName, Function<String, Long> func) throws IOException;
+    StatusProto.ResponseStatus createFiberFunc(String funcName, SerializableFunction<String, Long> func) throws IOException;
 
     void registerFilter(String database, String table, Function<Message, Boolean> filterFunc);
 

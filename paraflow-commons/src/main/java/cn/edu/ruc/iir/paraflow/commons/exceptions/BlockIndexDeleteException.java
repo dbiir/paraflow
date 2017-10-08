@@ -14,8 +14,11 @@
 package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+
 public class BlockIndexDeleteException extends ParaFlowException
 {
+    private static final long serialVersionUID = 193021504625075101L;
+
     /**
      * get error message.
      *
@@ -24,7 +27,7 @@ public class BlockIndexDeleteException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "Delete block index exception";
     }
 
     @Override
@@ -44,7 +47,7 @@ public class BlockIndexDeleteException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

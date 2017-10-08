@@ -17,6 +17,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
 public class TableDeleteException extends ParaFlowException
 {
+    private static final long serialVersionUID = -8652719153782972690L;
+
     /**
      * get error message.
      *
@@ -25,7 +27,7 @@ public class TableDeleteException extends ParaFlowException
     @Override
     public String getMessage()
     {
-        return null;
+        return "table delete exception";
     }
 
     @Override
@@ -44,7 +46,7 @@ public class TableDeleteException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

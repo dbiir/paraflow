@@ -48,7 +48,7 @@ public class CreateColumnAction extends Action
             int sizeExecute = colExecute.length;
             for (int j = 0; j < sizeExecute; j++) {
                 if (colExecute[j] == 0) {
-                    throw new ColumnCreationException();
+                    throw new ColumnCreationException(columns.get(j).getColName());
                 }
             }
         }

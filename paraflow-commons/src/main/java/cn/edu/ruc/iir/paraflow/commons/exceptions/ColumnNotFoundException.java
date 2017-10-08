@@ -20,10 +20,12 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
  */
 public class ColumnNotFoundException extends ParaFlowException
 {
+    private static final long serialVersionUID = -3791508839274943079L;
+
     @Override
     public String getMessage()
     {
-        return null;
+        return "Column not found exception";
     }
 
     @Override
@@ -43,7 +45,7 @@ public class ColumnNotFoundException extends ParaFlowException
     @Override
     public String getHint()
     {
-        return null;
+        return "Check and try again";
     }
 
     /**

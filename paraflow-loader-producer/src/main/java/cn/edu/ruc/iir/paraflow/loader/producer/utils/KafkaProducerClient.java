@@ -19,7 +19,14 @@ public class KafkaProducerClient
     public KafkaProducerClient()
     {
         Properties props = new Properties();
-        producer = new KafkaProducer<>(props);
+        ProducerConfig config = ProducerConfig.INSTANCE();
+        props.put("bootstrap.servers", config.getKafkaBootstrapServers());
+        props.put("acks", config.getKafkaAcks());
+        props.put("retries", config.getKafkaRetries());
+        props.put("batch.size", config.getKafkaBatchSize());
+        props.put("linger.ms", config.getKafkaLingerMs());
+        props.put("buffer.memory", config.getKafkaBufferMem());
+        producer = new KafkaProducer<Long, Message>(props);
     }
 
     public void send(String topic, long key, Message message)

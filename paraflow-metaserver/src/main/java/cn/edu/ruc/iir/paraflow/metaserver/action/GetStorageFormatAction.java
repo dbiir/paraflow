@@ -45,7 +45,7 @@ public class GetStorageFormatAction extends Action
                 input.setParam(storageFormatParam);
             }
             else {
-                throw new StorageFormatNotFoundException();
+                throw new StorageFormatNotFoundException(sfName);
             }
         }
         else {

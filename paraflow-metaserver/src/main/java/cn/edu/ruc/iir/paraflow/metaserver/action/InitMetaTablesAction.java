@@ -29,7 +29,6 @@ public class InitMetaTablesAction extends Action
             ResultList resVer = connection.executeQuery(findVerSql);
             ResultList resFiberFunc = connection.executeQuery(findFiberFunc);
             String version = MetaConstants.currentVersion.getVersionId();
-            String fiberFunc = "none";
             if (!resVer.isEmpty()) {
                 if (!version.equals(resVer.get(0).get(0))) {
                     throw new MetaInitException();
@@ -38,12 +37,7 @@ public class InitMetaTablesAction extends Action
             else {
                 throw new MetaInitException();
             }
-            if (!resFiberFunc.isEmpty()) {
-                if (!fiberFunc.equals(resFiberFunc.get(0).get(0))) {
-                    throw new MetaInitException();
-                }
-            }
-            else {
+            if (resFiberFunc.isEmpty()) {
                 throw new MetaInitException();
             }
             return input;
