@@ -2,10 +2,12 @@ package cn.edu.ruc.iir.paraflow.loader.producer.threads;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.loader.producer.buffer.BlockingQueueBuffer;
+import cn.edu.ruc.iir.paraflow.loader.producer.buffer.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.KafkaProducerClient;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 
+import java.util.Optional;
 import java.util.function.Function;
 
 /**
@@ -17,11 +19,12 @@ public class KafkaThread implements Runnable
 {
     private final String threadName;
     private final ProducerConfig config = ProducerConfig.INSTANCE();
-    private boolean isReadyToStop = false;
-    private BlockingQueueBuffer buffer = BlockingQueueBuffer.INSTANCE();
-    private KafkaProducerClient producerClient = new KafkaProducerClient();
+    private final BlockingQueueBuffer buffer = BlockingQueueBuffer.INSTANCE();
+    private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();
+    private final KafkaProducerClient producerClient = new KafkaProducerClient();
     private final MetaClient metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
-    private Function<String, Long> fiberFunc = null;
+
+    private boolean isReadyToStop = false;
 
     public KafkaThread()
     {
@@ -61,8 +64,10 @@ public class KafkaThread implements Runnable
             try {
                 Message msg = buffer.poll(config.getBufferPollTimeout());
                 if (msg.getTopic().isPresent()) {
-                    // todo get fiber func and apply it
-                    producerClient.send(msg.getTopic().get(), 0, msg);
+                    String topic = msg.getTopic().get();
+                    Optional<Function<String, Long>> function = funcMapBuffer.get(topic);
+                    function.ifPresent(stringLongFunction -> producerClient.send(topic, stringLongFunction.apply(msg.getKey()), msg));
+                    // else ignore this message
                 }
                 // else ignore this message
             }

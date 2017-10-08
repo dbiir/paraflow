@@ -26,7 +26,10 @@ public class KafkaProducerClient
         props.put("batch.size", config.getKafkaBatchSize());
         props.put("linger.ms", config.getKafkaLingerMs());
         props.put("buffer.memory", config.getKafkaBufferMem());
-        producer = new KafkaProducer<Long, Message>(props);
+        props.put("key.serializer", config.getKafkaKeySerializerClass());
+        props.put("value.serializer", config.getKafkaValueSerializerClass());
+        props.put("partitioner.class", config.getKafkaPartitionerClass());
+        producer = new KafkaProducer<>(props);
     }
 
     public void send(String topic, long key, Message message)
