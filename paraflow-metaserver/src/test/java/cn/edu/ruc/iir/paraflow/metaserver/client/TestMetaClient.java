@@ -2,7 +2,6 @@ package cn.edu.ruc.iir.paraflow.metaserver.client;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
-import com.google.protobuf.ByteString;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;

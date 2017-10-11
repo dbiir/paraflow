@@ -18,8 +18,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 
 /**
@@ -87,11 +85,10 @@ public class DefaultProducer implements Producer
         NewTopic newTopic = new NewTopic(topicName, partitionsNum, replicationFactor);
         CreateTopicsResult result = kafkaAdminClient.createTopics(Collections.singletonList(newTopic));
         KafkaFuture future = result.values().get(topicName);
-        try
-        {
+        try {
             future.get();
-        } catch (InterruptedException | ExecutionException e)
-        {
+        }
+        catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
