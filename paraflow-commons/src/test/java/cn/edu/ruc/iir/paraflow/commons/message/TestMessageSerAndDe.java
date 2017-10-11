@@ -20,15 +20,12 @@ public class TestMessageSerAndDe
         long timestamp = System.currentTimeMillis();
         String[] values = {"test0", "and", "test1", "try", "ser", "der"};
         Message expected = new Message(0, values, timestamp);
-
-        try
-        {
+        try {
             byte[] serBytes = MessageUtils.toBytes(expected);
             Message result = MessageUtils.fromBytes(serBytes);
-
             assertEquals(expected, result);
-        } catch (MessageSerializeException | MessageDeSerializationException e)
-        {
+        }
+        catch (MessageSerializeException | MessageDeSerializationException e) {
             e.printStackTrace();
         }
     }

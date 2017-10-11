@@ -10,7 +10,6 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.CreateDbParamAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateFuncAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateStorageFormatAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateTableAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.CreateTblFuncAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateTblParamAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateTblPrivAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateUserAction;

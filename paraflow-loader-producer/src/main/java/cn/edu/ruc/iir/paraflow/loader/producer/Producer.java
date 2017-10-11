@@ -1,10 +1,8 @@
 package cn.edu.ruc.iir.paraflow.loader.producer;
 
-import cn.edu.ruc.iir.paraflow.commons.func.SerializableFunction;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.function.Function;
 
