@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.producer.buffer;
+package cn.edu.ruc.iir.paraflow.commons.utils;
 
 import java.util.HashMap;
 import java.util.Map;

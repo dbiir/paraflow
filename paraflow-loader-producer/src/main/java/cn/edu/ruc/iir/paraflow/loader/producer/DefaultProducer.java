@@ -3,11 +3,11 @@ package cn.edu.ruc.iir.paraflow.loader.producer;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
+import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
 import cn.edu.ruc.iir.paraflow.loader.producer.buffer.BlockingQueueBuffer;
-import cn.edu.ruc.iir.paraflow.loader.producer.buffer.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.loader.producer.threads.ThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
-import cn.edu.ruc.iir.paraflow.loader.producer.utils.Utils;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
@@ -68,7 +68,7 @@ public class DefaultProducer implements Producer
     @Override
     public void send(String database, String table, Message message)
     {
-        message.setTopic(Utils.formTopicName(database, table));
+        message.setTopic(FormTopicName.formTopicName(database, table));
         while (true) {
             try {
                 buffer.offer(message, offerTimeout);
@@ -150,7 +150,7 @@ public class DefaultProducer implements Producer
     @Override
     public void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc)
     {
-        funcMapBuffer.put(Utils.formTopicName(database, table), fiberFunc);
+        funcMapBuffer.put(FormTopicName.formTopicName(database, table), fiberFunc);
     }
 
 //    @Override

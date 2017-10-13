@@ -1,13 +1,13 @@
-package cn.edu.ruc.iir.paraflow.loader.producer.utils;
+package cn.edu.ruc.iir.paraflow.commons.utils;
 
 /**
  * paraflow
  *
  * @author guodong
  */
-public class Utils
+public class FormTopicName
 {
-    private Utils()
+    private FormTopicName()
     {}
 
     public static String formTopicName(String database, String table)

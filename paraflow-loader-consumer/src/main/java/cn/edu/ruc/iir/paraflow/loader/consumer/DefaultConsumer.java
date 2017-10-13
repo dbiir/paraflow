@@ -2,6 +2,8 @@ package cn.edu.ruc.iir.paraflow.loader.consumer;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
+import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
+import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageListComparator;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -14,12 +16,15 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
+import java.util.function.Function;
 
 public class DefaultConsumer
 {
     private final MetaClient metaClient;
+    KafkaConsumer<Long, Message> consumer;
+    private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();
 
-    public DefaultConsumer(String configPath, LinkedList<TopicPartition> topicPartitions) throws ConfigFileNotFoundException
+    public DefaultConsumer(String configPath) throws ConfigFileNotFoundException
     {
         ConsumerConfig config = ConsumerConfig.INSTANCE();
         config.init(configPath);
@@ -35,7 +40,26 @@ public class DefaultConsumer
         props.setProperty("session.timeout.ms", "30000");
         props.setProperty("key.deserializer", config.getKafkaKeyDeserializerClass());
         props.setProperty("value.deserializer", config.getKafkaValueDeserializerClass());
-        KafkaConsumer<Long, Message> consumer = new KafkaConsumer<>(props);
+        consumer = new KafkaConsumer<>(props);
+        //init();
+    }
+
+//    private void init()
+//    {
+//        // todo init meta cache
+//        ThreadManager.INSTANCE().init();
+//        // register shutdown hook
+//        Runtime.getRuntime().addShutdownHook(
+//                new Thread(this::beforeShutdown)
+//        );
+//        Runtime.getRuntime().addShutdownHook(
+//                new Thread(ThreadManager.INSTANCE()::shutdown)
+//        );
+//        ThreadManager.INSTANCE().run();
+//    }
+
+    public void consume(LinkedList<TopicPartition> topicPartitions)
+    {
         consumer.assign(topicPartitions);
         while (true) {
             LinkedList<Message> messages = new LinkedList<>();
@@ -58,5 +82,15 @@ public class DefaultConsumer
                 Collections.sort(messageLists.get(key), new MessageListComparator());
             }
         }
+    }
+
+    public void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc)
+    {
+        funcMapBuffer.put(FormTopicName.formTopicName(database, table), fiberFunc);
+    }
+
+    public void shutdown()
+    {
+        Runtime.getRuntime().exit(0);
     }
 }
