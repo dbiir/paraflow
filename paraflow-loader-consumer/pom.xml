@@ -10,7 +10,20 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>paraflow-loader-consumer</artifactId>
-
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.edu.ruc.iir</groupId>
+            <artifactId>paraflow-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.edu.ruc.iir</groupId>
+            <artifactId>paraflow-metaserver</artifactId>
+        </dependency>
+    </dependencies>
     <build>
         <plugins>
             <plugin>
