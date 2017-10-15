@@ -61,6 +61,10 @@ public class DefaultConsumer
     public void consume(LinkedList<TopicPartition> topicPartitions)
     {
         consumer.assign(topicPartitions);
+        String[] topic = topicPartitions.get(0).topic().split(".");
+        final String dbName = topic[0];
+        final String tblName = topic[1];
+        int count;
         while (true) {
             LinkedList<Message> messages = new LinkedList<>();
             ConsumerRecords<Long, Message> records = consumer.poll(100);
@@ -68,6 +72,7 @@ public class DefaultConsumer
                 Message message = record.value();
                 messages.add(message);
             }
+            count = messages.size();
             Map<Integer, LinkedList<Message>> messageLists = new HashMap<Integer, LinkedList<Message>>();
             for (Message message1 : messages) {
                 if (messageLists.keySet().contains(message1.getKeyIndex())) {
@@ -78,9 +83,12 @@ public class DefaultConsumer
                     messageLists.get(message1.getKeyIndex()).add(message1);
                 }
             }
+            //sort in every messageList
             for (Integer key : messageLists.keySet()) {
                 Collections.sort(messageLists.get(key), new MessageListComparator());
+                messageLists.get(key).get(0).
             }
+
         }
     }
 
