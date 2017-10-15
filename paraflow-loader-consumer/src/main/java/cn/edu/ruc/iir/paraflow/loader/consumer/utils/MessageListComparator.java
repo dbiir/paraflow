@@ -9,6 +9,12 @@ public class MessageListComparator implements Comparator<Message>
     @Override
     public int compare(Message o1, Message o2)
     {
-        return (o2.getKeyIndex() - o1.getKeyIndex());
+        if(o2.getTimestamp().get() < o1.getTimestamp().get()){
+            return -1;
+        }
+        if(o2.getTimestamp().get() > o1.getTimestamp().get()){
+            return 1;
+        }
+        return 0;
     }
 }
