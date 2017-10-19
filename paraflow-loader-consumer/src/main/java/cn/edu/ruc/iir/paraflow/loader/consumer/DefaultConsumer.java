@@ -86,9 +86,7 @@ public class DefaultConsumer
             //sort in every messageList
             for (Integer key : messageLists.keySet()) {
                 Collections.sort(messageLists.get(key), new MessageListComparator());
-                messageLists.get(key).get(0).
             }
-
         }
     }
 
