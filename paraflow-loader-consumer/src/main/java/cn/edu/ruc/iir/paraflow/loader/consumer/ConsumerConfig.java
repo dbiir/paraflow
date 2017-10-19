@@ -124,6 +124,22 @@ public class ConsumerConfig
         return Integer.parseInt(paraflowConfig.getProperty("consumer.shutdown.timeout"));
     }
 
+    public String getHDFSWarehouse()
+    {
+        if (paraflowConfig.getProperty("hdfs.warehouse").endsWith("/")) {
+            return paraflowConfig.getProperty("hdfs.warehouse").substring(
+                    0, paraflowConfig.getProperty("hdfs.warehouse").length() - 2);
+        }
+        else {
+            return paraflowConfig.getProperty("hdfs.warehouse");
+        }
+    }
+
+    public long getBufferOfferBlockSize()
+    {
+        return Long.parseLong(paraflowConfig.getProperty("consumer.buffer.offer.block.size"));
+    }
+
     public int getMetaClientShutdownTimeout()
     {
         return Integer.parseInt(paraflowConfig.getProperty("meta.client.shutdown.timeout"));

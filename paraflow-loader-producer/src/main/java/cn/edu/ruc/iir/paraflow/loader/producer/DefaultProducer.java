@@ -1,11 +1,11 @@
 package cn.edu.ruc.iir.paraflow.loader.producer;
 
+import cn.edu.ruc.iir.paraflow.commons.buffer.BlockingQueueBuffer;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
-import cn.edu.ruc.iir.paraflow.loader.producer.buffer.BlockingQueueBuffer;
 import cn.edu.ruc.iir.paraflow.loader.producer.threads.ThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;

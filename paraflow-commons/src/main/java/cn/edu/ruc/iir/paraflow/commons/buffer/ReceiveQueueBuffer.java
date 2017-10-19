@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.producer.buffer;
+package cn.edu.ruc.iir.paraflow.commons.buffer;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 
@@ -6,28 +6,25 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-/**
- * paraflow
- *
- * @author guodong
- */
-public class BlockingQueueBuffer
+public class ReceiveQueueBuffer
 {
     private final BlockingQueue<Message> queue;
+    private static int blockSize;
 
-    private BlockingQueueBuffer()
+    private ReceiveQueueBuffer(int offeredBlockSize)
     {
-        queue = new LinkedBlockingQueue<>();
+        this.blockSize = offeredBlockSize;
+        queue = new LinkedBlockingQueue<>(offeredBlockSize);
     }
 
-    private static class BlockingQueueBufferHolder
+    private static class ReceiveQueueBufferHolder
     {
-        private static final BlockingQueueBuffer instance = new BlockingQueueBuffer();
+        private static final ReceiveQueueBuffer instance = new ReceiveQueueBuffer(blockSize);
     }
 
-    public static final BlockingQueueBuffer INSTANCE()
+    public static final ReceiveQueueBuffer INSTANCE()
     {
-        return BlockingQueueBufferHolder.instance;
+        return ReceiveQueueBufferHolder.instance;
     }
 
     public Message poll()

@@ -1,14 +1,19 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer;
 
+import cn.edu.ruc.iir.paraflow.commons.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageListComparator;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 
 import java.util.Collections;
@@ -18,17 +23,24 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.function.Function;
 
-public class DefaultConsumer
+public class DefaultConsumer implements Consumer
 {
     private final MetaClient metaClient;
     KafkaConsumer<Long, Message> consumer;
     private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();
+    private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
+    private final long offerBlockSize;
+    private String hdfsWarehouse;
+    private String dbName;
+    private String tblName;
 
     public DefaultConsumer(String configPath) throws ConfigFileNotFoundException
     {
         ConsumerConfig config = ConsumerConfig.INSTANCE();
         config.init(configPath);
         config.validate();
+        this.offerBlockSize = config.getBufferOfferBlockSize();
+        this.hdfsWarehouse = config.getHDFSWarehouse();
         // init meta client
         metaClient = new MetaClient(config.getMetaServerHost(),
                 config.getMetaServerPort());
@@ -62,32 +74,63 @@ public class DefaultConsumer
     {
         consumer.assign(topicPartitions);
         String[] topic = topicPartitions.get(0).topic().split(".");
-        final String dbName = topic[0];
-        final String tblName = topic[1];
-        int count;
+        dbName = topic[0];
+        tblName = topic[1];
+//        int count;
         while (true) {
             LinkedList<Message> messages = new LinkedList<>();
             ConsumerRecords<Long, Message> records = consumer.poll(100);
             for (ConsumerRecord<Long, Message> record : records) {
                 Message message = record.value();
-                messages.add(message);
-            }
-            count = messages.size();
-            Map<Integer, LinkedList<Message>> messageLists = new HashMap<Integer, LinkedList<Message>>();
-            for (Message message1 : messages) {
-                if (messageLists.keySet().contains(message1.getKeyIndex())) {
-                    messageLists.get(message1.getKeyIndex()).add(message1);
+                if (buffer.offer(message)) {
+                    messages.add(message);
                 }
                 else {
-                    messageLists.put(message1.getKeyIndex(), new LinkedList<Message>());
-                    messageLists.get(message1.getKeyIndex()).add(message1);
+                    commit(record.offset(), record.topic(), record.partition());
+                    break;
                 }
             }
-            //sort in every messageList
-            for (Integer key : messageLists.keySet()) {
-                Collections.sort(messageLists.get(key), new MessageListComparator());
+            sort(messages);
+            flush();
+        }
+    }
+
+    public void sort(LinkedList<Message> messages)
+    {
+        Map<Integer, LinkedList<Message>> messageLists = new HashMap<Integer, LinkedList<Message>>();
+        for (Message message1 : messages) {
+            if (messageLists.keySet().contains(message1.getKeyIndex())) {
+                messageLists.get(message1.getKeyIndex()).add(message1);
+            }
+            else {
+                messageLists.put(message1.getKeyIndex(), new LinkedList<Message>());
+                messageLists.get(message1.getKeyIndex()).add(message1);
             }
         }
+        //sort in every messageList
+        for (Integer key : messageLists.keySet()) {
+            Collections.sort(messageLists.get(key), new MessageListComparator());
+        }
+    }
+
+    public void commit(Long offset, String topic, int partition)
+    {
+        OffsetAndMetadata offsetAndMetadata = new OffsetAndMetadata(offset);
+        TopicPartition topicPartition = new TopicPartition(topic, partition);
+        Map<TopicPartition, OffsetAndMetadata> offsetParam
+                = new HashMap<TopicPartition, OffsetAndMetadata>();
+        offsetParam.put(topicPartition, offsetAndMetadata);
+        consumer.commitSync(offsetParam);
+    }
+
+    public void flush()
+    {
+        //todo
+//        String file = String.format("%s/%s/%s/test", hdfsWarehouse, dbName, tblName);
+//        Path path = new Path(file);
+//        Configuration conf = new Configuration();
+//        FileSystem fs = null;
+//        FSDataOut
     }
 
     public void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc)
