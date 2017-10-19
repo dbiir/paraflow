@@ -8,6 +8,7 @@ import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageListComparator;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -16,6 +17,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -33,6 +35,7 @@ public class DefaultConsumer implements Consumer
     private String hdfsWarehouse;
     private String dbName;
     private String tblName;
+    LinkedList<Message> messages = new LinkedList<>();
 
     public DefaultConsumer(String configPath) throws ConfigFileNotFoundException
     {
@@ -78,7 +81,6 @@ public class DefaultConsumer implements Consumer
         tblName = topic[1];
 //        int count;
         while (true) {
-            LinkedList<Message> messages = new LinkedList<>();
             ConsumerRecords<Long, Message> records = consumer.poll(100);
             for (ConsumerRecord<Long, Message> record : records) {
                 Message message = record.value();
@@ -91,7 +93,8 @@ public class DefaultConsumer implements Consumer
                 }
             }
             sort(messages);
-            flush();
+            flush(messages);
+            clear();
         }
     }
 
@@ -123,14 +126,35 @@ public class DefaultConsumer implements Consumer
         consumer.commitSync(offsetParam);
     }
 
-    public void flush()
+    public void flush(LinkedList<Message> messages)
     {
         //todo
-//        String file = String.format("%s/%s/%s/test", hdfsWarehouse, dbName, tblName);
-//        Path path = new Path(file);
-//        Configuration conf = new Configuration();
-//        FileSystem fs = null;
-//        FSDataOut
+        String file = String.format("%s/%s/%s/test", hdfsWarehouse, dbName, tblName);
+        Path path = new Path(file);
+        Configuration conf = new Configuration();
+        FileSystem fs = null;
+        FSDataOutputStream output = null;
+        try {
+           fs = path.getFileSystem(conf);
+           output = fs.create(path);
+           for (Message message : messages) {
+               String result = org.apache.commons.lang.StringUtils.join(message.getValues());
+               result += message.getTimestamp();
+               output.write(result.getBytes("UTF-8"));
+               output.flush();
+           }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        finally {
+            try {
+                output.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc)
@@ -141,5 +165,10 @@ public class DefaultConsumer implements Consumer
     public void shutdown()
     {
         Runtime.getRuntime().exit(0);
+    }
+
+    public void clear()
+    {
+        messages.clear();
     }
 }
