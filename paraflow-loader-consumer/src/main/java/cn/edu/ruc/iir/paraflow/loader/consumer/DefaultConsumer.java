@@ -1,6 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer;
 
-import cn.edu.ruc.iir.paraflow.commons.buffer.ReceiveQueueBuffer;
+//import cn.edu.ruc.iir.paraflow.commons.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
@@ -30,7 +30,7 @@ public class DefaultConsumer implements Consumer
     private final MetaClient metaClient;
     KafkaConsumer<Long, Message> consumer;
     private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();
-    private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
+//    private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
     private final long offerBlockSize;
     private String hdfsWarehouse;
     private String dbName;
@@ -84,16 +84,17 @@ public class DefaultConsumer implements Consumer
             ConsumerRecords<Long, Message> records = consumer.poll(100);
             for (ConsumerRecord<Long, Message> record : records) {
                 Message message = record.value();
-                if (buffer.offer(message)) {
+//                if (buffer.offer(message)) {
                     messages.add(message);
-                }
-                else {
-                    commit(record.offset(), record.topic(), record.partition());
-                    break;
-                }
+//                }
+//                else {
+//                    commit(record.offset(), record.topic(), record.partition());
+//                    break;
+//                }
             }
             sort(messages);
-            flush(messages);
+            System.out.println(messages);
+//            flush(messages);
             clear();
         }
     }

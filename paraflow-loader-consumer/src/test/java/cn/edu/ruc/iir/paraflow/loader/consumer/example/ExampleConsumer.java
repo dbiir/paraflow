@@ -9,12 +9,16 @@ import java.util.LinkedList;
 
 public class ExampleConsumer
 {
-    private void exampleTest(String configPath, LinkedList<TopicPartition> topicPartitions)
+    private void exampleTest(String configPath)
     {
         final DefaultConsumer consumer;
-        String[] topic = topicPartitions.get(0).topic().split(".");
-        final String dbName = topic[0];
-        final String tblName = topic[1];
+        LinkedList<TopicPartition> topicPartitions = new LinkedList<>();
+        for (int i = 0; i<100; i ++) {
+            TopicPartition topicPartition = new TopicPartition("exampleDb.exampleTbl", i);
+            topicPartitions.add(topicPartition);
+        }
+        final String dbName = "exampleDb";
+        final String tblName = "exampleTbl";
         try {
             consumer = new DefaultConsumer(configPath);
         }
@@ -28,10 +32,9 @@ public class ExampleConsumer
         System.out.println("Done with consuming");
         consumer.shutdown();
     }
-
-    public static void main(String[] args, LinkedList<TopicPartition> topicPartitions)
+    public static void main(String[] args)
     {
         ExampleConsumer consumer = new ExampleConsumer();
-        consumer.exampleTest(args[0], topicPartitions);
+        consumer.exampleTest(args[0]);
     }
 }
