@@ -63,6 +63,7 @@ public class KafkaThread implements Runnable
             }
             try {
                 Message msg = buffer.poll(config.getBufferPollTimeout());
+                System.out.println("[msg]: " + msg);
                 if (msg.getTopic().isPresent()) {
                     String topic = msg.getTopic().get();
                     Optional<Function<String, Long>> function = funcMapBuffer.get(topic);

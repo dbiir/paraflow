@@ -13,10 +13,8 @@ public class ExampleConsumer
     {
         final DefaultConsumer consumer;
         LinkedList<TopicPartition> topicPartitions = new LinkedList<>();
-        for (int i = 0; i<100; i ++) {
-            TopicPartition topicPartition = new TopicPartition("exampleDb.exampleTbl", i);
+            TopicPartition topicPartition = new TopicPartition("exampleDb.exampleTbl", 0);
             topicPartitions.add(topicPartition);
-        }
         final String dbName = "exampleDb";
         final String tblName = "exampleTbl";
         try {
@@ -26,10 +24,11 @@ public class ExampleConsumer
             e.printStackTrace();
             return;
         }
+        System.out.println("consumer consume start!!!");
+        consumer.consume(topicPartitions);
+        System.out.println("Done with consume end!!!");
         DeserializableFunction<String, Long> func = (v) -> Long.parseLong(v) % 1000;
         consumer.registerFiberFunc(dbName, tblName, func);
-        consumer.consume(topicPartitions);
-        System.out.println("Done with consuming");
         consumer.shutdown();
     }
     public static void main(String[] args)

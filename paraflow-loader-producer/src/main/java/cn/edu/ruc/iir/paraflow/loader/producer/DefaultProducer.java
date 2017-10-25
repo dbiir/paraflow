@@ -14,7 +14,9 @@ import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.common.KafkaFuture;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -91,6 +93,14 @@ public class DefaultProducer implements Producer
         catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void deleteTopic(String topicName)
+    {
+        Collection<String> topics = new LinkedList<>();
+        topics.add(topicName);
+        kafkaAdminClient.deleteTopics(topics);
     }
 
     @Override

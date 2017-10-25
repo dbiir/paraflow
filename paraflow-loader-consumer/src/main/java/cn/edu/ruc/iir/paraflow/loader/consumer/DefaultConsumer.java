@@ -76,14 +76,16 @@ public class DefaultConsumer implements Consumer
     public void consume(LinkedList<TopicPartition> topicPartitions)
     {
         consumer.assign(topicPartitions);
-        String[] topic = topicPartitions.get(0).topic().split(".");
-        dbName = topic[0];
-        tblName = topic[1];
-//        int count;
         while (true) {
-            ConsumerRecords<Long, Message> records = consumer.poll(100);
+            ConsumerRecords<Long, Message> records = consumer.poll(1000);
+            System.out.println("records count: " + records.count());
+            int i = 0;
             for (ConsumerRecord<Long, Message> record : records) {
                 Message message = record.value();
+                System.out.println(i++);
+                System.out.println(message);
+                System.out.println("msg key: " + message.getKey());
+                System.out.println("\n");
 //                if (buffer.offer(message)) {
                     messages.add(message);
 //                }
@@ -92,8 +94,9 @@ public class DefaultConsumer implements Consumer
 //                    break;
 //                }
             }
-            sort(messages);
-            System.out.println(messages);
+//            System.out.println(messages);
+//            sort(messages);
+//            System.out.println(messages);
 //            flush(messages);
             clear();
         }
