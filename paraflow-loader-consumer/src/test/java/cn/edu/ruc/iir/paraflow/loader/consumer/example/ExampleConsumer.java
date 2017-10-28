@@ -26,6 +26,7 @@ public class ExampleConsumer
         }
         System.out.println("consumer consume start!!!");
         consumer.consume(topicPartitions);
+        consumer.clear();
         System.out.println("Done with consume end!!!");
         DeserializableFunction<String, Long> func = (v) -> Long.parseLong(v) % 1000;
         consumer.registerFiberFunc(dbName, tblName, func);

@@ -1,6 +1,5 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer;
 
-//import cn.edu.ruc.iir.paraflow.commons.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
@@ -36,6 +35,7 @@ public class DefaultConsumer implements Consumer
     private String dbName;
     private String tblName;
     LinkedList<Message> messages = new LinkedList<>();
+    Map<Integer, LinkedList<Message>> messageLists = new HashMap<Integer, LinkedList<Message>>();
 
     public DefaultConsumer(String configPath) throws ConfigFileNotFoundException
     {
@@ -75,6 +75,12 @@ public class DefaultConsumer implements Consumer
 
     public void consume(LinkedList<TopicPartition> topicPartitions)
     {
+        int count;
+        String topic = topicPartitions.get(0).topic();
+        int indexofdot = topic.indexOf(".");
+        int length = topic.length();
+        dbName = topic.substring(0, indexofdot);
+        tblName = topic.substring(indexofdot + 1, length);
         consumer.assign(topicPartitions);
         while (true) {
             ConsumerRecords<Long, Message> records = consumer.poll(1000);
@@ -82,10 +88,9 @@ public class DefaultConsumer implements Consumer
             int i = 0;
             for (ConsumerRecord<Long, Message> record : records) {
                 Message message = record.value();
-                System.out.println(i++);
-                System.out.println(message);
-                System.out.println("msg key: " + message.getKey());
-                System.out.println("\n");
+//                System.out.println("i : " + i++);
+//                System.out.println("message : " + message);
+//                System.out.println("msg key: " + message.getKey());
 //                if (buffer.offer(message)) {
                     messages.add(message);
 //                }
@@ -94,17 +99,21 @@ public class DefaultConsumer implements Consumer
 //                    break;
 //                }
             }
-//            System.out.println(messages);
-//            sort(messages);
-//            System.out.println(messages);
-//            flush(messages);
-            clear();
+            count = messages.size();
+            System.out.println("message size : " + count);
+            sort(messages);
+            for (Integer key : messageLists.keySet()) {
+                for (i = 0; i < count; i++) {
+                    System.out.println("messagesLists.get(key).get(i) : " + messageLists.get(key).get(i));
+                }
+            }
+//            String fileName = String.format("%s%s",topicPartitions.get(0).topic(), timeStamp);
+            flush(messageLists);
         }
     }
 
     public void sort(LinkedList<Message> messages)
     {
-        Map<Integer, LinkedList<Message>> messageLists = new HashMap<Integer, LinkedList<Message>>();
         for (Message message1 : messages) {
             if (messageLists.keySet().contains(message1.getKeyIndex())) {
                 messageLists.get(message1.getKeyIndex()).add(message1);
@@ -130,35 +139,43 @@ public class DefaultConsumer implements Consumer
         consumer.commitSync(offsetParam);
     }
 
-    public void flush(LinkedList<Message> messages)
+    public void flush(Map<Integer, LinkedList<Message>> messageLists)
     {
-        //todo
-        String file = String.format("%s/%s/%s/test", hdfsWarehouse, dbName, tblName);
+        System.out.println("hdfsWarehouse : " + hdfsWarehouse);
+        System.out.println("dbName : " + dbName);
+        System.out.println("tblName : " + tblName);
+        String file = String.format("%s/%s/%s", hdfsWarehouse, dbName, tblName);
+        System.out.println("file : " + file);
         Path path = new Path(file);
         Configuration conf = new Configuration();
-        FileSystem fs = null;
+        FileSystem fs;
         FSDataOutputStream output = null;
         try {
-           fs = path.getFileSystem(conf);
-           output = fs.create(path);
-           for (Message message : messages) {
-               String result = org.apache.commons.lang.StringUtils.join(message.getValues());
-               result += message.getTimestamp();
-               output.write(result.getBytes("UTF-8"));
-               output.flush();
-           }
+            fs = path.getFileSystem(conf);
+            //fs = FileSystem.get(conf);
+            output = fs.create(path);
+            for (Integer key : messageLists.keySet()) {
+                for (Message message : messageLists.get(key)) {
+                    String result = org.apache.commons.lang.StringUtils.join(message.getValues());
+                    result += message.getTimestamp();
+                    output.write(result.getBytes("UTF-8"));
+                }
+            }
+            output.flush();
+            output.close();
+            fs.close();
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-        finally {
-            try {
-                output.close();
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+//        finally {
+//            try {
+//                output.close();
+//            }
+//            catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     public void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc)
@@ -174,5 +191,6 @@ public class DefaultConsumer implements Consumer
     public void clear()
     {
         messages.clear();
+        messageLists.clear();
     }
 }

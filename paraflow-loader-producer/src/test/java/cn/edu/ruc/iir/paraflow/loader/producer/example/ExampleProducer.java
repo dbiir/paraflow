@@ -26,12 +26,13 @@ public class ExampleProducer
         final String tblName = "exampleTbl";
         final String dbName = "exampleDb";
         final int fiberKeyIndex = 0;
-        String topicName = FormTopicName.formTopicName(dbName, tblName);
-        //producer.createTopic(topicName, 1, (short) 1);
+//        String topicName = FormTopicName.formTopicName(dbName, tblName);
+//        producer.createTopic(topicName, 1, (short) 1);
         System.out.println("Created topic " + FormTopicName.formTopicName(dbName, tblName));
         SerializableFunction<String, Long> func = (v) -> Long.parseLong(v) % 1000;
         producer.registerFiberFunc(dbName, tblName, func);
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 50; i++) {
+//            fiberKeyIndex = i;
             long ts = System.currentTimeMillis();
             String[] content = {String.valueOf(i), String.valueOf(i * 2), "alice" + i, String.valueOf(ts)};
             Message msg = new Message(fiberKeyIndex, content, ts);
