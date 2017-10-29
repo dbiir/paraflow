@@ -1,17 +1,17 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer;
 
+import cn.edu.ruc.iir.paraflow.commons.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
+import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageListComparator;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.consumer.OffsetAndMetadata;
 import org.apache.kafka.common.TopicPartition;
@@ -36,6 +36,7 @@ public class DefaultConsumer implements Consumer
     private String tblName;
     LinkedList<Message> messages = new LinkedList<>();
     Map<Integer, LinkedList<Message>> messageLists = new HashMap<Integer, LinkedList<Message>>();
+    private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
 
     public DefaultConsumer(String configPath) throws ConfigFileNotFoundException
     {
@@ -73,41 +74,18 @@ public class DefaultConsumer implements Consumer
 //        ThreadManager.INSTANCE().run();
 //    }
 
-    public void consume(LinkedList<TopicPartition> topicPartitions)
+    public void consume()
     {
         int count;
-        String topic = topicPartitions.get(0).topic();
-        int indexofdot = topic.indexOf(".");
-        int length = topic.length();
-        dbName = topic.substring(0, indexofdot);
-        tblName = topic.substring(indexofdot + 1, length);
-        consumer.assign(topicPartitions);
         while (true) {
-            ConsumerRecords<Long, Message> records = consumer.poll(1000);
-            System.out.println("records count: " + records.count());
-            int i = 0;
-            for (ConsumerRecord<Long, Message> record : records) {
-                Message message = record.value();
-//                System.out.println("i : " + i++);
-//                System.out.println("message : " + message);
-//                System.out.println("msg key: " + message.getKey());
-//                if (buffer.offer(message)) {
-                    messages.add(message);
-//                }
-//                else {
-//                    commit(record.offset(), record.topic(), record.partition());
-//                    break;
-//                }
-            }
-            count = messages.size();
-            System.out.println("message size : " + count);
+            count = buffer.drainTo(messages);
+            System.out.println("message count : " + count);
             sort(messages);
-            for (Integer key : messageLists.keySet()) {
-                for (i = 0; i < count; i++) {
-                    System.out.println("messagesLists.get(key).get(i) : " + messageLists.get(key).get(i));
-                }
-            }
-//            String fileName = String.format("%s%s",topicPartitions.get(0).topic(), timeStamp);
+//            for (Integer key : messageLists.keySet()) {
+//                for (int i = 0; i < count; i++) {
+//                    System.out.println("messagesLists.get(key).get(i) : " + messageLists.get(key).get(i));
+//                }
+//            }
             flush(messageLists);
         }
     }

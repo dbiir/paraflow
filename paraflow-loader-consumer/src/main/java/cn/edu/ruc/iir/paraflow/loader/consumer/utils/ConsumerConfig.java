@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer;
+package cn.edu.ruc.iir.paraflow.loader.consumer.utils;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.utils.ParaFlowConfig;
 
@@ -52,11 +52,17 @@ public class ConsumerConfig
             getKafkaPartitionerClass();
             getConsumerShutdownTimeout();
             getMetaClientShutdownTimeout();
+            getKafkaThreadNum();
         }
         catch (Exception e) {
             return false;
         }
         return true;
+    }
+
+    public String getKafkaBootstrapServers()
+    {
+        return paraflowConfig.getProperty("kafka.bootstrap.servers");
     }
 
     public int getMetaServerPort()
@@ -72,11 +78,6 @@ public class ConsumerConfig
     public String getGroupId()
     {
         return paraflowConfig.getProperty("consumer.group.id");
-    }
-
-    public String getKafkaBootstrapServers()
-    {
-        return paraflowConfig.getProperty("kafka.bootstrap.servers");
     }
 
     public String getKafkaAcks()
@@ -119,6 +120,11 @@ public class ConsumerConfig
         return paraflowConfig.getProperty("kafka.partitioner");
     }
 
+    public int getKafkaThreadNum()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("producer.thread.num"));
+    }
+
     public int getConsumerShutdownTimeout()
     {
         return Integer.parseInt(paraflowConfig.getProperty("consumer.shutdown.timeout"));
@@ -143,5 +149,10 @@ public class ConsumerConfig
     public int getMetaClientShutdownTimeout()
     {
         return Integer.parseInt(paraflowConfig.getProperty("meta.client.shutdown.timeout"));
+    }
+
+    public long getConsumerPollTimeout()
+    {
+        return Long.parseLong(paraflowConfig.getProperty("consumer.poll.timeout.ms"));
     }
 }

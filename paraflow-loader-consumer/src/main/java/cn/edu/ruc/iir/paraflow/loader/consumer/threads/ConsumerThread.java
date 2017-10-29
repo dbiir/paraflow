@@ -1,39 +1,40 @@
-package cn.edu.ruc.iir.paraflow.loader.producer.threads;
+package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
 
-import cn.edu.ruc.iir.paraflow.commons.buffer.BlockingQueueBuffer;
+import cn.edu.ruc.iir.paraflow.commons.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
-import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
-import cn.edu.ruc.iir.paraflow.loader.producer.utils.KafkaProducerClient;
-import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
+import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.common.TopicPartition;
 
-import java.util.Optional;
-import java.util.function.Function;
+import java.util.LinkedList;
 
-/**
- * paraflow
- *
- * @author guodong
- */
-public class KafkaThread implements Runnable
+public class ConsumerThread implements Runnable
 {
     private final String threadName;
-    private final ProducerConfig config = ProducerConfig.INSTANCE();
-    private final BlockingQueueBuffer buffer = BlockingQueueBuffer.INSTANCE();
-    private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();
-    private final KafkaProducerClient producerClient = new KafkaProducerClient();
+    private final ConsumerConfig config = ConsumerConfig.INSTANCE();
+    private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
+    private final KafkaConsumerClient consumerClient = new KafkaConsumerClient();
     private final MetaClient metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
+    private LinkedList<TopicPartition> topicPartitions;
 
     private boolean isReadyToStop = false;
 
-    public KafkaThread()
+    public ConsumerThread()
     {
         this("kafka-thread");
     }
 
-    public KafkaThread(String threadName)
+    public ConsumerThread(String threadName)
     {
         this.threadName = threadName;
+    }
+
+    public ConsumerThread(String threadName, LinkedList<TopicPartition> topicPartitions)
+    {
+        this.threadName = threadName;
+        this.topicPartitions = topicPartitions;
     }
 
     public String getName()
@@ -52,25 +53,25 @@ public class KafkaThread implements Runnable
      *
      * @see Thread#run()
      */
+
+    /**
+     * ConsumerThread run() is used to poll message from kafka to buffer
+     */
     @Override
     public void run()
     {
         while (true) {
-            if (isReadyToStop && (buffer.poll() == null)) {
+            if (isReadyToStop && buffer.remainingCapacity() != 0) { //loop end condition
                 System.out.println("Thread stop");
-                producerClient.close();
+                consumerClient.close();
                 return;
             }
             try {
-                Message msg = buffer.poll(config.getBufferPollTimeout());
-                System.out.println("[msg]: " + msg);
-                if (msg.getTopic().isPresent()) {
-                    String topic = msg.getTopic().get();
-                    Optional<Function<String, Long>> function = funcMapBuffer.get(topic);
-                    function.ifPresent(stringLongFunction -> producerClient.send(topic, stringLongFunction.apply(msg.getKey()), msg));
-                    // else ignore this message
+                consumerClient.assign(topicPartitions);
+                ConsumerRecords<Long, Message> consumerRecords = consumerClient.poll(config.getConsumerPollTimeout());
+                for (ConsumerRecord<Long, Message> record : consumerRecords) {
+                    buffer.put(record.value());
                 }
-                // else ignore this message
             }
             catch (InterruptedException ignored) {
                 // if poll nothing, enter next loop

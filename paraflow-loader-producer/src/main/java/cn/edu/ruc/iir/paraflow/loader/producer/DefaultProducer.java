@@ -6,7 +6,7 @@ import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
-import cn.edu.ruc.iir.paraflow.loader.producer.threads.ThreadManager;
+import cn.edu.ruc.iir.paraflow.loader.producer.threads.ProducerThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -56,15 +56,15 @@ public class DefaultProducer implements Producer
     private void init()
     {
         // todo init meta cache
-        ThreadManager.INSTANCE().init();
+        ProducerThreadManager.INSTANCE().init();
         // register shutdown hook
         Runtime.getRuntime().addShutdownHook(
                 new Thread(this::beforeShutdown)
         );
         Runtime.getRuntime().addShutdownHook(
-                new Thread(ThreadManager.INSTANCE()::shutdown)
+                new Thread(ProducerThreadManager.INSTANCE()::shutdown)
         );
-        ThreadManager.INSTANCE().run();
+        ProducerThreadManager.INSTANCE().run();
     }
 
     @Override

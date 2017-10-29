@@ -25,7 +25,7 @@ public class ExampleConsumer
             return;
         }
         System.out.println("consumer consume start!!!");
-        consumer.consume(topicPartitions);
+        consumer.consume();
         consumer.clear();
         System.out.println("Done with consume end!!!");
         DeserializableFunction<String, Long> func = (v) -> Long.parseLong(v) % 1000;

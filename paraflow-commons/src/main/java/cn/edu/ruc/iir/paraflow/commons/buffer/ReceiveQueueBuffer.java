@@ -2,6 +2,7 @@ package cn.edu.ruc.iir.paraflow.commons.buffer;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 
+import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +51,16 @@ public class ReceiveQueueBuffer
     public boolean offer(Message e, long timeout) throws InterruptedException
     {
         return queue.offer(e, timeout, TimeUnit.MILLISECONDS);
+    }
+
+    public int drainTo(LinkedList<Message> messages)
+    {
+        return queue.drainTo(messages);
+    }
+
+    public int remainingCapacity()
+    {
+        return queue.remainingCapacity();
     }
 
     public void put(Message e) throws InterruptedException
