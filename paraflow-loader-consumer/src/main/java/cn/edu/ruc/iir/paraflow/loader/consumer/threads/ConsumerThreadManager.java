@@ -15,14 +15,14 @@ public class ConsumerThreadManager
     private final int threadNum = config.getKafkaThreadNum();
     private ConsumerThread[] threads = new ConsumerThread[threadNum];
 
-    private static class ThreadManagerHolder
-    {
-        private static final ConsumerThreadManager instance = new ConsumerThreadManager();
-    }
-
     private ConsumerThreadManager()
     {
         executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    }
+
+    private static class ThreadManagerHolder
+    {
+        private static final ConsumerThreadManager instance = new ConsumerThreadManager();
     }
 
     public static final ConsumerThreadManager INSTANCE()

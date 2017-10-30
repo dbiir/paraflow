@@ -18,14 +18,14 @@ public class ProducerThreadManager
     private final int threadNum = config.getKafkaThreadNum();
     private ProducerThread[] threads = new ProducerThread[threadNum];
 
-    private static class ThreadManagerHolder
-    {
-        private static final ProducerThreadManager instance = new ProducerThreadManager();
-    }
-
     private ProducerThreadManager()
     {
         executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
+    }
+
+    private static class ThreadManagerHolder
+    {
+        private static final ProducerThreadManager instance = new ProducerThreadManager();
     }
 
     public static final ProducerThreadManager INSTANCE()

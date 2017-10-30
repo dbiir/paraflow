@@ -1,8 +1,8 @@
 package cn.edu.ruc.iir.paraflow.loader.producer.threads;
 
-import cn.edu.ruc.iir.paraflow.commons.buffer.BlockingQueueBuffer;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
+import cn.edu.ruc.iir.paraflow.loader.producer.buffer.BlockingQueueBuffer;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.KafkaProducerClient;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;

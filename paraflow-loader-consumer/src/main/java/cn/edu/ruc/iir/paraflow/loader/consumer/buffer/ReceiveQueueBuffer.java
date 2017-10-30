@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.commons.buffer;
+package cn.edu.ruc.iir.paraflow.loader.consumer.buffer;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 
@@ -10,17 +10,15 @@ import java.util.concurrent.TimeUnit;
 public class ReceiveQueueBuffer
 {
     private final BlockingQueue<Message> queue;
-    private static int blockSize;
 
-    private ReceiveQueueBuffer(int offeredBlockSize)
+    private ReceiveQueueBuffer()
     {
-        this.blockSize = offeredBlockSize;
-        queue = new LinkedBlockingQueue<>(offeredBlockSize);
+        queue = new LinkedBlockingQueue<>();
     }
 
     private static class ReceiveQueueBufferHolder
     {
-        private static final ReceiveQueueBuffer instance = new ReceiveQueueBuffer(blockSize);
+        private static final ReceiveQueueBuffer instance = new ReceiveQueueBuffer();
     }
 
     public static final ReceiveQueueBuffer INSTANCE()
@@ -61,6 +59,11 @@ public class ReceiveQueueBuffer
     public int remainingCapacity()
     {
         return queue.remainingCapacity();
+    }
+
+    public boolean isEmpty()
+    {
+        return queue.isEmpty();
     }
 
     public void put(Message e) throws InterruptedException

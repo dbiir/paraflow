@@ -1,10 +1,11 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer;
 
-import cn.edu.ruc.iir.paraflow.commons.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
+import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.ReceiveQueueBuffer;
+import cn.edu.ruc.iir.paraflow.loader.consumer.threads.ConsumerThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageListComparator;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
@@ -12,8 +13,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.TopicPartition;
 
 import java.io.IOException;
@@ -27,58 +27,69 @@ import java.util.function.Function;
 public class DefaultConsumer implements Consumer
 {
     private final MetaClient metaClient;
-    KafkaConsumer<Long, Message> consumer;
+    private final AdminClient kafkaAdminClient;
     private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();
-//    private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
-    private final long offerBlockSize;
     private String hdfsWarehouse;
     private String dbName;
     private String tblName;
-    LinkedList<Message> messages = new LinkedList<>();
-    Map<Integer, LinkedList<Message>> messageLists = new HashMap<Integer, LinkedList<Message>>();
+    private LinkedList<Message> messages = new LinkedList<>();
+    private Map<Integer, LinkedList<Message>> messageLists = new HashMap<>();
     private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
+    private String topic;
+    private ConsumerThreadManager consumerThreadManager;
 
-    public DefaultConsumer(String configPath) throws ConfigFileNotFoundException
+    public DefaultConsumer(String configPath, LinkedList<TopicPartition> topicPartitions) throws ConfigFileNotFoundException
     {
         ConsumerConfig config = ConsumerConfig.INSTANCE();
         config.init(configPath);
         config.validate();
-        this.offerBlockSize = config.getBufferOfferBlockSize();
+        this.topic = topicPartitions.get(0).topic();
         this.hdfsWarehouse = config.getHDFSWarehouse();
         // init meta client
         metaClient = new MetaClient(config.getMetaServerHost(),
                 config.getMetaServerPort());
         Properties props = new Properties();
         props.setProperty("bootstrap.servers", config.getKafkaBootstrapServers());
+        props.setProperty("client.id", "consumerAdmin");
+        props.setProperty("metadata.max.age.ms", "3000");
         props.setProperty("group.id", config.getGroupId());
         props.setProperty("enable.auto.commit", "true");
         props.setProperty("auto.commit.interval.ms", "1000");
         props.setProperty("session.timeout.ms", "30000");
         props.setProperty("key.deserializer", config.getKafkaKeyDeserializerClass());
         props.setProperty("value.deserializer", config.getKafkaValueDeserializerClass());
-        consumer = new KafkaConsumer<>(props);
-        //init();
+        kafkaAdminClient = AdminClient.create(props);
+        consumerThreadManager = ConsumerThreadManager.INSTANCE();
+        init(topicPartitions);
     }
 
-//    private void init()
-//    {
-//        // todo init meta cache
-//        ThreadManager.INSTANCE().init();
-//        // register shutdown hook
-//        Runtime.getRuntime().addShutdownHook(
-//                new Thread(this::beforeShutdown)
-//        );
-//        Runtime.getRuntime().addShutdownHook(
-//                new Thread(ThreadManager.INSTANCE()::shutdown)
-//        );
-//        ThreadManager.INSTANCE().run();
-//    }
+    private void init(LinkedList<TopicPartition> topicPartitions)
+    {
+        // todo init meta cache
+        consumerThreadManager.init(topicPartitions);
+        // register shutdown hook
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(this::beforeShutdown)
+        );
+        Runtime.getRuntime().addShutdownHook(
+                new Thread(ConsumerThreadManager.INSTANCE()::shutdown)
+        );
+        consumerThreadManager.run();
+    }
 
     public void consume()
     {
         int count;
         while (true) {
+            if (buffer.isEmpty()) {
+                System.out.println("Thread stop");
+                return;
+            }
             count = buffer.drainTo(messages);
+            int indexOfDot = topic.indexOf(".");
+            int length = topic.length();
+            this.dbName = topic.substring(0, indexOfDot - 1);
+            this.tblName = topic.substring(indexOfDot + 1, length - 1);
             System.out.println("message count : " + count);
             sort(messages);
 //            for (Integer key : messageLists.keySet()) {
@@ -87,10 +98,11 @@ public class DefaultConsumer implements Consumer
 //                }
 //            }
             flush(messageLists);
+            writeToMetaData();
         }
     }
 
-    public void sort(LinkedList<Message> messages)
+    private void sort(LinkedList<Message> messages)
     {
         for (Message message1 : messages) {
             if (messageLists.keySet().contains(message1.getKeyIndex())) {
@@ -107,19 +119,8 @@ public class DefaultConsumer implements Consumer
         }
     }
 
-    public void commit(Long offset, String topic, int partition)
+    private void flush(Map<Integer, LinkedList<Message>> messageLists)
     {
-        OffsetAndMetadata offsetAndMetadata = new OffsetAndMetadata(offset);
-        TopicPartition topicPartition = new TopicPartition(topic, partition);
-        Map<TopicPartition, OffsetAndMetadata> offsetParam
-                = new HashMap<TopicPartition, OffsetAndMetadata>();
-        offsetParam.put(topicPartition, offsetAndMetadata);
-        consumer.commitSync(offsetParam);
-    }
-
-    public void flush(Map<Integer, LinkedList<Message>> messageLists)
-    {
-        System.out.println("hdfsWarehouse : " + hdfsWarehouse);
         System.out.println("dbName : " + dbName);
         System.out.println("tblName : " + tblName);
         String file = String.format("%s/%s/%s", hdfsWarehouse, dbName, tblName);
@@ -127,10 +128,9 @@ public class DefaultConsumer implements Consumer
         Path path = new Path(file);
         Configuration conf = new Configuration();
         FileSystem fs;
-        FSDataOutputStream output = null;
+        FSDataOutputStream output;
         try {
             fs = path.getFileSystem(conf);
-            //fs = FileSystem.get(conf);
             output = fs.create(path);
             for (Integer key : messageLists.keySet()) {
                 for (Message message : messageLists.get(key)) {
@@ -146,14 +146,30 @@ public class DefaultConsumer implements Consumer
         catch (IOException e) {
             e.printStackTrace();
         }
-//        finally {
-//            try {
-//                output.close();
-//            }
-//            catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
+    }
+
+    private void writeToMetaData()
+    {
+        int fiberValue;
+        long timeBegin;
+        long timeEnd;
+        String path;
+        if (messages.get(0).getTimestamp().isPresent()) {
+            timeBegin = messages.get(0).getTimestamp().get();
+            timeEnd = messages.get(0).getTimestamp().get();
+            for (Integer key : messageLists.keySet()) {
+                if (key < timeBegin) {
+                    timeBegin = key;
+                }
+                if (key > timeEnd) {
+                    timeEnd = key;
+                }
+            }
+            fiberValue = Integer.parseInt(messages.get(0).getValues()[messages.get(0).getKeyIndex()]);
+            path = String.format("%s/%s/%s", hdfsWarehouse, dbName, tblName);
+            metaClient.createBlockIndex(dbName, tblName, fiberValue, timeBegin, timeEnd, path);
+        }
+        //else ignore
     }
 
     public void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc)
@@ -166,9 +182,16 @@ public class DefaultConsumer implements Consumer
         Runtime.getRuntime().exit(0);
     }
 
-    public void clear()
+    private void beforeShutdown()
     {
         messages.clear();
         messageLists.clear();
+        kafkaAdminClient.close();
+        try {
+            metaClient.shutdown(ConsumerConfig.INSTANCE().getMetaClientShutdownTimeout());
+        }
+        catch (InterruptedException e) {
+            metaClient.shutdownNow();
+        }
     }
 }

@@ -14,8 +14,8 @@
 package cn.edu.ruc.iir.paraflow.metaserver.action;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ActionParamNotValidException;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.DatabasesNotExistException;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
-import cn.edu.ruc.iir.paraflow.commons.exceptions.TablesNotExistException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
@@ -24,20 +24,14 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
 import java.util.ArrayList;
 import java.util.Optional;
 
-/**
- * @author jelly.guodong.jin@gmail.com
- */
-public class ListTableAction extends Action
+public class ListDatabasesAction extends Action
 {
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
         Optional<Object> paramOp = input.getParam();
-        Optional<Object> dbIdOp = input.getProperties("dbId");
-        if (paramOp.isPresent() && dbIdOp.isPresent()) {
-            MetaProto.DbNameParam dbNameParam =
-                    (MetaProto.DbNameParam) paramOp.get();
-            String sqlStatement = SQLTemplate.listTables((Long) dbIdOp.get());
+        if (paramOp.isPresent()) {
+            String sqlStatement = SQLTemplate.listDatabases();
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {
                 MetaProto.StringListType stringList;
@@ -52,14 +46,14 @@ public class ListTableAction extends Action
                         .setIsEmpty(false)
                         .build();
                 input.setParam(stringList);
+                return input;
             }
             else {
-                throw new TablesNotExistException(dbNameParam.getDatabase());
+                throw new DatabasesNotExistException();
             }
         }
         else {
             throw new ActionParamNotValidException();
         }
-        return input;
     }
 }

@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.commons.buffer;
+package cn.edu.ruc.iir.paraflow.loader.producer.buffer;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 

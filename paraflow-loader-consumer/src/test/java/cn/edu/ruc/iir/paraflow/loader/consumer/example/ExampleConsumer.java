@@ -18,7 +18,7 @@ public class ExampleConsumer
         final String dbName = "exampleDb";
         final String tblName = "exampleTbl";
         try {
-            consumer = new DefaultConsumer(configPath);
+            consumer = new DefaultConsumer(configPath, topicPartitions);
         }
         catch (ConfigFileNotFoundException e) {
             e.printStackTrace();
@@ -26,7 +26,6 @@ public class ExampleConsumer
         }
         System.out.println("consumer consume start!!!");
         consumer.consume();
-        consumer.clear();
         System.out.println("Done with consume end!!!");
         DeserializableFunction<String, Long> func = (v) -> Long.parseLong(v) % 1000;
         consumer.registerFiberFunc(dbName, tblName, func);

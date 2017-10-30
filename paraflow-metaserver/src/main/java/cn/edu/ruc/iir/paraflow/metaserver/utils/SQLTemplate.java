@@ -44,6 +44,16 @@ public class SQLTemplate
         return String.format("SELECT tblname FROM meta_tblmodel WHERE dbid = %d;", dbId);
     }
 
+    public static String listColumns(long dbId, long tblId)
+    {
+        return String.format("SELECT colName FROM meta_colmodel WHERE dbid = %d AND tblid = %d;", dbId, tblId);
+    }
+
+    public static String listColumnsDataType(long dbId, long tblId)
+    {
+        return String.format("SELECT dataType FROM meta_colmodel WHERE dbid = %d AND tblid = %d;", dbId, tblId);
+    }
+
     public static String getDatabase(String dbName)
     {
         return String.format("SELECT dbname, locationurl, userid FROM meta_dbmodel WHERE dbname = '%s';",

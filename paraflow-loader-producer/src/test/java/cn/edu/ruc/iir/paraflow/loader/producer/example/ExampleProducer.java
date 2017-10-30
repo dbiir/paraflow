@@ -13,11 +13,11 @@ import cn.edu.ruc.iir.paraflow.loader.producer.DefaultProducer;
  */
 public class ExampleProducer
 {
-    private void exampleTest(String config)
+    private void exampleTest(String consumerConfig, String metaServerConfig)
     {
         final DefaultProducer producer;
         try {
-            producer = new DefaultProducer(config);
+            producer = new DefaultProducer(consumerConfig);
         }
         catch (ConfigFileNotFoundException e) {
             e.printStackTrace();
@@ -45,6 +45,6 @@ public class ExampleProducer
     public static void main(String[] args)
     {
         ExampleProducer producer = new ExampleProducer();
-        producer.exampleTest(args[0]);
+        producer.exampleTest(args[0], args[1]);
     }
 }

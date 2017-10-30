@@ -32,6 +32,8 @@ public class MessageUtils
             bytesSize += Integer.BYTES;
             bytesSize += v.length();
         }
+        bytesSize += Integer.BYTES;
+        bytesSize += msg.getTopic().get().length();
         ByteBuffer buffer = ByteBuffer.allocate(bytesSize);
         buffer.putInt(msg.getKeyIndex());
         buffer.putLong(msg.getTimestamp().get());
@@ -40,7 +42,8 @@ public class MessageUtils
             buffer.putInt(v.length());
             buffer.put(v.getBytes());
         }
-
+        buffer.putInt(msg.getTopic().get().length());
+        buffer.put(msg.getTopic().get().getBytes());
         return buffer.array();
     }
 
@@ -58,7 +61,11 @@ public class MessageUtils
                 wrapper.get(v);
                 values[i] = new String(v, StandardCharsets.UTF_8);
             }
-            return new Message(keyIndex, values, timestamp);
+            int tLen = wrapper.getInt();
+            byte[] t = new byte[tLen];
+            wrapper.get(t);
+            String topic = new String(t, StandardCharsets.UTF_8);
+            return new Message(keyIndex, values, timestamp, topic);
         }
         catch (Exception e) {
             throw new MessageDeSerializationException();

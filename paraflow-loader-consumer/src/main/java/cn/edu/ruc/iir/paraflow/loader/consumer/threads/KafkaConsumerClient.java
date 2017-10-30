@@ -38,6 +38,11 @@ public class KafkaConsumerClient
         return consumer.poll(pollTimeout);
     }
 
+    public void commitSync()
+    {
+        consumer.commitSync();
+    }
+
     public void close()
     {
         consumer.close();
