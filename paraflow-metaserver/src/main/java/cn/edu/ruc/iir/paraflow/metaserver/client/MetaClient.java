@@ -384,6 +384,7 @@ public class MetaClient
     {
         MetaProto.NoneType none = MetaProto.NoneType.newBuilder().build();
         MetaProto.StringListType stringList;
+        MetaProto.StringListType.Builder builder = MetaProto.StringListType.newBuilder();
         try {
             stringList = metaBlockingStub.listDatabases(none);
         }
@@ -896,6 +897,7 @@ public class MetaClient
                                                  long timeEnd,
                                                  String path)
     {
+        System.out.println("coming into MetaClient createBlockIndex!");
         boolean dbNameFormat = nameValidate(dbName);
         boolean dbNameLen = lengthValidate(dbName);
         boolean tblNameFormat = nameValidate(tblName);

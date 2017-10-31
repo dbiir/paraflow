@@ -13,7 +13,7 @@ public class ReceiveQueueBuffer
 
     private ReceiveQueueBuffer()
     {
-        queue = new LinkedBlockingQueue<>();
+        queue = new LinkedBlockingQueue<>(50000);
     }
 
     private static class ReceiveQueueBufferHolder
@@ -56,6 +56,11 @@ public class ReceiveQueueBuffer
         return queue.drainTo(messages);
     }
 
+    public int drainTo(LinkedList<Message> messages, int maxElements)
+    {
+        return queue.drainTo(messages, maxElements);
+    }
+
     public int remainingCapacity()
     {
         return queue.remainingCapacity();
@@ -69,5 +74,21 @@ public class ReceiveQueueBuffer
     public void put(Message e) throws InterruptedException
     {
         queue.put(e);
+    }
+
+    public void add(Message e)
+    {
+        queue.add(e);
+    }
+
+    public void travers()
+    {
+        LinkedList<Message> messages = new LinkedList<>();
+        queue.drainTo(messages);
+        int index = 0;
+        for (Message message : messages) {
+            System.out.println("index : " + index++);
+            System.out.println("ReceiveQueueBuffer : messages : " + message);
+        }
     }
 }

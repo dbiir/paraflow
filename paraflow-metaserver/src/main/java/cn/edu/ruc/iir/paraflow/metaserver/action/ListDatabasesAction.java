@@ -45,6 +45,7 @@ public class ListDatabasesAction extends Action
                         .addAllStr(result)
                         .setIsEmpty(false)
                         .build();
+                System.out.println("stringList : " + stringList);
                 input.setParam(stringList);
                 return input;
             }

@@ -167,6 +167,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             ActionResponse result = txController.commit(input);
             MetaProto.StringListType stringListType =
                     (MetaProto.StringListType) result.getParam().get();
+            System.out.println("MetaService :stringList :" + stringListType);
             responseStreamObserver.onNext(stringListType);
             responseStreamObserver.onCompleted();
         }
@@ -307,6 +308,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             ActionResponse result = txController.commit(input);
             MetaProto.DbParam dbParam =
                     (MetaProto.DbParam) result.getParam().get();
+            System.out.println("dbParam : " + dbParam);
             responseStreamObserver.onNext(dbParam);
             responseStreamObserver.onCompleted();
         }

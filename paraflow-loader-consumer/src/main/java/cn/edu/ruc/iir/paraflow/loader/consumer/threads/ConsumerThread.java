@@ -3,7 +3,6 @@ package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
-import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageSizeCalculator;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -17,11 +16,9 @@ public class ConsumerThread implements Runnable
     private final ConsumerConfig config = ConsumerConfig.INSTANCE();
     private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
     private final KafkaConsumerClient consumerClient = new KafkaConsumerClient();
-    private MessageSizeCalculator messageSizeCalculator = new MessageSizeCalculator();
-    private final long blockSize = messageSizeCalculator.getBlockSize();
-    private final MetaClient metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
+//    private final MetaClient metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
     private LinkedList<TopicPartition> topicPartitions;
-    private long size = 0;
+//    private long size = 0;
 
     private boolean isReadyToStop = false;
 
@@ -65,32 +62,19 @@ public class ConsumerThread implements Runnable
     public void run()
     {
         while (true) {
-            if (isReadyToStop && (blockSize <= size)) { //loop end condition
+            if (isReadyToStop) { //loop end condition
                 System.out.println("Thread stop");
                 consumerClient.close();
                 return;
             }
-            try {
                 consumerClient.assign(topicPartitions);
                 ConsumerRecords<Long, Message> consumerRecords = consumerClient.poll(config.getConsumerPollTimeout());
                 for (ConsumerRecord<Long, Message> record : consumerRecords) {
                     if (record.value().getTopic().isPresent()) {
-                        System.out.println("record.value : " + record.value());
-                        size += messageSizeCalculator.caculate(record.value().getTopic().get());
-                        System.out.println("messageSizeCalculator.caculate(record.value().getTopic().get() : " + messageSizeCalculator.caculate(record.value().getTopic().get()));
-                        System.out.println("size now : " + size);
-                        buffer.put(record.value());
-                        if (blockSize <= size) {
-                            consumerClient.commitSync();
-                            break;
-                        }
+                        buffer.offer(record.value());
                     }
                     //else ignore
                 }
-            }
-            catch (InterruptedException ignored) {
-                // if poll nothing, enter next loop
-            }
         }
     }
 
@@ -101,15 +85,15 @@ public class ConsumerThread implements Runnable
 
     public void shutdown()
     {
-        try {
-            size = 0;
+//        try {
+//            size = 0;
             readyToStop();
-            metaClient.shutdown(config.getMetaClientShutdownTimeout());
-        }
-        catch (InterruptedException e) {
-            size = 0;
-            readyToStop();
-            metaClient.shutdownNow();
-        }
+//            metaClient.shutdown(config.getMetaClientShutdownTimeout());
+//        }
+//        catch (InterruptedException e) {
+////            size = 0;
+//            readyToStop();
+//            metaClient.shutdownNow();
+//        }
     }
 }

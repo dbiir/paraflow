@@ -8,6 +8,7 @@ import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.loader.consumer.threads.ConsumerThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageListComparator;
+import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageSizeCalculator;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -37,14 +38,21 @@ public class DefaultConsumer implements Consumer
     private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
     private String topic;
     private ConsumerThreadManager consumerThreadManager;
+    private MessageSizeCalculator messageSizeCalculator;
+    private final long blockSize;
+//    private boolean isReadyToStop = false;
+//    private final long pollTimeout;
 
     public DefaultConsumer(String configPath, LinkedList<TopicPartition> topicPartitions) throws ConfigFileNotFoundException
     {
+        messageSizeCalculator = new MessageSizeCalculator(configPath);
         ConsumerConfig config = ConsumerConfig.INSTANCE();
         config.init(configPath);
         config.validate();
         this.topic = topicPartitions.get(0).topic();
         this.hdfsWarehouse = config.getHDFSWarehouse();
+        this.blockSize = config.getBufferOfferBlockSize();
+//        this.pollTimeout = config.getBufferPollTimeout();
         // init meta client
         metaClient = new MetaClient(config.getMetaServerHost(),
                 config.getMetaServerPort());
@@ -60,6 +68,11 @@ public class DefaultConsumer implements Consumer
         props.setProperty("value.deserializer", config.getKafkaValueDeserializerClass());
         kafkaAdminClient = AdminClient.create(props);
         consumerThreadManager = ConsumerThreadManager.INSTANCE();
+        topic = topicPartitions.get(0).topic();
+        int indexOfDot = topic.indexOf(".");
+        int length = topic.length();
+        this.dbName = topic.substring(0, indexOfDot - 1);
+        this.tblName = topic.substring(indexOfDot + 1, length - 1);
         init(topicPartitions);
     }
 
@@ -79,37 +92,31 @@ public class DefaultConsumer implements Consumer
 
     public void consume()
     {
-        int count;
+        long messageSize = messageSizeCalculator.caculate(topic);
+        int messageCount = (int) (blockSize / messageSize);
+        int remainingCount;
         while (true) {
-            if (buffer.isEmpty()) {
-                System.out.println("Thread stop");
-                return;
+            remainingCount = messageCount;
+            for (messages.clear(); remainingCount <= 0; remainingCount = messageCount - messages.size()) {
+                buffer.drainTo(messages, remainingCount);
             }
-            count = buffer.drainTo(messages);
-            int indexOfDot = topic.indexOf(".");
-            int length = topic.length();
-            this.dbName = topic.substring(0, indexOfDot - 1);
-            this.tblName = topic.substring(indexOfDot + 1, length - 1);
-            System.out.println("message count : " + count);
-            sort(messages);
-//            for (Integer key : messageLists.keySet()) {
-//                for (int i = 0; i < count; i++) {
-//                    System.out.println("messagesLists.get(key).get(i) : " + messageLists.get(key).get(i));
-//                }
-//            }
-            flush(messageLists);
-            writeToMetaData();
+            for (Message message : messages) {
+                System.out.println("message : " + message);
+            }
+//            sort();
+//            flush();
+//            writeToMetaData();
         }
     }
 
-    private void sort(LinkedList<Message> messages)
+    private void sort()
     {
         for (Message message1 : messages) {
             if (messageLists.keySet().contains(message1.getKeyIndex())) {
                 messageLists.get(message1.getKeyIndex()).add(message1);
             }
             else {
-                messageLists.put(message1.getKeyIndex(), new LinkedList<Message>());
+                messageLists.put(message1.getKeyIndex(), new LinkedList<>());
                 messageLists.get(message1.getKeyIndex()).add(message1);
             }
         }
@@ -119,10 +126,10 @@ public class DefaultConsumer implements Consumer
         }
     }
 
-    private void flush(Map<Integer, LinkedList<Message>> messageLists)
+    private void flush()
     {
-        System.out.println("dbName : " + dbName);
-        System.out.println("tblName : " + tblName);
+        System.out.println("DefaultConsume : flush() : dbName : " + dbName);
+        System.out.println("DefaultConsume : flush() : tblName : " + tblName);
         String file = String.format("%s/%s/%s", hdfsWarehouse, dbName, tblName);
         System.out.println("file : " + file);
         Path path = new Path(file);
@@ -165,8 +172,12 @@ public class DefaultConsumer implements Consumer
                     timeEnd = key;
                 }
             }
+            System.out.println("DefaultConsume : writeToMetaData() : timeBegin : " + timeBegin);
+            System.out.println("DefaultConsume : writeToMetaData() : timeEnd : " + timeEnd);
             fiberValue = Integer.parseInt(messages.get(0).getValues()[messages.get(0).getKeyIndex()]);
             path = String.format("%s/%s/%s", hdfsWarehouse, dbName, tblName);
+            System.out.println("DefaultConsume : writeToMetaData() : fiberValue : " + fiberValue);
+            System.out.println("DefaultConsume : writeToMetaData() : path : " + path);
             metaClient.createBlockIndex(dbName, tblName, fiberValue, timeBegin, timeEnd, path);
         }
         //else ignore

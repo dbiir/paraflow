@@ -23,7 +23,6 @@ public class ConsumerConfig
 
     public void init(String configPath) throws ConfigFileNotFoundException
     {
-        System.out.println("config.init()");
         paraflowConfig = new ParaFlowConfig(configPath);
         paraflowConfig.build();
     }
@@ -144,7 +143,12 @@ public class ConsumerConfig
 
     public int getBufferOfferBlockSize()
     {
-        return Integer.parseInt(paraflowConfig.getProperty("consumer.buffer.offer.block.size"));
+        return Integer.parseInt(paraflowConfig.getProperty("consumer.buffer.poll.block.size"));
+    }
+
+    public long getBufferPollTimeout()
+    {
+        return Long.parseLong(paraflowConfig.getProperty("consumer.buffer.poll.timeout"));
     }
 
     public int getMetaClientShutdownTimeout()
