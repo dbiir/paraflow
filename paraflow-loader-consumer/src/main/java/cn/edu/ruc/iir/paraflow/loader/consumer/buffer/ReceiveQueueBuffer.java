@@ -13,7 +13,7 @@ public class ReceiveQueueBuffer
 
     private ReceiveQueueBuffer()
     {
-        queue = new LinkedBlockingQueue<>(50000);
+        queue = new LinkedBlockingQueue<>(10000);
     }
 
     private static class ReceiveQueueBufferHolder
@@ -79,6 +79,11 @@ public class ReceiveQueueBuffer
     public void add(Message e)
     {
         queue.add(e);
+    }
+
+    public int size()
+    {
+        return queue.size();
     }
 
     public void travers()

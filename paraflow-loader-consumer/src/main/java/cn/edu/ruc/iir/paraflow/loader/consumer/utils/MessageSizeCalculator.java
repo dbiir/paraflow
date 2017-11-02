@@ -1,6 +1,5 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.utils;
 
-import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 
@@ -8,15 +7,9 @@ public class MessageSizeCalculator
 {
     private final MetaClient metaClient;
 
-    public MessageSizeCalculator(String configPath)
+    public MessageSizeCalculator()
     {
         final ConsumerConfig config = ConsumerConfig.INSTANCE();
-        try {
-            config.init(configPath);
-        }
-        catch (ConfigFileNotFoundException ignore) {
-        }
-        config.validate();
         metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
     }
 

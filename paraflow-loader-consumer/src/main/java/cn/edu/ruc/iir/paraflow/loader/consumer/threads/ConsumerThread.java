@@ -3,7 +3,6 @@ package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
-import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
@@ -16,9 +15,7 @@ public class ConsumerThread implements Runnable
     private final ConsumerConfig config = ConsumerConfig.INSTANCE();
     private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
     private final KafkaConsumerClient consumerClient = new KafkaConsumerClient();
-//    private final MetaClient metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
     private LinkedList<TopicPartition> topicPartitions;
-//    private long size = 0;
 
     private boolean isReadyToStop = false;
 
@@ -70,11 +67,17 @@ public class ConsumerThread implements Runnable
                 consumerClient.assign(topicPartitions);
                 ConsumerRecords<Long, Message> consumerRecords = consumerClient.poll(config.getConsumerPollTimeout());
                 for (ConsumerRecord<Long, Message> record : consumerRecords) {
-                    if (record.value().getTopic().isPresent()) {
-                        buffer.offer(record.value());
-                    }
-                    //else ignore
+                    System.out.println("record : " + record);
+                    buffer.offer(record.value());
+                    System.out.println("buffer size: " + buffer.size());
                 }
+//                LinkedList<Message> messages = new LinkedList<>();
+//                buffer.drainTo(messages);
+//                int i = 0;
+//                for (Message message : messages) {
+//                    System.out.println("i = " + i++);
+//                    System.out.println("ConsumerThread : run() :message :" + message);
+//                }
         }
     }
 
@@ -85,15 +88,6 @@ public class ConsumerThread implements Runnable
 
     public void shutdown()
     {
-//        try {
-//            size = 0;
             readyToStop();
-//            metaClient.shutdown(config.getMetaClientShutdownTimeout());
-//        }
-//        catch (InterruptedException e) {
-////            size = 0;
-//            readyToStop();
-//            metaClient.shutdownNow();
-//        }
     }
 }

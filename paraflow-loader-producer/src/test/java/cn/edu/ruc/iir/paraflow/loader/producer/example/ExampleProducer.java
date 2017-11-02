@@ -11,6 +11,7 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * paraflow
@@ -42,7 +43,7 @@ public class ExampleProducer
 //        System.out.println("Created topic " + FormTopicName.formTopicName(dbName, tblName));
         SerializableFunction<String, Long> func = (v) -> Long.parseLong(v) % 1000;
         producer.registerFiberFunc(dbName, tblName, func);
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 1500; i++) {
 //            fiberKeyIndex = i;
             long ts = System.currentTimeMillis();
             String[] content = {String.valueOf(i), String.valueOf(i * 2), "alice" + i, String.valueOf(ts)};
@@ -50,6 +51,11 @@ public class ExampleProducer
             producer.send(dbName, tblName, msg);
         }
         System.out.println("Done with sending");
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         producer.shutdown();
     }
 

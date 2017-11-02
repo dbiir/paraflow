@@ -40,12 +40,9 @@ public class DefaultConsumer implements Consumer
     private ConsumerThreadManager consumerThreadManager;
     private MessageSizeCalculator messageSizeCalculator;
     private final long blockSize;
-//    private boolean isReadyToStop = false;
-//    private final long pollTimeout;
 
     public DefaultConsumer(String configPath, LinkedList<TopicPartition> topicPartitions) throws ConfigFileNotFoundException
     {
-        messageSizeCalculator = new MessageSizeCalculator(configPath);
         ConsumerConfig config = ConsumerConfig.INSTANCE();
         config.init(configPath);
         config.validate();
@@ -56,6 +53,7 @@ public class DefaultConsumer implements Consumer
         // init meta client
         metaClient = new MetaClient(config.getMetaServerHost(),
                 config.getMetaServerPort());
+        messageSizeCalculator = new MessageSizeCalculator();
         Properties props = new Properties();
         props.setProperty("bootstrap.servers", config.getKafkaBootstrapServers());
         props.setProperty("client.id", "consumerAdmin");
@@ -93,19 +91,25 @@ public class DefaultConsumer implements Consumer
     public void consume()
     {
         long messageSize = messageSizeCalculator.caculate(topic);
-        int messageCount = (int) (blockSize / messageSize);
-        int remainingCount;
-        while (true) {
-            remainingCount = messageCount;
-            for (messages.clear(); remainingCount <= 0; remainingCount = messageCount - messages.size()) {
-                buffer.drainTo(messages, remainingCount);
+        int messageCount = (int) (blockSize / messageSize + 1);//+1 to
+        if (messageCount > 0) {//blockSize is bigger then messageSize
+            int remainCount;//remaining message count
+            while (true) {
+                remainCount = messageCount - messages.size();
+                for (; remainCount > 0 && buffer.size() > 0; remainCount = messageCount - messages.size()) {
+                    buffer.drainTo(messages, remainCount);
+                }
+                if (remainCount == 0) {//block is full
+                    sort();
+                    flush();
+                    writeToMetaData();
+                    clear();
+                }
             }
-            for (Message message : messages) {
-                System.out.println("message : " + message);
-            }
-//            sort();
-//            flush();
-//            writeToMetaData();
+        }
+        else {//blockSize is small then messageSize
+            System.out.println("Block size is too small to add one message!");
+            System.out.println("Please increase the block size!");
         }
     }
 
@@ -186,6 +190,12 @@ public class DefaultConsumer implements Consumer
     public void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc)
     {
         funcMapBuffer.put(FormTopicName.formTopicName(database, table), fiberFunc);
+    }
+
+    public void clear()
+    {
+        messages.clear();
+        messageLists.clear();
     }
 
     public void shutdown()
