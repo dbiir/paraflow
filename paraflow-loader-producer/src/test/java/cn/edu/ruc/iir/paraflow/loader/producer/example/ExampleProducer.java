@@ -11,7 +11,6 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * paraflow
@@ -53,7 +52,8 @@ public class ExampleProducer
         System.out.println("Done with sending");
         try {
             Thread.sleep(10000);
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
             e.printStackTrace();
         }
         producer.shutdown();

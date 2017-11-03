@@ -91,15 +91,15 @@ public class DefaultConsumer implements Consumer
     public void consume()
     {
         long messageSize = messageSizeCalculator.caculate(topic);
-        int messageCount = (int) (blockSize / messageSize + 1);//+1 to
-        if (messageCount > 0) {//blockSize is bigger then messageSize
-            int remainCount;//remaining message count
+        int messageCount = (int) (blockSize / messageSize + 1); //+1 to
+        if (messageCount > 0) { //blockSize is bigger then messageSize
+            int remainCount; //remaining message count
             while (true) {
                 remainCount = messageCount - messages.size();
                 for (; remainCount > 0 && buffer.size() > 0; remainCount = messageCount - messages.size()) {
                     buffer.drainTo(messages, remainCount);
                 }
-                if (remainCount == 0) {//block is full
+                if (remainCount == 0) { //block is full
                     sort();
                     flush();
                     writeToMetaData();
@@ -107,7 +107,7 @@ public class DefaultConsumer implements Consumer
                 }
             }
         }
-        else {//blockSize is small then messageSize
+        else { //blockSize is small then messageSize
             System.out.println("Block size is too small to add one message!");
             System.out.println("Please increase the block size!");
         }
