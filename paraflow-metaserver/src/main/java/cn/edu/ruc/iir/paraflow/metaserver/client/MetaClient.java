@@ -384,6 +384,7 @@ public class MetaClient
     {
         MetaProto.NoneType none = MetaProto.NoneType.newBuilder().build();
         MetaProto.StringListType stringList;
+        MetaProto.StringListType.Builder builder = MetaProto.StringListType.newBuilder();
         try {
             stringList = metaBlockingStub.listDatabases(none);
         }
@@ -392,7 +393,7 @@ public class MetaClient
             stringList = MetaProto.StringListType.newBuilder().build();
             return stringList;
         }
-        logger.info("Database list : " + stringList);
+        logger.info("Databases list : " + stringList);
         return stringList;
     }
 
@@ -410,7 +411,57 @@ public class MetaClient
             stringList = MetaProto.StringListType.newBuilder().build();
             return stringList;
         }
-        logger.info("Table list : " + stringList);
+        logger.info("Tables list : " + stringList);
+        return stringList;
+    }
+
+    public MetaProto.StringListType listColumns(String dbName, String tblName)
+    {
+        MetaProto.DbNameParam dbNameParam = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
+        MetaProto.TblNameParam tblNameParam = MetaProto.TblNameParam.newBuilder()
+                .setTable(tblName)
+                .build();
+        MetaProto.DbTblParam dbTblParam = MetaProto.DbTblParam.newBuilder()
+                .setDatabase(dbNameParam)
+                .setTable(tblNameParam)
+                .build();
+        MetaProto.StringListType stringList;
+        try {
+            stringList = metaBlockingStub.listColumns(dbTblParam);
+        }
+        catch (StatusRuntimeException e) {
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            stringList = MetaProto.StringListType.newBuilder().build();
+            return stringList;
+        }
+        logger.info("Columns list : " + stringList);
+        return stringList;
+    }
+
+    public MetaProto.StringListType listColumnsDataType(String dbName, String tblName)
+    {
+        MetaProto.DbNameParam dbNameParam = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
+        MetaProto.TblNameParam tblNameParam = MetaProto.TblNameParam.newBuilder()
+                .setTable(tblName)
+                .build();
+        MetaProto.DbTblParam dbTblParam = MetaProto.DbTblParam.newBuilder()
+                .setDatabase(dbNameParam)
+                .setTable(tblNameParam)
+                .build();
+        MetaProto.StringListType stringList;
+        try {
+            stringList = metaBlockingStub.listColumnsDataType(dbTblParam);
+        }
+        catch (StatusRuntimeException e) {
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            stringList = MetaProto.StringListType.newBuilder().build();
+            return stringList;
+        }
+        logger.info("ColumnsDataType list : " + stringList);
         return stringList;
     }
 
@@ -425,7 +476,7 @@ public class MetaClient
         }
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
-            database = MetaProto.DbParam.newBuilder().build();
+            database = MetaProto.DbParam.newBuilder().setIsEmpty(false).build();
             return database;
         }
         logger.info("Database is : " + database);
@@ -846,6 +897,7 @@ public class MetaClient
                                                  long timeEnd,
                                                  String path)
     {
+        System.out.println("coming into MetaClient createBlockIndex!");
         boolean dbNameFormat = nameValidate(dbName);
         boolean dbNameLen = lengthValidate(dbName);
         boolean tblNameFormat = nameValidate(tblName);

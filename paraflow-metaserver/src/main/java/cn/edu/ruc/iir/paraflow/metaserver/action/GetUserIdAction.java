@@ -23,6 +23,7 @@ public class GetUserIdAction extends Action
         Optional<Object> userNameOp = input.getProperties("userName");
         if (paramOp.isPresent() && userNameOp.isPresent()) {
             String userName = userNameOp.get().toString();
+            System.out.println("username : " + userName);
             String sqlStatement = SQLTemplate.findUserId(userName);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {

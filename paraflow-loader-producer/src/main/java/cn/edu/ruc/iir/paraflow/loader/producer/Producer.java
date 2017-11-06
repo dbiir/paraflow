@@ -15,6 +15,8 @@ public interface Producer
 {
     void send(String database, String table, Message message);
 
+    void deleteTopic(String topicName);
+
     void createTopic(String topicName, int partitionsNum, short replicationFactor);
 
     StatusProto.ResponseStatus createUser(String userName, String password);

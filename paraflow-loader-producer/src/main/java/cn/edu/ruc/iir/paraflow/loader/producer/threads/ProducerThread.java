@@ -1,8 +1,8 @@
 package cn.edu.ruc.iir.paraflow.loader.producer.threads;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
+import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.loader.producer.buffer.BlockingQueueBuffer;
-import cn.edu.ruc.iir.paraflow.loader.producer.buffer.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.KafkaProducerClient;
 import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
@@ -15,7 +15,7 @@ import java.util.function.Function;
  *
  * @author guodong
  */
-public class KafkaThread implements Runnable
+public class ProducerThread implements Runnable
 {
     private final String threadName;
     private final ProducerConfig config = ProducerConfig.INSTANCE();
@@ -26,12 +26,12 @@ public class KafkaThread implements Runnable
 
     private boolean isReadyToStop = false;
 
-    public KafkaThread()
+    public ProducerThread()
     {
         this("kafka-thread");
     }
 
-    public KafkaThread(String threadName)
+    public ProducerThread(String threadName)
     {
         this.threadName = threadName;
     }
@@ -63,6 +63,7 @@ public class KafkaThread implements Runnable
             }
             try {
                 Message msg = buffer.poll(config.getBufferPollTimeout());
+                System.out.println("[msg]: " + msg);
                 if (msg.getTopic().isPresent()) {
                     String topic = msg.getTopic().get();
                     Optional<Function<String, Long>> function = funcMapBuffer.get(topic);

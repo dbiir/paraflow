@@ -23,6 +23,14 @@ public class Message
         this.timestamp = timestamp;
     }
 
+    public Message(int keyIndex, String[] values, long timestamp, String topic)
+    {
+        this.keyIndex = keyIndex;
+        this.values = values;
+        this.timestamp = timestamp;
+        this.topic = topic;
+    }
+
     public String getKey()
     {
         return this.values[keyIndex];

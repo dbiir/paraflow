@@ -11,6 +11,8 @@ package paraflow;
 service Meta {
     rpc listDatabases(NoneType) returns (StringListType) {}
     rpc listTables(DbNameParam) returns (StringListType) {}
+    rpc listColumns(DbTblParam) returns (StringListType) {}
+    rpc listColumnsDataType(DbTblParam) returns (StringListType) {}
     rpc getDatabase(DbNameParam) returns (DbParam) {}
     rpc getTable(DbTblParam) returns (TblParam) {}
     rpc getColumn(DbTblColParam) returns (ColParam) {}

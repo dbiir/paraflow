@@ -6,11 +6,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class BlockingQueueBuffer
 {
     private final BlockingQueue<Message> queue;

@@ -43,8 +43,10 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.GetTableIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetTblParamAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetUserIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetUserNameAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.ListDatabaseAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.ListTableAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.ListColumnsAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.ListColumnsDataTypeAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.ListDatabasesAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.ListTablesAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.RenameColumnAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.RenameDatabaseAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.RenameTableAction;
@@ -161,10 +163,11 @@ public class MetaService extends MetaGrpc.MetaImplBase
             ActionResponse input = new ActionResponse();
             input.setParam(none);
             txController.setAutoCommit(true);
-            txController.addAction(new ListDatabaseAction());
+            txController.addAction(new ListDatabasesAction());
             ActionResponse result = txController.commit(input);
             MetaProto.StringListType stringListType =
                     (MetaProto.StringListType) result.getParam().get();
+            System.out.println("MetaService :stringList :" + stringListType);
             responseStreamObserver.onNext(stringListType);
             responseStreamObserver.onCompleted();
         }
@@ -195,7 +198,78 @@ public class MetaService extends MetaGrpc.MetaImplBase
             input.setProperties("dbName", dbNameParam.getDatabase());
             txController.setAutoCommit(true);
             txController.addAction(new GetDatabaseIdAction());
-            txController.addAction(new ListTableAction());
+            txController.addAction(new ListTablesAction());
+            ActionResponse result = txController.commit(input);
+            MetaProto.StringListType stringListType =
+                    (MetaProto.StringListType) result.getParam().get();
+            responseStreamObserver.onNext(stringListType);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            MetaProto.StringListType stringList = MetaProto.StringListType.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            responseStreamObserver.onNext(stringList);
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+
+    @Override
+    public void listColumns(MetaProto.DbTblParam dbTblParam,
+                            StreamObserver<MetaProto.StringListType> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(dbTblParam);
+            input.setProperties("dbName", dbTblParam.getDatabase().getDatabase());
+            input.setProperties("tblName", dbTblParam.getTable().getTable());
+            txController.setAutoCommit(true);
+            txController.addAction(new GetDatabaseIdAction());
+            txController.addAction(new GetTableIdAction());
+            txController.addAction(new ListColumnsAction());
+            ActionResponse result = txController.commit(input);
+            MetaProto.StringListType stringListType =
+                    (MetaProto.StringListType) result.getParam().get();
+            responseStreamObserver.onNext(stringListType);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            MetaProto.StringListType stringList = MetaProto.StringListType.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            responseStreamObserver.onNext(stringList);
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+    @Override
+    public void listColumnsDataType(MetaProto.DbTblParam dbTblParam,
+                                       StreamObserver<MetaProto.StringListType> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(dbTblParam);
+            input.setProperties("dbName", dbTblParam.getDatabase().getDatabase());
+            input.setProperties("tblName", dbTblParam.getTable().getTable());
+            txController.setAutoCommit(true);
+            txController.addAction(new GetDatabaseIdAction());
+            txController.addAction(new GetTableIdAction());
+            txController.addAction(new ListColumnsDataTypeAction());
             ActionResponse result = txController.commit(input);
             MetaProto.StringListType stringListType =
                     (MetaProto.StringListType) result.getParam().get();
@@ -234,6 +308,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             ActionResponse result = txController.commit(input);
             MetaProto.DbParam dbParam =
                     (MetaProto.DbParam) result.getParam().get();
+            System.out.println("dbParam : " + dbParam);
             responseStreamObserver.onNext(dbParam);
             responseStreamObserver.onCompleted();
         }
