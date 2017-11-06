@@ -50,13 +50,13 @@ public class ExampleProducer
             producer.send(dbName, tblName, msg);
         }
         System.out.println("Done with sending");
-        try {
-            Thread.sleep(10000);
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        producer.shutdown();
+//        try {
+//            Thread.sleep(10000);
+//        }
+//        catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        producer.shutdown();
     }
 
     private void createDbTbl()

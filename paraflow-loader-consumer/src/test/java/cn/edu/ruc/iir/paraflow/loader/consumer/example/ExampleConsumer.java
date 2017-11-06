@@ -27,7 +27,13 @@ public class ExampleConsumer
         consumer.consume();
         DeserializableFunction<String, Long> func = (v) -> Long.parseLong(v) % 1000;
         consumer.registerFiberFunc(dbName, tblName, func);
-        consumer.shutdown();
+//        try {
+//            Thread.sleep(10000);
+//        }
+//        catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        consumer.shutdown();
     }
     public static void main(String[] args)
     {

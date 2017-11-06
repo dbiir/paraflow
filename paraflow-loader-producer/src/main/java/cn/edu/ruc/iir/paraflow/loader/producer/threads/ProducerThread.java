@@ -63,9 +63,6 @@ public class ProducerThread implements Runnable
             }
             try {
                 Message msg = buffer.poll(config.getBufferPollTimeout());
-                if (msg == null) {
-                    System.out.println("Null message");
-                }
                 System.out.println("[msg]: " + msg);
                 if (msg.getTopic().isPresent()) {
                     String topic = msg.getTopic().get();

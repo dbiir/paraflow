@@ -1,52 +1,50 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
 
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
-import org.apache.kafka.common.TopicPartition;
 
-import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-public class ConsumerThreadManager
+public class DataProcessThreadManager
 {
     private final ExecutorService executorService;
     private final ConsumerConfig config = ConsumerConfig.INSTANCE();
     private final int threadNum = config.getKafkaThreadNum();
-    private ConsumerThread[] threads = new ConsumerThread[threadNum];
+    private DataProcessThread[] threads = new DataProcessThread[threadNum];
 
-    private ConsumerThreadManager()
+    private DataProcessThreadManager()
     {
         executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2);
     }
 
-    private static class ConsumerThreadManagerHolder
+    private static class DataProcessThreadManagerHolder
     {
-        private static final ConsumerThreadManager instance = new ConsumerThreadManager();
+        private static final DataProcessThreadManager instance = new DataProcessThreadManager();
     }
 
-    public static final ConsumerThreadManager INSTANCE()
+    public static final DataProcessThreadManager INSTANCE()
     {
-        return ConsumerThreadManagerHolder.instance;
+        return DataProcessThreadManager.DataProcessThreadManagerHolder.instance;
     }
 
-    public void init(LinkedList<TopicPartition> topicPartitions)
+    public void init(String topic)
     {
         for (int i = 0; i < threadNum; i++) {
-            threads[i] = new ConsumerThread("kafka-thread" + i, topicPartitions);
+            threads[i] = new DataProcessThread("kafka-thread" + i, topic);
         }
     }
 
     public void run()
     {
-        for (ConsumerThread thread : threads) {
+        for (DataProcessThread thread : threads) {
             executorService.submit(thread);
         }
     }
 
     public void shutdown()
     {
-        for (ConsumerThread thread : threads) {
+        for (DataProcessThread thread : threads) {
             thread.shutdown();
         }
         try {
