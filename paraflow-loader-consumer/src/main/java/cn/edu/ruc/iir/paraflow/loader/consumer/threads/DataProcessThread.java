@@ -71,7 +71,8 @@ public class DataProcessThread implements Runnable
      * DataProcessThread run() is used to poll message from consumer buffer
      */
     @Override
-    public void run() {
+    public void run()
+    {
         int remainCount; //remaining message count
         if (messageCount > 0) { //blockSize is bigger then messageSize
             while (true) {

@@ -4,7 +4,6 @@ import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
 import cn.edu.ruc.iir.paraflow.loader.consumer.threads.ConsumerThreadManager;
-import cn.edu.ruc.iir.paraflow.loader.consumer.threads.DataProcessThread;
 import cn.edu.ruc.iir.paraflow.loader.consumer.threads.DataProcessThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -43,7 +42,7 @@ public class DefaultConsumer implements Consumer
         props.setProperty("value.deserializer", config.getKafkaValueDeserializerClass());
         kafkaAdminClient = AdminClient.create(props);
         consumerThreadManager = ConsumerThreadManager.INSTANCE();
-        dataProcessThreadManager= DataProcessThreadManager.INSTANCE();
+        dataProcessThreadManager = DataProcessThreadManager.INSTANCE();
         topic = topicPartitions.get(0).topic();
         init();
     }
