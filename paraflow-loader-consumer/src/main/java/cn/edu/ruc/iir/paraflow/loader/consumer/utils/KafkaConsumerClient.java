@@ -1,13 +1,12 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.utils;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
-import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 public class KafkaConsumerClient
@@ -28,7 +27,7 @@ public class KafkaConsumerClient
         consumer = new KafkaConsumer<>(props);
     }
 
-    public void assign(LinkedList<TopicPartition> topicPartitions)
+    public void assign(List<TopicPartition> topicPartitions)
     {
         consumer.assign(topicPartitions);
     }

@@ -22,7 +22,7 @@ public class MessageUtils
      * format:
      * timestamp(8 bytes) + fiberId(4 bytes) + keyIndex(4 bytes) + num of values(4 bytes)
      *   + [value length(4 bytes) + value content(m bytes)] repeat for k values
-     *   + topic value  length + topic
+     *   + topic value length + topic
      * */
     public static byte[] toBytes(Message msg) throws MessageSerializeException
     {

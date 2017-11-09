@@ -1,6 +1,9 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.buffer;
 
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.DynamicStringArray;
+import org.apache.kafka.common.TopicPartition;
+
+import java.util.List;
 
 /**
  * paraflow
@@ -10,24 +13,27 @@ import cn.edu.ruc.iir.paraflow.loader.consumer.utils.DynamicStringArray;
 public class BufferSegment
 {
     private final long segmentCapacity;
-    private final int fixedFieldNum;
     private final long[] timestamps;
-    private final int[] fiberIds;
+    private final List<TopicPartition> fiberPartitions;
     private final DynamicStringArray stringBuffer;
     private int messageNum = 0;
 
-    public BufferSegment(long segmentCapacity, long[] timestamps, int[] fiberIds, int fixedFieldNum)
+    public BufferSegment(long segmentCapacity, long[] timestamps, List<TopicPartition> fiberPartitions)
     {
         this.segmentCapacity = segmentCapacity;
-        this.fixedFieldNum = fixedFieldNum;
         this.timestamps = timestamps;
-        this.fiberIds = fiberIds;
-        this.stringBuffer = new DynamicStringArray(fixedFieldNum);
+        this.fiberPartitions = fiberPartitions;
+        this.stringBuffer = new DynamicStringArray();
     }
 
     public void addValueStride(String[] values)
     {
         // add this message value(string array) to stringBuffer
         messageNum++;
+    }
+
+    public long getSegmentCapacity()
+    {
+        return segmentCapacity;
     }
 }

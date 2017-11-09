@@ -1,7 +1,9 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.buffer;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
+import org.apache.kafka.common.TopicPartition;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -14,77 +16,82 @@ import java.util.TreeMap;
  */
 public class BufferBlock
 {
-    private long blockMinTimestamp = Long.MIN_VALUE;
-    private long blockMaxTimestamp = Long.MIN_VALUE;
     private long blockSize = 0L;
 
-    private final String dbName;
-    private final String tblName;
     private final long blockCapacity;
-    private final List[] block;                         // message buffer. each list records messages of a fiber
+    private final List<Message>[] block;                         // THIS SHOULD BE A DYNAMIC ARRAY INSTEAD!! message buffer. each list records messages of a fiber
     private final long[] timestamps;                    // begin and end timestamps as metadata. each fiber contains two values (begin + end)
-    private final Map<Integer, Integer> fiberIdToIndex; // mapping from fiber id to index of block array
+    private final Map<TopicPartition, Integer> fiberPartitionToBlockIndex; // mapping from fiber id to index of block array
     private final int timestampStride = 2;
     private final int beginTimeOffset = 0;
     private final int endTimeOffset   = 1;
+    private final List<TopicPartition> fiberPartitions;
 
-    private final FlushBuffer flushBuffer = FlushBuffer.INSTANCE();
+    private final FlushQueueBuffer flushQueueBuffer = FlushQueueBuffer.INSTANCE();
 
-    public BufferBlock(String dbName, String tblName, long blockCapacity, int[] fiberIds, long flushBufferCapacity)
+    public BufferBlock(List<TopicPartition> fiberPartitions, long blockCapacity, long flushBufferCapacity)
     {
-        int fiberNum = fiberIds.length;
-        this.dbName = dbName;
-        this.tblName = tblName;
+        int fiberNum = fiberPartitions.size();
         this.blockCapacity = blockCapacity;
-        this.block = new List[fiberNum];
+        this.block = new LinkedList[fiberNum];
         this.timestamps = new long[fiberNum * 2];
-        this.fiberIdToIndex = new TreeMap<>(
+        this.fiberPartitionToBlockIndex = new TreeMap<>(
                 (o1, o2) -> {
-                    if (Objects.equals(o1, o2)) {
+                    if (Objects.equals(o1.toString(), o2.toString())) {
                         return 0;
                     }
-                    return o1 > o2 ? 1 : -1;
+                    return o1.toString().compareTo(o2.toString());
                 }
         );
-        this.flushBuffer.setBufferCapacity(flushBufferCapacity);
+        this.flushQueueBuffer.setBufferCapacity(flushBufferCapacity);
+        this.fiberPartitions = fiberPartitions;
 
-        for (int i = 0; i < fiberIds.length; i++) {
-            fiberIdToIndex.put(fiberIds[i], i);
+        for (int i = 0; i < fiberPartitions.size(); i++) {
+            fiberPartitionToBlockIndex.put(fiberPartitions.get(i), i);
         }
     }
 
     public void add(Message message)
     {
         if (blockSize + message.getValueSize() > blockCapacity) {
-            spillToFlushBuffer();
+            while (!spillToFlushBuffer()) {
+                // waiting
+                System.out.println("Waiting for flush buffer");
+            }
         }
-        int fiberId = message.getFiberId().get();
-        block[fiberIdToIndex.get(fiberId)].add(message);
-        blockSize += message.getValueSize();
+        if (message.getFiberId().isPresent() && message.getTopic().isPresent()) {
+            int fiberId = message.getFiberId().get();
+            String fiberTopic = message.getTopic().get();
+            TopicPartition fiber = new TopicPartition(fiberTopic, fiberId);
+            block[fiberPartitionToBlockIndex.get(fiber)].add(message);
+            blockSize += message.getValueSize();
+        }
     }
 
-    private void spillToFlushBuffer()
+    private boolean spillToFlushBuffer()
     {
-        int[] fiberIds = new int[fiberIdToIndex.size()];
-        Object[] objects = fiberIdToIndex.keySet().toArray();
-        for (int i = 0; i < fiberIdToIndex.size(); i++) {
-            fiberIds[i] = (int) objects[i];
+        BufferSegment segment = flushQueueBuffer.addSegment(blockSize, timestamps, fiberPartitions);
+        if (segment == null) {
+            return false;
         }
-        BufferSegment segment = flushBuffer.newSegment(blockSize, timestamps, fiberIds);
-        for (int i = 0; i < fiberIds.length; i++) {
-            List<Message> fiberMessages = block[fiberIdToIndex.get(fiberIds[i])];
+        int index = 0;
+        for (TopicPartition key : fiberPartitionToBlockIndex.keySet()) {
+            List<Message> fiberMessages = block[fiberPartitionToBlockIndex.get(key)];
             fiberMessages.sort((o1, o2) -> {
                 if (o1.getTimestamp().get().equals(o2.getTimestamp().get())) {
                     return 0;
                 }
                 return o1.getTimestamp().get() > o2.getTimestamp().get() ? 1 : -1;
             });
-            timestamps[timestampStride * i + beginTimeOffset] =
+            timestamps[timestampStride * index + beginTimeOffset] =
                     fiberMessages.get(0).getTimestamp().get();
-            timestamps[timestampStride * i + endTimeOffset] =
+            timestamps[timestampStride * index + endTimeOffset] =
                     fiberMessages.get(fiberMessages.size() - 1).getTimestamp().get();
             fiberMessages.forEach(msg -> segment.addValueStride(msg.getValues()));
             fiberMessages.clear();
+            index++;
         }
+        blockSize = 0;
+        return true;
     }
 }

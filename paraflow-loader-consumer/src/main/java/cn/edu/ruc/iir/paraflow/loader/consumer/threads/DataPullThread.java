@@ -8,37 +8,29 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
 
-import java.util.LinkedList;
+import java.util.List;
 
-public class ConsumerThread implements Runnable
+public class DataPullThread extends DataThread
 {
-    private final String threadName;
     private final ConsumerConfig config = ConsumerConfig.INSTANCE();
     private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
     private final KafkaConsumerClient consumerClient = new KafkaConsumerClient();
-    private LinkedList<TopicPartition> topicPartitions;
+    private List<TopicPartition> topicPartitions;
 
-    private boolean isReadyToStop = false;
-
-    public ConsumerThread()
+    public DataPullThread()
     {
         this("kafka-thread");
     }
 
-    public ConsumerThread(String threadName)
+    public DataPullThread(String threadName)
     {
         this.threadName = threadName;
     }
 
-    public ConsumerThread(String threadName, LinkedList<TopicPartition> topicPartitions)
+    public DataPullThread(String threadName, List<TopicPartition> topicPartitions)
     {
         this.threadName = threadName;
         this.topicPartitions = topicPartitions;
-    }
-
-    public String getName()
-    {
-        return threadName;
     }
 
     /**
@@ -54,7 +46,7 @@ public class ConsumerThread implements Runnable
      */
 
     /**
-     * ConsumerThread run() is used to poll message from kafka to buffer
+     * DataPullThread run() is used to poll message from kafka to buffer
      */
     @Override
     public void run()
@@ -73,15 +65,5 @@ public class ConsumerThread implements Runnable
                     System.out.println("buffer size: " + buffer.size());
                 }
         }
-    }
-
-    private void readyToStop()
-    {
-        this.isReadyToStop = true;
-    }
-
-    public void shutdown()
-    {
-            readyToStop();
     }
 }

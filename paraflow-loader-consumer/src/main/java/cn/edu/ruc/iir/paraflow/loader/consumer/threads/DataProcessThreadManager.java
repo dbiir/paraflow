@@ -1,7 +1,9 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
 
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
+import org.apache.kafka.common.TopicPartition;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -28,10 +30,10 @@ public class DataProcessThreadManager
         return DataProcessThreadManager.DataProcessThreadManagerHolder.instance;
     }
 
-    public void init(String topic)
+    public void init(List<TopicPartition> topicPartitions)
     {
         for (int i = 0; i < threadNum; i++) {
-            threads[i] = new DataProcessThread("kafka-thread" + i, topic);
+            threads[i] = new DataProcessThread("kafka-thread" + i, topicPartitions);
         }
     }
 

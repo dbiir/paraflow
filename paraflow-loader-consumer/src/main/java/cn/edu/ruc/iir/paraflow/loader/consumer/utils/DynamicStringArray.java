@@ -9,20 +9,17 @@ public class DynamicStringArray
 {
     private final int initSegSize;
     private final int initSegNum;
-    private final int fixedValueStride;
 
-    public DynamicStringArray(int initSegSize, int initSegNum, int fixedValueStride)
+    public DynamicStringArray(int initSegSize, int initSegNum)
     {
         this.initSegSize = initSegSize;
         this.initSegNum = initSegNum;
-        this.fixedValueStride = fixedValueStride;
     }
 
-    public DynamicStringArray(int fixedValueStride)
+    public DynamicStringArray()
     {
         this.initSegSize = 400;
         this.initSegNum = 20;
-        this.fixedValueStride = fixedValueStride;
     }
 
     public void addValueStride(String[] values)

@@ -3,13 +3,14 @@ package cn.edu.ruc.iir.paraflow.loader.consumer;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
-import cn.edu.ruc.iir.paraflow.loader.consumer.threads.ConsumerThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.consumer.threads.DataProcessThreadManager;
+import cn.edu.ruc.iir.paraflow.loader.consumer.threads.DataPullThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.TopicPartition;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.function.Function;
 
@@ -17,12 +18,11 @@ public class DefaultConsumer implements Consumer
 {
     private final AdminClient kafkaAdminClient;
     private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();
-    private LinkedList<TopicPartition> topicPartitions = new LinkedList<>();
-    private ConsumerThreadManager consumerThreadManager;
+    private List<TopicPartition> topicPartitions = new LinkedList<>();
+    private DataPullThreadManager dataPullThreadManager;
     private DataProcessThreadManager dataProcessThreadManager;
-    private String topic;
 
-    public DefaultConsumer(String configPath, LinkedList<TopicPartition> topicPartitions) throws ConfigFileNotFoundException
+    public DefaultConsumer(String configPath, List<TopicPartition> topicPartitions) throws ConfigFileNotFoundException
     {
         ConsumerConfig config = ConsumerConfig.INSTANCE();
         config.init(configPath);
@@ -39,27 +39,26 @@ public class DefaultConsumer implements Consumer
         props.setProperty("key.deserializer", config.getKafkaKeyDeserializerClass());
         props.setProperty("value.deserializer", config.getKafkaValueDeserializerClass());
         kafkaAdminClient = AdminClient.create(props);
-        consumerThreadManager = ConsumerThreadManager.INSTANCE();
+        dataPullThreadManager = DataPullThreadManager.INSTANCE();
         dataProcessThreadManager = DataProcessThreadManager.INSTANCE();
-        topic = topicPartitions.get(0).topic();
         init();
     }
 
     private void init()
     {
-        consumerThreadManager.init(topicPartitions);
+        dataPullThreadManager.init(topicPartitions);
         Runtime.getRuntime().addShutdownHook(
                 new Thread(this::beforeShutdown)
         );
         Runtime.getRuntime().addShutdownHook(
-                new Thread(ConsumerThreadManager.INSTANCE()::shutdown)
+                new Thread(DataPullThreadManager.INSTANCE()::shutdown)
         );
-        consumerThreadManager.run();
+        dataPullThreadManager.run();
     }
 
     public void consume()
     {
-        dataProcessThreadManager.init(topic);
+        dataProcessThreadManager.init(topicPartitions);
         Runtime.getRuntime().addShutdownHook(
                 new Thread(DataProcessThreadManager.INSTANCE()::shutdown)
         );
