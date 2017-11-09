@@ -67,7 +67,7 @@ public class ConsumerThread implements Runnable
                 consumerClient.assign(topicPartitions);
                 ConsumerRecords<Long, Message> consumerRecords = consumerClient.poll(config.getConsumerPollTimeout());
                 for (ConsumerRecord<Long, Message> record : consumerRecords) {
-                    System.out.println("record : " + record);
+                    System.out.println("ConsumerThread run() : record : " + record);
                     buffer.offer(record.value());
                     System.out.println("buffer size: " + buffer.size());
                 }

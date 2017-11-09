@@ -6,10 +6,16 @@ import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageListComparator;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageSizeCalculator;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
+import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hive.ql.exec.vector.BytesColumnVector;
+import org.apache.hadoop.hive.ql.exec.vector.VectorizedRowBatch;
+import org.apache.orc.CompressionKind;
+import org.apache.orc.OrcFile;
+import org.apache.orc.TypeDescription;
+import org.apache.orc.Writer;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -28,6 +34,9 @@ public class DataProcessThread implements Runnable
     private String hdfsWarehouse;
     private String dbName;
     private String tblName;
+    private long orcFileStripeSize;
+    private int orcFileBufferSize;
+    private long orcFileBlockSize;
     private int i = 0;
     private int j = 0;
     private final int messageCount;
@@ -42,6 +51,9 @@ public class DataProcessThread implements Runnable
         this.dbName = topic.substring(0, indexOfDot);
         this.tblName = topic.substring(indexOfDot + 1, length);
         this.hdfsWarehouse = config.getHDFSWarehouse();
+        this.orcFileStripeSize = config.getOrcFileStripeSize();
+        this.orcFileBufferSize = config.getOrcFileBufferSize();
+        this.orcFileBlockSize = config.getOrcFileBlockSize();
         long blockSize = config.getBufferOfferBlockSize();
         long messageSize = messageSizeCalculator.caculate(topic);
         System.out.println("messageSize : " + messageSize);
@@ -76,18 +88,21 @@ public class DataProcessThread implements Runnable
         int remainCount; //remaining message count
         if (messageCount > 0) { //blockSize is bigger then messageSize
             while (true) {
-                System.out.println("j = " + j);
                 if (isReadyToStop) { //loop end condition
                     System.out.println("Thread stop");
                     return;
                 }
                 remainCount = messageCount - messages.size();
+//                System.out.println("remainCount : " + remainCount);
+//                System.out.println("buffersize : " + buffer.size());
                 for (; remainCount > 0 && buffer.size() > 0; remainCount = messageCount - messages.size()) {
                     buffer.drainTo(messages, remainCount);
+                    System.out.println("remainCount : " + remainCount);
+                    System.out.println("buffersize : " + buffer.size());
                 }
                 if (remainCount == 0) { //block is full
                     sort();
-                    flush();
+//                    flush();
                     writeToMetaData();
                     clear();
                 }
@@ -101,6 +116,7 @@ public class DataProcessThread implements Runnable
 
     private void sort()
     {
+        System.out.println("sort start!");
         for (Message message1 : messages) {
             if (messageLists.keySet().contains(message1.getKeyIndex())) {
                 messageLists.get(message1.getKeyIndex()).add(message1);
@@ -118,42 +134,101 @@ public class DataProcessThread implements Runnable
             System.out.println("messageLists.keySet() : key : " + key);
             for (Message message : messageLists.get(key)) {
                 System.out.println("i = " + i++);
-                System.out.println("message : " + message);
+                System.out.println("DataProcessThread run() : message : " + message);
             }
         }
+        System.out.println("sort end!");
     }
 
     private void flush()
     {
-        System.out.println("DefaultConsume : flush() : dbName : " + dbName);
-        System.out.println("DefaultConsume : flush() : tblName : " + tblName);
-        String file = String.format("%s/%s/%s", hdfsWarehouse, dbName, tblName);
-        System.out.println("file : " + file);
-        Path path = new Path(file);
-        Configuration conf = new Configuration();
-        FileSystem fs;
-        FSDataOutputStream output;
-        try {
-            fs = path.getFileSystem(conf);
-            output = fs.create(path);
-            for (Integer key : messageLists.keySet()) {
-                for (Message message : messageLists.get(key)) {
-                    String result = org.apache.commons.lang.StringUtils.join(message.getValues());
-                    result += message.getTimestamp();
-                    output.write(result.getBytes("UTF-8"));
+//        System.out.println("DefaultConsume : flush() : dbName : " + dbName);
+//        System.out.println("DefaultConsume : flush() : tblName : " + tblName);
+//        String file = String.format("%s/%s/%s", hdfsWarehouse, dbName, tblName);
+//        System.out.println("file : " + file);
+//        Path path = new Path(file);
+//        Configuration conf = new Configuration();
+//        FileSystem fs;
+//        FSDataOutputStream output;
+//        try {
+//            fs = path.getFileSystem(conf);
+//            output = fs.create(path);
+//            for (Integer key : messageLists.keySet()) {
+//                for (Message message : messageLists.get(key)) {
+//                    String result = org.apache.commons.lang.StringUtils.join(message.getValues());
+//                    result += message.getTimestamp();
+//                    output.write(result.getBytes("UTF-8"));
+//                }
+//            }
+//            output.flush();
+//            output.close();
+//            fs.close();
+//        }
+//        catch (IOException e) {
+//            e.printStackTrace();
+//        }
+        System.out.println("flush start!");
+        MetaProto.StringListType columnsNameList = metaClient.listColumns(dbName, tblName);
+        MetaProto.StringListType columnDataTypeList = metaClient.listColumnsDataType(dbName, tblName);
+        int columnNameCount = columnsNameList.getStrCount();
+        int columnDataTypeCount = columnDataTypeList.getStrCount();
+        if (columnNameCount == columnDataTypeCount) {
+            TypeDescription schema = TypeDescription.createStruct();
+            for (int i = 0; i < columnNameCount; i++) {
+                switch (columnDataTypeList.getStr(i)) {
+                    case "bigint":
+                        schema.addField(columnsNameList.getStr(i), TypeDescription.createLong());
+                        break;
+                    case "int":
+                        schema.addField(columnsNameList.getStr(i), TypeDescription.createInt());
+                        break;
+                    case "boolean":
+                        schema.addField(columnsNameList.getStr(i), TypeDescription.createBoolean());
+                        break;
+                    default:
+                        schema.addField(columnsNameList.getStr(i), TypeDescription.createString());
                 }
             }
-            output.flush();
-            output.close();
-            fs.close();
+            String path = String.format("%s/%s/%s", hdfsWarehouse, dbName, tblName);
+            Configuration conf = new Configuration();
+            try {
+                FileSystem.getLocal(conf);
+                Writer writer = OrcFile.createWriter(new Path(path),
+                        OrcFile.writerOptions(conf)
+                                .setSchema(schema)
+                                .stripeSize(orcFileStripeSize)
+                                .bufferSize(orcFileBufferSize)
+                                .blockSize(orcFileBlockSize)
+                                .compress(CompressionKind.ZLIB)
+                                .version(OrcFile.Version.V_0_12));
+                VectorizedRowBatch batch = schema.createRowBatch();
+                for (Integer key : messageLists.keySet()) {
+                    for (Message message : messageLists.get(key)) {
+                        int rowCount = batch.size++;
+                        String[] contents = message.getValues();
+                        for (int i = 0; i < contents.length; i++) {
+                            ((BytesColumnVector) batch.cols[i]).setVal(rowCount, contents[i].getBytes());
+                            //batch full
+                            if (batch.size == batch.getMaxSize()) {
+                                writer.addRowBatch(batch);
+                                batch.reset();
+                            }
+                        }
+                    }
+                }
+                writer.addRowBatch(batch);
+                writer.close();
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        System.out.println("flush end!");
     }
 
     private void writeToMetaData()
     {
+        System.out.println("writeToMetaData start!");
         int fiberValue;
         long timeBegin;
         long timeEnd;
@@ -178,6 +253,7 @@ public class DataProcessThread implements Runnable
             metaClient.createBlockIndex(dbName, tblName, fiberValue, timeBegin, timeEnd, path);
         }
         //else ignore
+        System.out.println("writeToMetaData end!");
     }
 
     public void clear()
