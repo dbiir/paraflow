@@ -20,13 +20,21 @@ public class MessageUtils
     /**
      * Default message serialization
      * format:
-     * keyIndex(4 bytes) + timestamp(8 bytes) + num of values(4 bytes) + [value length(4 bytes) + value content(m bytes)] repeat for k values
+     * timestamp(8 bytes) + fiberId(4 bytes) + keyIndex(4 bytes) + num of values(4 bytes)
+     *   + [value length(4 bytes) + value content(m bytes)] repeat for k values
+     *   + topic value  length + topic
      * */
     public static byte[] toBytes(Message msg) throws MessageSerializeException
     {
-        int bytesSize = Integer.BYTES + Long.BYTES + Integer.BYTES;
+        int bytesSize = Long.BYTES + Integer.BYTES + Integer.BYTES + Integer.BYTES;
         if (!msg.getTimestamp().isPresent()) {
             throw new MessageSerializeException("Message timestamp is not present");
+        }
+        if (!msg.getFiberId().isPresent()) {
+            throw new MessageSerializeException("Message fiber id is not present");
+        }
+        if (!msg.getTopic().isPresent()) {
+            throw new MessageSerializeException("Message topic is not present");
         }
         for (String v : msg.getValues()) {
             bytesSize += Integer.BYTES;
@@ -35,8 +43,9 @@ public class MessageUtils
         bytesSize += Integer.BYTES;
         bytesSize += msg.getTopic().get().length();
         ByteBuffer buffer = ByteBuffer.allocate(bytesSize);
-        buffer.putInt(msg.getKeyIndex());
         buffer.putLong(msg.getTimestamp().get());
+        buffer.putInt(msg.getFiberId().get());
+        buffer.putInt(msg.getKeyIndex());
         buffer.putInt(msg.getValues().length);
         for (String v : msg.getValues()) {
             buffer.putInt(v.length());
@@ -51,8 +60,9 @@ public class MessageUtils
     {
         try {
             ByteBuffer wrapper = ByteBuffer.wrap(bytes);
-            int keyIndex = wrapper.getInt();
             long timestamp = wrapper.getLong();
+            int fiberId = wrapper.getInt();
+            int keyIndex = wrapper.getInt();
             int valueNum = wrapper.getInt();
             String[] values = new String[valueNum];
             for (int i = 0; i < valueNum; i++) {
@@ -65,7 +75,7 @@ public class MessageUtils
             byte[] t = new byte[tLen];
             wrapper.get(t);
             String topic = new String(t, StandardCharsets.UTF_8);
-            return new Message(keyIndex, values, timestamp, topic);
+            return new Message(keyIndex, values, timestamp, topic, fiberId);
         }
         catch (Exception e) {
             throw new MessageDeSerializationException();

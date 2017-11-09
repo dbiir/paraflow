@@ -45,6 +45,14 @@ public class ProducerThreadManager
         for (ProducerThread thread : threads) {
             executorService.submit(thread);
         }
+        try {
+            for (ProducerThread thread : threads) {
+                thread.join();
+            }
+        }
+        catch (InterruptedException e) {
+            //
+        }
     }
 
     public void shutdown()

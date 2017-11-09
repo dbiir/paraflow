@@ -3,6 +3,7 @@ package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
+import cn.edu.ruc.iir.paraflow.loader.consumer.utils.KafkaConsumerClient;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
@@ -71,13 +72,6 @@ public class ConsumerThread implements Runnable
                     buffer.offer(record.value());
                     System.out.println("buffer size: " + buffer.size());
                 }
-//                LinkedList<Message> messages = new LinkedList<>();
-//                buffer.drainTo(messages);
-//                int i = 0;
-//                for (Message message : messages) {
-//                    System.out.println("i = " + i++);
-//                    System.out.println("ConsumerThread : run() :message :" + message);
-//                }
         }
     }
 

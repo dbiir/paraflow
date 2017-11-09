@@ -15,7 +15,7 @@ import java.util.function.Function;
  *
  * @author guodong
  */
-public class ProducerThread implements Runnable
+public class ProducerThread extends Thread
 {
     private final String threadName;
     private final ProducerConfig config = ProducerConfig.INSTANCE();
@@ -36,7 +36,7 @@ public class ProducerThread implements Runnable
         this.threadName = threadName;
     }
 
-    public String getName()
+    public String getThreadName()
     {
         return threadName;
     }
@@ -63,11 +63,19 @@ public class ProducerThread implements Runnable
             }
             try {
                 Message msg = buffer.poll(config.getBufferPollTimeout());
+                if (msg == null) {
+                    // ignore it
+                    continue;
+                }
                 System.out.println("[msg]: " + msg);
                 if (msg.getTopic().isPresent()) {
                     String topic = msg.getTopic().get();
-                    Optional<Function<String, Long>> function = funcMapBuffer.get(topic);
-                    function.ifPresent(stringLongFunction -> producerClient.send(topic, stringLongFunction.apply(msg.getKey()), msg));
+                    Optional<Function<String, Integer>> function = funcMapBuffer.get(topic);
+                    function.ifPresent(stringLongFunction -> {
+                        int fiberId = stringLongFunction.apply(msg.getKey());
+                        msg.setFiberId(fiberId);
+                        producerClient.send(topic, fiberId, msg);
+                    });
                     // else ignore this message
                 }
                 // else ignore this message
@@ -83,7 +91,7 @@ public class ProducerThread implements Runnable
         this.isReadyToStop = true;
     }
 
-    public void shutdown()
+    void shutdown()
     {
         try {
             readyToStop();

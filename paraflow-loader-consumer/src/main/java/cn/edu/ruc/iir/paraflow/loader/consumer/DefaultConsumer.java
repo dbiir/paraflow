@@ -27,8 +27,6 @@ public class DefaultConsumer implements Consumer
         ConsumerConfig config = ConsumerConfig.INSTANCE();
         config.init(configPath);
         config.validate();
-//        this.pollTimeout = config.getBufferPollTimeout();
-        // init meta client
         this.topicPartitions = topicPartitions;
         Properties props = new Properties();
         props.setProperty("bootstrap.servers", config.getKafkaBootstrapServers());
@@ -49,9 +47,7 @@ public class DefaultConsumer implements Consumer
 
     private void init()
     {
-        // todo init meta cache
         consumerThreadManager.init(topicPartitions);
-        // register shutdown hook
         Runtime.getRuntime().addShutdownHook(
                 new Thread(this::beforeShutdown)
         );
@@ -65,15 +61,12 @@ public class DefaultConsumer implements Consumer
     {
         dataProcessThreadManager.init(topic);
         Runtime.getRuntime().addShutdownHook(
-                new Thread(this::beforeShutdown)
-        );
-        Runtime.getRuntime().addShutdownHook(
                 new Thread(DataProcessThreadManager.INSTANCE()::shutdown)
         );
         dataProcessThreadManager.run();
     }
 
-    public void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc)
+    public void registerFiberFunc(String database, String table, Function<String, Integer> fiberFunc)
     {
         funcMapBuffer.put(FormTopicName.formTopicName(database, table), fiberFunc);
     }

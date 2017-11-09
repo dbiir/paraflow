@@ -9,7 +9,10 @@ public class Message
     private final int keyIndex;
     private final String[] values;
     private final long timestamp;
+    private final int valueSize;
     private String topic = "";
+    private int fiberId;
+    private boolean hasFiberId = false;
 
     public Message(int keyIndex, String[] values)
     {
@@ -21,6 +24,12 @@ public class Message
         this.keyIndex = keyIndex;
         this.values = values;
         this.timestamp = timestamp;
+
+        int vSize = 0;
+        for (String v : values) {
+            vSize += v.length();
+        }
+        this.valueSize = vSize;
     }
 
     public Message(int keyIndex, String[] values, long timestamp, String topic)
@@ -29,6 +38,27 @@ public class Message
         this.values = values;
         this.timestamp = timestamp;
         this.topic = topic;
+
+        int vSize = 0;
+        for (String v : values) {
+            vSize += v.length();
+        }
+        this.valueSize = vSize;
+    }
+
+    public Message(int keyIndex, String[] values, long timestamp, String topic, int fiberId)
+    {
+        this.keyIndex = keyIndex;
+        this.values = values;
+        this.timestamp = timestamp;
+        this.topic = topic;
+        this.fiberId = fiberId;
+
+        int vSize = 0;
+        for (String v : values) {
+            vSize += v.length();
+        }
+        this.valueSize = vSize;
     }
 
     public String getKey()
@@ -65,6 +95,28 @@ public class Message
             return Optional.of(topic);
         }
         return Optional.empty();
+    }
+
+    public void setFiberId(int fiberId)
+    {
+        this.fiberId = fiberId;
+        this.hasFiberId = true;
+    }
+
+    public Optional<Integer> getFiberId()
+    {
+        if (hasFiberId) {
+            return Optional.of(fiberId);
+        }
+        return Optional.empty();
+    }
+
+    /**
+     * Get message value size in bytes
+     * */
+    public int getValueSize()
+    {
+        return valueSize;
     }
 
     // todo override equals, hashCode and toString

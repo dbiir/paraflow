@@ -20,6 +20,7 @@ public class TestMessageSerAndDe
         long timestamp = System.currentTimeMillis();
         String[] values = {"test0", "and", "test1", "try", "ser", "der"};
         Message expected = new Message(0, values, timestamp);
+        expected.setFiberId(1);
         try {
             byte[] serBytes = MessageUtils.toBytes(expected);
             Message result = MessageUtils.fromBytes(serBytes);

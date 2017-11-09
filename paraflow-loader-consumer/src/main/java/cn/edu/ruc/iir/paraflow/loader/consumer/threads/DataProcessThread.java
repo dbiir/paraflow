@@ -12,7 +12,6 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -25,12 +24,11 @@ public class DataProcessThread implements Runnable
     private LinkedList<Message> messages = new LinkedList<>();
     private Map<Integer, LinkedList<Message>> messageLists = new HashMap<>();
     private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
-    private String hdfsWarehouse;
-    private String dbName;
-    private String tblName;
-    private int i = 0;
-    private int j = 0;
-    private final int messageCount;
+    private final String hdfsWarehouse;
+    private final String dbName;
+    private final String tblName;
+    private String hdfsBasePath;
+    private final int blockMessageNum;
 
     public DataProcessThread(String threadName, String topic)
     {
@@ -45,9 +43,10 @@ public class DataProcessThread implements Runnable
         long blockSize = config.getBufferOfferBlockSize();
         long messageSize = messageSizeCalculator.caculate(topic);
         System.out.println("messageSize : " + messageSize);
-        messageCount = (int) (blockSize / (messageSize + 1)); //+1 to
+        blockMessageNum = (int) (blockSize / (messageSize + 1)); //+1 to
         metaClient = new MetaClient(config.getMetaServerHost(),
                 config.getMetaServerPort());
+        this.hdfsBasePath = metaClient.getTable(dbName, tblName).getLocationUrl();
     }
 
     public String getName()
@@ -74,21 +73,20 @@ public class DataProcessThread implements Runnable
     public void run()
     {
         int remainCount; //remaining message count
-        if (messageCount > 0) { //blockSize is bigger then messageSize
+        if (blockMessageNum > 0) { //blockSize is bigger then messageSize
             while (true) {
-                System.out.println("j = " + j);
                 if (isReadyToStop) { //loop end condition
                     System.out.println("Thread stop");
                     return;
                 }
-                remainCount = messageCount - messages.size();
-                for (; remainCount > 0 && buffer.size() > 0; remainCount = messageCount - messages.size()) {
+                remainCount =  blockMessageNum - messages.size();
+                while (remainCount > 0 && buffer.size() > 0) {
                     buffer.drainTo(messages, remainCount);
+                    remainCount = blockMessageNum - messages.size();
                 }
                 if (remainCount == 0) { //block is full
                     sort();
-                    flush();
-                    writeToMetaData();
+                    writeToMetaData(flush());
                     clear();
                 }
             }
@@ -101,33 +99,33 @@ public class DataProcessThread implements Runnable
 
     private void sort()
     {
-        for (Message message1 : messages) {
-            if (messageLists.keySet().contains(message1.getKeyIndex())) {
-                messageLists.get(message1.getKeyIndex()).add(message1);
+        for (Message message : messages) {
+            if (messageLists.keySet().contains(message.getFiberId().get())) {
+                messageLists.get(message.getFiberId().get()).add(message);
             }
             else {
-                messageLists.put(message1.getKeyIndex(), new LinkedList<>());
-                messageLists.get(message1.getKeyIndex()).add(message1);
+                messageLists.put(message.getFiberId().get(), new LinkedList<>());
+                messageLists.get(message.getFiberId().get()).add(message);
             }
         }
         //sort in every messageList
-        for (Integer key : messageLists.keySet()) {
-            Collections.sort(messageLists.get(key), new MessageListComparator());
-        }
-        for (Integer key : messageLists.keySet()) {
-            System.out.println("messageLists.keySet() : key : " + key);
-            for (Message message : messageLists.get(key)) {
-                System.out.println("i = " + i++);
-                System.out.println("message : " + message);
-            }
+        for (int key : messageLists.keySet()) {
+            messageLists.get(key).sort(new MessageListComparator());
         }
     }
 
-    private void flush()
+    /**
+     * Flush out to disk.
+     * @return file path
+     * */
+    private Path flush()
     {
         System.out.println("DefaultConsume : flush() : dbName : " + dbName);
         System.out.println("DefaultConsume : flush() : tblName : " + tblName);
         String file = String.format("%s/%s/%s", hdfsWarehouse, dbName, tblName);
+        if (hdfsBasePath.endsWith("/")) {
+            hdfsBasePath = hdfsBasePath.substring(0, hdfsBasePath.length() - 1);
+        }
         System.out.println("file : " + file);
         Path path = new Path(file);
         Configuration conf = new Configuration();
@@ -136,7 +134,7 @@ public class DataProcessThread implements Runnable
         try {
             fs = path.getFileSystem(conf);
             output = fs.create(path);
-            for (Integer key : messageLists.keySet()) {
+            for (int key : messageLists.keySet()) {
                 for (Message message : messageLists.get(key)) {
                     String result = org.apache.commons.lang.StringUtils.join(message.getValues());
                     result += message.getTimestamp();
@@ -150,33 +148,30 @@ public class DataProcessThread implements Runnable
         catch (IOException e) {
             e.printStackTrace();
         }
+
+        return path;
     }
 
-    private void writeToMetaData()
+    private void writeToMetaData(Path path)
     {
-        int fiberValue;
-        long timeBegin;
-        long timeEnd;
-        String path;
-        if (messages.get(0).getTimestamp().isPresent()) {
-            timeBegin = messages.get(0).getTimestamp().get();
-            timeEnd = messages.get(0).getTimestamp().get();
-            for (Integer key : messageLists.keySet()) {
-                for (int i = 0; i <= messageLists.get(key).size(); i++) {
-                    if (messageLists.get(key).get(i).getTimestamp().isPresent()) {
-                        if (messageLists.get(key).get(i).getTimestamp().get() < timeBegin) {
-                            timeBegin = key;
-                        }
-                        if (messageLists.get(key).get(i).getTimestamp().get() > timeEnd) {
-                            timeEnd = key;
-                        }
-                    }
-                }
-            }
-            fiberValue = Integer.parseInt(messages.get(0).getValues()[messages.get(0).getKeyIndex()]);
-            path = String.format("%s/%s/%s", hdfsWarehouse, dbName, tblName);
-            metaClient.createBlockIndex(dbName, tblName, fiberValue, timeBegin, timeEnd, path);
-        }
+//        long timeBegin;
+//        long timeEnd;
+//        if (messages.get(0).getTimestamp().isPresent()) {
+//            for (int key : messageLists.keySet()) {
+//                timeBegin = timeEnd = messageLists.get(key).get(0).getTimestamp().get();
+//                for (int i = 0; i <= messageLists.get(key).size(); i++) {
+//                    if (messageLists.get(key).get(i).getTimestamp().isPresent()) {
+//                        if (messageLists.get(key).get(i).getTimestamp().get() < timeBegin) {
+//                            timeBegin = key;
+//                        }
+//                        if (messageLists.get(key).get(i).getTimestamp().get() > timeEnd) {
+//                            timeEnd = key;
+//                        }
+//                    }
+//                }
+//                metaClient.createBlockIndex(dbName, tblName, key, timeBegin, timeEnd, path.toString());
+//            }
+//        }
         //else ignore
     }
 
