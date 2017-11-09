@@ -102,7 +102,7 @@ public class DataProcessThread implements Runnable
                 }
                 if (remainCount == 0) { //block is full
                     sort();
-//                    flush();
+                    flush();
                     writeToMetaData();
                     clear();
                 }
@@ -172,24 +172,31 @@ public class DataProcessThread implements Runnable
         MetaProto.StringListType columnDataTypeList = metaClient.listColumnsDataType(dbName, tblName);
         int columnNameCount = columnsNameList.getStrCount();
         int columnDataTypeCount = columnDataTypeList.getStrCount();
+        System.out.println("columnNameCount : " + columnNameCount);
+        System.out.println("columnDataTypeCount : " + columnDataTypeCount);
         if (columnNameCount == columnDataTypeCount) {
             TypeDescription schema = TypeDescription.createStruct();
             for (int i = 0; i < columnNameCount; i++) {
                 switch (columnDataTypeList.getStr(i)) {
                     case "bigint":
+                        System.out.println("bigint");
                         schema.addField(columnsNameList.getStr(i), TypeDescription.createLong());
                         break;
                     case "int":
+                        System.out.println("int");
                         schema.addField(columnsNameList.getStr(i), TypeDescription.createInt());
                         break;
                     case "boolean":
+                        System.out.println("boolean");
                         schema.addField(columnsNameList.getStr(i), TypeDescription.createBoolean());
                         break;
                     default:
+                        System.out.println("default");
                         schema.addField(columnsNameList.getStr(i), TypeDescription.createString());
                 }
             }
             String path = String.format("%s/%s/%s", hdfsWarehouse, dbName, tblName);
+            System.out.println("path : " + path);
             Configuration conf = new Configuration();
             try {
                 FileSystem.getLocal(conf);
@@ -206,6 +213,8 @@ public class DataProcessThread implements Runnable
                     for (Message message : messageLists.get(key)) {
                         int rowCount = batch.size++;
                         String[] contents = message.getValues();
+                        System.out.println("contents : message.getValues() : " + contents);
+                        System.out.println("contents.length : " + contents.length);
                         for (int i = 0; i < contents.length; i++) {
                             ((BytesColumnVector) batch.cols[i]).setVal(rowCount, contents[i].getBytes());
                             //batch full
@@ -215,9 +224,9 @@ public class DataProcessThread implements Runnable
                             }
                         }
                     }
+                    writer.addRowBatch(batch);
+                    writer.close();
                 }
-                writer.addRowBatch(batch);
-                writer.close();
             }
             catch (IOException e) {
                 e.printStackTrace();
