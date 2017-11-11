@@ -36,7 +36,7 @@ public class MessageUtils
         if (!msg.getTopic().isPresent()) {
             throw new MessageSerializeException("Message topic is not present");
         }
-        for (String v : msg.getValues()) {
+        for (String v : msg.getValue()) {
             bytesSize += Integer.BYTES;
             bytesSize += v.length();
         }
@@ -46,8 +46,8 @@ public class MessageUtils
         buffer.putLong(msg.getTimestamp().get());
         buffer.putInt(msg.getFiberId().get());
         buffer.putInt(msg.getKeyIndex());
-        buffer.putInt(msg.getValues().length);
-        for (String v : msg.getValues()) {
+        buffer.putInt(msg.getValue().length);
+        for (String v : msg.getValue()) {
             buffer.putInt(v.length());
             buffer.put(v.getBytes());
         }

@@ -16,7 +16,9 @@ public class BufferSegment
     private final long[] timestamps;
     private final List<TopicPartition> fiberPartitions;
     private final DynamicStringArray stringBuffer;
+    private String filePath;
     private int messageNum = 0;
+    private int currentIndex = 0;
 
     public BufferSegment(long segmentCapacity, long[] timestamps, List<TopicPartition> fiberPartitions)
     {
@@ -26,11 +28,22 @@ public class BufferSegment
         this.stringBuffer = new DynamicStringArray();
     }
 
-    public void addValueStride(String[] values)
+    public void addValue(String[] value)
     {
         // add this message value(string array) to stringBuffer
-        stringBuffer.addValue(values);
+        stringBuffer.addValue(value);
         messageNum++;
+    }
+
+    public boolean hasNext()
+    {
+        return currentIndex < messageNum;
+    }
+
+    public String[] getNext()
+    {
+        currentIndex++;
+        return stringBuffer.getValue(currentIndex);
     }
 
     public long getSegmentCapacity()
@@ -46,5 +59,15 @@ public class BufferSegment
     public List<TopicPartition> getFiberPartitions()
     {
         return fiberPartitions;
+    }
+
+    public void setFilePath(String filePath)
+    {
+        this.filePath = filePath;
+    }
+
+    public String getFilePath()
+    {
+        return filePath;
     }
 }

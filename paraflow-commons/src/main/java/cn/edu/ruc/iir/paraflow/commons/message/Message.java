@@ -71,7 +71,7 @@ public class Message
         return this.keyIndex;
     }
 
-    public String[] getValues()
+    public String[] getValue()
     {
         return this.values;
     }

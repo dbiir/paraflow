@@ -40,7 +40,7 @@ public class ExampleProducer
 //        String topicName = FormTopicName.formTopicName(dbName, tblName);
 //        producer.createTopic(topicName, 1, (short) 1);
 //        System.out.println("Created topic " + FormTopicName.formTopicName(dbName, tblName));
-        SerializableFunction<String, Long> func = (v) -> Long.parseLong(v) % 1000;
+        SerializableFunction<String, Integer> func = (v) -> Integer.parseInt(v) % 1000;
         producer.registerFiberFunc(dbName, tblName, func);
         for (int i = 0; i < 1500; i++) {
 //            fiberKeyIndex = i;

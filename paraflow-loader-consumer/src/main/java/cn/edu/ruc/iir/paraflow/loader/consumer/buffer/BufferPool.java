@@ -16,15 +16,16 @@ import java.util.TreeMap;
  */
 public class BufferPool
 {
+    private static final int TIMESTAMP_STRIDE = 2;
+    private static final int BEGIN_TIME_OFFSET = 0;
+    private static final int END_TIME_OFFSET = 1;
+
     private long blockSize = 0L;
 
     private final long blockCapacity;
-    private final List<Message>[] block;                         // THIS SHOULD BE A DYNAMIC ARRAY INSTEAD!! message buffer. each list records messages of a fiber
+    private final List<Message>[] block;                // THIS SHOULD BE A DYNAMIC ARRAY INSTEAD!! message buffer. each list records messages of a fiber
     private final long[] timestamps;                    // begin and end timestamps as metadata. each fiber contains two values (begin + end)
     private final Map<TopicPartition, Integer> fiberPartitionToBlockIndex; // mapping from fiber id to index of block array
-    private final int timestampStride = 2;
-    private final int beginTimeOffset = 0;
-    private final int endTimeOffset   = 1;
     private final List<TopicPartition> fiberPartitions;
 
     private final FlushQueueBuffer flushQueueBuffer = FlushQueueBuffer.INSTANCE();
@@ -33,7 +34,7 @@ public class BufferPool
     {
         int fiberNum = fiberPartitions.size();
         this.blockCapacity = blockCapacity;
-        this.block = new LinkedList[fiberNum];
+        this.block = new List[fiberNum];
         this.timestamps = new long[fiberNum * 2];
         this.fiberPartitionToBlockIndex = new TreeMap<>(
                 (o1, o2) -> {
@@ -48,6 +49,9 @@ public class BufferPool
 
         for (int i = 0; i < fiberPartitions.size(); i++) {
             fiberPartitionToBlockIndex.put(fiberPartitions.get(i), i);
+        }
+        for (int i = 0; i < fiberNum; i++) {
+            block[i] = new LinkedList<>();
         }
     }
 
@@ -83,11 +87,11 @@ public class BufferPool
                 }
                 return o1.getTimestamp().get() > o2.getTimestamp().get() ? 1 : -1;
             });
-            timestamps[timestampStride * index + beginTimeOffset] =
+            timestamps[TIMESTAMP_STRIDE * index + BEGIN_TIME_OFFSET] =
                     fiberMessages.get(0).getTimestamp().get();
-            timestamps[timestampStride * index + endTimeOffset] =
+            timestamps[TIMESTAMP_STRIDE * index + END_TIME_OFFSET] =
                     fiberMessages.get(fiberMessages.size() - 1).getTimestamp().get();
-            fiberMessages.forEach(msg -> segment.addValueStride(msg.getValues()));
+            fiberMessages.forEach(msg -> segment.addValue(msg.getValue()));
             fiberMessages.clear();
             index++;
         }
