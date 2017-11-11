@@ -25,7 +25,7 @@ public class ExampleConsumer
             return;
         }
         consumer.consume();
-        DeserializableFunction<String, Long> func = (v) -> Long.parseLong(v) % 1000;
+        DeserializableFunction<String, Integer> func = (v) -> Integer.parseInt(v) % 1000;
         consumer.registerFiberFunc(dbName, tblName, func);
 //        try {
 //            Thread.sleep(10000);

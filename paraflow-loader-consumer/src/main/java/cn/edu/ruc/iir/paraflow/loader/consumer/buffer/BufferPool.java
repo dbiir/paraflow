@@ -14,7 +14,7 @@ import java.util.TreeMap;
  *
  * @author guodong
  */
-public class BufferBlock
+public class BufferPool
 {
     private long blockSize = 0L;
 
@@ -29,7 +29,7 @@ public class BufferBlock
 
     private final FlushQueueBuffer flushQueueBuffer = FlushQueueBuffer.INSTANCE();
 
-    public BufferBlock(List<TopicPartition> fiberPartitions, long blockCapacity, long flushBufferCapacity)
+    public BufferPool(List<TopicPartition> fiberPartitions, long blockCapacity, long flushBufferCapacity)
     {
         int fiberNum = fiberPartitions.size();
         this.blockCapacity = blockCapacity;

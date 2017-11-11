@@ -29,11 +29,22 @@ public class BufferSegment
     public void addValueStride(String[] values)
     {
         // add this message value(string array) to stringBuffer
+        stringBuffer.addValue(values);
         messageNum++;
     }
 
     public long getSegmentCapacity()
     {
         return segmentCapacity;
+    }
+
+    public long[] getTimestamps()
+    {
+        return timestamps;
+    }
+
+    public List<TopicPartition> getFiberPartitions()
+    {
+        return fiberPartitions;
     }
 }

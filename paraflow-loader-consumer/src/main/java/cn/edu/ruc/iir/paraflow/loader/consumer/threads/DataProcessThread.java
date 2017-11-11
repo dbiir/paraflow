@@ -1,7 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
-import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.BufferBlock;
+import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.BufferPool;
 import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
@@ -15,7 +15,7 @@ public class DataProcessThread extends DataThread
     private final MetaClient metaClient;
     private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
     private List<TopicPartition> topicPartitions;
-    private final BufferBlock bufferBlock;
+    private final BufferPool bufferPool;
 
     public DataProcessThread(String threadName, List<TopicPartition> topicPartitions)
     {
@@ -25,7 +25,7 @@ public class DataProcessThread extends DataThread
         long blockSize = config.getBufferOfferBlockSize();
         metaClient = new MetaClient(config.getMetaServerHost(),
                 config.getMetaServerPort());
-        this.bufferBlock = new BufferBlock(topicPartitions, blockSize, blockSize);
+        this.bufferPool = new BufferPool(topicPartitions, blockSize, blockSize);
     }
 
 
@@ -43,7 +43,7 @@ public class DataProcessThread extends DataThread
             }
             Message message = buffer.poll();
             if (message != null) {
-                bufferBlock.add(message);
+                bufferPool.add(message);
             }
         }
     }
