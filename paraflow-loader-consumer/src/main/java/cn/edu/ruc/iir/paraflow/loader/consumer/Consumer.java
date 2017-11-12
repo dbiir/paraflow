@@ -6,7 +6,7 @@ public interface Consumer
 {
     void consume();
 
-    void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc);
+    void registerFiberFunc(String database, String table, Function<String, Integer> fiberFunc);
 
     void shutdown();
 }

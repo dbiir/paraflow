@@ -125,6 +125,21 @@ public class ConsumerConfig
         return Integer.parseInt(paraflowConfig.getProperty("consumer.thread.num"));
     }
 
+    public int getDataPullThreadNum()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("consumer.pull.thread.num"));
+    }
+
+    public int getDataProcessThreadNum()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("consumer.process.thread.num"));
+    }
+
+    public int getDataFlushThreadNum()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("consumer.flush.thread.num"));
+    }
+
     public int getConsumerShutdownTimeout()
     {
         return Integer.parseInt(paraflowConfig.getProperty("consumer.shutdown.timeout"));
@@ -141,9 +156,9 @@ public class ConsumerConfig
         }
     }
 
-    public int getBufferOfferBlockSize()
+    public long getBufferPoolSize()
     {
-        return Integer.parseInt(paraflowConfig.getProperty("consumer.buffer.poll.block.size"));
+        return Long.parseLong(paraflowConfig.getProperty("consumer.buffer.pool.size"));
     }
 
     public long getBufferPollTimeout()

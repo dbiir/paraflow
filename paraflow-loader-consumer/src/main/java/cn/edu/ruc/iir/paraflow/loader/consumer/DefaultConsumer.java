@@ -1,15 +1,15 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer;
 
+import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
-import cn.edu.ruc.iir.paraflow.loader.consumer.threads.ConsumerThreadManager;
-import cn.edu.ruc.iir.paraflow.loader.consumer.threads.DataProcessThreadManager;
+import cn.edu.ruc.iir.paraflow.loader.consumer.threads.DataThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.TopicPartition;
 
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import java.util.function.Function;
 
@@ -17,19 +17,17 @@ public class DefaultConsumer implements Consumer
 {
     private final AdminClient kafkaAdminClient;
     private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();
-    private LinkedList<TopicPartition> topicPartitions = new LinkedList<>();
-    private ConsumerThreadManager consumerThreadManager;
-    private DataProcessThreadManager dataProcessThreadManager;
-    private String topic;
+    private List<TopicPartition> topicPartitions;
+    private List<TopicFiber> topicFibers;
+    private final DataThreadManager dataThreadManager;
 
-    public DefaultConsumer(String configPath, LinkedList<TopicPartition> topicPartitions) throws ConfigFileNotFoundException
+    public DefaultConsumer(String configPath, List<TopicPartition> topicPartitions, List<TopicFiber> topicFibers) throws ConfigFileNotFoundException
     {
         ConsumerConfig config = ConsumerConfig.INSTANCE();
         config.init(configPath);
         config.validate();
-//        this.pollTimeout = config.getBufferPollTimeout();
-        // init meta client
         this.topicPartitions = topicPartitions;
+        this.topicFibers = topicFibers;
         Properties props = new Properties();
         props.setProperty("bootstrap.servers", config.getKafkaBootstrapServers());
         props.setProperty("client.id", "consumerAdmin");
@@ -41,39 +39,27 @@ public class DefaultConsumer implements Consumer
         props.setProperty("key.deserializer", config.getKafkaKeyDeserializerClass());
         props.setProperty("value.deserializer", config.getKafkaValueDeserializerClass());
         kafkaAdminClient = AdminClient.create(props);
-        consumerThreadManager = ConsumerThreadManager.INSTANCE();
-        dataProcessThreadManager = DataProcessThreadManager.INSTANCE();
-        topic = topicPartitions.get(0).topic();
+        this.dataThreadManager = DataThreadManager.INSTANCE();
         init();
     }
 
     private void init()
     {
-        // todo init meta cache
-        consumerThreadManager.init(topicPartitions);
-        // register shutdown hook
+        dataThreadManager.init(topicPartitions, topicFibers);
         Runtime.getRuntime().addShutdownHook(
                 new Thread(this::beforeShutdown)
         );
         Runtime.getRuntime().addShutdownHook(
-                new Thread(ConsumerThreadManager.INSTANCE()::shutdown)
+                new Thread(DataThreadManager.INSTANCE()::shutdown)
         );
-        consumerThreadManager.run();
     }
 
     public void consume()
     {
-        dataProcessThreadManager.init(topic);
-        Runtime.getRuntime().addShutdownHook(
-                new Thread(this::beforeShutdown)
-        );
-        Runtime.getRuntime().addShutdownHook(
-                new Thread(DataProcessThreadManager.INSTANCE()::shutdown)
-        );
-        dataProcessThreadManager.run();
+        dataThreadManager.run();
     }
 
-    public void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc)
+    public void registerFiberFunc(String database, String table, Function<String, Integer> fiberFunc)
     {
         funcMapBuffer.put(FormTopicName.formTopicName(database, table), fiberFunc);
     }

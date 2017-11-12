@@ -1,31 +1,37 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.example;
 
+import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.func.DeserializableFunction;
 import cn.edu.ruc.iir.paraflow.loader.consumer.DefaultConsumer;
 import org.apache.kafka.common.TopicPartition;
 
 import java.util.LinkedList;
+import java.util.List;
 
 public class ExampleConsumer
 {
     private void exampleTest(String configPath)
     {
         final DefaultConsumer consumer;
-        LinkedList<TopicPartition> topicPartitions = new LinkedList<>();
-            TopicPartition topicPartition = new TopicPartition("exampleDb.exampleTbl", 0);
-            topicPartitions.add(topicPartition);
+        List<TopicPartition> topicPartitions = new LinkedList<>();
+        TopicPartition topicPartition = new TopicPartition("exampleDb.exampleTbl", 0);
+        topicPartitions.add(topicPartition);
+        List<TopicFiber> topicFibers = new LinkedList<>();
+        for (int i = 0; i < 1000; i++) {
+            topicFibers.add(new TopicFiber("exampleDb.exampleTbl", i));
+        }
         final String dbName = "exampleDb";
         final String tblName = "exampleTbl";
         try {
-            consumer = new DefaultConsumer(configPath, topicPartitions);
+            consumer = new DefaultConsumer(configPath, topicPartitions, topicFibers);
         }
         catch (ConfigFileNotFoundException e) {
             e.printStackTrace();
             return;
         }
         consumer.consume();
-        DeserializableFunction<String, Long> func = (v) -> Long.parseLong(v) % 1000;
+        DeserializableFunction<String, Integer> func = (v) -> Integer.parseInt(v) % 1000;
         consumer.registerFiberFunc(dbName, tblName, func);
 //        try {
 //            Thread.sleep(10000);

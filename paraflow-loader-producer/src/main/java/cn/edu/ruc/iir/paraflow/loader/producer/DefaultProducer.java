@@ -158,7 +158,7 @@ public class DefaultProducer implements Producer
     }
 
     @Override
-    public void registerFiberFunc(String database, String table, Function<String, Long> fiberFunc)
+    public void registerFiberFunc(String database, String table, Function<String, Integer> fiberFunc)
     {
         funcMapBuffer.put(FormTopicName.formTopicName(database, table), fiberFunc);
     }

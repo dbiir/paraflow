@@ -12,7 +12,7 @@ import java.util.function.Function;
  */
 public class FiberFuncMapBuffer
 {
-    private final Map<String, Function<String, Long>> functionMap;
+    private final Map<String, Function<String, Integer>> functionMap;
 
     private FiberFuncMapBuffer()
     {
@@ -29,14 +29,14 @@ public class FiberFuncMapBuffer
         return FiberFuncMapBufferHolder.instance;
     }
 
-    public void put(String topic, Function<String, Long> function)
+    public void put(String topic, Function<String, Integer> function)
     {
         functionMap.put(topic, function);
     }
 
-    public Optional<Function<String, Long>> get(String topic)
+    public Optional<Function<String, Integer>> get(String topic)
     {
-        Function<String, Long> function = functionMap.get(topic);
+        Function<String, Integer> function = functionMap.get(topic);
         if (function == null) {
             return Optional.empty();
         }
