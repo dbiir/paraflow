@@ -13,10 +13,16 @@ import java.io.IOException;
  */
 public class PlainTextFlushThread extends DataFlushThread
 {
+    public PlainTextFlushThread(String threadName)
+    {
+        super(threadName);
+    }
+
     @Override
     boolean flushData(BufferSegment segment)
     {
         try {
+            System.out.println("Flush out!!!");
             BufferedWriter writer = new BufferedWriter(new FileWriter("/Users/Jelly/Desktop/testPlainFile"));
             while (segment.hasNext()) {
                 String[] value = segment.getNext();

@@ -9,6 +9,11 @@ import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.BufferSegment;
  */
 public class ParquetFlushThread extends DataFlushThread
 {
+    public ParquetFlushThread(String threadName)
+    {
+        super(threadName);
+    }
+
     @Override
     boolean flushData(BufferSegment segment)
     {

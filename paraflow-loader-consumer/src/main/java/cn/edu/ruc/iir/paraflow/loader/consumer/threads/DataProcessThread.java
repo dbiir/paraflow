@@ -1,10 +1,10 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
 
+import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.BufferPool;
 import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
-import org.apache.kafka.common.TopicPartition;
 
 import java.util.List;
 
@@ -13,12 +13,12 @@ public class DataProcessThread extends DataThread
     private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
     private final BufferPool bufferPool;
 
-    public DataProcessThread(String threadName, List<TopicPartition> topicPartitions)
+    public DataProcessThread(String threadName, List<TopicFiber> topicFibers)
     {
+        super(threadName);
         ConsumerConfig config = ConsumerConfig.INSTANCE();
-        this.threadName = threadName;
-        long blockSize = config.getBufferOfferBlockSize();
-        this.bufferPool = new BufferPool(topicPartitions, blockSize, blockSize);
+        long blockSize = config.getBufferPoolSize();
+        this.bufferPool = new BufferPool(topicFibers, blockSize, blockSize);
     }
 
     /**
@@ -27,15 +27,29 @@ public class DataProcessThread extends DataThread
     @Override
     public void run()
     {
-        while (true) {
-            if (isReadyToStop && buffer.isEmpty()) { //loop end condition
-                System.out.println("Thread stop");
-                return;
+        System.out.println(threadName + " started.");
+        try {
+            while (true) {
+                if (isReadyToStop && buffer.isEmpty()) { //loop end condition
+                    System.out.println("Thread stop");
+                    return;
+                }
+                try {
+                    Message message = buffer.poll(1000);
+                    if (message != null) {
+                        bufferPool.add(message);
+                    }
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-            Message message = buffer.poll();
-            if (message != null) {
-                bufferPool.add(message);
-            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        finally {
+            System.out.println(threadName + " stopped");
         }
     }
 }

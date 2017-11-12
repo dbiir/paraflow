@@ -9,6 +9,11 @@ import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.BufferSegment;
  */
 public class OrcFlushThread extends DataFlushThread
 {
+    public OrcFlushThread(String threadName)
+    {
+        super(threadName);
+    }
+
     @Override
     boolean flushData(BufferSegment segment)
     {

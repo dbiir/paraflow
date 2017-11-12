@@ -1,10 +1,11 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.buffer;
 
-import org.apache.kafka.common.TopicPartition;
+import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * paraflow
@@ -13,7 +14,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class FlushQueueBuffer
 {
-    private long bufferSize = 0L;
+    private AtomicLong bufferSize = new AtomicLong(0L);
     private long bufferCapacity = 0L;
 
     private final ConcurrentLinkedQueue<BufferSegment> segments;
@@ -38,11 +39,12 @@ public class FlushQueueBuffer
         this.bufferCapacity = bufferCapacity;
     }
 
-    public BufferSegment addSegment(long segmentSize, long[] timestamps, List<TopicPartition> fiberPartitions)
+    public BufferSegment addSegment(long segmentSize, long[] timestamps, List<TopicFiber> fiberPartitions)
     {
-        if (bufferSize + segmentSize < bufferCapacity) {
+        if (bufferSize.get() < bufferCapacity - segmentSize) {
             BufferSegment bufferSegment = new BufferSegment(segmentSize, timestamps, fiberPartitions);
             segments.add(bufferSegment);
+            bufferSize.addAndGet(segmentSize);
             return bufferSegment;
         }
         return null;
@@ -54,7 +56,7 @@ public class FlushQueueBuffer
         if (segment == null) {
             return Optional.empty();
         }
-        bufferSize -= segment.getSegmentCapacity();
+        bufferSize.addAndGet(-segment.getSegmentCapacity());
         return Optional.of(segment);
     }
 

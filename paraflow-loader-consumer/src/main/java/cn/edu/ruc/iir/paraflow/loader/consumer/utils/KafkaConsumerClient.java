@@ -42,6 +42,11 @@ public class KafkaConsumerClient
         consumer.commitSync();
     }
 
+    public void wakeup()
+    {
+        consumer.wakeup();
+    }
+
     public void close()
     {
         consumer.close();

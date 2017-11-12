@@ -1,7 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.buffer;
 
+import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.DynamicStringArray;
-import org.apache.kafka.common.TopicPartition;
 
 import java.util.List;
 
@@ -14,13 +14,13 @@ public class BufferSegment
 {
     private final long segmentCapacity;
     private final long[] timestamps;
-    private final List<TopicPartition> fiberPartitions;
+    private final List<TopicFiber> fiberPartitions;
     private final DynamicStringArray stringBuffer;
     private String filePath;
     private int messageNum = 0;
     private int currentIndex = 0;
 
-    public BufferSegment(long segmentCapacity, long[] timestamps, List<TopicPartition> fiberPartitions)
+    public BufferSegment(long segmentCapacity, long[] timestamps, List<TopicFiber> fiberPartitions)
     {
         this.segmentCapacity = segmentCapacity;
         this.timestamps = timestamps;
@@ -56,7 +56,7 @@ public class BufferSegment
         return timestamps;
     }
 
-    public List<TopicPartition> getFiberPartitions()
+    public List<TopicFiber> getFiberPartitions()
     {
         return fiberPartitions;
     }

@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.buffer;
 
+import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import org.apache.kafka.common.TopicPartition;
 
@@ -25,12 +26,12 @@ public class BufferPool
     private final long blockCapacity;
     private final List<Message>[] block;                // THIS SHOULD BE A DYNAMIC ARRAY INSTEAD!! message buffer. each list records messages of a fiber
     private final long[] timestamps;                    // begin and end timestamps as metadata. each fiber contains two values (begin + end)
-    private final Map<TopicPartition, Integer> fiberPartitionToBlockIndex; // mapping from fiber id to index of block array
-    private final List<TopicPartition> fiberPartitions;
+    private final Map<TopicFiber, Integer> fiberPartitionToBlockIndex; // mapping from fiber id to index of block array
+    private final List<TopicFiber> fiberPartitions;
 
     private final FlushQueueBuffer flushQueueBuffer = FlushQueueBuffer.INSTANCE();
 
-    public BufferPool(List<TopicPartition> fiberPartitions, long blockCapacity, long flushBufferCapacity)
+    public BufferPool(List<TopicFiber> fiberPartitions, long blockCapacity, long flushBufferCapacity)
     {
         int fiberNum = fiberPartitions.size();
         this.blockCapacity = blockCapacity;
@@ -70,16 +71,20 @@ public class BufferPool
             block[fiberPartitionToBlockIndex.get(fiber)].add(message);
             blockSize += message.getValueSize();
         }
+        System.out.println("Message Size: " + message.getValueSize()
+                + ", Block Size: " + blockSize
+                + ", Block Cap: " + blockCapacity);
     }
 
     private boolean spillToFlushBuffer()
     {
+        System.out.println("Flush Buffer!!!");
         BufferSegment segment = flushQueueBuffer.addSegment(blockSize, timestamps, fiberPartitions);
         if (segment == null) {
             return false;
         }
         int index = 0;
-        for (TopicPartition key : fiberPartitionToBlockIndex.keySet()) {
+        for (TopicFiber key : fiberPartitionToBlockIndex.keySet()) {
             List<Message> fiberMessages = block[fiberPartitionToBlockIndex.get(key)];
             fiberMessages.sort((o1, o2) -> {
                 if (o1.getTimestamp().get().equals(o2.getTimestamp().get())) {

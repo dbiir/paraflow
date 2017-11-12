@@ -53,6 +53,7 @@ public class Message
         this.timestamp = timestamp;
         this.topic = topic;
         this.fiberId = fiberId;
+        this.hasFiberId = true;
 
         int vSize = 0;
         for (String v : values) {

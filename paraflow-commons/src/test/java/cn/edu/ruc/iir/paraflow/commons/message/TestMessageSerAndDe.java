@@ -21,6 +21,7 @@ public class TestMessageSerAndDe
         String[] values = {"test0", "and", "test1", "try", "ser", "der"};
         Message expected = new Message(0, values, timestamp);
         expected.setFiberId(1);
+        expected.setTopic("topic");
         try {
             byte[] serBytes = MessageUtils.toBytes(expected);
             Message result = MessageUtils.fromBytes(serBytes);
