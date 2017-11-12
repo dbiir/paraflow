@@ -39,6 +39,7 @@ public abstract class DataFlushThread extends DataThread
                     }
                     else {
                         // error dealing
+                        System.out.println("Flush out failed!");
                     }
                 }
                 else {
@@ -62,5 +63,7 @@ public abstract class DataFlushThread extends DataThread
     abstract boolean flushData(BufferSegment segment);
 
     private void flushMeta(BufferSegment segment)
-    {}
+    {
+        System.out.println(segment.getFilePath());
+    }
 }

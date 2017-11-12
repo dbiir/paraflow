@@ -2,7 +2,6 @@ package cn.edu.ruc.iir.paraflow.loader.consumer.buffer;
 
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
-import org.apache.kafka.common.TopicPartition;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -61,24 +60,25 @@ public class BufferPool
         if (blockSize + message.getValueSize() > blockCapacity) {
             while (!spillToFlushBuffer()) {
                 // waiting
-                System.out.println("Waiting for flush buffer");
+                try {
+                    Thread.sleep(1000);
+                }
+                catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
         if (message.getFiberId().isPresent() && message.getTopic().isPresent()) {
             int fiberId = message.getFiberId().get();
             String fiberTopic = message.getTopic().get();
-            TopicPartition fiber = new TopicPartition(fiberTopic, fiberId);
+            TopicFiber fiber = new TopicFiber(fiberTopic, fiberId);
             block[fiberPartitionToBlockIndex.get(fiber)].add(message);
             blockSize += message.getValueSize();
         }
-        System.out.println("Message Size: " + message.getValueSize()
-                + ", Block Size: " + blockSize
-                + ", Block Cap: " + blockCapacity);
     }
 
     private boolean spillToFlushBuffer()
     {
-        System.out.println("Flush Buffer!!!");
         BufferSegment segment = flushQueueBuffer.addSegment(blockSize, timestamps, fiberPartitions);
         if (segment == null) {
             return false;
@@ -86,6 +86,9 @@ public class BufferPool
         int index = 0;
         for (TopicFiber key : fiberPartitionToBlockIndex.keySet()) {
             List<Message> fiberMessages = block[fiberPartitionToBlockIndex.get(key)];
+            if (fiberMessages.size() == 0) {
+                continue;
+            }
             fiberMessages.sort((o1, o2) -> {
                 if (o1.getTimestamp().get().equals(o2.getTimestamp().get())) {
                     return 0;

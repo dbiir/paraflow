@@ -42,8 +42,7 @@ public class BufferSegment
 
     public String[] getNext()
     {
-        currentIndex++;
-        return stringBuffer.getValue(currentIndex);
+        return stringBuffer.getValue(currentIndex++);
     }
 
     public long getSegmentCapacity()
