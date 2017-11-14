@@ -69,7 +69,9 @@ public class DataThreadManager
         }
         // init flush thread
         for (int i = 0; i < flushThreadNum; i++) {
-            flushThreads[i] = new PlainTextFlushThread("data-flush-thread-" + i);
+            //flushThreads[i] = new PlainTextFlushThread("data-flush-thread-" + i);
+            flushThreads[i] = new OrcFlushThread("data-flush-thread-" + i);
+            //flushThreads[i] = new ParquetFlushThread("data-flush-thread-" + i);
         }
     }
 
