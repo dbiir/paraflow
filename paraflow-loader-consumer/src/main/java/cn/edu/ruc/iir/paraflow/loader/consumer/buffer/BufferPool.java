@@ -58,9 +58,8 @@ public class BufferPool
 
     public void add(Message message)
     {
-        MessageSizeCalculator messageSizeCalculator = new MessageSizeCalculator();
         String topic = message.getTopic().get();
-        long messageSize = messageSizeCalculator.caculate(topic);
+        long messageSize = MessageSizeCalculator.caculate(topic);
         if (blockSize + messageSize > blockCapacity) {
             while (!spillToFlushBuffer()) {
                 // waiting

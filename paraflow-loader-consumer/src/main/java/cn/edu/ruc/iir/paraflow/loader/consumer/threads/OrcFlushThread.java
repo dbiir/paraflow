@@ -86,23 +86,27 @@ public class OrcFlushThread extends DataFlushThread
                     case "float4":
                         System.out.println("float4");
                         schema.addField(columnsNameList.getStr(i), TypeDescription.createFloat());
+                        break;
                     case "float8":
                         System.out.println("float8");
                         schema.addField(columnsNameList.getStr(i), TypeDescription.createDouble());
+                        break;
                     case "timestamptz":
                         System.out.println("timestamptz");
                         schema.addField(columnsNameList.getStr(i), TypeDescription.createTimestamp());
+                        break;
                     case "real" :
                         System.out.println("real");
                         schema.addField(columnsNameList.getStr(i), TypeDescription.createFloat());
+                        break;
                     default:
                         System.out.println("default");
                         schema.addField(columnsNameList.getStr(i), TypeDescription.createString());
+                        break;
                 }
             }
             Configuration conf = new Configuration();
             try {
-                FileSystem.getLocal(conf);
                 Writer writer = OrcFile.createWriter(new Path(path),
                         OrcFile.writerOptions(conf)
                                 .setSchema(schema)

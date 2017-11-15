@@ -77,19 +77,13 @@ public abstract class DataFlushThread extends DataThread
         String tblName = topic.substring(indexOfDot + 1, length);
         int fiberValue;
         String path = segment.getFilePath();
-        long beginTime = segment.getTimestamps()[0];
-        long endTime = segment.getTimestamps()[0];
-        for (long timeStamp : segment.getTimestamps()) {
-            if (timeStamp < beginTime) {
-                beginTime = timeStamp;
-            }
-            if (timeStamp > endTime) {
-                beginTime = timeStamp;
-            }
-        }
+        long beginTime;
+        long endTime;
         for (int i = 0; i < segment.getFiberPartitions().size(); i++) {
+            beginTime = segment.getTimestamps()[2 * i];
+            endTime = segment.getTimestamps()[2 * i + 1];
             fiberValue = segment.getFiberPartitions().get(i).getFiber();
-            metaClient.createBlockIndex(dbName, tblName, fiberValue, beginTime, beginTime, path);
+            metaClient.createBlockIndex(dbName, tblName, fiberValue, beginTime, endTime, path);
         }
         //else ignore
     }

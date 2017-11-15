@@ -7,6 +7,7 @@ import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.orc.TypeDescription;
 import org.apache.parquet.column.ParquetProperties;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.GroupFactory;
@@ -17,6 +18,8 @@ import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.MessageTypeParser;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+
 /**
  * paraflow
  *
@@ -73,7 +76,32 @@ public class ParquetFlushThread extends DataFlushThread
                 Group group = factory.newGroup();
                 for (String[] contents = segment.getNext(); segment.hasNext(); contents = segment.getNext()) {
                     for (int i = 0; i < contents.length; i++) {
-                        group.append(columnsNameList.getStr(i), contents[i]);
+                        switch (columnDataTypeList.getStr(i)) {
+                            case "bigint":
+                                group.append(columnsNameList.getStr(i), Long.parseLong(contents[i]));
+                                break;
+                            case "int":
+                                group.append(columnsNameList.getStr(i), Integer.parseInt(contents[i]));
+                                break;
+                            case "boolean":
+                                group.append(columnsNameList.getStr(i), Boolean.parseBoolean(contents[i]));
+                                break;
+                            case "float4":
+                                group.append(columnsNameList.getStr(i), Float.parseFloat(contents[i]));
+                                break;
+                            case "float8":
+                                group.append(columnsNameList.getStr(i), Double.parseDouble(contents[i]));
+                                break;
+                            case "timestamptz":
+                                group.append(columnsNameList.getStr(i), Long.parseLong(contents[i]));
+                                break;
+                            case "real" :
+                                group.append(columnsNameList.getStr(i), Float.parseFloat(contents[i]));
+                                break;
+                            default:
+                                group.append(columnsNameList.getStr(i), contents[i]);
+                                break;
+                        }
                     }
                 }
                 GroupWriteSupport writeSupport = new GroupWriteSupport();

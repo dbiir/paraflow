@@ -5,16 +5,16 @@ import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 
 public class MessageSizeCalculator
 {
-    private final MetaClient metaClient;
 
-    public MessageSizeCalculator()
+    private MessageSizeCalculator()
     {
-        final ConsumerConfig config = ConsumerConfig.INSTANCE();
-        metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
     }
 
-    public long caculate(String topic)
+    public static long caculate(String topic)
     {
+        MetaClient metaClient;
+        final ConsumerConfig config = ConsumerConfig.INSTANCE();
+        metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
         long size = 0;
         int dot = topic.indexOf(".");
         int length = topic.length();

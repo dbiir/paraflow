@@ -61,10 +61,6 @@
             <artifactId>parquet-common</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.avro</groupId>
-            <artifactId>avro</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.parquet</groupId>
             <artifactId>parquet-format</artifactId>
             <version>2.3.1</version>
