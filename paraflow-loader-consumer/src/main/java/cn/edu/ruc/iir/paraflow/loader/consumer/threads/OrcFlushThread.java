@@ -6,7 +6,6 @@ import cn.edu.ruc.iir.paraflow.loader.consumer.utils.FileNameGenerator;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.ql.exec.vector.BytesColumnVector;
 import org.apache.hadoop.hive.ql.exec.vector.VectorizedRowBatch;
@@ -45,6 +44,7 @@ public class OrcFlushThread extends DataFlushThread
     @Override
     boolean flushData(BufferSegment segment)
     {
+        System.out.println("OrcFlushThread : flushData()");
         String topic = segment.getFiberPartitions().get(0).getTopic();
         int indexOfDot = topic.indexOf(".");
         String dbName = topic.substring(0, indexOfDot);
