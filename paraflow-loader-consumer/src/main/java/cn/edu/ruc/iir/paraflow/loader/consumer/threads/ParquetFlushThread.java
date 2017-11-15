@@ -66,7 +66,33 @@ public class ParquetFlushThread extends DataFlushThread
             try {
                 String schemaString = "message " + tblName + " {";
                 for (int i = 0; i < columnDataTypeCount; i++) {
-                    schemaString = schemaString + "required " + columnDataTypeList.getStr(i) + " " + columnsNameList.getStr(i) + "; ";
+
+                    switch (columnDataTypeList.getStr(i)) {
+                        case "bigint":
+                            schemaString = schemaString + "required INT64 " + columnsNameList.getStr(i) + "; ";
+                            break;
+                        case "int":
+                            schemaString = schemaString + "required INT32 " + columnsNameList.getStr(i) + "; ";
+                            break;
+                        case "boolean":
+                            schemaString = schemaString + "required BOOLEAN " + columnsNameList.getStr(i) + "; ";
+                            break;
+                        case "float4":
+                            schemaString = schemaString + "required FLOAT " + columnsNameList.getStr(i) + "; ";
+                            break;
+                        case "float8":
+                            schemaString = schemaString + "required DOUBLE " + columnsNameList.getStr(i) + "; ";
+                            break;
+                        case "timestamptz":
+                            schemaString = schemaString + "required INT64 " + columnsNameList.getStr(i) + "; ";
+                            break;
+                        case "real" :
+                            schemaString = schemaString + "required INT64 " + columnsNameList.getStr(i) + "; ";
+                            break;
+                        default:
+                            schemaString = schemaString + "required BYTE_ARRAY " + columnsNameList.getStr(i) + "; ";
+                            break;
+                    }
                 }
                 schemaString = schemaString + "}";
                 MessageType schema = MessageTypeParser.parseMessageType(schemaString);
