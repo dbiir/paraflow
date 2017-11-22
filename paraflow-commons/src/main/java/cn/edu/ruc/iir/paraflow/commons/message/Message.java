@@ -9,7 +9,6 @@ public class Message
     private final int keyIndex;
     private final String[] values;
     private final long timestamp;
-    private final int valueSize;
     private String topic = "";
     private int fiberId;
     private boolean hasFiberId = false;
@@ -24,12 +23,6 @@ public class Message
         this.keyIndex = keyIndex;
         this.values = values;
         this.timestamp = timestamp;
-
-        int vSize = 0;
-        for (String v : values) {
-            vSize += v.length();
-        }
-        this.valueSize = vSize;
     }
 
     public Message(int keyIndex, String[] values, long timestamp, String topic)
@@ -38,12 +31,6 @@ public class Message
         this.values = values;
         this.timestamp = timestamp;
         this.topic = topic;
-
-        int vSize = 0;
-        for (String v : values) {
-            vSize += v.length();
-        }
-        this.valueSize = vSize;
     }
 
     public Message(int keyIndex, String[] values, long timestamp, String topic, int fiberId)
@@ -54,12 +41,6 @@ public class Message
         this.topic = topic;
         this.fiberId = fiberId;
         this.hasFiberId = true;
-
-        int vSize = 0;
-        for (String v : values) {
-            vSize += v.length();
-        }
-        this.valueSize = vSize;
     }
 
     public String getKey()
@@ -115,10 +96,6 @@ public class Message
     /**
      * Get message value size in bytes
      * */
-    public int getValueSize()
-    {
-        return valueSize;
-    }
 
     // todo override equals, hashCode and toString
     @Override

@@ -175,4 +175,19 @@ public class ConsumerConfig
     {
         return Long.parseLong(paraflowConfig.getProperty("consumer.poll.timeout.ms"));
     }
+
+    public long getOrcFileStripeSize()
+    {
+        return Long.parseLong(paraflowConfig.getProperty("orc.file.stripe.size"));
+    }
+
+    public int getOrcFileBufferSize()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("orc.file.buffer.size"));
+    }
+
+    public long getOrcFileBlockSize()
+    {
+        return Long.parseLong(paraflowConfig.getProperty("orc.file.block.size"));
+    }
 }

@@ -2,6 +2,7 @@ package cn.edu.ruc.iir.paraflow.loader.consumer.buffer;
 
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
+import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageSizeCalculator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -57,7 +58,9 @@ public class BufferPool
 
     public void add(Message message)
     {
-        if (blockSize + message.getValueSize() > blockCapacity) {
+        String topic = message.getTopic().get();
+        long messageSize = MessageSizeCalculator.caculate(topic);
+        if (blockSize + messageSize > blockCapacity) {
             while (!spillToFlushBuffer()) {
                 // waiting
                 try {
@@ -73,7 +76,7 @@ public class BufferPool
             String fiberTopic = message.getTopic().get();
             TopicFiber fiber = new TopicFiber(fiberTopic, fiberId);
             block[fiberPartitionToBlockIndex.get(fiber)].add(message);
-            blockSize += message.getValueSize();
+            blockSize += messageSize; // all message's value size put together.
         }
     }
 
