@@ -13,6 +13,6 @@ public class FileNameGenerator
         String hdfsWarehouse = config.getHDFSWarehouse();
         ThreadLocalRandom tlr = ThreadLocalRandom.current();
         long random = tlr.nextLong();
-        return String.format("%s/%s/%s/%s-%s-%d-%d-%d", hdfsWarehouse, dbName, tblName, dbName, tblName, beginTime, endTime, random);
+        return String.format("%s/%s/%s/%s-%s-%d%d%d", hdfsWarehouse, dbName, tblName, dbName, tblName, beginTime, endTime, random);
     }
 }

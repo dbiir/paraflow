@@ -93,15 +93,10 @@ public class Message
         return Optional.empty();
     }
 
-    /**
-     * Get message value size in bytes
-     * */
-
-    // todo override equals, hashCode and toString
     @Override
     public String toString()
     {
-        return String.format("keyIndex: %d, timestamp: %d, topic: %s", keyIndex, timestamp, topic);
+        return String.format("keyIndex: %d, key: %s, timestamp: %d, topic: %s", keyIndex, values[keyIndex], timestamp, topic);
     }
 
     @Override

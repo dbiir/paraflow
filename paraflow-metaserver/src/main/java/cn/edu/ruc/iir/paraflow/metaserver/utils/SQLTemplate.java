@@ -46,12 +46,12 @@ public class SQLTemplate
 
     public static String listColumns(long dbId, long tblId)
     {
-        return String.format("SELECT colName FROM meta_colmodel WHERE dbid = %d AND tblid = %d;", dbId, tblId);
+        return String.format("SELECT colName FROM meta_colmodel WHERE dbid = %d AND tblid = %d ORDER BY colindex;", dbId, tblId);
     }
 
     public static String listColumnsDataType(long dbId, long tblId)
     {
-        return String.format("SELECT dataType FROM meta_colmodel WHERE dbid = %d AND tblid = %d;", dbId, tblId);
+        return String.format("SELECT dataType FROM meta_colmodel WHERE dbid = %d AND tblid = %d ORDER BY colindex;", dbId, tblId);
     }
 
     public static String getDatabase(String dbName)

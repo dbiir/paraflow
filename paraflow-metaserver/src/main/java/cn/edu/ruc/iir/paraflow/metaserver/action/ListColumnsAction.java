@@ -31,6 +31,7 @@ public class ListColumnsAction extends Action
                 int size = resultList.size();
                 for (int i = 0; i < size; i++) {
                     result.add(resultList.get(i).get(0));
+                    System.out.println("Meta server execution result " + i + ": " + resultList.get(i).get(0));
                 }
                 stringList = MetaProto.StringListType.newBuilder()
                         .addAllStr(result)

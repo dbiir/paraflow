@@ -23,6 +23,7 @@
         <module>paraflow-metaserver</module>
         <module>paraflow-commons</module>
         <module>paraflow-assembly</module>
+        <module>paraflow-connector</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -55,6 +56,8 @@
 
         <java.source.version>1.8</java.source.version>
         <java.target.version>1.8</java.target.version>
+
+        <hadoop.version>2.7.3</hadoop.version>
     </properties>
 
     <dependencyManagement>
@@ -140,7 +143,7 @@
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-common</artifactId>
-                <version>2.8.1</version>
+                <version>${hadoop.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.google.guava</groupId>
@@ -155,7 +158,7 @@
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-hdfs</artifactId>
-                <version>2.8.1</version>
+                <version>${hadoop.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.google.guava</groupId>
@@ -170,7 +173,7 @@
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-client</artifactId>
-                <version>2.8.1</version>
+                <version>${hadoop.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.orc</groupId>
@@ -211,6 +214,16 @@
                 <groupId>org.apache.parquet</groupId>
                 <artifactId>parquet-format</artifactId>
                 <version>2.3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-all</artifactId>
+                <version>5.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-spi</artifactId>
+                <version>0.190</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

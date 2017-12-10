@@ -1,8 +1,5 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.buffer;
 
-import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
-
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicLong;
@@ -39,15 +36,15 @@ public class FlushQueueBuffer
         this.bufferCapacity = bufferCapacity;
     }
 
-    public BufferSegment addSegment(long segmentSize, long[] timestamps, List<TopicFiber> fiberPartitions)
+    public boolean addSegment(long segmentSize, BufferSegment segment)
     {
         if (bufferSize.get() < bufferCapacity - segmentSize) {
-            BufferSegment bufferSegment = new BufferSegment(segmentSize, timestamps, fiberPartitions);
-            segments.add(bufferSegment);
+//            BufferSegment bufferSegment = new BufferSegment(segmentSize, timestamps, fiberPartitions);
+            segments.add(segment);
             bufferSize.addAndGet(segmentSize);
-            return bufferSegment;
+            return true;
         }
-        return null;
+        return false;
     }
 
     public Optional<BufferSegment> getSegment()

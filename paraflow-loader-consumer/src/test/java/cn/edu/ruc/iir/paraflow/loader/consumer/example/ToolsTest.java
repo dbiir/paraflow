@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.example;
 
+import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
 
 /**
@@ -9,6 +10,8 @@ import org.junit.Test;
  */
 public class ToolsTest
 {
+    private Configuration conf = new Configuration();
+
     @Test
     public void testSubString()
     {

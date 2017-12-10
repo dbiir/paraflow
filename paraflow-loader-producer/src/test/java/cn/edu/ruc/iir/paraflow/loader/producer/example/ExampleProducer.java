@@ -3,12 +3,11 @@ package cn.edu.ruc.iir.paraflow.loader.producer.example;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.func.SerializableFunction;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
-import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
+import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.loader.producer.DefaultProducer;
-import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
-import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
+import org.junit.Test;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +19,8 @@ import java.util.List;
  */
 public class ExampleProducer
 {
+    private MetaClient metaClient = new MetaClient("127.0.0.1", 10012);
+
     private final String tblName = "exampleTbl";
     private final String dbName = "exampleDb";
     private MetaConfig metaConfig = MetaConfig.INSTANCE();
@@ -37,9 +38,8 @@ public class ExampleProducer
         }
 
         final int fiberKeyIndex = 0;
-        String topicName = FormTopicName.formTopicName(dbName, tblName);
-        producer.createTopic(topicName, 1, (short) 1);
-        System.out.println("Created topic " + FormTopicName.formTopicName(dbName, tblName));
+//        String topicName = FormTopicName.formTopicName(dbName, tblName);
+//        producer.createTopic(topicName, 1, (short) 1);
         SerializableFunction<String, Integer> func = (v) -> Integer.parseInt(v) % 1000;
         producer.registerFiberFunc(dbName, tblName, func);
         for (int i = 0; i < 1500000; i++) {
@@ -58,36 +58,47 @@ public class ExampleProducer
         producer.shutdown();
     }
 
-    private void createDbTbl()
+    @Test
+    public void createDatabase()
     {
-        final MetaClient metaClient;
-        ProducerConfig config = ProducerConfig.INSTANCE();
-            metaClient = new MetaClient(config.getMetaServerHost(),
-                    config.getMetaServerPort());
-        MetaProto.DbParam dbParam = metaClient.getDatabase(dbName);
-        if (dbParam.getIsEmpty()) {
-            final String userName = metaConfig.getDBUser();
-            final String storageFormatName = "StorageFormatName";
-            final List<String> columnName = new LinkedList<>();
-            final List<String> dataType = new LinkedList<>();
-            columnName.add("stu_id");
-            columnName.add("class_id");
-            columnName.add("alice_id");
-            columnName.add("time");
-            dataType.add("int");
-            dataType.add("int");
-            dataType.add("varchar(10)");
-            dataType.add("bigint");
-            System.out.println("userName : " + userName);
-            metaClient.createDatabase(dbName, userName);
-            metaClient.createRegularTable(
-                    dbName,
-                    tblName,
-                    userName,
-                    storageFormatName,
-                    columnName,
-                    dataType);
-        }
+        metaClient.createDatabase(dbName, "alice");
+    }
+
+    @Test
+    public void createTable()
+    {
+        final String userName = "alice";
+        final String storageFormatName = "parquet";
+        final List<String> columnName = new LinkedList<>();
+        final List<String> dataType = new LinkedList<>();
+        columnName.add("stu_id");
+        columnName.add("class_id");
+        columnName.add("alice_id");
+        columnName.add("time");
+        dataType.add("int");
+        dataType.add("int");
+        dataType.add("varchar(10)");
+        dataType.add("bigint");
+        StatusProto.ResponseStatus status = metaClient.createRegularTable(
+                dbName,
+                tblName,
+                userName,
+                storageFormatName,
+                columnName,
+                dataType);
+        System.out.println(status.getStatusValue());
+    }
+
+    @Test
+    public void createUser()
+    {
+        metaClient.createUser("alice", "alice");
+    }
+
+    @Test
+    public void createSF()
+    {
+        metaClient.createStorageFormat("parquet", "none", "org.apache.parquet.Parquet");
     }
 
     public static void main(String[] args)

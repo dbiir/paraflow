@@ -26,7 +26,7 @@ public class PlainTextFlushThread extends DataFlushThread
     boolean flushData(BufferSegment segment)
     {
         try {
-            System.out.println("Flush out!!!");
+            System.out.println("Text file flush out!!!");
             String filePath = "/Users/Jelly/Desktop/testPlainFile";
             Random random = ThreadLocalRandom.current();
             long[] timestamps = segment.getTimestamps();
