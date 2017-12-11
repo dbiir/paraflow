@@ -43,6 +43,7 @@ public class DataPullThread extends DataThread
                 ConsumerRecords<Long, Message> consumerRecords = consumerClient.poll(config.getConsumerPollTimeout());
                 for (ConsumerRecord<Long, Message> record : consumerRecords) {
                     buffer.offer(record.value());
+//                    System.out.println("Pulling messages");
                 }
                 try {
                     Thread.sleep(1000);

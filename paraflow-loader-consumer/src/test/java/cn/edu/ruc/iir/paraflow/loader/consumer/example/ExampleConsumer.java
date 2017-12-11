@@ -13,26 +13,27 @@ public class ExampleConsumer
 {
     private void exampleTest(String configPath)
     {
-        final DefaultConsumer consumer;
-        List<TopicPartition> topicPartitions = new LinkedList<>();
-        TopicPartition topicPartition = new TopicPartition("exampleDb.exampleTbl", 0);
-        topicPartitions.add(topicPartition);
-        List<TopicFiber> topicFibers = new LinkedList<>();
-        for (int i = 0; i < 1000; i++) {
-            topicFibers.add(new TopicFiber("exampleDb.exampleTbl", i));
-        }
-        final String dbName = "exampleDb";
-        final String tblName = "exampleTbl";
         try {
-            consumer = new DefaultConsumer(configPath, topicPartitions, topicFibers);
-        }
-        catch (ConfigFileNotFoundException e) {
-            e.printStackTrace();
-            return;
-        }
-        consumer.consume();
-        DeserializableFunction<String, Integer> func = (v) -> Integer.parseInt(v) % 1000;
-        consumer.registerFiberFunc(dbName, tblName, func);
+            final DefaultConsumer consumer;
+            List<TopicPartition> topicPartitions = new LinkedList<>();
+            TopicPartition topicPartition = new TopicPartition("exampleDb.exampleTbl", 0);
+            topicPartitions.add(topicPartition);
+            List<TopicFiber> topicFibers = new LinkedList<>();
+            for (int i = 0; i < 1000; i++) {
+                topicFibers.add(new TopicFiber("exampleDb.exampleTbl", i));
+            }
+            final String dbName = "exampleDb";
+            final String tblName = "exampleTbl";
+            try {
+                consumer = new DefaultConsumer(configPath, topicPartitions, topicFibers);
+            }
+            catch (ConfigFileNotFoundException e) {
+                e.printStackTrace();
+                return;
+            }
+            consumer.consume();
+            DeserializableFunction<String, Integer> func = (v) -> Integer.parseInt(v) % 1000;
+            consumer.registerFiberFunc(dbName, tblName, func);
 //        try {
 //            Thread.sleep(10000);
 //        }
@@ -40,6 +41,10 @@ public class ExampleConsumer
 //            e.printStackTrace();
 //        }
 //        consumer.shutdown();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     public static void main(String[] args)
     {

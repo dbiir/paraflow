@@ -24,6 +24,12 @@
             <groupId>cn.edu.ruc.iir</groupId>
             <artifactId>paraflow-metaserver</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>

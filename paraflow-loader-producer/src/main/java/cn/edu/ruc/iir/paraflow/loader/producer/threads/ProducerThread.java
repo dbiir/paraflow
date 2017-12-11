@@ -67,7 +67,7 @@ public class ProducerThread extends Thread
                     // ignore it
                     continue;
                 }
-                System.out.println("[msg]: " + msg);
+                System.out.println("Sent out: [" + msg + "]");
                 if (msg.getTopic().isPresent()) {
                     String topic = msg.getTopic().get();
                     Optional<Function<String, Integer>> function = funcMapBuffer.get(topic);

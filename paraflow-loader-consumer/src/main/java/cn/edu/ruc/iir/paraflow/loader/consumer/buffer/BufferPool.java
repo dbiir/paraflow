@@ -60,6 +60,7 @@ public class BufferPool
     {
         String topic = message.getTopic().get();
         long messageSize = MessageSizeCalculator.caculate(topic);
+        System.out.println("Block size: " + blockSize + ", current message size: " + messageSize + "capacity: " + blockCapacity);
         if (blockSize + messageSize > blockCapacity) {
             while (!spillToFlushBuffer()) {
                 // waiting
@@ -71,21 +72,21 @@ public class BufferPool
                 }
             }
         }
-        if (message.getFiberId().isPresent() && message.getTopic().isPresent()) {
+        else if (message.getFiberId().isPresent() && message.getTopic().isPresent()) {
             int fiberId = message.getFiberId().get();
             String fiberTopic = message.getTopic().get();
             TopicFiber fiber = new TopicFiber(fiberTopic, fiberId);
             block[fiberPartitionToBlockIndex.get(fiber)].add(message);
             blockSize += messageSize; // all message's value size put together.
         }
+        else {
+            System.out.println("Message fiberId or topic not present");
+        }
     }
 
     private boolean spillToFlushBuffer()
     {
-        BufferSegment segment = flushQueueBuffer.addSegment(blockSize, timestamps, fiberPartitions);
-        if (segment == null) {
-            return false;
-        }
+        BufferSegment segment = new BufferSegment(blockSize, timestamps, fiberPartitions);
         int index = 0;
         for (TopicFiber key : fiberPartitionToBlockIndex.keySet()) {
             List<Message> fiberMessages = block[fiberPartitionToBlockIndex.get(key)];
@@ -106,7 +107,16 @@ public class BufferPool
             fiberMessages.clear();
             index++;
         }
+        while (!flushQueueBuffer.addSegment(blockSize, segment)) {
+            try {
+                Thread.sleep(1000);
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         blockSize = 0;
+        System.out.println("Spilled to flush queue buffer");
         return true;
     }
 }

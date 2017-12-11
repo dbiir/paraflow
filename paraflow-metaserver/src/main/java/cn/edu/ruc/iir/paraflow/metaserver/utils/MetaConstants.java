@@ -36,7 +36,7 @@ public final class MetaConstants
     public static String createDbParamModelSql = "CREATE TABLE meta_dbparammodel (dbid int REFERENCES meta_dbmodel(dbid), paramkey varchar(100), paramvalue varchar(200), constraint unique_dbparam unique(dbid,paramkey));";
     public static String createTblParamModelSql = "CREATE TABLE meta_tblparammodel (tblid int REFERENCES meta_tblmodel(tblid), paramkey varchar(100), paramvalue varchar(200), constraint unique_tblparam unique(tblid,paramkey));";
     public static String createTblPrivModelSql = "CREATE TABLE meta_tblprivmodel (tblprivid SERIAL primary key, tblid int REFERENCES meta_tblmodel(tblid), userid int REFERENCES meta_usermodel(userid), privtype int, granttime bigint, constraint unique_tblpriv unique(tblid,userid,privtype));";
-    public static String createBlockIndexSql = "CREATE TABLE meta_blockindex (meta_blockindexid SERIAL primary key, tblid int REFERENCES meta_tblmodel(tblid), fibervalue int, timebegin bigint, timeend bigint, timezone varchar(50), blockpath varchar(100));";
+    public static String createBlockIndexSql = "CREATE TABLE meta_blockindex (meta_blockindexid SERIAL primary key, tblid int REFERENCES meta_tblmodel(tblid), fibervalue int, timebegin bigint, timeend bigint, timezone varchar(50), blockpath varchar(1024));";
 
     public static String getMetaTablesSql = "SELECT tablename FROM pg_tables WHERE tablename LIKE 'meta_%' ORDER BY tablename;";
 

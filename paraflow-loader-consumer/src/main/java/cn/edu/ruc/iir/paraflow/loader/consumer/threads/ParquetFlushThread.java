@@ -1,9 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
 
 import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.BufferSegment;
-import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.FileNameGenerator;
-import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -25,20 +23,19 @@ import java.io.IOException;
  */
 public class ParquetFlushThread extends DataFlushThread
 {
-    private final MetaClient metaClient;
     private Configuration conf = new Configuration();
 
     public ParquetFlushThread(String threadName)
     {
         super(threadName);
-        ConsumerConfig config = ConsumerConfig.INSTANCE();
-        metaClient = new MetaClient(config.getMetaServerHost(),
-                config.getMetaServerPort());
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
     }
 
     @Override
     boolean flushData(BufferSegment segment)
     {
+        System.out.println("Parquet file flush out!!!");
         String topic = segment.getFiberPartitions().get(0).getTopic();
         int indexOfDot = topic.indexOf(".");
         String dbName = topic.substring(0, indexOfDot);
@@ -59,46 +56,58 @@ public class ParquetFlushThread extends DataFlushThread
         MetaProto.StringListType columnDataTypeList = metaClient.listColumnsDataType(dbName, tblName);
         int columnNameCount = columnsNameList.getStrCount();
         int columnDataTypeCount = columnDataTypeList.getStrCount();
-        System.out.println("columnNameCount : " + columnNameCount);
-        System.out.println("columnDataTypeCount : " + columnDataTypeCount);
+        System.out.println("Path: " + path);
         if (columnNameCount == columnDataTypeCount) {
             Path file = new Path(path);
             try {
-                String schemaString = "message " + tblName + " {";
+                StringBuilder schemaString = new StringBuilder("message " + tblName + " {");
                 for (int i = 0; i < columnDataTypeCount; i++) {
-
                     switch (columnDataTypeList.getStr(i)) {
                         case "bigint":
-                            schemaString = schemaString + "required INT64 " + columnsNameList.getStr(i) + "; ";
+                            schemaString.append("required INT64 ").append(columnsNameList.getStr(i)).append("; ");
                             break;
                         case "int":
-                            schemaString = schemaString + "required INT32 " + columnsNameList.getStr(i) + "; ";
+                            schemaString.append("required INT32 ").append(columnsNameList.getStr(i)).append("; ");
                             break;
                         case "boolean":
-                            schemaString = schemaString + "required BOOLEAN " + columnsNameList.getStr(i) + "; ";
+                            schemaString.append("required BOOLEAN ").append(columnsNameList.getStr(i)).append("; ");
                             break;
                         case "float4":
-                            schemaString = schemaString + "required FLOAT " + columnsNameList.getStr(i) + "; ";
+                            schemaString.append("required FLOAT ").append(columnsNameList.getStr(i)).append("; ");
                             break;
                         case "float8":
-                            schemaString = schemaString + "required DOUBLE " + columnsNameList.getStr(i) + "; ";
+                            schemaString.append("required DOUBLE ").append(columnsNameList.getStr(i)).append("; ");
                             break;
                         case "timestamptz":
-                            schemaString = schemaString + "required INT64 " + columnsNameList.getStr(i) + "; ";
+                            schemaString.append("required INT64 ").append(columnsNameList.getStr(i)).append("; ");
                             break;
                         case "real" :
-                            schemaString = schemaString + "required INT64 " + columnsNameList.getStr(i) + "; ";
+                            schemaString.append("required INT64 ").append(columnsNameList.getStr(i)).append("; ");
                             break;
                         default:
-                            schemaString = schemaString + "required BYTE_ARRAY " + columnsNameList.getStr(i) + "; ";
+                            schemaString.append("required BINARY ").append(columnsNameList.getStr(i)).append("; ");
                             break;
                     }
                 }
-                schemaString = schemaString + "}";
-                MessageType schema = MessageTypeParser.parseMessageType(schemaString);
+                schemaString.append("}");
+                System.out.println("Parquet file schema: " + schemaString);
+                MessageType schema = MessageTypeParser.parseMessageType(schemaString.toString());
                 GroupFactory factory = new SimpleGroupFactory(schema);
-                Group group = factory.newGroup();
-                for (String[] contents = segment.getNext(); segment.hasNext(); contents = segment.getNext()) {
+                GroupWriteSupport writeSupport = new GroupWriteSupport();
+                GroupWriteSupport.setSchema(schema, conf);
+                ParquetWriter<Group> writer = new ParquetWriter<Group>(file, writeSupport,
+                        ParquetWriter.DEFAULT_COMPRESSION_CODEC_NAME,
+                        ParquetWriter.DEFAULT_BLOCK_SIZE,
+                        ParquetWriter.DEFAULT_PAGE_SIZE,
+                        ParquetWriter.DEFAULT_PAGE_SIZE,
+                        false,
+                        ParquetWriter.DEFAULT_IS_VALIDATING_ENABLED,
+                        ParquetProperties.WriterVersion.PARQUET_2_0,
+                        conf
+                );
+                while (segment.hasNext()) {
+                    String[] contents = segment.getNext();
+                    Group group = factory.newGroup();
                     for (int i = 0; i < contents.length; i++) {
                         switch (columnDataTypeList.getStr(i)) {
                             case "bigint":
@@ -127,20 +136,8 @@ public class ParquetFlushThread extends DataFlushThread
                                 break;
                         }
                     }
+                    writer.write(group);
                 }
-                GroupWriteSupport writeSupport = new GroupWriteSupport();
-                writeSupport.setSchema(schema, conf);
-                ParquetWriter<Group> writer = new ParquetWriter<Group>(file, writeSupport,
-                        ParquetWriter.DEFAULT_COMPRESSION_CODEC_NAME,
-                        ParquetWriter.DEFAULT_BLOCK_SIZE,
-                        ParquetWriter.DEFAULT_PAGE_SIZE,
-                        ParquetWriter.DEFAULT_PAGE_SIZE,
-                        ParquetWriter.DEFAULT_IS_DICTIONARY_ENABLED,
-                        ParquetWriter.DEFAULT_IS_VALIDATING_ENABLED,
-                        ParquetProperties.WriterVersion.PARQUET_1_0,
-                        conf
-                );
-                writer.write(group);
                 writer.close();
                 segment.setFilePath(path);
                 return true;

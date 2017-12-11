@@ -38,6 +38,10 @@ public class DataProcessThread extends DataThread
                     Message message = buffer.poll(1000);
                     if (message != null) {
                         bufferPool.add(message);
+//                        System.out.println("Processing message");
+                    }
+                    else {
+                        System.out.println("Null message during processing");
                     }
                 }
                 catch (InterruptedException e) {

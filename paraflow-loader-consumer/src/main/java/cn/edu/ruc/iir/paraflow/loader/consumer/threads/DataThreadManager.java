@@ -2,6 +2,7 @@ package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
 
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
+import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageSizeCalculator;
 import org.apache.kafka.common.TopicPartition;
 
 import java.util.LinkedList;
@@ -69,9 +70,9 @@ public class DataThreadManager
         }
         // init flush thread
         for (int i = 0; i < flushThreadNum; i++) {
-            flushThreads[i] = new PlainTextFlushThread("data-flush-thread-" + i);
-            //flushThreads[i] = new OrcFlushThread("data-flush-thread-" + i);
-            //flushThreads[i] = new ParquetFlushThread("data-flush-thread-" + i);
+//            flushThreads[i] = new PlainTextFlushThread("data-flush-thread-" + i);
+//            flushThreads[i] = new OrcFlushThread("data-flush-thread-" + i);
+            flushThreads[i] = new ParquetFlushThread("data-flush-thread-" + i);
         }
     }
 
@@ -99,6 +100,7 @@ public class DataThreadManager
         for (DataFlushThread flushThread : flushThreads) {
             flushThread.shutdown();
         }
+        MessageSizeCalculator.metaClient.shutdownNow();
         try {
             executorService.awaitTermination(consumerConfig.getConsumerShutdownTimeout(), TimeUnit.SECONDS);
         }

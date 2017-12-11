@@ -15,7 +15,7 @@ import java.util.Optional;
 public abstract class DataFlushThread extends DataThread
 {
     private final FlushQueueBuffer flushQueueBuffer = FlushQueueBuffer.INSTANCE();
-    private final MetaClient metaClient;
+    protected final MetaClient metaClient;
 
     public DataFlushThread(String threadName)
     {
@@ -42,6 +42,7 @@ public abstract class DataFlushThread extends DataThread
                     if (flushData(segment)) {
                         // records metadata
                         flushMeta(segment);
+                        System.out.println("Done flushing metadata");
                     }
                     else {
                         // error dealing
@@ -83,6 +84,7 @@ public abstract class DataFlushThread extends DataThread
             beginTime = segment.getTimestamps()[2 * i];
             endTime = segment.getTimestamps()[2 * i + 1];
             fiberValue = segment.getFiberPartitions().get(i).getFiber();
+            System.out.println("Index: [" + dbName + "," + tblName + "," + fiberValue + "," + beginTime + "," + endTime + "," + path + "]");
             metaClient.createBlockIndex(dbName, tblName, fiberValue, beginTime, endTime, path);
         }
         //else ignore
