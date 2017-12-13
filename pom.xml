@@ -24,6 +24,7 @@
         <module>paraflow-commons</module>
         <module>paraflow-assembly</module>
         <module>paraflow-connector</module>
+        <module>paraflow-server</module>
     </modules>
     <packaging>pom</packaging>
 
