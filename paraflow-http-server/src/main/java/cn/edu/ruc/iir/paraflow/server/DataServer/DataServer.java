@@ -1,24 +1,25 @@
-package cn.edu.ruc.iir.server.DataServer;
-
+package cn.edu.ruc.iir.paraflow.server.DataServer;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.webapp.WebAppContext;
 
-public class DataServer {
-
+public class DataServer
+{
     private Server server;
     private static int port = 8088;
 
-    public void setPort(int port) {
+    public void setPort(int port)
+    {
         this.port = port;
     }
 
-    public void start() throws Exception {
+    public void start() throws Exception
+    {
         server = new Server(port);
 
         WebAppContext webAppContext = new WebAppContext();
         webAppContext.setContextPath("/");
-        webAppContext.setWar("E:\\ruc_projects\\github_t\\paraflow\\paraflow-server\\target\\paraflow-server.war");
+        webAppContext.setWar("/Users/Jelly/Developer/paraflow/paraflow-http-server/target/paraflow-server.war");
         webAppContext.setParentLoaderPriority(true);
         webAppContext.setServer(server);
         webAppContext.setClassLoader(ClassLoader.getSystemClassLoader());
@@ -28,9 +29,9 @@ public class DataServer {
         server.start();
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws Exception
+    {
         DataServer dataServer = new DataServer();
         dataServer.start();
     }
-
 }
