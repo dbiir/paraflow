@@ -394,7 +394,7 @@
                             <failOnViolation>${check.fail-checkstyle}</failOnViolation>
                             <consoleOutput>true</consoleOutput>
                             <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <configLocation>${main.basedir}/src/checkstyle/checks.xml</configLocation>
+                            <configLocation>${main.basedir}/src/checkstyles/checks.xml</configLocation>
                             <sourceDirectories>
                                 <directory>${project.build.sourceDirectory}</directory>
                             </sourceDirectories>
