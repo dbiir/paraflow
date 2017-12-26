@@ -15,6 +15,132 @@
         <main.basedir>${project.parent.basedir}</main.basedir>
     </properties>
 
+    <!--<dependencies>-->
+        <!--<dependency>-->
+            <!--<groupId>com.facebook.presto</groupId>-->
+            <!--<artifactId>presto-spi</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>com.facebook.presto</groupId>-->
+            <!--<artifactId>presto-resource-group-managers</artifactId>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>com.facebook.presto</groupId>-->
+            <!--<artifactId>presto-array</artifactId>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>com.facebook.presto</groupId>-->
+            <!--<artifactId>presto-plugin-toolkit</artifactId>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>com.facebook.presto</groupId>-->
+            <!--<artifactId>presto-record-decoder</artifactId>-->
+        <!--</dependency>-->
+
+        <!--<dependency>-->
+            <!--<groupId>com.facebook.presto</groupId>-->
+            <!--<artifactId>presto-orc</artifactId>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+            <!--&lt;!&ndash;<groupId>com.facebook.presto</groupId>&ndash;&gt;-->
+            <!--&lt;!&ndash;<artifactId>presto-rcfile</artifactId>&ndash;&gt;-->
+        <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>com.google.inject</groupId>-->
+            <!--<artifactId>guice</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>com.facebook.presto</groupId>-->
+            <!--<artifactId>presto-hive</artifactId>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+            <!--&lt;!&ndash;<groupId>com.facebook.presto</groupId>&ndash;&gt;-->
+            <!--&lt;!&ndash;<artifactId>presto-hive-cdh4</artifactId>&ndash;&gt;-->
+            <!--&lt;!&ndash;<type>zip</type>&ndash;&gt;-->
+        <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+            <!--&lt;!&ndash;<groupId>com.facebook.presto</groupId>&ndash;&gt;-->
+            <!--&lt;!&ndash;<artifactId>presto-example-http</artifactId>&ndash;&gt;-->
+            <!--&lt;!&ndash;<type>zip</type>&ndash;&gt;-->
+        <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+
+        <!--&lt;!&ndash;<dependency>&ndash;&gt;-->
+            <!--&lt;!&ndash;<groupId>com.facebook.presto</groupId>&ndash;&gt;-->
+            <!--&lt;!&ndash;<artifactId>presto-local-file</artifactId>&ndash;&gt;-->
+        <!--&lt;!&ndash;</dependency>&ndash;&gt;-->
+
+        <!--<dependency>-->
+            <!--<groupId>org.apache.hadoop</groupId>-->
+            <!--<artifactId>hadoop-common</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.hadoop</groupId>-->
+            <!--<artifactId>hadoop-hdfs</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.hadoop</groupId>-->
+            <!--<artifactId>hadoop-client</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>org.testng</groupId>-->
+            <!--<artifactId>testng</artifactId>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>cn.edu.ruc.iir</groupId>-->
+            <!--<artifactId>paraflow-commons</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>cn.edu.ruc.iir</groupId>-->
+            <!--<artifactId>paraflow-metaserver</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.grpc</groupId>-->
+            <!--<artifactId>grpc-netty</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.grpc</groupId>-->
+            <!--<artifactId>grpc-protobuf</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.grpc</groupId>-->
+            <!--<artifactId>grpc-stub</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.airlift</groupId>-->
+            <!--<artifactId>bootstrap</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.airlift</groupId>-->
+            <!--<artifactId>configuration</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.airlift</groupId>-->
+            <!--<artifactId>json</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.airlift</groupId>-->
+            <!--<artifactId>log</artifactId>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.airlift</groupId>-->
+            <!--<artifactId>slice</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+        <!--<dependency>-->
+            <!--<groupId>io.airlift</groupId>-->
+            <!--<artifactId>units</artifactId>-->
+            <!--<scope>provided</scope>-->
+        <!--</dependency>-->
+    <!--</dependencies>-->
     <dependencies>
         <dependency>
             <groupId>com.facebook.presto</groupId>
@@ -22,110 +148,38 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-<<<<<<< HEAD
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-spi</artifactId>
+            <groupId>org.openjdk.jol</groupId>
+            <artifactId>jol-core</artifactId>
+            <version>0.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-resource-group-managers</artifactId>
+            <artifactId>presto-hive</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-resource-group-managers</artifactId>
+            <groupId>com.facebook.presto.hive</groupId>
+            <artifactId>hive-apache</artifactId>
+            <version>1.2.0-2</version>
         </dependency>
-
         <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-array</artifactId>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.8.4</version>
+            <scope>provided</scope>
         </dependency>
-
         <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-plugin-toolkit</artifactId>
+            <groupId>com.facebook.presto.hadoop</groupId>
+            <artifactId>hadoop-apache2</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-record-decoder</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-orc</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-rcfile</artifactId>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>24.0-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-hive</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-hive-cdh4</artifactId>
-            <type>zip</type>
-        </dependency>
-
-        <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-example-http</artifactId>
-            <type>zip</type>
-        </dependency>
-
-        <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-local-file</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.facebook.presto</groupId>
-            <artifactId>presto-hive</artifactId>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-common</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-hdfs</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.hadoop</groupId>
-            <artifactId>hadoop-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cn.edu.ruc.iir</groupId>
-            <artifactId>paraflow-commons</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cn.edu.ruc.iir</groupId>
-            <artifactId>paraflow-metaserver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-netty</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-protobuf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>io.grpc</groupId>
-            <artifactId>grpc-stub</artifactId>
         </dependency>
         <dependency>
             <groupId>io.airlift</groupId>
@@ -135,23 +189,53 @@
             <groupId>io.airlift</groupId>
             <artifactId>configuration</artifactId>
         </dependency>
+
         <dependency>
             <groupId>io.airlift</groupId>
             <artifactId>json</artifactId>
         </dependency>
+
         <dependency>
             <groupId>io.airlift</groupId>
             <artifactId>log</artifactId>
         </dependency>
+
         <dependency>
             <groupId>io.airlift</groupId>
             <artifactId>slice</artifactId>
             <scope>provided</scope>
         </dependency>
+
         <dependency>
             <groupId>io.airlift</groupId>
             <artifactId>units</artifactId>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+            <version>2.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.1.0.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.edu.ruc.iir</groupId>
+            <artifactId>paraflow-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>cn.edu.ruc.iir</groupId>
+            <artifactId>paraflow-metaserver</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -163,32 +247,5 @@
                 <version>1.5.0.Final</version>
             </extension>
         </extensions>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${check.skip-checkstyle}</skip>
-                            <failOnViolation>${check.fail-checkstyle}</failOnViolation>
-                            <consoleOutput>true</consoleOutput>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <configLocation>${project.parent.basedir}/src/checkstyles/checks.xml</configLocation>
-                            <sourceDirectories>
-                                <directory>${project.build.sourceDirectory}</directory>
-                            </sourceDirectories>
-                            <testSourceDirectories>
-                                <directory>${project.build.testSourceDirectory}</directory>
-                            </testSourceDirectories>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
     </build>
 </project>
