@@ -48,6 +48,8 @@ public class GetTblParamAction extends Action
                     .setStorageFormatName(sfName)
                     .setFiberColId(tblParam.getFiberColId())
                     .setFuncName(funcName)
+                    .setTblId(Long.parseLong(input.getProperties("tblId").get().toString()))
+                    .setDbId(Long.parseLong(input.getProperties("dbId").get().toString()))
                     .setIsEmpty(false)
                     .build();
             input.setParam(tblParamLast);

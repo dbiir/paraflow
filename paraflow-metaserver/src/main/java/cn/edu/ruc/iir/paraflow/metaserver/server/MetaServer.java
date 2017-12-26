@@ -126,7 +126,7 @@ public class MetaServer
      * 1. Stop rpcServer
      * 2. Stop db connection
      * */
-    private void stop()
+    public void stop()
     {
         if (server != null) {
             logger.info("****** MetaServer shutting down...");
