@@ -326,7 +326,7 @@
                 <artifactId>asm-all</artifactId>
                 <version>5.2</version>
             </dependency>
-
+            presto-spi
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
@@ -336,76 +336,76 @@
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-spi</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
             </dependency>
 
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-resource-group-managers</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
             </dependency>
 
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-resource-group-managers</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
                 <type>test-jar</type>
             </dependency>
 
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-array</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
             </dependency>
 
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-plugin-toolkit</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
             </dependency>
 
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-record-decoder</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
             </dependency>
 
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-orc</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
             </dependency>
 
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-rcfile</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
             </dependency>
 
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-hive</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
             </dependency>
 
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-hive-cdh4</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
                 <type>zip</type>
             </dependency>
 
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-example-http</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
                 <type>zip</type>
             </dependency>
 
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-local-file</artifactId>
-                <version>0.158-SNAPSHOT</version>
+                <version>0.190</version>
             </dependency>
 
             <dependency>
