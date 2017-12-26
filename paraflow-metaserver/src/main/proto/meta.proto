@@ -157,25 +157,28 @@ message UserParam {
 
 message DbParam {
     bool isEmpty = 1;
-    string dbName = 2;
-    string locationUrl = 3;
-    string userName = 4;
-    ResponseStatus status = 5;
+    int64 dbId = 2;
+    string dbName = 3;
+    string locationUrl = 4;
+    string userName = 5;
+    ResponseStatus status = 6;
 }
 
 message TblParam {
     bool isEmpty = 1;
-    string dbName = 2;
-    string tblName = 3;
-    int32 tblType = 4;
-    string userName = 5;
-    int64 createTime = 6;
-    int64 lastAccessTime = 7;
-    string locationUrl = 8;
-    string storageFormatName = 9;
-    int32 fiberColId = 11;
-    string funcName = 12;
-    ColListType colList = 13;
+    int64 dbId = 2;
+    int64 tblId = 3;
+    string dbName = 4;
+    string tblName = 5;
+    int32 tblType = 6;
+    string userName = 7;
+    int64 createTime = 8;
+    int64 lastAccessTime = 9;
+    string locationUrl = 10;
+    string storageFormatName = 11;
+    int32 fiberColId = 12;
+    string funcName = 13;
+    ColListType colList = 14;
 }
 
 message ColParam {

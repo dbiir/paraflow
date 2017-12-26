@@ -11,11 +11,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.ruc.iir.paraflow.connector;
+package cn.edu.ruc.iir.paraflow.connector.exception;
+
+import com.facebook.presto.spi.PrestoException;
+import org.apache.hadoop.fs.Path;
 
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public enum StorageFormat {
-    PARQUET, ORC, RCFILE
+public class HdfsSplitNotOpenException
+extends PrestoException
+{
+    public HdfsSplitNotOpenException(Path path)
+    {
+        super(HDFSErrorCode.HDFS_SPLIT_NOT_OPEN, "HDFS Split " + path + " cannot open");
+    }
 }

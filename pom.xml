@@ -61,6 +61,7 @@
         <java.target.version>1.8</java.target.version>
 
         <hadoop.version>2.7.3</hadoop.version>
+        <dep.testng.version>6.8.21</dep.testng.version>
         <guice.version>4.0</guice.version>
         <presto.version>0.190</presto.version>
         <airlift.version>0.157</airlift.version>
@@ -259,6 +260,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
                 <artifactId>hadoop-hdfs</artifactId>
@@ -330,6 +332,92 @@
                 <artifactId>junit</artifactId>
                 <version>4.12</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-spi</artifactId>
+                <version>0.158-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-resource-group-managers</artifactId>
+                <version>0.158-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-resource-group-managers</artifactId>
+                <version>0.158-SNAPSHOT</version>
+                <type>test-jar</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-array</artifactId>
+                <version>0.158-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-plugin-toolkit</artifactId>
+                <version>0.158-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-record-decoder</artifactId>
+                <version>0.158-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-orc</artifactId>
+                <version>0.158-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-rcfile</artifactId>
+                <version>0.158-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-hive</artifactId>
+                <version>0.158-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-hive-cdh4</artifactId>
+                <version>0.158-SNAPSHOT</version>
+                <type>zip</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-example-http</artifactId>
+                <version>0.158-SNAPSHOT</version>
+                <type>zip</type>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-local-file</artifactId>
+                <version>0.158-SNAPSHOT</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-hive</artifactId>
+                <version>0.158-SNAPSHOT</version>
+                <type>test-jar</type>
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>6.8.21</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -11,11 +11,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.ruc.iir.paraflow.connector;
+package cn.edu.ruc.iir.paraflow.connector.exception;
+
+import com.facebook.presto.spi.PrestoException;
 
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public enum StorageFormat {
-    PARQUET, ORC, RCFILE
+public class HdfsCursorException
+extends PrestoException
+{
+    public HdfsCursorException()
+    {
+        super(HDFSErrorCode.HDFS_CURSOR_ERROR, "HDFS cursor error");
+    }
 }

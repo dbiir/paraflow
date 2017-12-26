@@ -11,11 +11,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.ruc.iir.paraflow.connector;
+package cn.edu.ruc.iir.paraflow.connector.exception;
+
+import com.facebook.presto.spi.PrestoException;
 
 /**
- * @author jelly.guodong.jin@gmail.com
+ * presto-root
+ *
+ * @author Jelly
  */
-public enum StorageFormat {
-    PARQUET, ORC, RCFILE
+public class TableNotFoundException
+    extends PrestoException
+{
+    public TableNotFoundException(String tableName)
+    {
+        super(HDFSErrorCode.TABLE_NOT_FOUND, "Table " + tableName + " not found.");
+    }
 }

@@ -11,11 +11,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.ruc.iir.paraflow.connector;
+package cn.edu.ruc.iir.paraflow.connector.exception;
+
+import com.facebook.presto.spi.PrestoException;
 
 /**
- * @author jelly.guodong.jin@gmail.com
+ * presto-root
+ *
+ * @author Jelly
  */
-public enum StorageFormat {
-    PARQUET, ORC, RCFILE
+public class UnSupportedFunctionException extends PrestoException
+{
+    public UnSupportedFunctionException(String function)
+    {
+        super(HDFSErrorCode.FUNCTION_UNSUPPORTED, "Function " + function + " not exists.");
+    }
 }

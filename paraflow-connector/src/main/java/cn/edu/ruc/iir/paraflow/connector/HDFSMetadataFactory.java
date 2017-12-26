@@ -13,24 +13,32 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.lang.String.format;
+import com.google.inject.Inject;
+
+import static java.util.Objects.requireNonNull;
+
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class Types {
-    private Types() {
+public class HDFSMetadataFactory
+{
+    private final HDFSConnectorId connectorId;
+    private final MetaDataQuery metaDataQuer;
+
+    @Inject
+    public HDFSMetadataFactory(HDFSConnectorId connectorId, MetaDataQuery metaDataQuer)
+    {
+        this.connectorId = requireNonNull(connectorId, "connectorId is null");
+        this.metaDataQuer = requireNonNull(metaDataQuer, "metaServer is null");
     }
 
-    public static <A, B extends A> B checkType(A value, Class<B> target, String name) {
-        if (value == null) {
-            throw new NullPointerException(format("%s is null", name));
-        }
-        checkArgument(target.isInstance(value),
-                "%s must be of type %s, not %s",
-                name,
-                target.getName(),
-                value.getClass().getName());
-        return target.cast(value);
+    public HDFSMetadata create()
+    {
+        return new HDFSMetadata(metaDataQuer, connectorId);
+    }
+
+    public void shutdown()
+    {
+        metaDataQuer.shutdown();
     }
 }

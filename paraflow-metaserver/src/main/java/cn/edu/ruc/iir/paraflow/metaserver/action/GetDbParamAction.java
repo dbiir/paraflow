@@ -38,6 +38,7 @@ public class GetDbParamAction extends Action
                     .setIsEmpty(false)
                     .setUserName(userName)
                     .setLocationUrl(dbParam.getLocationUrl())
+                    .setDbId(Long.parseLong(input.getProperties("dbId").toString()))
                     .build();
             input.setParam(dbParamLast);
         }

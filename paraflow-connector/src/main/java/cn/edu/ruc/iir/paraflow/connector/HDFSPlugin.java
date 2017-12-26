@@ -13,24 +13,28 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static java.lang.String.format;
+import com.facebook.presto.spi.Plugin;
+import com.facebook.presto.spi.connector.ConnectorFactory;
+import com.google.common.collect.ImmutableList;
+
+import static com.google.common.base.MoreObjects.firstNonNull;
+
 /**
+ * presto-hdfs
+ *
  * @author jelly.guodong.jin@gmail.com
  */
-public class Types {
-    private Types() {
+public class HDFSPlugin
+implements Plugin
+{
+    @Override
+    public Iterable<ConnectorFactory> getConnectorFactories()
+    {
+        return ImmutableList.of(new HDFSConnectorFactory());
     }
 
-    public static <A, B extends A> B checkType(A value, Class<B> target, String name) {
-        if (value == null) {
-            throw new NullPointerException(format("%s is null", name));
-        }
-        checkArgument(target.isInstance(value),
-                "%s must be of type %s, not %s",
-                name,
-                target.getName(),
-                value.getClass().getName());
-        return target.cast(value);
+    public static ClassLoader getClassLoader()
+    {
+        return firstNonNull(Thread.currentThread().getContextClassLoader(), HDFSPlugin.class.getClassLoader());
     }
 }
