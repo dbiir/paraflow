@@ -18,12 +18,11 @@ import static java.lang.String.format;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class Types
-{
-    private Types() {}
+public class Types {
+    private Types() {
+    }
 
-    public static <A, B extends A> B checkType(A value, Class<B> target, String name)
-    {
+    public static <A, B extends A> B checkType(A value, Class<B> target, String name) {
         if (value == null) {
             throw new NullPointerException(format("%s is null", name));
         }
