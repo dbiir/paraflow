@@ -30,19 +30,19 @@ import static java.util.Objects.requireNonNull;
  *
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSConnectorFactory
+public class ParaflowConnectorFactory
 implements ConnectorFactory
 {
     private final String name = "hdfs";
 
-//    public HDFSConnectorFactory(String name)
+//    public ParaflowConnectorFactory(String name)
 //    {
 //        logger.info("Connector " + name + " initialized.");
 //    }
 
-    public HDFSConnectorFactory()
+    public ParaflowConnectorFactory()
     {
-        Logger logger = Logger.get(HDFSConnectorFactory.class);
+        Logger logger = Logger.get(ParaflowConnectorFactory.class);
         logger.info("Connector " + name + " initialized.");
     }
 
@@ -55,7 +55,7 @@ implements ConnectorFactory
     @Override
     public ConnectorHandleResolver getHandleResolver()
     {
-        return new HDFSHandleResolver();
+        return new ParaflowHandleResolver();
     }
 
     @Override
@@ -66,7 +66,7 @@ implements ConnectorFactory
         try {
             Bootstrap app = new Bootstrap(
                     new JsonModule(),
-                    new HDFSModule(connectorId, context.getTypeManager())
+                    new ParaflowModule(connectorId, context.getTypeManager())
             );
 
             Injector injector = app
@@ -75,7 +75,7 @@ implements ConnectorFactory
                     .setRequiredConfigurationProperties(config)
                     .initialize();
 
-            return injector.getInstance(HDFSConnector.class);
+            return injector.getInstance(ParaflowConnector.class);
         }
         catch (Exception e) {
             e.printStackTrace();

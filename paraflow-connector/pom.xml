@@ -16,11 +16,6 @@
     </properties>
 
     <!--<dependencies>-->
-        <!--<dependency>-->
-            <!--<groupId>com.facebook.presto</groupId>-->
-            <!--<artifactId>presto-spi</artifactId>-->
-            <!--<scope>provided</scope>-->
-        <!--</dependency>-->
 
         <!--<dependency>-->
             <!--<groupId>com.facebook.presto</groupId>-->
@@ -148,10 +143,8 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.openjdk.jol</groupId>
-            <artifactId>jol-core</artifactId>
-            <version>0.2</version>
-            <scope>provided</scope>
+            <groupId>com.facebook.presto</groupId>
+            <artifactId>presto-plugin-toolkit</artifactId>
         </dependency>
         <dependency>
             <groupId>com.facebook.presto</groupId>
@@ -161,6 +154,12 @@
             <groupId>com.facebook.presto.hive</groupId>
             <artifactId>hive-apache</artifactId>
             <version>1.2.0-2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openjdk.jol</groupId>
+            <artifactId>jol-core</artifactId>
+            <version>0.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -175,7 +174,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>24.0-SNAPSHOT</version>
+            <version>23.6-jre</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject</groupId>

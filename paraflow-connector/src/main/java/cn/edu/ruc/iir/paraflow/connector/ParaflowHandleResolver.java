@@ -26,42 +26,42 @@ import com.facebook.presto.spi.connector.ConnectorTransactionHandle;
  *
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSHandleResolver
+public class ParaflowHandleResolver
 implements ConnectorHandleResolver
 {
     @Override
     public Class<? extends ConnectorTableHandle> getTableHandleClass()
     {
-        return HDFSTableHandle.class;
+        return ParaflowTableHandle.class;
     }
 
     @Override
     public Class<? extends ConnectorTableLayoutHandle> getTableLayoutHandleClass()
     {
-        return HDFSTableLayoutHandle.class;
+        return ParaflowTableLayoutHandle.class;
     }
 
     @Override
     public Class<? extends ColumnHandle> getColumnHandleClass()
     {
-        return HDFSColumnHandle.class;
+        return ParaflowColumnHandle.class;
     }
 
     @Override
     public Class<? extends ConnectorSplit> getSplitClass()
     {
-        return HDFSSplit.class;
+        return ParaflowSplit.class;
     }
 
     @Override
     public Class<? extends ConnectorPartitioningHandle> getPartitioningHandleClass()
     {
-        return HDFSPartitioningHandle.class;
+        return ParaflowPartitioningHandle.class;
     }
 
     @Override
     public Class<? extends ConnectorTransactionHandle> getTransactionHandleClass()
     {
-        return HDFSTransactionHandle.class;
+        return ParaflowTransactionHandle.class;
     }
 }

@@ -22,7 +22,7 @@ import static com.facebook.presto.spi.ErrorType.EXTERNAL;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public enum HDFSErrorCode
+public enum ParaflowErrorCode
     implements ErrorCodeSupplier
 {
     HDFS_RECORD_MORE_LESS_ERROR(0, EXTERNAL),
@@ -38,7 +38,7 @@ public enum HDFSErrorCode
 
     private final ErrorCode errorCode;
 
-    HDFSErrorCode(int code, ErrorType type)
+    ParaflowErrorCode(int code, ErrorType type)
     {
         errorCode = new ErrorCode(code + 0x0210_0000, name(), type);
     }

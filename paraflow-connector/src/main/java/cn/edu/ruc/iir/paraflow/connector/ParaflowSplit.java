@@ -30,10 +30,10 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSSplit
+public class ParaflowSplit
 implements ConnectorSplit
 {
-    private final HDFSConnectorId connectorId;
+    private final ParaflowConnectorId connectorId;
     private final SchemaTableName table;
     private final String path;
     private final long start;
@@ -41,8 +41,8 @@ implements ConnectorSplit
     private final List<HostAddress> addresses;
 
     @JsonCreator
-    public HDFSSplit(
-            @JsonProperty("connectorId") HDFSConnectorId connectorId,
+    public ParaflowSplit(
+            @JsonProperty("connectorId") ParaflowConnectorId connectorId,
             @JsonProperty("table") SchemaTableName table,
             @JsonProperty("path") String path,
             @JsonProperty("start") long start,
@@ -65,7 +65,7 @@ implements ConnectorSplit
     }
 
     @JsonProperty
-    public HDFSConnectorId getConnectorId()
+    public ParaflowConnectorId getConnectorId()
     {
         return connectorId;
     }
@@ -128,7 +128,7 @@ implements ConnectorSplit
             return false;
         }
 
-        HDFSSplit other = (HDFSSplit) obj;
+        ParaflowSplit other = (ParaflowSplit) obj;
         return Objects.equals(connectorId, other.connectorId) &&
                 Objects.equals(table, other.table) &&
                 Objects.equals(path, other.path) &&

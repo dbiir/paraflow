@@ -13,28 +13,32 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
-import com.facebook.presto.spi.Plugin;
-import com.facebook.presto.spi.connector.ConnectorFactory;
-import com.google.common.collect.ImmutableList;
+import com.google.inject.Inject;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
+import static java.util.Objects.requireNonNull;
 
 /**
- * presto-hdfs
- *
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSPlugin
-implements Plugin
+public class ParaflowMetadataFactory
 {
-    @Override
-    public Iterable<ConnectorFactory> getConnectorFactories()
+    private final ParaflowConnectorId connectorId;
+    private final MetaDataQuery metaDataQuer;
+
+    @Inject
+    public ParaflowMetadataFactory(ParaflowConnectorId connectorId, MetaDataQuery metaDataQuer)
     {
-        return ImmutableList.of(new HDFSConnectorFactory());
+        this.connectorId = requireNonNull(connectorId, "connectorId is null");
+        this.metaDataQuer = requireNonNull(metaDataQuer, "metaServer is null");
     }
 
-    public static ClassLoader getClassLoader()
+    public ParaflowMetadata create()
     {
-        return firstNonNull(Thread.currentThread().getContextClassLoader(), HDFSPlugin.class.getClassLoader());
+        return new ParaflowMetadata(metaDataQuer, connectorId);
+    }
+
+    public void shutdown()
+    {
+        metaDataQuer.shutdown();
     }
 }

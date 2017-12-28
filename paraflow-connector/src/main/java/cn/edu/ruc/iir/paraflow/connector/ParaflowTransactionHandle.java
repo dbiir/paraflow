@@ -13,38 +13,39 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
+import com.facebook.presto.spi.connector.ConnectorTransactionHandle;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
+import java.util.UUID;
 
+import static com.google.common.base.MoreObjects.toStringHelper;
 import static java.util.Objects.requireNonNull;
 
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSConnectorId
+public class ParaflowTransactionHandle
+implements ConnectorTransactionHandle
 {
-    private final String connectorId;
+    private final UUID uuid;
+
+    public ParaflowTransactionHandle()
+    {
+        this(UUID.randomUUID());
+    }
 
     @JsonCreator
-    public HDFSConnectorId(
-            @JsonProperty("connectorId") String connectorId)
+    public ParaflowTransactionHandle(@JsonProperty("uuid") UUID uuid)
     {
-        requireNonNull(connectorId, "connectorId is null");
-        this.connectorId = connectorId;
+        this.uuid = requireNonNull(uuid, "uuid is null");
     }
 
     @JsonProperty
-    public String getConnectorId()
+    public UUID getUuid()
     {
-        return connectorId;
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(connectorId);
+        return uuid;
     }
 
     @Override
@@ -56,13 +57,22 @@ public class HDFSConnectorId
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        HDFSConnectorId other = (HDFSConnectorId) obj;
-        return Objects.equals(this.connectorId, other.connectorId);
+
+        ParaflowTransactionHandle other = (ParaflowTransactionHandle) obj;
+        return Objects.equals(uuid, other.uuid);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(uuid);
     }
 
     @Override
     public String toString()
     {
-        return connectorId;
+        return toStringHelper(this)
+                .add("uuid", uuid)
+                .toString();
     }
 }

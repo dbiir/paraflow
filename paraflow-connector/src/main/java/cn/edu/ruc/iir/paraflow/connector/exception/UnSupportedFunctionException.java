@@ -24,6 +24,6 @@ public class UnSupportedFunctionException extends PrestoException
 {
     public UnSupportedFunctionException(String function)
     {
-        super(HDFSErrorCode.FUNCTION_UNSUPPORTED, "Function " + function + " not exists.");
+        super(ParaflowErrorCode.FUNCTION_UNSUPPORTED, "Function " + function + " not exists.");
     }
 }

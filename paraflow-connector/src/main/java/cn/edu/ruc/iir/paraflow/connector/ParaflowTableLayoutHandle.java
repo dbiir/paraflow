@@ -32,31 +32,31 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSTableLayoutHandle
+public class ParaflowTableLayoutHandle
 implements ConnectorTableLayoutHandle
 {
-    private final HDFSTableHandle table;
-    private final HDFSColumnHandle fiberColumn;
-    private final HDFSColumnHandle timestampColumn;
+    private final ParaflowTableHandle table;
+    private final ParaflowColumnHandle fiberColumn;
+    private final ParaflowColumnHandle timestampColumn;
     private final Function fiberFunction;
     private final StorageFormat storageFormat;
     private Optional<TupleDomain<ColumnHandle>> predicates;
 
-    public HDFSTableLayoutHandle(HDFSTableHandle table)
+    public ParaflowTableLayoutHandle(ParaflowTableHandle table)
     {
         this(table,
-                new HDFSColumnHandle("null", IntegerType.INTEGER, "", HDFSColumnHandle.ColumnType.REGULAR, ""),
-                new HDFSColumnHandle("null", IntegerType.INTEGER, "", HDFSColumnHandle.ColumnType.REGULAR, ""),
+                new ParaflowColumnHandle("null", IntegerType.INTEGER, "", ParaflowColumnHandle.ColumnType.REGULAR, ""),
+                new ParaflowColumnHandle("null", IntegerType.INTEGER, "", ParaflowColumnHandle.ColumnType.REGULAR, ""),
                 new Function0(80),
                 StorageFormat.PARQUET,
                 Optional.empty());
     }
 
     @JsonCreator
-    public HDFSTableLayoutHandle(
-            @JsonProperty("table") HDFSTableHandle table,
-            @JsonProperty("fiberColumn") HDFSColumnHandle fiberColumn,
-            @JsonProperty("timestampColumn") HDFSColumnHandle timestampColumn,
+    public ParaflowTableLayoutHandle(
+            @JsonProperty("table") ParaflowTableHandle table,
+            @JsonProperty("fiberColumn") ParaflowColumnHandle fiberColumn,
+            @JsonProperty("timestampColumn") ParaflowColumnHandle timestampColumn,
             @JsonProperty("fiberFunction") Function fiberFunction,
             @JsonProperty("storageFormat") StorageFormat storageFormat,
             @JsonProperty("predicates") Optional<TupleDomain<ColumnHandle>> predicates)
@@ -70,7 +70,7 @@ implements ConnectorTableLayoutHandle
     }
 
     @JsonProperty
-    public HDFSTableHandle getTable()
+    public ParaflowTableHandle getTable()
     {
         return table;
     }
@@ -82,13 +82,13 @@ implements ConnectorTableLayoutHandle
     }
 
     @JsonProperty
-    public HDFSColumnHandle getFiberColumn()
+    public ParaflowColumnHandle getFiberColumn()
     {
         return fiberColumn;
     }
 
     @JsonProperty
-    public HDFSColumnHandle getTimestampColumn()
+    public ParaflowColumnHandle getTimestampColumn()
     {
         return timestampColumn;
     }
@@ -132,7 +132,7 @@ implements ConnectorTableLayoutHandle
             return false;
         }
 
-        HDFSTableLayoutHandle other = (HDFSTableLayoutHandle) obj;
+        ParaflowTableLayoutHandle other = (ParaflowTableLayoutHandle) obj;
         return Objects.equals(table, other.table) &&
                 Objects.equals(fiberColumn, other.fiberColumn) &&
                 Objects.equals(timestampColumn, other.timestampColumn) &&
