@@ -11,19 +11,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.ruc.iir.paraflow.connector.exception;
+package cn.edu.ruc.iir.paraflow.connector;
 
-import com.facebook.presto.spi.PrestoException;
-import org.apache.hadoop.fs.Path;
+import com.facebook.presto.spi.connector.ConnectorPartitioningHandle;
 
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HdfsSplitNotOpenException
-extends PrestoException
+public class ParaflowPartitioningHandle
+implements ConnectorPartitioningHandle
 {
-    public HdfsSplitNotOpenException(Path path)
-    {
-        super(HDFSErrorCode.HDFS_SPLIT_NOT_OPEN, "HDFS Split " + path + " cannot open");
-    }
 }

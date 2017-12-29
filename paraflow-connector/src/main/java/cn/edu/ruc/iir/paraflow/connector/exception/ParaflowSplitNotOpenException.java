@@ -14,15 +14,16 @@
 package cn.edu.ruc.iir.paraflow.connector.exception;
 
 import com.facebook.presto.spi.PrestoException;
+import org.apache.hadoop.fs.Path;
 
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HdfsCursorException
+public class ParaflowSplitNotOpenException
 extends PrestoException
 {
-    public HdfsCursorException()
+    public ParaflowSplitNotOpenException(Path path)
     {
-        super(HDFSErrorCode.HDFS_CURSOR_ERROR, "HDFS cursor error");
+        super(ParaflowErrorCode.HDFS_SPLIT_NOT_OPEN, "HDFS Split " + path + " cannot open");
     }
 }

@@ -26,7 +26,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSTableHandle
+public class ParaflowTableHandle
     implements ConnectorTableHandle
 {
     private final String connectorId;
@@ -35,7 +35,7 @@ public class HDFSTableHandle
     private String path;
 
     @JsonCreator
-    public HDFSTableHandle(
+    public ParaflowTableHandle(
             @JsonProperty("connectorId") String connectorId,
             @JsonProperty("schemaName") String schemaName,
             @JsonProperty("tableName") String tableName,
@@ -93,7 +93,7 @@ public class HDFSTableHandle
             return false;
         }
 
-        HDFSTableHandle other = (HDFSTableHandle) obj;
+        ParaflowTableHandle other = (ParaflowTableHandle) obj;
         return Objects.equals(connectorId, other.connectorId) &&
                 Objects.equals(schemaName, other.schemaName) &&
                 Objects.equals(tableName, other.tableName) &&

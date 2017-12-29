@@ -13,12 +13,10 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
-import com.facebook.presto.spi.connector.ConnectorTransactionHandle;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
-import java.util.UUID;
 
 import static com.google.common.base.MoreObjects.toStringHelper;
 import static java.util.Objects.requireNonNull;
@@ -26,26 +24,52 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class   HDFSTransactionHandle
-implements ConnectorTransactionHandle
+public class ParaflowDatabase
 {
-    private final UUID uuid;
-
-    public HDFSTransactionHandle()
-    {
-        this(UUID.randomUUID());
-    }
+    private final String name;
+    private String location;
+    private String id;
 
     @JsonCreator
-    public HDFSTransactionHandle(@JsonProperty("uuid") UUID uuid)
+    public ParaflowDatabase(
+            @JsonProperty("name") String name)
     {
-        this.uuid = requireNonNull(uuid, "uuid is null");
+        this.name = requireNonNull(name, "name is null");
+        this.location = "";
     }
 
     @JsonProperty
-    public UUID getUuid()
+    public String getName()
     {
-        return uuid;
+        return name;
+    }
+
+    public void setLocation(String location)
+    {
+        this.location = location;
+    }
+
+    @JsonProperty
+    public String getLocation()
+    {
+        return location;
+    }
+
+    public void setId(String id)
+    {
+        this.id = id;
+    }
+
+    @JsonProperty
+    public String getId()
+    {
+        return id;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(name);
     }
 
     @Override
@@ -58,21 +82,15 @@ implements ConnectorTransactionHandle
             return false;
         }
 
-        HDFSTransactionHandle other = (HDFSTransactionHandle) obj;
-        return Objects.equals(uuid, other.uuid);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(uuid);
+        ParaflowDatabase other = (ParaflowDatabase) obj;
+        return Objects.equals(name, other.name);
     }
 
     @Override
     public String toString()
     {
         return toStringHelper(this)
-                .add("uuid", uuid)
+                .add("name", name)
                 .toString();
     }
 }

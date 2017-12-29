@@ -18,58 +18,33 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Objects;
 
-import static com.google.common.base.MoreObjects.toStringHelper;
 import static java.util.Objects.requireNonNull;
 
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSDatabase
+public class ParaflowConnectorId
 {
-    private final String name;
-    private String location;
-    private String id;
+    private final String connectorId;
 
     @JsonCreator
-    public HDFSDatabase(
-            @JsonProperty("name") String name)
+    public ParaflowConnectorId(
+            @JsonProperty("connectorId") String connectorId)
     {
-        this.name = requireNonNull(name, "name is null");
-        this.location = "";
+        requireNonNull(connectorId, "connectorId is null");
+        this.connectorId = connectorId;
     }
 
     @JsonProperty
-    public String getName()
+    public String getConnectorId()
     {
-        return name;
-    }
-
-    public void setLocation(String location)
-    {
-        this.location = location;
-    }
-
-    @JsonProperty
-    public String getLocation()
-    {
-        return location;
-    }
-
-    public void setId(String id)
-    {
-        this.id = id;
-    }
-
-    @JsonProperty
-    public String getId()
-    {
-        return id;
+        return connectorId;
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(name);
+        return Objects.hash(connectorId);
     }
 
     @Override
@@ -81,16 +56,13 @@ public class HDFSDatabase
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-
-        HDFSDatabase other = (HDFSDatabase) obj;
-        return Objects.equals(name, other.name);
+        ParaflowConnectorId other = (ParaflowConnectorId) obj;
+        return Objects.equals(this.connectorId, other.connectorId);
     }
 
     @Override
     public String toString()
     {
-        return toStringHelper(this)
-                .add("name", name)
-                .toString();
+        return connectorId;
     }
 }

@@ -26,7 +26,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSColumnHandle
+public class ParaflowColumnHandle
 implements ColumnHandle
 {
     public enum ColumnType
@@ -44,7 +44,7 @@ implements ColumnHandle
     private final String connectorId;
 
     @JsonCreator
-    public HDFSColumnHandle(
+    public ParaflowColumnHandle(
             @JsonProperty("name") String name,
             @JsonProperty("type") Type type,
             @JsonProperty("comment") String comment,
@@ -104,7 +104,7 @@ implements ColumnHandle
             return false;
         }
 
-        HDFSColumnHandle other = (HDFSColumnHandle) obj;
+        ParaflowColumnHandle other = (ParaflowColumnHandle) obj;
         return Objects.equals(name, other.name) &&
                 Objects.equals(type, other.type) &&
                 Objects.equals(comment, other.comment) &&

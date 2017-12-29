@@ -26,18 +26,18 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSTable
+public class ParaflowTable
 {
-    private final HDFSTableHandle table;
-    private final HDFSTableLayoutHandle tableLayout;
-    private final List<HDFSColumnHandle> columns;
+    private final ParaflowTableHandle table;
+    private final ParaflowTableLayoutHandle tableLayout;
+    private final List<ParaflowColumnHandle> columns;
     private final List<ColumnMetadata> columnMetadatas;
 
     @JsonCreator
-    public HDFSTable(
-            @JsonProperty("table") HDFSTableHandle table,
-            @JsonProperty("tableLayout") HDFSTableLayoutHandle tableLayout,
-            @JsonProperty("columns") List<HDFSColumnHandle> columns,
+    public ParaflowTable(
+            @JsonProperty("table") ParaflowTableHandle table,
+            @JsonProperty("tableLayout") ParaflowTableLayoutHandle tableLayout,
+            @JsonProperty("columns") List<ParaflowColumnHandle> columns,
             @JsonProperty("columnMetadatas") List<ColumnMetadata> columnMetadatas)
     {
         this.table = requireNonNull(table, "table is null");
@@ -47,19 +47,19 @@ public class HDFSTable
     }
 
     @JsonProperty
-    public HDFSTableHandle getTable()
+    public ParaflowTableHandle getTable()
     {
         return table;
     }
 
     @JsonProperty
-    public HDFSTableLayoutHandle getTableLayout()
+    public ParaflowTableLayoutHandle getTableLayout()
     {
         return tableLayout;
     }
 
     @JsonProperty
-    public List<HDFSColumnHandle> getColumns()
+    public List<ParaflowColumnHandle> getColumns()
     {
         return columns;
     }
@@ -86,7 +86,7 @@ public class HDFSTable
             return false;
         }
 
-        HDFSTable other = (HDFSTable) obj;
+        ParaflowTable other = (ParaflowTable) obj;
         return Objects.equals(table, other.table) &&
                 Objects.equals(tableLayout, other.tableLayout) &&
                 Objects.equals(columns, other.columns) &&
