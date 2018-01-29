@@ -34,30 +34,30 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSConnector
+public class ParaflowConnector
 implements Connector
 {
-    private final Logger logger = Logger.get(HDFSConnector.class);
+    private final Logger logger = Logger.get(ParaflowConnector.class);
 
     private final LifeCycleManager lifeCycleManager;
-    private final HDFSMetadataFactory hdfsMetadataFactory;
-    private final HDFSSplitManager hdfsSplitManager;
-    private final HDFSPageSourceProvider hdfsPageSourceProvider;
+    private final ParaflowMetadataFactory paraflowMetadataFactory;
+    private final ParaflowSplitManager paraflowSplitManager;
+    private final ParaflowPageSourceProvider paraflowPageSourceProvider;
 //    private final ConnectorNodePartitioningProvider nodePartitioningProvider;
 
-    private final ConcurrentMap<ConnectorTransactionHandle, HDFSMetadata> transactions = new ConcurrentHashMap<>();
+    private final ConcurrentMap<ConnectorTransactionHandle, ParaflowMetadata> transactions = new ConcurrentHashMap<>();
 
     @Inject
-    public HDFSConnector(
+    public ParaflowConnector(
             LifeCycleManager lifeCycleManager,
-            HDFSMetadataFactory hdfsMetadataFactory,
-            HDFSSplitManager hdfsSplitManager,
-            HDFSPageSourceProvider hdfsPageSourceProvider)
+            ParaflowMetadataFactory paraflowMetadataFactory,
+            ParaflowSplitManager paraflowSplitManager,
+            ParaflowPageSourceProvider paraflowPageSourceProvider)
     {
         this.lifeCycleManager = requireNonNull(lifeCycleManager, "lifeCycleManager is null");
-        this.hdfsMetadataFactory = requireNonNull(hdfsMetadataFactory, "hdfsMetadataFactory is null");
-        this.hdfsSplitManager = requireNonNull(hdfsSplitManager, "hdfsSplitManager is null");
-        this.hdfsPageSourceProvider = requireNonNull(hdfsPageSourceProvider, "hdfsPageSourceProvider is null");
+        this.paraflowMetadataFactory = requireNonNull(paraflowMetadataFactory, "paraflowMetadataFactory is null");
+        this.paraflowSplitManager = requireNonNull(paraflowSplitManager, "paraflowSplitManager is null");
+        this.paraflowPageSourceProvider = requireNonNull(paraflowPageSourceProvider, "paraflowPageSourceProvider is null");
 //        this.nodePartitioningProvider = requireNonNull(nodePartitioningProvider, "nodePartitioningProvider is null");
     }
 
@@ -65,8 +65,8 @@ implements Connector
     public ConnectorTransactionHandle beginTransaction(IsolationLevel isolationLevel, boolean readOnly)
     {
         checkConnectorSupports(READ_UNCOMMITTED, isolationLevel);
-        HDFSTransactionHandle transaction = new HDFSTransactionHandle();
-        transactions.putIfAbsent(transaction, hdfsMetadataFactory.create());
+        ParaflowTransactionHandle transaction = new ParaflowTransactionHandle();
+        transactions.putIfAbsent(transaction, paraflowMetadataFactory.create());
         return transaction;
     }
 
@@ -79,21 +79,21 @@ implements Connector
     @Override
     public ConnectorMetadata getMetadata(ConnectorTransactionHandle transactionHandle)
     {
-        HDFSMetadata metadata = transactions.get(transactionHandle);
+        ParaflowMetadata metadata = transactions.get(transactionHandle);
         checkArgument(metadata != null, "no such transaction: %s", transactionHandle);
-        return hdfsMetadataFactory.create();
+        return paraflowMetadataFactory.create();
     }
 
     @Override
     public ConnectorSplitManager getSplitManager()
     {
-        return hdfsSplitManager;
+        return paraflowSplitManager;
     }
 
     @Override
     public ConnectorPageSourceProvider getPageSourceProvider()
     {
-        return hdfsPageSourceProvider;
+        return paraflowPageSourceProvider;
     }
 
     @Override
@@ -122,7 +122,7 @@ implements Connector
     public void shutdown()
     {
         try {
-            hdfsMetadataFactory.shutdown();
+            paraflowMetadataFactory.shutdown();
             lifeCycleManager.stop();
         }
         catch (Exception e) {

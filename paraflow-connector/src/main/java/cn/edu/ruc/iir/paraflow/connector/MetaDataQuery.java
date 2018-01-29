@@ -1,6 +1,9 @@
 package cn.edu.ruc.iir.paraflow.connector;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+import cn.edu.ruc.iir.paraflow.connector.function.Function;
+import cn.edu.ruc.iir.paraflow.connector.function.Function0;
+import cn.edu.ruc.iir.paraflow.connector.type.UnknownType;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import com.facebook.presto.spi.ColumnMetadata;
@@ -24,7 +27,6 @@ import com.facebook.presto.spi.type.Type;
 import com.facebook.presto.spi.type.VarcharType;
 import io.airlift.log.Logger;
 import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +34,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,13 +44,15 @@ public class MetaDataQuery
 {
     private static final Logger log = Logger.get(MetaDataQuery.class);
     private static final Map<String, String> sqlTable = new HashMap<>();
-    MetaClient metaClient = new MetaClient("127.0.0.1", 10012);
+    private MetaClient metaClient = new MetaClient("127.0.0.1", 10012);
+    FSFactory fsFactory;
 
     private FileSystem fileSystem;
 
     // read config. check if meta table already exists in database, or else initialize tables.
     public MetaDataQuery(FSFactory fsFactory)
     {
+        this.fsFactory = fsFactory;
         fileSystem = fsFactory.getFS().get();
     }
 
@@ -118,32 +121,32 @@ public class MetaDataQuery
         if (tblParam.getIsEmpty()) {
             return null;
         }
-        return tblParam.getTblId();
+        return String.valueOf(tblParam.getTblId());
     }
 
-//    private Optional<HDFSTable> getTable(String databaseName, String tableName)
+//    private Optional<ParaflowTable> getTable(String databaseName, String tableName)
 //    {
 //        log.debug("Get table " + formName(databaseName, tableName));
-//        HDFSTableHandle table;
-//        HDFSTableLayoutHandle tableLayout;
-//        List<HDFSColumnHandle> columns;
+//        ParaflowTableHandle table;
+//        ParaflowTableLayoutHandle tableLayout;
+//        List<ParaflowColumnHandle> columns;
 //        List<ColumnMetadata> metadatas;
 //
-//        Optional<HDFSTableHandle> tableOptional = getTableHandle(databaseName, tableName);
+//        Optional<ParaflowTableHandle> tableOptional = getTableHandle(databaseName, tableName);
 //        if (!tableOptional.isPresent()) {
 //            log.warn("Table not exists");
 //            return Optional.empty();
 //        }
 //        table = tableOptional.get();
 //
-//        Optional<HDFSTableLayoutHandle> tableLayoutOptional = getTableLayout(databaseName, tableName);
+//        Optional<ParaflowTableLayoutHandle> tableLayoutOptional = getTableLayout(databaseName, tableName);
 //        if (!tableLayoutOptional.isPresent()) {
 //            log.warn("Table layout not exists");
 //            return Optional.empty();
 //        }
 //        tableLayout = tableLayoutOptional.get();
 //
-//        Optional<List<HDFSColumnHandle>> columnsOptional = getTableColumnHandle(databaseName, tableName);
+//        Optional<List<ParaflowColumnHandle>> columnsOptional = getTableColumnHandle(databaseName, tableName);
 //        if (!columnsOptional.isPresent()) {
 //            log.warn("Column handles not exists");
 //            return Optional.empty();
@@ -157,24 +160,21 @@ public class MetaDataQuery
 //        }
 //        metadatas = metadatasOptional.get();
 //
-//        HDFSTable hdfsTable = new HDFSTable(table, tableLayout, columns, metadatas);
-//        return Optional.of(hdfsTable);
+//        ParaflowTable ParaflowTable = new ParaflowTable(table, tableLayout, columns, metadatas);
+//        return Optional.of(ParaflowTable);
 //    }
 
-    @Override
-    public Optional<HDFSTableHandle> getTableHandle(String connectorId, String dbName, String tblName)
+    public Optional<ParaflowTableHandle> getTableHandle(String connectorId, String dbName, String tblName)
     {
         log.debug("Get table handle " + formName(dbName, tblName));
-        HDFSTableHandle table;
+        ParaflowTableHandle table;
         MetaProto.TblParam tblParam = metaClient.getTable(dbName, tblName);
         if (tblParam.getIsEmpty()) {
             log.error("Match more/less than one table");
             return Optional.empty();
         }
-        String tblName = tblParam.getTblName();
-        String dbName = tblParam.getDbName();
         String location = tblParam.getLocationUrl();
-        table = new HDFSTableHandle(
+        table = new ParaflowTableHandle(
                 requireNonNull(connectorId, "connectorId is null"),
                 requireNonNull(dbName, "database name is null"),
                 requireNonNull(tblName, "table name is null"),
@@ -182,23 +182,23 @@ public class MetaDataQuery
         return Optional.of(table);
     }
 
-    @Override
-    public Optional<HDFSTableLayoutHandle> getTableLayout(String connectorId, String dbName, String tblName)
+    public Optional<ParaflowTableLayoutHandle> getTableLayout(String connectorId, String dbName, String tblName)
     {
         log.debug("Get table layout " + formName(dbName, tblName));
-        HDFSTableLayoutHandle tableLayout;
+        ParaflowTableLayoutHandle tableLayout;
         MetaProto.TblParam tblParam = metaClient.getTable(dbName, tblName);
         if (tblParam.getIsEmpty()) {
             log.error("Match more/less than one table");
             return Optional.empty();
         }
-        HDFSTableHandle tableHandle = getTableHandle(connectorId, dbName, tblName).orElse(null);
+        ParaflowTableHandle tableHandle = getTableHandle(connectorId, dbName, tblName).orElse(null);
         if (tableHandle == null) {
             log.error("Match no table handle");
             return Optional.empty();
         }
-
-        String fiberColName = tblParam.getColList(tblParam.getFiberColId());
+        MetaProto.ColListType colList = tblParam.getColList();
+        int fiberColId = tblParam.getFiberColId();
+        String fiberColName = colList.getColumn(fiberColId).getColName();
         String timeColName = String.valueOf(tblParam.getCreateTime());
         String fiberFunc = tblParam.getFuncName();
         Function function = parseFunction(fiberFunc);
@@ -208,13 +208,13 @@ public class MetaDataQuery
         }
 
         if (fiberColName.equals("") || timeColName.equals("")) {
-            tableLayout = new HDFSTableLayoutHandle(tableHandle);
+            tableLayout = new ParaflowTableLayoutHandle(tableHandle);
         }
         else {
             // construct ColumnHandle
-            HDFSColumnHandle fiberCol = getColumnHandle(connectorId, fiberColName, tblName, dbName);
-            HDFSColumnHandle timeCol = getColumnHandle(connectorId, timeColName, tblName, dbName);
-            tableLayout = new HDFSTableLayoutHandle(tableHandle, fiberCol, timeCol, function, StorageFormat.PARQUET, Optional.empty());
+            ParaflowColumnHandle fiberCol = getColumnHandle(connectorId, fiberColName, tblName, dbName);
+            ParaflowColumnHandle timeCol = getColumnHandle(connectorId, timeColName, tblName, dbName);
+            tableLayout = new ParaflowTableLayoutHandle(tableHandle, fiberCol, timeCol, function, StorageFormat.PARQUET, Optional.empty());
         }
         return Optional.of(tableLayout);
     }
@@ -222,11 +222,10 @@ public class MetaDataQuery
     /**
      * Get all column handles of specified table
      * */
-    @Override
-    public Optional<List<HDFSColumnHandle>> getTableColumnHandle(String connectorId, String dbName, String tblName)
+    public Optional<List<ParaflowColumnHandle>> getTableColumnHandle(String connectorId, String dbName, String tblName)
     {
         log.debug("Get list of column handles of table " + formName(dbName, tblName));
-        List<HDFSColumnHandle> columnHandles = new ArrayList<>();
+        List<ParaflowColumnHandle> columnHandles = new ArrayList<>();
         String colName;
         String colTypeName;
         String dataTypeName;
@@ -241,32 +240,41 @@ public class MetaDataQuery
             colTypeName = String.valueOf(colParam.getColType());
             dataTypeName = String.valueOf(colParam.getDataType());
             // Deal with col type
-            HDFSColumnHandle.ColumnType colType = getColType(colTypeName);
+            ParaflowColumnHandle.ColumnType colType = getColType(colTypeName);
             // Deal with data type
             Type type = getType(dataTypeName);
-            columnHandles.add(new HDFSColumnHandle(colName, type, "", colType, connectorId));
+            columnHandles.add(new ParaflowColumnHandle(colName, type, "", colType, connectorId));
         }
         return Optional.of(columnHandles);
     }
 
-    @Override
     public void shutdown()
     {
     }
 
-    private HDFSColumnHandle getColumnHandle(String connectorId, String colName, String tblName, String dbName)
+    private ParaflowColumnHandle getColumnHandle(String connectorId, String colName, String tblName, String dbName)
     {
         MetaProto.ColParam colParam = metaClient.getColumn(dbName, tblName, colName);
         if (colParam.getIsEmpty()) {
             log.error("Match more/less than one column");
         }
-        String colTypeName = colParam.getColType();
+        int colTypeId = colParam.getColType();
+        String colTypeName = "";
+        if (colTypeId == 0) {
+            colTypeName = "REGULAR";
+        }
+        else if (colTypeId == 1) {
+            colTypeName = "FIBER";
+        }
+        else if (colTypeId == 2) {
+            colTypeName = "TIMESTAMP";
+        }
         String dataType = colParam.getDataType();
         // Deal with colType
-        HDFSColumnHandle.ColumnType colType = getColType(colTypeName);
+        ParaflowColumnHandle.ColumnType colType = getColType(colTypeName);
         // Deal with type
         Type type = getType(dataType);
-        return new HDFSColumnHandle(colName, type, "", colType, connectorId);
+        return new ParaflowColumnHandle(colName, type, "", colType, connectorId);
     }
 
     public Optional<List<ColumnMetadata>> getTableColMetadata(String connectorId, String dbName, String tblName)
@@ -319,15 +327,14 @@ public class MetaDataQuery
 //        return new ColumnMetadata(colName, type, "", false);
 //    }
 
-    @Override
-    public void createDatabase(ConnectorSession session, HDFSDatabase database)
+    public void createDatabase(ConnectorSession session, ParaflowDatabase database)
     {
         createDatabase(database);
     }
 
-    private void createDatabase(HDFSDatabase database)
+    private void createDatabase(ParaflowDatabase database)
     {
-        database.setLocation(formPath(database.getName()).toString());
+        database.setLocation(fsFactory.formPath(database.getName()).toString());
         log.debug("Create database " + database.getName());
         createDatabase(database.getName(),
                 database.getLocation());
@@ -344,7 +351,6 @@ public class MetaDataQuery
         }
     }
 
-    @Override
     public void createTable(ConnectorSession session, ConnectorTableMetadata tableMetadata)
     {
         log.debug("Create table " + tableMetadata.getTable().getTableName());
@@ -362,7 +368,6 @@ public class MetaDataQuery
         metaClient.createRegularTable(dbName, tblName, userName, storageFormatName, columnName, dataType);
     }
 
-    @Override
     public void createTableWithFiber(ConnectorSession session, ConnectorTableMetadata tableMetadata, String fiberKey, String function, String timeKey)
     {
         log.debug("Create table with fiber " + tableMetadata.getTable().getTableName());
@@ -762,7 +767,6 @@ public class MetaDataQuery
 //    /**
 //     * Filter blocks
 //     * */
-//    @Override
     public List<String> filterBlocks(String db, String table, Optional<Long> fiberId, Optional<Long> timeLow, Optional<Long> timeHigh)
     {
         MetaProto.StringListType stringListType = metaClient.filterBlockIndexByFiber(db, table, Integer.parseInt(String.valueOf(fiberId.get())), timeLow.get(), timeHigh.get());
@@ -773,15 +777,15 @@ public class MetaDataQuery
         return resultL;
     }
 
-    private HDFSColumnHandle.ColumnType getColType(String typeName)
+    private ParaflowColumnHandle.ColumnType getColType(String typeName)
     {
         log.debug("Get col type " + typeName);
         switch (typeName.toUpperCase()) {
-            case "FIBER": return HDFSColumnHandle.ColumnType.FIBER_COL;
-            case "TIME": return HDFSColumnHandle.ColumnType.TIME_COL;
-            case "REGULAR": return HDFSColumnHandle.ColumnType.REGULAR;
+            case "FIBER": return ParaflowColumnHandle.ColumnType.FIBER_COL;
+            case "TIME": return ParaflowColumnHandle.ColumnType.TIME_COL;
+            case "REGULAR": return ParaflowColumnHandle.ColumnType.REGULAR;
             default : log.error("No match col type!");
-                return HDFSColumnHandle.ColumnType.NOTVALID;
+                return ParaflowColumnHandle.ColumnType.NOTVALID;
         }
     }
 
@@ -852,35 +856,35 @@ public class MetaDataQuery
         return database + "." + table;
     }
 
-    private Path formPath(String dirOrFile1, String dirOrFile2)
-    {
-        String base = config.getMetaserverStore();
-        String path1 = dirOrFile1;
-        String path2 = dirOrFile2;
-        while (base.endsWith("/")) {
-            base = base.substring(0, base.length() - 2);
-        }
-        if (!path1.startsWith("/")) {
-            path1 = "/" + path1;
-        }
-        if (path1.endsWith("/")) {
-            path1 = path1.substring(0, path1.length() - 2);
-        }
-        if (!path2.startsWith("/")) {
-            path2 = "/" + path2;
-        }
-        return Path.mergePaths(Path.mergePaths(new Path(base), new Path(path1)), new Path(path2));
-    }
-
-    private Path formPath(String dirOrFile)
-    {
-        String base = config.getMetaserverStore();
-        while (base.endsWith("/")) {
-            base = base.substring(0, base.length() - 2);
-        }
-        if (!dirOrFile.startsWith("/")) {
-            dirOrFile = "/" + dirOrFile;
-        }
-        return Path.mergePaths(new Path(base), new Path(dirOrFile));
-    }
+//    private Path formPath(String dirOrFile1, String dirOrFile2)
+//    {
+//        String base = config.getMetaserverStore();
+//        String path1 = dirOrFile1;
+//        String path2 = dirOrFile2;
+//        while (base.endsWith("/")) {
+//            base = base.substring(0, base.length() - 2);
+//        }
+//        if (!path1.startsWith("/")) {
+//            path1 = "/" + path1;
+//        }
+//        if (path1.endsWith("/")) {
+//            path1 = path1.substring(0, path1.length() - 2);
+//        }
+//        if (!path2.startsWith("/")) {
+//            path2 = "/" + path2;
+//        }
+//        return Path.mergePaths(Path.mergePaths(new Path(base), new Path(path1)), new Path(path2));
+//    }
+//
+//    private Path formPath(String dirOrFile)
+//    {
+//        String base = config.getMetaserverStore();
+//        while (base.endsWith("/")) {
+//            base = base.substring(0, base.length() - 2);
+//        }
+//        if (!dirOrFile.startsWith("/")) {
+//            dirOrFile = "/" + dirOrFile;
+//        }
+//        return Path.mergePaths(new Path(base), new Path(dirOrFile));
+//    }
 }

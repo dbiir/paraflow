@@ -46,16 +46,16 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSSplitManager
+public class ParaflowSplitManager
 implements ConnectorSplitManager
 {
-    private final HDFSConnectorId connectorId;
+    private final ParaflowConnectorId connectorId;
     private final MetaDataQuery metaDataQuer;
     private final FSFactory fsFactory;
 
     @Inject
-    public HDFSSplitManager(
-            HDFSConnectorId connectorId,
+    public ParaflowSplitManager(
+            ParaflowConnectorId connectorId,
             MetaDataQuery metaDataQuer,
             FSFactory fsFactory)
     {
@@ -67,8 +67,8 @@ implements ConnectorSplitManager
     @Override
     public ConnectorSplitSource getSplits(ConnectorTransactionHandle handle, ConnectorSession session, ConnectorTableLayoutHandle layoutHandle)
     {
-        HDFSTableLayoutHandle layout = checkType(layoutHandle, HDFSTableLayoutHandle.class, "layoutHandle");
-        Optional<HDFSTableHandle> tableHandle = metaDataQuer.getTableHandle(connectorId.getConnectorId(), layout.getSchemaTableName().getSchemaName(), layout.getSchemaTableName().getTableName());
+        ParaflowTableLayoutHandle layout = checkType(layoutHandle, ParaflowTableLayoutHandle.class, "layoutHandle");
+        Optional<ParaflowTableHandle> tableHandle = metaDataQuer.getTableHandle(connectorId.getConnectorId(), layout.getSchemaTableName().getSchemaName(), layout.getSchemaTableName().getTableName());
         if (!tableHandle.isPresent()) {
             throw new TableNotFoundException(layout.getSchemaTableName().toString());
         }
@@ -161,7 +161,7 @@ implements ConnectorSplitManager
             files = fsFactory.listFiles(new Path(tablePath));
         }
 
-        files.forEach(file -> splits.add(new HDFSSplit(connectorId,
+        files.forEach(file -> splits.add(new ParaflowSplit(connectorId,
                         tableHandle.get().getSchemaTableName(),
                         file.toString(), 0, -1,
                         fsFactory.getBlockLocations(file, 0, Long.MAX_VALUE))));

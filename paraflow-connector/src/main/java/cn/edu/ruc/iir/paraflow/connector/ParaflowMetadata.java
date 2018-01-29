@@ -42,15 +42,15 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSMetadata
+public class ParaflowMetadata
 implements ConnectorMetadata
 {
     private final String connectorId;
     private final MetaDataQuery metaDataQuery;
-    private final Logger logger = Logger.get(HDFSMetadata.class);
+    private final Logger logger = Logger.get(ParaflowMetadata.class);
 
     @Inject
-    public HDFSMetadata(MetaDataQuery metaDataQuery, HDFSConnectorId connectorId)
+    public ParaflowMetadata(MetaDataQuery metaDataQuery, ParaflowConnectorId connectorId)
     {
         this.connectorId = requireNonNull(connectorId.toString(), "connectorId is null");
         this.metaDataQuery = requireNonNull(metaDataQuery, "metaDataQuery is null");
@@ -76,7 +76,7 @@ implements ConnectorMetadata
     @Override
     public ConnectorTableHandle getTableHandle(ConnectorSession session, SchemaTableName tableName)
     {
-        Optional<HDFSTableHandle> table = metaDataQuery.getTableHandle(connectorId, tableName.getSchemaName(), tableName.getTableName());
+        Optional<ParaflowTableHandle> table = metaDataQuery.getTableHandle(connectorId, tableName.getSchemaName(), tableName.getTableName());
         return table.orElse(null);
     }
 
@@ -94,12 +94,12 @@ implements ConnectorMetadata
     public List<ConnectorTableLayoutResult> getTableLayouts(ConnectorSession session, ConnectorTableHandle table, Constraint<ColumnHandle> constraint, Optional<Set<ColumnHandle>> desiredColumns)
     {
         // get table name from ConnectorTableHandle
-        HDFSTableHandle hdfsTable = checkType(table, HDFSTableHandle.class, "table");
-        SchemaTableName tableName = hdfsTable.getSchemaTableName();
-        // create HDFSTableLayoutHandle
-        HDFSTableLayoutHandle tableLayout = metaDataQuery.getTableLayout(connectorId, tableName.getSchemaName(), tableName.getTableName()).orElse(null);
+        ParaflowTableHandle paraflowTable = checkType(table, ParaflowTableHandle.class, "table");
+        SchemaTableName tableName = paraflowTable.getSchemaTableName();
+        // create ParaflowTableLayoutHandle
+        ParaflowTableLayoutHandle tableLayout = metaDataQuery.getTableLayout(connectorId, tableName.getSchemaName(), tableName.getTableName()).orElse(null);
         tableLayout.setPredicates(constraint.getSummary() != null ? Optional.of(constraint.getSummary()) : Optional.empty());
-        // ConnectorTableLayout layout = new ConnectorTableLayout(HDFSTableLayoutHandle)
+        // ConnectorTableLayout layout = new ConnectorTableLayout(ParaflowTableLayoutHandle)
         ConnectorTableLayout layout = getTableLayout(session, tableLayout);
 
         return ImmutableList.of(new ConnectorTableLayoutResult(layout, constraint.getSummary()));
@@ -109,7 +109,7 @@ implements ConnectorMetadata
     public ConnectorTableLayout getTableLayout(ConnectorSession session, ConnectorTableLayoutHandle handle)
     {
         // TODO add fiber and timestamp as new LocalProperty into ConnectorTableLayout ?
-        HDFSTableLayoutHandle layoutHandle = checkType(handle, HDFSTableLayoutHandle.class, "tableLayoutHandle");
+        ParaflowTableLayoutHandle layoutHandle = checkType(handle, ParaflowTableLayoutHandle.class, "tableLayoutHandle");
         return new ConnectorTableLayout(layoutHandle);
     }
 
@@ -123,8 +123,8 @@ implements ConnectorMetadata
     @Override
     public ConnectorTableMetadata getTableMetadata(ConnectorSession session, ConnectorTableHandle table)
     {
-        HDFSTableHandle hdfsTable = checkType(table, HDFSTableHandle.class, "table");
-        SchemaTableName tableName = hdfsTable.getSchemaTableName();
+        ParaflowTableHandle paraflowTable = checkType(table, ParaflowTableHandle.class, "table");
+        SchemaTableName tableName = paraflowTable.getSchemaTableName();
         return getTableMetadata(tableName);
     }
 
@@ -160,11 +160,11 @@ implements ConnectorMetadata
     @Override
     public Map<String, ColumnHandle> getColumnHandles(ConnectorSession session, ConnectorTableHandle tableHandle)
     {
-        HDFSTableHandle table = checkType(tableHandle, HDFSTableHandle.class, "table");
-        List<HDFSColumnHandle> cols = metaDataQuery.getTableColumnHandle(connectorId, table.getSchemaName(), table.getTableName())
+        ParaflowTableHandle table = checkType(tableHandle, ParaflowTableHandle.class, "table");
+        List<ParaflowColumnHandle> cols = metaDataQuery.getTableColumnHandle(connectorId, table.getSchemaName(), table.getTableName())
                 .orElse(new ArrayList<>());
         Map<String, ColumnHandle> columnMap = new HashMap<>();
-        for (HDFSColumnHandle col : cols) {
+        for (ParaflowColumnHandle col : cols) {
             columnMap.putIfAbsent(col.getName(), col);
         }
         return columnMap;
@@ -181,7 +181,7 @@ implements ConnectorMetadata
     @Override
     public ColumnMetadata getColumnMetadata(ConnectorSession session, ConnectorTableHandle tableHandle, ColumnHandle columnHandle)
     {
-        HDFSColumnHandle column = (HDFSColumnHandle) columnHandle;
+        ParaflowColumnHandle column = (ParaflowColumnHandle) columnHandle;
         return new ColumnMetadata(column.getName(), column.getType(), column.getComment(), false);
     }
 
@@ -214,7 +214,7 @@ implements ConnectorMetadata
     @Override
     public void createSchema(ConnectorSession session, String schemaName, Map<String, Object> properties)
     {
-        HDFSDatabase database = new HDFSDatabase(schemaName);
+        ParaflowDatabase database = new ParaflowDatabase(schemaName);
         metaDataQuery.createDatabase(session, database);
     }
 

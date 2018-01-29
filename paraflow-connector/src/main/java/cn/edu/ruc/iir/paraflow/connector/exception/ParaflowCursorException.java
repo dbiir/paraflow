@@ -11,14 +11,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.ruc.iir.paraflow.connector;
+package cn.edu.ruc.iir.paraflow.connector.exception;
 
-import com.facebook.presto.spi.connector.ConnectorPartitioningHandle;
+import com.facebook.presto.spi.PrestoException;
 
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSPartitioningHandle
-implements ConnectorPartitioningHandle
+public class ParaflowCursorException
+extends PrestoException
 {
+    public ParaflowCursorException()
+    {
+        super(ParaflowErrorCode.HDFS_CURSOR_ERROR, "HDFS cursor error");
+    }
 }
