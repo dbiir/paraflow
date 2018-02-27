@@ -16,14 +16,14 @@ public class ExampleConsumer
         try {
             final DefaultConsumer consumer;
             List<TopicPartition> topicPartitions = new LinkedList<>();
-            TopicPartition topicPartition = new TopicPartition("exampleDb.exampleTbl", 0);
+            TopicPartition topicPartition = new TopicPartition("exampledb.exampletbl", 0);
             topicPartitions.add(topicPartition);
             List<TopicFiber> topicFibers = new LinkedList<>();
             for (int i = 0; i < 1000; i++) {
-                topicFibers.add(new TopicFiber("exampleDb.exampleTbl", i));
+                topicFibers.add(new TopicFiber("exampledb.exampletbl", i));
             }
-            final String dbName = "exampleDb";
-            final String tblName = "exampleTbl";
+            final String dbName = "exampledb";
+            final String tblName = "exampletbl";
             try {
                 consumer = new DefaultConsumer(configPath, topicPartitions, topicFibers);
             }

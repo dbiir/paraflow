@@ -12,10 +12,12 @@ service Meta {
     rpc listDatabases(NoneType) returns (StringListType) {}
     rpc listTables(DbNameParam) returns (StringListType) {}
     rpc listColumns(DbTblParam) returns (StringListType) {}
+    rpc listColumnsId(DbTblParam) returns (StringListType) {}
     rpc listColumnsDataType(DbTblParam) returns (StringListType) {}
     rpc getDatabase(DbNameParam) returns (DbParam) {}
     rpc getTable(DbTblParam) returns (TblParam) {}
     rpc getColumn(DbTblColParam) returns (ColParam) {}
+    rpc getColumnName(DbTblColIdParam) returns (ColNameParam) {}
     rpc createDatabase(DbParam) returns (ResponseStatus) {}
     rpc createTable(TblParam) returns (ResponseStatus) {}
     rpc createColumn(ColListType) returns (ResponseStatus) {}
@@ -177,8 +179,9 @@ message TblParam {
     string locationUrl = 10;
     string storageFormatName = 11;
     int32 fiberColId = 12;
-    string funcName = 13;
-    ColListType colList = 14;
+    int32 timeColId = 13;
+    string funcName = 14;
+    ColListType colList = 15;
 }
 
 message ColParam {
@@ -191,6 +194,8 @@ message ColParam {
     string dataType = 7;
     ResponseStatus status = 8;
 }
+
+
 
 message DbNameParam {
     string database = 1;
@@ -213,6 +218,12 @@ message DbTblColParam {
     DbNameParam database = 1;
     TblNameParam table = 2;
     ColNameParam column = 3;
+}
+
+message DbTblColIdParam {
+    int64 dbId = 1;
+    int64 tblId = 2;
+    int64 colId = 3;
 }
 
 message RenameDbParam {

@@ -16,6 +16,8 @@ package cn.edu.ruc.iir.paraflow.connector;
 import cn.edu.ruc.iir.paraflow.connector.exception.TableNotFoundException;
 import cn.edu.ruc.iir.paraflow.connector.function.Function;
 import cn.edu.ruc.iir.paraflow.connector.function.Function0;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableLayoutHandle;
 import com.facebook.presto.spi.ColumnHandle;
 import com.facebook.presto.spi.ConnectorSession;
 import com.facebook.presto.spi.ConnectorSplit;
@@ -43,6 +45,7 @@ import java.util.stream.Collectors;
 
 import static cn.edu.ruc.iir.paraflow.connector.Types.checkType;
 import static java.util.Objects.requireNonNull;
+
 /**
  * @author jelly.guodong.jin@gmail.com
  */

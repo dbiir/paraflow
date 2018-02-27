@@ -350,6 +350,7 @@ public class MetaClient
                             .setLocationUrl(locationUrl)
                             .setStorageFormatName(storageFormatName)
                             .setFiberColId(fiberColIndex)
+                            .setTimeColId(timestampColIndex)
                             .setFuncName(funcName)
                             .setColList(colList)
                             .build();
@@ -437,6 +438,31 @@ public class MetaClient
             return stringList;
         }
         logger.info("Columns list : " + stringList);
+        return stringList;
+    }
+
+    public MetaProto.StringListType listColumnsId(String dbName, String tblName)
+    {
+        MetaProto.DbNameParam dbNameParam = MetaProto.DbNameParam.newBuilder()
+                .setDatabase(dbName)
+                .build();
+        MetaProto.TblNameParam tblNameParam = MetaProto.TblNameParam.newBuilder()
+                .setTable(tblName)
+                .build();
+        MetaProto.DbTblParam dbTblParam = MetaProto.DbTblParam.newBuilder()
+                .setDatabase(dbNameParam)
+                .setTable(tblNameParam)
+                .build();
+        MetaProto.StringListType stringList;
+        try {
+            stringList = metaBlockingStub.listColumnsId(dbTblParam);
+        }
+        catch (StatusRuntimeException e) {
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            stringList = MetaProto.StringListType.newBuilder().build();
+            return stringList;
+        }
+        logger.info("ColumnsId list : " + stringList);
         return stringList;
     }
 
@@ -531,6 +557,26 @@ public class MetaClient
         catch (StatusRuntimeException e) {
             logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
             column = MetaProto.ColParam.newBuilder().build();
+            return column;
+        }
+        logger.info("Column is : " + column);
+        return column;
+    }
+
+    public MetaProto.ColNameParam getColumnName(long dbId, long tblId, long colId)
+    {
+        MetaProto.DbTblColIdParam databaseTableColumn = MetaProto.DbTblColIdParam.newBuilder()
+                .setDbId(dbId)
+                .setTblId(tblId)
+                .setColId(colId)
+                .build();
+        MetaProto.ColNameParam column;
+        try {
+            column = metaBlockingStub.getColumnName(databaseTableColumn);
+        }
+        catch (StatusRuntimeException e) {
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            column = MetaProto.ColNameParam.newBuilder().build();
             return column;
         }
         logger.info("Column is : " + column);

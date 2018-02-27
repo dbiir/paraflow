@@ -11,7 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package cn.edu.ruc.iir.paraflow.connector;
+package cn.edu.ruc.iir.paraflow.connector.handle;
 
 import com.facebook.presto.spi.ColumnHandle;
 import com.facebook.presto.spi.type.Type;
@@ -31,10 +31,11 @@ implements ColumnHandle
 {
     public enum ColumnType
     {
-        FIBER_COL,
-        TIME_COL,
         REGULAR,
+        FIBER,
+        TIMESTAMP,
         NOTVALID
+
     }
 
     private final String name;

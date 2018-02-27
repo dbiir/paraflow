@@ -3,6 +3,10 @@ package cn.edu.ruc.iir.paraflow.connector;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.connector.function.Function;
 import cn.edu.ruc.iir.paraflow.connector.function.Function0;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowColumnHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowDatabase;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableLayoutHandle;
 import cn.edu.ruc.iir.paraflow.connector.type.UnknownType;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
@@ -25,6 +29,7 @@ import com.facebook.presto.spi.type.TimestampType;
 import com.facebook.presto.spi.type.TinyintType;
 import com.facebook.presto.spi.type.Type;
 import com.facebook.presto.spi.type.VarcharType;
+import com.google.inject.Inject;
 import io.airlift.log.Logger;
 import org.apache.hadoop.fs.FileSystem;
 
@@ -50,6 +55,7 @@ public class MetaDataQuery
     private FileSystem fileSystem;
 
     // read config. check if meta table already exists in database, or else initialize tables.
+    @Inject
     public MetaDataQuery(FSFactory fsFactory)
     {
         this.fsFactory = fsFactory;
@@ -169,6 +175,7 @@ public class MetaDataQuery
         log.debug("Get table handle " + formName(dbName, tblName));
         ParaflowTableHandle table;
         MetaProto.TblParam tblParam = metaClient.getTable(dbName, tblName);
+        //MetaProto.StringListType paths = metaClient.filterBlockIndex(dbName, tblName, -1, -1);
         if (tblParam.getIsEmpty()) {
             log.error("Match more/less than one table");
             return Optional.empty();
@@ -196,10 +203,10 @@ public class MetaDataQuery
             log.error("Match no table handle");
             return Optional.empty();
         }
-        MetaProto.ColListType colList = tblParam.getColList();
         int fiberColId = tblParam.getFiberColId();
-        String fiberColName = colList.getColumn(fiberColId).getColName();
-        String timeColName = String.valueOf(tblParam.getCreateTime());
+        int timeColId = tblParam.getTimeColId();
+        String fiberColName = metaClient.getColumnName(tblParam.getDbId(), tblParam.getTblId(), fiberColId).getColumn();
+        String timeColName = metaClient.getColumnName(tblParam.getDbId(), tblParam.getTblId(), timeColId).getColumn();
         String fiberFunc = tblParam.getFuncName();
         Function function = parseFunction(fiberFunc);
         if (function == null) {
@@ -227,7 +234,7 @@ public class MetaDataQuery
         log.debug("Get list of column handles of table " + formName(dbName, tblName));
         List<ParaflowColumnHandle> columnHandles = new ArrayList<>();
         String colName;
-        String colTypeName;
+        int colTypeName;
         String dataTypeName;
         MetaProto.StringListType listColumns = metaClient.listColumns(dbName, tblName);
         if (listColumns.getIsEmpty()) {
@@ -237,8 +244,8 @@ public class MetaDataQuery
         for (int i = 0; i < listColumns.getStrCount(); i++) {
             colName = listColumns.getStr(i);
             MetaProto.ColParam colParam = metaClient.getColumn(dbName, tblName, colName);
-            colTypeName = String.valueOf(colParam.getColType());
-            dataTypeName = String.valueOf(colParam.getDataType());
+            colTypeName = colParam.getColType();
+            dataTypeName = colParam.getDataType();
             // Deal with col type
             ParaflowColumnHandle.ColumnType colType = getColType(colTypeName);
             // Deal with data type
@@ -259,19 +266,9 @@ public class MetaDataQuery
             log.error("Match more/less than one column");
         }
         int colTypeId = colParam.getColType();
-        String colTypeName = "";
-        if (colTypeId == 0) {
-            colTypeName = "REGULAR";
-        }
-        else if (colTypeId == 1) {
-            colTypeName = "FIBER";
-        }
-        else if (colTypeId == 2) {
-            colTypeName = "TIMESTAMP";
-        }
         String dataType = colParam.getDataType();
         // Deal with colType
-        ParaflowColumnHandle.ColumnType colType = getColType(colTypeName);
+        ParaflowColumnHandle.ColumnType colType = getColType(colTypeId);
         // Deal with type
         Type type = getType(dataType);
         return new ParaflowColumnHandle(colName, type, "", colType, connectorId);
@@ -777,13 +774,13 @@ public class MetaDataQuery
         return resultL;
     }
 
-    private ParaflowColumnHandle.ColumnType getColType(String typeName)
+    private ParaflowColumnHandle.ColumnType getColType(int typeName)
     {
         log.debug("Get col type " + typeName);
-        switch (typeName.toUpperCase()) {
-            case "FIBER": return ParaflowColumnHandle.ColumnType.FIBER_COL;
-            case "TIME": return ParaflowColumnHandle.ColumnType.TIME_COL;
-            case "REGULAR": return ParaflowColumnHandle.ColumnType.REGULAR;
+        switch (typeName) {
+            case 1: return ParaflowColumnHandle.ColumnType.FIBER;
+            case 2: return ParaflowColumnHandle.ColumnType.TIMESTAMP;
+            case 0: return ParaflowColumnHandle.ColumnType.REGULAR;
             default : log.error("No match col type!");
                 return ParaflowColumnHandle.ColumnType.NOTVALID;
         }
