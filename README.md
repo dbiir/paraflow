@@ -1,8 +1,8 @@
 # ParaFlow
 
-[PR Guide](https://gist.github.com/Chaser324/ce0505fbed06b947d962)
+ParaFlow is an interactive analysis system for OLAP developed at [DBIIR Lab @ RUC](http://iir.ruc.edu.cn).
 
-#### TODO
-1. consumer orc writer
-2. consumer timestamp check
-3. consumer offset log
+#### Contributors
+1. [Yueguo Chen](http://iir.ruc.edu.cn/~ygchen/)
+2. [Guodong Jin](http://iir.ruc.edu.cn/~guodong/index.html)
+3. Youxian Tao
