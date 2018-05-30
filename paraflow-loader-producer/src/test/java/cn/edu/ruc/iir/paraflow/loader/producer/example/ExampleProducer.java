@@ -4,6 +4,7 @@ import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.func.SerializableFunction;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
 import cn.edu.ruc.iir.paraflow.loader.producer.DefaultProducer;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
@@ -38,8 +39,8 @@ public class ExampleProducer
         }
 
         final int fiberKeyIndex = 0;
-//        String topicName = FormTopicName.formTopicName(dbName, tblName);
-//        producer.createTopic(topicName, 1, (short) 1);
+        String topicName = FormTopicName.formTopicName(dbName, tblName);
+        producer.createTopic(topicName, 1, (short) 1);
         SerializableFunction<String, Integer> func = (v) -> Integer.parseInt(v) % 1000;
         producer.registerFiberFunc(dbName, tblName, func);
         for (int i = 0; i < 1500000; i++) {
