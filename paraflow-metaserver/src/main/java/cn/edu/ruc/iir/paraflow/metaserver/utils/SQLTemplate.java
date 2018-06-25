@@ -49,6 +49,11 @@ public class SQLTemplate
         return String.format("SELECT colName FROM meta_colmodel WHERE dbid = %d AND tblid = %d ORDER BY colindex;", dbId, tblId);
     }
 
+    public static String listColumnsId(long dbId, long tblId)
+    {
+        return String.format("SELECT colid FROM meta_colmodel WHERE dbid = %d AND tblid = %d ORDER BY colindex;", dbId, tblId);
+    }
+
     public static String listColumnsDataType(long dbId, long tblId)
     {
         return String.format("SELECT dataType FROM meta_colmodel WHERE dbid = %d AND tblid = %d ORDER BY colindex;", dbId, tblId);
@@ -67,9 +72,12 @@ public class SQLTemplate
 
     public static String getTable(long dbId, String tblName)
     {
-        return String.format("SELECT tbltype,userid,createtime,lastaccesstime,locationurl,storageformatid,fibercolid,funcid,tblid FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
+        return String.format("SELECT tbltype,userid,createtime,lastaccesstime,locationurl,storageformatid,fibercolid,timecolid,fiberfuncid,tblid FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
                 dbId,
                 tblName);
+//        return String.format("SELECT * FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
+//                dbId,
+//                tblName);
     }
 
     public static String findTblId(long dbId, String tblName)
@@ -87,6 +95,13 @@ public class SQLTemplate
         return String.format("SELECT colindex, coltype, datatype FROM meta_colmodel WHERE tblid = %d AND colname = '%s';",
                 tblId,
                 colName);
+    }
+    public static String getColumnName(long dbId, long tblId, long colId)
+    {
+        return String.format("SELECT colname FROM meta_colmodel WHERE dbid = %d AND tblid = %d AND colindex = %d;",
+                dbId,
+                tblId,
+                colId);
     }
 //    public String findTblName(int tblId)
 //    {
@@ -116,9 +131,10 @@ public class SQLTemplate
                                      String locationUrl,
                                      long storageFormatId,
                                      long fiberColId,
+                                     long timeColId,
                                      long funcId)
     {
-        return String.format("INSERT INTO meta_tblmodel (dbid, tblname, tbltype, userid, createtime, lastaccesstime, locationurl, storageformatid, fibercolid, fiberfuncid) VALUES(%d,'%s',%d,%d,%d,%d,'%s',%d,%d,%d);",
+        return String.format("INSERT INTO meta_tblmodel (dbid, tblname, tbltype, userid, createtime, lastaccesstime, locationurl, storageformatid, fibercolid, timecolid, fiberfuncid) VALUES(%d,'%s',%d,%d,%d,%d,'%s',%d,%d,%d,%d);",
                 dbId,
                 tblName,
                 tblType,
@@ -128,6 +144,7 @@ public class SQLTemplate
                 locationUrl,
                 storageFormatId,
                 fiberColId,
+                timeColId,
                 funcId);
     }
 
@@ -360,6 +377,6 @@ public class SQLTemplate
 
     public static String createTblFunc(long tblId, long funcId)
     {
-        return String.format("INSERT INTO meta_tblfuncmodel (tblid,funcid) VALUES('%d','%d');", tblId, funcId);
+        return String.format("INSERT INTO meta_funcmodel (tblid,funcid) VALUES('%d','%d');", tblId, funcId);
     }
 }

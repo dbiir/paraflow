@@ -48,6 +48,7 @@ public class CreateTableAction extends Action
                     locationUrl,
                     (long) sfIdOp.get(),
                     tblParam.getFiberColId(),
+                    tblParam.getTimeColId(),
                     (long) funcIdOp.get());
             int status = connection.executeUpdate(userStatement);
             if (status == 0) {

@@ -34,6 +34,10 @@
         </dependency>
 
         <dependency>
+            <groupId>io.airlift</groupId>
+            <artifactId>configuration</artifactId>
+        </dependency>
+        <dependency>
             <groupId>cn.edu.ruc.iir</groupId>
             <artifactId>paraflow-commons</artifactId>
         </dependency>

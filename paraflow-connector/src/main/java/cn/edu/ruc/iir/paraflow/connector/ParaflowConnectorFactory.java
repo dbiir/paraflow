@@ -33,12 +33,7 @@ import static java.util.Objects.requireNonNull;
 public class ParaflowConnectorFactory
 implements ConnectorFactory
 {
-    private final String name = "hdfs";
-
-//    public ParaflowConnectorFactory(String name)
-//    {
-//        logger.info("Connector " + name + " initialized.");
-//    }
+    private final String name = "paraflow";
 
     public ParaflowConnectorFactory()
     {
@@ -62,7 +57,6 @@ implements ConnectorFactory
     public Connector create(String connectorId, Map<String, String> config, ConnectorContext context)
     {
         requireNonNull(config, "config is null");
-
         try {
             Bootstrap app = new Bootstrap(
                     new JsonModule(),

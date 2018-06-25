@@ -13,7 +13,7 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
-import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
+import cn.edu.ruc.iir.paraflow.connector.utils.ParaflowConnectorConfig;
 import com.facebook.presto.spi.HostAddress;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
@@ -40,13 +40,20 @@ import java.util.Set;
 public final class FSFactory
 {
     private Configuration conf = new Configuration();
-    private final MetaConfig config;
+    private FileSystem fileSystem;
+    private final ParaflowConnectorConfig config;
     private final Logger log = Logger.get(FSFactory.class.getName());
 
     @Inject
-    public FSFactory(MetaConfig config)
+    public FSFactory(ParaflowConnectorConfig config)
     {
         this.config = config;
+//        try {
+//            this.fileSystem = FileSystem.get(conf);
+//            fileSystem.setWorkingDirectory(new Path(config.getHDFSWarehouse()));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public Optional<FileSystem> getFS()

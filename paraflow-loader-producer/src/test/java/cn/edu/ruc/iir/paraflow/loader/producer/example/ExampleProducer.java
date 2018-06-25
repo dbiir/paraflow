@@ -22,8 +22,8 @@ public class ExampleProducer
 {
     private MetaClient metaClient = new MetaClient("127.0.0.1", 10012);
 
-    private final String tblName = "exampleTbl";
-    private final String dbName = "exampleDb";
+    private final String tblName = "exampletbl";
+    private final String dbName = "exampledb";
     private MetaConfig metaConfig = MetaConfig.INSTANCE();
     private void exampleTest(String producerConfig, String metaServerConfig)
     {
@@ -60,9 +60,29 @@ public class ExampleProducer
     }
 
     @Test
+    public void createUser()
+    {
+        metaClient.createUser("alice", "alice");
+    }
+
+    @Test
     public void createDatabase()
     {
         metaClient.createDatabase(dbName, "alice");
+    }
+
+    @Test
+    public void createSF()
+    {
+        metaClient.createStorageFormat("parquet", "none", "org.apache.parquet.Parquet");
+    }
+
+    @Test
+    public void createFiberFunc()
+    {
+        String string = "I am a girl";
+        byte[] funcContent = string.getBytes();
+        metaClient.createFunc("function0", funcContent);
     }
 
     @Test
@@ -80,26 +100,17 @@ public class ExampleProducer
         dataType.add("int");
         dataType.add("varchar(10)");
         dataType.add("bigint");
-        StatusProto.ResponseStatus status = metaClient.createRegularTable(
+        StatusProto.ResponseStatus status = metaClient.createFiberTable(
                 dbName,
                 tblName,
                 userName,
                 storageFormatName,
+                1,
+                "function0",
+                3,
                 columnName,
                 dataType);
         System.out.println(status.getStatusValue());
-    }
-
-    @Test
-    public void createUser()
-    {
-        metaClient.createUser("alice", "alice");
-    }
-
-    @Test
-    public void createSF()
-    {
-        metaClient.createStorageFormat("parquet", "none", "org.apache.parquet.Parquet");
     }
 
     public static void main(String[] args)

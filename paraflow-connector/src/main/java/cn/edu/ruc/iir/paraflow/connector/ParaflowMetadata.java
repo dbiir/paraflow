@@ -13,6 +13,10 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowColumnHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowDatabase;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableLayoutHandle;
 import com.facebook.presto.spi.ColumnHandle;
 import com.facebook.presto.spi.ColumnMetadata;
 import com.facebook.presto.spi.ConnectorSession;
@@ -37,6 +41,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static cn.edu.ruc.iir.paraflow.connector.Types.checkType;
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -123,8 +128,9 @@ implements ConnectorMetadata
     @Override
     public ConnectorTableMetadata getTableMetadata(ConnectorSession session, ConnectorTableHandle table)
     {
-        ParaflowTableHandle paraflowTable = checkType(table, ParaflowTableHandle.class, "table");
-        SchemaTableName tableName = paraflowTable.getSchemaTableName();
+        ParaflowTableHandle paraflowTable = (ParaflowTableHandle)table;
+        checkArgument(paraflowTable.getConnectorId().equals(connectorId), "tableHandle is not for this connector");
+        SchemaTableName tableName = new SchemaTableName(paraflowTable.getSchemaName(), paraflowTable.getTableName());
         return getTableMetadata(tableName);
     }
 

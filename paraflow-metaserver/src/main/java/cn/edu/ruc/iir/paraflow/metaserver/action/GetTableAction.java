@@ -49,13 +49,14 @@ public class GetTableAction extends Action
                         .setLastAccessTime(Long.parseLong(resultList.get(0).get(3)))
                         .setLocationUrl(resultList.get(0).get(4))
                         .setFiberColId(Integer.parseInt(resultList.get(0).get(6)))
+                        .setTimeColId(Integer.parseInt(resultList.get(0).get(7)))
                         .setIsEmpty(false)
                         .build();
                 input.setParam(tblParam);
-                input.setProperties("tblId", Long.parseLong(resultList.get(0).get(8)));
+                input.setProperties("tblId", Long.parseLong(resultList.get(0).get(9)));
                 input.setProperties("userId", Long.parseLong(resultList.get(0).get(1)));
                 input.setProperties("sfId", Long.parseLong(resultList.get(0).get(5)));
-                input.setProperties("funcId", Long.parseLong(resultList.get(0).get(7)));
+                input.setProperties("funcId", Long.parseLong(resultList.get(0).get(8)));
             }
             else {
                 throw new TableNotFoundException(tblName);

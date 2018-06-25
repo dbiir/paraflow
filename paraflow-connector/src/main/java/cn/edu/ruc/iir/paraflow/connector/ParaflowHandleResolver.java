@@ -13,12 +13,15 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowColumnHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableLayoutHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTransactionHandle;
 import com.facebook.presto.spi.ColumnHandle;
 import com.facebook.presto.spi.ConnectorHandleResolver;
 import com.facebook.presto.spi.ConnectorSplit;
 import com.facebook.presto.spi.ConnectorTableHandle;
 import com.facebook.presto.spi.ConnectorTableLayoutHandle;
-import com.facebook.presto.spi.connector.ConnectorPartitioningHandle;
 import com.facebook.presto.spi.connector.ConnectorTransactionHandle;
 
 /**
@@ -51,12 +54,6 @@ implements ConnectorHandleResolver
     public Class<? extends ConnectorSplit> getSplitClass()
     {
         return ParaflowSplit.class;
-    }
-
-    @Override
-    public Class<? extends ConnectorPartitioningHandle> getPartitioningHandleClass()
-    {
-        return ParaflowPartitioningHandle.class;
     }
 
     @Override

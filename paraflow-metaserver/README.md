@@ -32,6 +32,7 @@
  | locationUrl    | string           | path in filesystem                                                 |
  | storageFormatId| int32            |            //Forign Key：StorageFormatModel：StorageFormatId        |
  | fiberColId     | int64            | -1 means no fiber column                                           |
+ | timeColId      | int64            | -1 means no time column                                            |
  | fiberFuncId    | int64            | table partition function //Forign Key：FiberFuncModel：FiberFuncId  |
  
  #### 5. ColModel (column information)

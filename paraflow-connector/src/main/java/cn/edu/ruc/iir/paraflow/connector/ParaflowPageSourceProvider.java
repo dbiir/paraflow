@@ -14,6 +14,7 @@
 package cn.edu.ruc.iir.paraflow.connector;
 
 import cn.edu.ruc.iir.paraflow.connector.exception.ParaflowSplitNotOpenException;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowColumnHandle;
 import com.facebook.presto.hive.parquet.HdfsParquetDataSource;
 import com.facebook.presto.hive.parquet.ParquetDataSource;
 import com.facebook.presto.spi.ColumnHandle;

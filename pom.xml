@@ -64,7 +64,7 @@
         <dep.testng.version>6.8.21</dep.testng.version>
         <guice.version>4.0</guice.version>
         <presto.version>0.158-SNAPSHOT</presto.version>
-        <airlift.version>0.157</airlift.version>
+        <airlift.version>0.161</airlift.version>
         <dep.jetty.version>9.0.5.v20130815</dep.jetty.version>
         <dep.jackson.version>1.9.13</dep.jackson.version>
     </properties>
@@ -145,6 +145,11 @@
                 <version>2.6.2</version>
             </dependency>
 
+            <dependency>
+                <groupId>io.airlift</groupId>
+                <artifactId>io.airlift</artifactId>
+                <version>${airlift.version}</version>
+            </dependency>
             <dependency>
                 <groupId>io.airlift</groupId>
                 <artifactId>bootstrap</artifactId>
@@ -261,10 +266,15 @@
                 <artifactId>kafka-clients</artifactId>
                 <version>1.1.0</version>
             </dependency>
+            <!--<dependency>-->
+                <!--<groupId>org.postgresql</groupId>-->
+                <!--<artifactId>postgresql</artifactId>-->
+                <!--<version>9.4.1212.jre7</version>-->
+            <!--</dependency>-->
             <dependency>
                 <groupId>org.postgresql</groupId>
                 <artifactId>postgresql</artifactId>
-                <version>9.4.1212.jre7</version>
+                <version>42.2.1</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
@@ -354,23 +364,7 @@
             </dependency>
             <dependency>
                 <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-spi</artifactId>
-                <version>0.190</version>
-            </dependency>
-            <dependency>
-                <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-orc</artifactId>
-                <version>${presto.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.protobuf</groupId>
-                        <artifactId>protobuf-java</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-hive</artifactId>
                 <version>${presto.version}</version>
                 <exclusions>
                     <exclusion>
@@ -434,6 +428,24 @@
         <pluginManagement>
             <plugins>
                 <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.7.0</version>
+                    <configuration>
+                        <source>${java.source.version}</source>
+                        <target>${java.target.version}</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.19.1</version>
+                    <configuration>
+                        <skipTests>true</skipTests>
+                    </configuration>
+                </plugin>
+                <plugin>
                     <groupId>org.xolstice.maven.plugins</groupId>
                     <artifactId>protobuf-maven-plugin</artifactId>
                     <version>0.5.0</version>
@@ -453,53 +465,41 @@
                     <artifactId>jetty-maven-plugin</artifactId>
                     <version>${dep.jetty.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>2.17</version>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                <skip>${check.skip-checkstyle}</skip>
+                                <failOnViolation>${check.fail-checkstyle}</failOnViolation>
+                                <consoleOutput>true</consoleOutput>
+                                <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                                <configLocation>${main.basedir}/src/checkstyles/checks.xml</configLocation>
+                                <sourceDirectories>
+                                    <directory>${project.build.sourceDirectory}</directory>
+                                </sourceDirectories>
+                                <testSourceDirectories>
+                                    <directory>${project.build.testSourceDirectory}</directory>
+                                </testSourceDirectories>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <source>${java.source.version}</source>
-                    <target>${java.target.version}</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${check.skip-checkstyle}</skip>
-                            <failOnViolation>${check.fail-checkstyle}</failOnViolation>
-                            <consoleOutput>true</consoleOutput>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <configLocation>${main.basedir}/src/checkstyles/checks.xml</configLocation>
-                            <sourceDirectories>
-                                <directory>${project.build.sourceDirectory}</directory>
-                            </sourceDirectories>
-                            <testSourceDirectories>
-                                <directory>${project.build.testSourceDirectory}</directory>
-                            </testSourceDirectories>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-maven-plugin</artifactId>
+                <version>0.3</version>
+                <extensions>true</extensions>
             </plugin>
         </plugins>
     </build>
