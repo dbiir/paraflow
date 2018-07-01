@@ -23,22 +23,22 @@ import static java.util.Objects.requireNonNull;
 public class ParaflowMetadataFactory
 {
     private final ParaflowConnectorId connectorId;
-    private final MetaDataQuery metaDataQuer;
+    private final ParaflowMetadataClient metaDataClient;
 
     @Inject
-    public ParaflowMetadataFactory(ParaflowConnectorId connectorId, MetaDataQuery metaDataQuer)
+    public ParaflowMetadataFactory(ParaflowConnectorId connectorId, ParaflowMetadataClient metaDataClient)
     {
         this.connectorId = requireNonNull(connectorId, "connectorId is null");
-        this.metaDataQuer = requireNonNull(metaDataQuer, "metaServer is null");
+        this.metaDataClient = requireNonNull(metaDataClient, "metaServer is null");
     }
 
     public ParaflowMetadata create()
     {
-        return new ParaflowMetadata(metaDataQuer, connectorId);
+        return new ParaflowMetadata(metaDataClient, connectorId);
     }
 
     public void shutdown()
     {
-        metaDataQuer.shutdown();
+        metaDataClient.shutdown();
     }
 }

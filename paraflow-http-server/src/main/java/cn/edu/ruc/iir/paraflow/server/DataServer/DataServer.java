@@ -19,7 +19,7 @@ public class DataServer
 
         WebAppContext webAppContext = new WebAppContext();
         webAppContext.setContextPath("/");
-        webAppContext.setWar("/Users/Jelly/Developer/paraflow/paraflow-http-server/target/paraflow-server.war");
+        webAppContext.setWar("/Users/Jelly/Developer/paraflow/paraflow-http-server/target/paraflow-http-server-1.0-alpha1.war");
         webAppContext.setParentLoaderPriority(true);
         webAppContext.setServer(server);
         webAppContext.setClassLoader(ClassLoader.getSystemClassLoader());

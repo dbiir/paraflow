@@ -27,11 +27,9 @@ import static java.util.Objects.requireNonNull;
  * Bind interface to implementation class,
  * Bind class in scopes such as SINGLETON,
  * Bind class to created instance.
- *
- * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowModule
-implements Module
+        implements Module
 {
     private final String connectorId;
     private final TypeManager typeManager;
@@ -55,7 +53,6 @@ implements Module
 
         configBinder(binder).bindConfig(MetaConfig.class);
 
-        binder.bind(ParaflowMetadataFactory.class).in(Scopes.SINGLETON);
         binder.bind(ParaflowMetadata.class).in(Scopes.SINGLETON);
         binder.bind(FSFactory.class).in(Scopes.SINGLETON);
         binder.bind(ParaflowConnector.class).in(Scopes.SINGLETON);

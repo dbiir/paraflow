@@ -50,13 +50,13 @@ public class ParaflowSplitManager
 implements ConnectorSplitManager
 {
     private final ParaflowConnectorId connectorId;
-    private final MetaDataQuery metaDataQuer;
+    private final ParaflowMetadataClient metaDataQuer;
     private final FSFactory fsFactory;
 
     @Inject
     public ParaflowSplitManager(
             ParaflowConnectorId connectorId,
-            MetaDataQuery metaDataQuer,
+            ParaflowMetadataClient metaDataQuer,
             FSFactory fsFactory)
     {
         this.connectorId = requireNonNull(connectorId, "connectorId is null");
