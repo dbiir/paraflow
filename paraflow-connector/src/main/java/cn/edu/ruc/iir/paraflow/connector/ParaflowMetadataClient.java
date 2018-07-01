@@ -1,6 +1,10 @@
 package cn.edu.ruc.iir.paraflow.connector;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+import cn.edu.ruc.iir.paraflow.commons.utils.ParaFlowConfig;
+import cn.edu.ruc.iir.paraflow.connector.function.Function;
+import cn.edu.ruc.iir.paraflow.connector.function.Function0;
+import cn.edu.ruc.iir.paraflow.connector.type.UnknownType;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import com.facebook.presto.spi.ColumnMetadata;
@@ -30,7 +34,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -41,12 +44,14 @@ public class ParaflowMetadataClient
 {
     private static final Logger logger = Logger.get(ParaflowMetadataClient.class);
     private final MetaClient metaClient = new MetaClient("127.0.0.1", 10012);
+    FSFactory fsFactory;
 
     private FileSystem fileSystem;
 
     // read config. check if meta table already exists in database, or else initialize tables.
     public ParaflowMetadataClient(FSFactory fsFactory)
     {
+        this.fsFactory = fsFactory;
         fileSystem = fsFactory.getFS().get();
     }
 
@@ -115,7 +120,7 @@ public class ParaflowMetadataClient
         if (tblParam.getIsEmpty()) {
             return null;
         }
-        return tblParam.getTblId();
+        return String.valueOf(tblParam.getTblId());
     }
 
 //    private Optional<ParaflowTable> getTable(String databaseName, String tableName)
@@ -158,7 +163,6 @@ public class ParaflowMetadataClient
 //        return Optional.of(hdfsTable);
 //    }
 
-    @Override
     public Optional<ParaflowTableHandle> getTableHandle(String connectorId, String dbName, String tblName)
     {
         logger.debug("Get table handle " + formName(dbName, tblName));
@@ -168,8 +172,6 @@ public class ParaflowMetadataClient
             logger.error("Match more/less than one table");
             return Optional.empty();
         }
-        String tblName = tblParam.getTblName();
-        String dbName = tblParam.getDbName();
         String location = tblParam.getLocationUrl();
         table = new ParaflowTableHandle(
                 requireNonNull(connectorId, "connectorId is null"),
@@ -179,7 +181,6 @@ public class ParaflowMetadataClient
         return Optional.of(table);
     }
 
-    @Override
     public Optional<ParaflowTableLayoutHandle> getTableLayout(String connectorId, String dbName, String tblName)
     {
         logger.debug("Get table layout " + formName(dbName, tblName));
@@ -194,8 +195,9 @@ public class ParaflowMetadataClient
             logger.error("Match no table handle");
             return Optional.empty();
         }
-
-        String fiberColName = tblParam.getColList(tblParam.getFiberColId());
+        MetaProto.ColListType colList = tblParam.getColList();
+        int fiberColId = tblParam.getFiberColId();
+        String fiberColName = colList.getColumn(fiberColId).getColName();
         String timeColName = String.valueOf(tblParam.getCreateTime());
         String fiberFunc = tblParam.getFuncName();
         Function function = parseFunction(fiberFunc);
@@ -219,7 +221,6 @@ public class ParaflowMetadataClient
     /**
      * Get all column handles of specified table
      * */
-    @Override
     public Optional<List<ParaflowColumnHandle>> getTableColumnHandle(String connectorId, String dbName, String tblName)
     {
         logger.debug("Get list of column handles of table " + formName(dbName, tblName));
@@ -246,7 +247,6 @@ public class ParaflowMetadataClient
         return Optional.of(columnHandles);
     }
 
-    @Override
     public void shutdown()
     {
     }
@@ -257,7 +257,17 @@ public class ParaflowMetadataClient
         if (colParam.getIsEmpty()) {
             logger.error("Match more/less than one column");
         }
-        String colTypeName = colParam.getColType();
+        int colTypeId = colParam.getColType();
+        String colTypeName = "";
+        if (colTypeId == 0) {
+            colTypeName = "REGULAR";
+        }
+        else if (colTypeId == 1) {
+            colTypeName = "FIBER";
+        }
+        else if (colTypeId == 2) {
+            colTypeName = "TIMESTAMP";
+        }
         String dataType = colParam.getDataType();
         // Deal with colType
         ParaflowColumnHandle.ColumnType colType = getColType(colTypeName);
@@ -316,7 +326,6 @@ public class ParaflowMetadataClient
 //        return new ColumnMetadata(colName, type, "", false);
 //    }
 
-    @Override
     public void createDatabase(ConnectorSession session, ParaflowDatabase database)
     {
         createDatabase(database);
@@ -341,7 +350,6 @@ public class ParaflowMetadataClient
         }
     }
 
-    @Override
     public void createTable(ConnectorSession session, ConnectorTableMetadata tableMetadata)
     {
         logger.debug("Create table " + tableMetadata.getTable().getTableName());
@@ -359,7 +367,6 @@ public class ParaflowMetadataClient
         metaClient.createRegularTable(dbName, tblName, userName, storageFormatName, columnName, dataType);
     }
 
-    @Override
     public void createTableWithFiber(ConnectorSession session, ConnectorTableMetadata tableMetadata, String fiberKey, String function, String timeKey)
     {
         logger.debug("Create table with fiber " + tableMetadata.getTable().getTableName());
@@ -759,7 +766,6 @@ public class ParaflowMetadataClient
 //    /**
 //     * Filter blocks
 //     * */
-//    @Override
     public List<String> filterBlocks(String db, String table, Optional<Long> fiberId, Optional<Long> timeLow, Optional<Long> timeHigh)
     {
         MetaProto.StringListType stringListType = metaClient.filterBlockIndexByFiber(db, table, Integer.parseInt(String.valueOf(fiberId.get())), timeLow.get(), timeHigh.get());
@@ -851,7 +857,7 @@ public class ParaflowMetadataClient
 
     private Path formPath(String dirOrFile1, String dirOrFile2)
     {
-        String base = config.getMetaserverStore();
+        String base = "";
         String path1 = dirOrFile1;
         String path2 = dirOrFile2;
         while (base.endsWith("/")) {
@@ -871,7 +877,7 @@ public class ParaflowMetadataClient
 
     private Path formPath(String dirOrFile)
     {
-        String base = config.getMetaserverStore();
+        String base = "";
         while (base.endsWith("/")) {
             base = base.substring(0, base.length() - 2);
         }

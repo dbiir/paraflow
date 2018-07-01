@@ -145,7 +145,7 @@ public final class FSFactory
         return builder.build();
     }
 
-    private Path formPath(String dirOrFile)
+    public Path formPath(String dirOrFile)
     {
         String base = config.getHDFSWarehouse();
         String path = dirOrFile;

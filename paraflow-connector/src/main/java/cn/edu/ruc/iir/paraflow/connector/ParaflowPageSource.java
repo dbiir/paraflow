@@ -13,10 +13,10 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
+import cn.edu.ruc.iir.paraflow.connector.exception.ParaflowCursorException;
 import com.facebook.presto.hive.parquet.ParquetDataSource;
 import com.facebook.presto.hive.parquet.ParquetTypeUtils;
 import com.facebook.presto.hive.parquet.RichColumnDescriptor;
-import com.facebook.presto.hive.parquet.reader.ParquetReader;
 import com.facebook.presto.spi.ConnectorPageSource;
 import com.facebook.presto.spi.Page;
 import com.facebook.presto.spi.block.Block;
@@ -107,11 +107,11 @@ implements ConnectorPageSource
      * This is normally the same size as the split.  If size is not available,
      * this method should return zero.
      */
-//    @Override
-//    public long getTotalBytes()
-//    {
-//        return totalBytes;
-//    }
+    @Override
+    public long getTotalBytes()
+    {
+        return totalBytes;
+    }
 
     /**
      * Gets the number of input bytes processed by this page source so far.

@@ -13,10 +13,9 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
+import cn.edu.ruc.iir.paraflow.connector.exception.ParaflowSplitNotOpenException;
 import com.facebook.presto.hive.parquet.HdfsParquetDataSource;
 import com.facebook.presto.hive.parquet.ParquetDataSource;
-import com.facebook.presto.hive.parquet.reader.ParquetMetadataReader;
-import com.facebook.presto.hive.parquet.reader.ParquetReader;
 import com.facebook.presto.spi.ColumnHandle;
 import com.facebook.presto.spi.ConnectorPageSource;
 import com.facebook.presto.spi.ConnectorSession;
@@ -73,7 +72,7 @@ implements ConnectorPageSourceProvider
         ParaflowSplit paraflowSplit = checkType(split, ParaflowSplit.class, "hdfs split");
         Path path = new Path(paraflowSplit.getPath());
 
-        Optional<ConnectorPageSource> pageSource = createHDFSPageSource(
+        Optional<ConnectorPageSource> pageSource = createParaflowPageSource(
                 path,
                 paraflowSplit.getStart(),
                 paraflowSplit.getLen(),
@@ -84,7 +83,7 @@ implements ConnectorPageSourceProvider
         throw new RuntimeException("Could not find a file reader for split " + paraflowSplit);
     }
 
-    private Optional<ConnectorPageSource> createHDFSPageSource(
+    private Optional<ConnectorPageSource> createParaflowPageSource(
             Path path,
             long start,
             long length,
