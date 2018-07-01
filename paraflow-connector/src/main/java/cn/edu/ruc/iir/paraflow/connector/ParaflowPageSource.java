@@ -13,7 +13,6 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
-import cn.edu.ruc.iir.paraflow.connector.exception.HdfsCursorException;
 import com.facebook.presto.hive.parquet.ParquetDataSource;
 import com.facebook.presto.hive.parquet.ParquetTypeUtils;
 import com.facebook.presto.hive.parquet.RichColumnDescriptor;
@@ -46,7 +45,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSPageSource
+public class ParaflowPageSource
 implements ConnectorPageSource
 {
     private static final int MAX_VECTOR_LENGTH = 1024;
@@ -67,13 +66,13 @@ implements ConnectorPageSource
     private boolean closed;
     private long readTimeNanos;
 
-    public HDFSPageSource(
+    public ParaflowPageSource(
             ParquetReader parquetReader,
             ParquetDataSource dataSource,
             MessageType fileSchema,
             MessageType requestedSchema,
             long totalBytes,
-            List<HDFSColumnHandle> columns,
+            List<ParaflowColumnHandle> columns,
             TypeManager typeManager)
     {
         checkArgument(totalBytes >= 0, "totalBytes is negative");
@@ -89,7 +88,7 @@ implements ConnectorPageSource
         ImmutableList.Builder<String> namesBuilder = ImmutableList.builder();
         ImmutableList.Builder<Type> typesBuilder = ImmutableList.builder();
         for (int columnIndex = 0; columnIndex < columnSize; columnIndex++) {
-            HDFSColumnHandle column = columns.get(columnIndex);
+            ParaflowColumnHandle column = columns.get(columnIndex);
             String name = column.getName();
             Type type = typeManager.getType(column.getType().getTypeSignature());
 
@@ -195,7 +194,7 @@ implements ConnectorPageSource
         }
         catch (IOException e) {
             closeWithSupression(e);
-            throw new HdfsCursorException();
+            throw new ParaflowCursorException();
         }
     }
 
@@ -243,7 +242,7 @@ implements ConnectorPageSource
         }
     }
 
-    private parquet.schema.Type getParquetType(HDFSColumnHandle column, MessageType messageType)
+    private parquet.schema.Type getParquetType(ParaflowColumnHandle column, MessageType messageType)
     {
         if (messageType.containsField(column.getName())) {
             return messageType.getType(column.getName());
@@ -300,7 +299,7 @@ implements ConnectorPageSource
                 lazyBlock.setBlock(block);
             }
             catch (IOException e) {
-                throw new HdfsCursorException();
+                throw new ParaflowCursorException();
             }
             loaded = true;
         }

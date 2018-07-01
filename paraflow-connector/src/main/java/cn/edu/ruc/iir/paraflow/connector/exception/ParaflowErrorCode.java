@@ -22,23 +22,17 @@ import static com.facebook.presto.spi.ErrorType.EXTERNAL;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public enum HDFSErrorCode
+public enum ParaflowErrorCode
     implements ErrorCodeSupplier
 {
-    HDFS_RECORD_MORE_LESS_ERROR(0, EXTERNAL),
-    COL_TYPE_NONVALID(1, EXTERNAL),
-    TYPE_UNKNOWN(2, EXTERNAL),
-    ARRAY_LENGTH_NOT_MATCH(3, EXTERNAL),
+    CONNECTOR_INIT_ERROR(0, ErrorType.INTERNAL_ERROR),
+    CONNECTOR_SHUTDOWN_ERROR(1, ErrorType.INTERNAL_ERROR),
     TABLE_NOT_FOUND(4, EXTERNAL),
-    HDFS_SPLIT_NOT_OPEN(5, EXTERNAL),
-    HDFS_CURSOR_ERROR(6, EXTERNAL),
-    META_CURRUPTION(7, EXTERNAL),
-    FUNCTION_UNSUPPORTED(8, EXTERNAL),
-    COLUMN_NOT_FOUND(9, EXTERNAL);
+    FUNCTION_UNSUPPORTED(8, EXTERNAL);
 
     private final ErrorCode errorCode;
 
-    HDFSErrorCode(int code, ErrorType type)
+    ParaflowErrorCode(int code, ErrorType type)
     {
         errorCode = new ErrorCode(code + 0x0210_0000, name(), type);
     }

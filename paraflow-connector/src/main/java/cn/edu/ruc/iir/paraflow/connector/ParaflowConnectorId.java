@@ -23,12 +23,12 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSConnectorId
+public class ParaflowConnectorId
 {
     private final String connectorId;
 
     @JsonCreator
-    public HDFSConnectorId(
+    public ParaflowConnectorId(
             @JsonProperty("connectorId") String connectorId)
     {
         requireNonNull(connectorId, "connectorId is null");
@@ -56,7 +56,7 @@ public class HDFSConnectorId
         if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        HDFSConnectorId other = (HDFSConnectorId) obj;
+        ParaflowConnectorId other = (ParaflowConnectorId) obj;
         return Objects.equals(this.connectorId, other.connectorId);
     }
 

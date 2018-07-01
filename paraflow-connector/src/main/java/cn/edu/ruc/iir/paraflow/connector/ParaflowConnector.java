@@ -13,6 +13,7 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
+import com.facebook.presto.spi.PrestoException;
 import com.facebook.presto.spi.connector.Connector;
 import com.facebook.presto.spi.connector.ConnectorMetadata;
 import com.facebook.presto.spi.connector.ConnectorPageSourceProvider;
@@ -23,51 +24,36 @@ import com.google.inject.Inject;
 import io.airlift.bootstrap.LifeCycleManager;
 import io.airlift.log.Logger;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-
-import static com.facebook.presto.spi.transaction.IsolationLevel.READ_UNCOMMITTED;
-import static com.facebook.presto.spi.transaction.IsolationLevel.checkConnectorSupports;
-import static com.google.common.base.Preconditions.checkArgument;
+import static cn.edu.ruc.iir.paraflow.connector.exception.ParaflowErrorCode.CONNECTOR_SHUTDOWN_ERROR;
 import static java.util.Objects.requireNonNull;
 
-/**
- * @author jelly.guodong.jin@gmail.com
- */
-public class HDFSConnector
-implements Connector
+public class ParaflowConnector
+        implements Connector
 {
-    private final Logger logger = Logger.get(HDFSConnector.class);
+    private final Logger logger = Logger.get(ParaflowConnector.class);
 
     private final LifeCycleManager lifeCycleManager;
-    private final HDFSMetadataFactory hdfsMetadataFactory;
-    private final HDFSSplitManager hdfsSplitManager;
-    private final HDFSPageSourceProvider hdfsPageSourceProvider;
-//    private final ConnectorNodePartitioningProvider nodePartitioningProvider;
-
-    private final ConcurrentMap<ConnectorTransactionHandle, HDFSMetadata> transactions = new ConcurrentHashMap<>();
+    private final ParaflowMetadata paraflowMetadata;
+    private final ParaflowSplitManager paraflowSplitManager;
+    private final ParaflowPageSourceProvider paraflowPageSourceProvider;
 
     @Inject
-    public HDFSConnector(
+    public ParaflowConnector(
             LifeCycleManager lifeCycleManager,
-            HDFSMetadataFactory hdfsMetadataFactory,
-            HDFSSplitManager hdfsSplitManager,
-            HDFSPageSourceProvider hdfsPageSourceProvider)
+            ParaflowMetadata paraflowMetadata,
+            ParaflowSplitManager paraflowSplitManager,
+            ParaflowPageSourceProvider paraflowPageSourceProvider)
     {
         this.lifeCycleManager = requireNonNull(lifeCycleManager, "lifeCycleManager is null");
-        this.hdfsMetadataFactory = requireNonNull(hdfsMetadataFactory, "hdfsMetadataFactory is null");
-        this.hdfsSplitManager = requireNonNull(hdfsSplitManager, "hdfsSplitManager is null");
-        this.hdfsPageSourceProvider = requireNonNull(hdfsPageSourceProvider, "hdfsPageSourceProvider is null");
-//        this.nodePartitioningProvider = requireNonNull(nodePartitioningProvider, "nodePartitioningProvider is null");
+        this.paraflowMetadata = requireNonNull(paraflowMetadata, "paraflowMetadata is null");
+        this.paraflowSplitManager = requireNonNull(paraflowSplitManager, "paraflowSplitManager is null");
+        this.paraflowPageSourceProvider = requireNonNull(paraflowPageSourceProvider, "paraflowPageSourceProvider is null");
     }
 
     @Override
     public ConnectorTransactionHandle beginTransaction(IsolationLevel isolationLevel, boolean readOnly)
     {
-        checkConnectorSupports(READ_UNCOMMITTED, isolationLevel);
-        HDFSTransactionHandle transaction = new HDFSTransactionHandle();
-        transactions.putIfAbsent(transaction, hdfsMetadataFactory.create());
-        return transaction;
+        return ParaflowTransactionHandle.INSTANCE;
     }
 
     /**
@@ -79,37 +65,20 @@ implements Connector
     @Override
     public ConnectorMetadata getMetadata(ConnectorTransactionHandle transactionHandle)
     {
-        HDFSMetadata metadata = transactions.get(transactionHandle);
-        checkArgument(metadata != null, "no such transaction: %s", transactionHandle);
-        return hdfsMetadataFactory.create();
+        return paraflowMetadata;
     }
 
     @Override
     public ConnectorSplitManager getSplitManager()
     {
-        return hdfsSplitManager;
+        return paraflowSplitManager;
     }
 
     @Override
     public ConnectorPageSourceProvider getPageSourceProvider()
     {
-        return hdfsPageSourceProvider;
+        return paraflowPageSourceProvider;
     }
-
-    @Override
-    public void commit(ConnectorTransactionHandle transaction)
-    {
-        checkArgument(transactions.remove(transaction) != null, "no such transaction: %s", transaction);
-    }
-
-    /**
-     * @throws UnsupportedOperationException if this connector does not support partitioned table layouts
-     */
-//    @Override
-//    public ConnectorNodePartitioningProvider getNodePartitioningProvider()
-//    {
-//        return nodePartitioningProvider;
-//    }
 
     /**
      * Shutdown the connector by releasing any held resources such as
@@ -122,11 +91,11 @@ implements Connector
     public void shutdown()
     {
         try {
-            hdfsMetadataFactory.shutdown();
             lifeCycleManager.stop();
         }
         catch (Exception e) {
-            logger.error(e, "Error shutting down hdfs connector");
+            logger.error(e, "Error shutting down connector");
+            throw new PrestoException(CONNECTOR_SHUTDOWN_ERROR, e);
         }
     }
 }

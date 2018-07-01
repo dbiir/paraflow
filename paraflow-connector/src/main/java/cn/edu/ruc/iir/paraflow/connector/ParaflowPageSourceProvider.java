@@ -13,7 +13,6 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
-import cn.edu.ruc.iir.paraflow.connector.exception.HdfsSplitNotOpenException;
 import com.facebook.presto.hive.parquet.HdfsParquetDataSource;
 import com.facebook.presto.hive.parquet.ParquetDataSource;
 import com.facebook.presto.hive.parquet.reader.ParquetMetadataReader;
@@ -49,47 +48,47 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSPageSourceProvider
+public class ParaflowPageSourceProvider
 implements ConnectorPageSourceProvider
 {
     private final TypeManager typeManager;
     private final FSFactory fsFactory;
 
     @Inject
-    public HDFSPageSourceProvider(TypeManager typeManager, FSFactory fsFactory)
+    public ParaflowPageSourceProvider(TypeManager typeManager, FSFactory fsFactory)
     {
         this.typeManager = requireNonNull(typeManager, "typeManager is null");
         this.fsFactory = requireNonNull(fsFactory, "fsFactory is null");
     }
 
-    private Logger log = Logger.get(HDFSPageSourceProvider.class.getName());
+    private Logger log = Logger.get(ParaflowPageSourceProvider.class.getName());
 
     @Override
     public ConnectorPageSource createPageSource(ConnectorTransactionHandle transactionHandle, ConnectorSession session,
                                                 ConnectorSplit split, List<ColumnHandle> columns)
     {
-        List<HDFSColumnHandle> hdfsColumns = columns.stream()
-                .map(col -> (HDFSColumnHandle) col)
+        List<ParaflowColumnHandle> hdfsColumns = columns.stream()
+                .map(col -> (ParaflowColumnHandle) col)
                 .collect(Collectors.toList());
-        HDFSSplit hdfsSplit = checkType(split, HDFSSplit.class, "hdfs split");
-        Path path = new Path(hdfsSplit.getPath());
+        ParaflowSplit paraflowSplit = checkType(split, ParaflowSplit.class, "hdfs split");
+        Path path = new Path(paraflowSplit.getPath());
 
         Optional<ConnectorPageSource> pageSource = createHDFSPageSource(
                 path,
-                hdfsSplit.getStart(),
-                hdfsSplit.getLen(),
+                paraflowSplit.getStart(),
+                paraflowSplit.getLen(),
                 hdfsColumns);
         if (pageSource.isPresent()) {
             return pageSource.get();
         }
-        throw new RuntimeException("Could not find a file reader for split " + hdfsSplit);
+        throw new RuntimeException("Could not find a file reader for split " + paraflowSplit);
     }
 
     private Optional<ConnectorPageSource> createHDFSPageSource(
             Path path,
             long start,
             long length,
-            List<HDFSColumnHandle> columns)
+            List<ParaflowColumnHandle> columns)
     {
         Optional<FileSystem> fileSystemOptional = fsFactory.getFS(path);
         FileSystem fileSystem;
@@ -109,7 +108,7 @@ implements ConnectorPageSourceProvider
             MessageType fileSchema = fileMetaData.getSchema();
 
             List<Type> fields = columns.stream()
-                    .filter(column -> column.getColType() != HDFSColumnHandle.ColumnType.NOTVALID)
+                    .filter(column -> column.getColType() != ParaflowColumnHandle.ColumnType.NOTVALID)
                     .map(column -> getParquetType(column, fileSchema))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
@@ -129,7 +128,7 @@ implements ConnectorPageSourceProvider
                     blocks,
                     dataSource,
                     typeManager);
-            return Optional.of(new HDFSPageSource(
+            return Optional.of(new ParaflowPageSource(
                     parquetReader,
                     dataSource,
                     fileSchema,
@@ -152,11 +151,11 @@ implements ConnectorPageSourceProvider
             return new HdfsParquetDataSource(path, size, inputStream);
         }
         catch (IOException e) {
-            throw new HdfsSplitNotOpenException(path);
+            throw new ParaflowSplitNotOpenException(path);
         }
     }
 
-    private Type getParquetType(HDFSColumnHandle column, MessageType messageType)
+    private Type getParquetType(ParaflowColumnHandle column, MessageType messageType)
     {
         if (messageType.containsField(column.getName())) {
             return messageType.getType(column.getName());

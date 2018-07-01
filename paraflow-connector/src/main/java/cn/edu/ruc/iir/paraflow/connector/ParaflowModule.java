@@ -27,16 +27,14 @@ import static java.util.Objects.requireNonNull;
  * Bind interface to implementation class,
  * Bind class in scopes such as SINGLETON,
  * Bind class to created instance.
- *
- * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSModule
-implements Module
+public class ParaflowModule
+        implements Module
 {
     private final String connectorId;
     private final TypeManager typeManager;
 
-    public HDFSModule(String connectorId, TypeManager typeManager)
+    public ParaflowModule(String connectorId, TypeManager typeManager)
     {
         this.connectorId = requireNonNull(connectorId);
         this.typeManager = requireNonNull(typeManager);
@@ -50,17 +48,16 @@ implements Module
     @Override
     public void configure(Binder binder)
     {
-        binder.bind(HDFSConnectorId.class).toInstance(new HDFSConnectorId(connectorId));
+        binder.bind(ParaflowConnectorId.class).toInstance(new ParaflowConnectorId(connectorId));
         binder.bind(TypeManager.class).toInstance(typeManager);
 
         configBinder(binder).bindConfig(MetaConfig.class);
 
-        binder.bind(HDFSMetadataFactory.class).in(Scopes.SINGLETON);
-        binder.bind(HDFSMetadata.class).in(Scopes.SINGLETON);
+        binder.bind(ParaflowMetadata.class).in(Scopes.SINGLETON);
         binder.bind(FSFactory.class).in(Scopes.SINGLETON);
-        binder.bind(HDFSConnector.class).in(Scopes.SINGLETON);
-        binder.bind(HDFSSplitManager.class).in(Scopes.SINGLETON);
-        binder.bind(HDFSPageSourceProvider.class).in(Scopes.SINGLETON);
-        binder.bind(ClassLoader.class).toInstance(HDFSPlugin.getClassLoader());
+        binder.bind(ParaflowConnector.class).in(Scopes.SINGLETON);
+        binder.bind(ParaflowSplitManager.class).in(Scopes.SINGLETON);
+        binder.bind(ParaflowPageSourceProvider.class).in(Scopes.SINGLETON);
+        binder.bind(ClassLoader.class).toInstance(ParaflowPlugin.getClassLoader());
     }
 }

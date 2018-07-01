@@ -24,14 +24,14 @@ import static java.util.Objects.requireNonNull;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public class HDFSDatabase
+public class ParaflowDatabase
 {
     private final String name;
     private String location;
     private String id;
 
     @JsonCreator
-    public HDFSDatabase(
+    public ParaflowDatabase(
             @JsonProperty("name") String name)
     {
         this.name = requireNonNull(name, "name is null");
@@ -82,7 +82,7 @@ public class HDFSDatabase
             return false;
         }
 
-        HDFSDatabase other = (HDFSDatabase) obj;
+        ParaflowDatabase other = (ParaflowDatabase) obj;
         return Objects.equals(name, other.name);
     }
 

@@ -25,6 +25,6 @@ public class TableNotFoundException
 {
     public TableNotFoundException(String tableName)
     {
-        super(HDFSErrorCode.TABLE_NOT_FOUND, "Table " + tableName + " not found.");
+        super(ParaflowErrorCode.TABLE_NOT_FOUND, "Table " + tableName + " not found.");
     }
 }

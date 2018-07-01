@@ -19,22 +19,17 @@ import com.google.common.collect.ImmutableList;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 
-/**
- * presto-hdfs
- *
- * @author jelly.guodong.jin@gmail.com
- */
-public class HDFSPlugin
+public class ParaflowPlugin
 implements Plugin
 {
     @Override
     public Iterable<ConnectorFactory> getConnectorFactories()
     {
-        return ImmutableList.of(new HDFSConnectorFactory());
+        return ImmutableList.of(new ParaflowConnectorFactory());
     }
 
     public static ClassLoader getClassLoader()
     {
-        return firstNonNull(Thread.currentThread().getContextClassLoader(), HDFSPlugin.class.getClassLoader());
+        return firstNonNull(Thread.currentThread().getContextClassLoader(), ParaflowPlugin.class.getClassLoader());
     }
 }
