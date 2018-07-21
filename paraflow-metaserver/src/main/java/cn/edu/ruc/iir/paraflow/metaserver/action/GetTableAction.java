@@ -52,6 +52,7 @@ public class GetTableAction extends Action
                         .setIsEmpty(false)
                         .build();
                 input.setParam(tblParam);
+                input.setProperties("tblId", Long.parseLong(resultList.get(0).get(8)));
                 input.setProperties("userId", Long.parseLong(resultList.get(0).get(1)));
                 input.setProperties("sfId", Long.parseLong(resultList.get(0).get(5)));
                 input.setProperties("funcId", Long.parseLong(resultList.get(0).get(7)));

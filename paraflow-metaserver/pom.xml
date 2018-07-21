@@ -100,7 +100,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>${artifactId}-${project.version}</finalName>
+                            <finalName>${project.artifactId}-${project.version}</finalName>
                             <outputDirectory>${project.parent.basedir}/dist/lib</outputDirectory>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>allinone</shadedClassifierName>

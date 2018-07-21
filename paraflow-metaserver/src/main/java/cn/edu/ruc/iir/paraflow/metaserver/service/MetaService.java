@@ -303,6 +303,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             input.setProperties("dbName", dbNameParam.getDatabase());
             txController.setAutoCommit(true);
             txController.addAction(new GetDatabaseAction());
+            txController.addAction(new GetDatabaseIdAction());
             txController.addAction(new GetUserNameAction());
             txController.addAction(new GetDbParamAction());
             ActionResponse result = txController.commit(input);

@@ -18,13 +18,15 @@
     <artifactId>paraflow</artifactId>
     <version>1.0-alpha1</version>
     <modules>
-        <module>paraflow-loader-consumer</module>
-        <module>paraflow-loader-producer</module>
+        <module>paraflow-loader</module>
+        <module>paraflow-collector</module>
         <module>paraflow-metaserver</module>
         <module>paraflow-commons</module>
         <module>paraflow-assembly</module>
         <module>paraflow-connector</module>
         <module>paraflow-http-server</module>
+        <module>paraflow-master</module>
+        <module>paraflow-examples</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -61,8 +63,9 @@
         <java.target.version>1.8</java.target.version>
 
         <hadoop.version>2.7.3</hadoop.version>
+        <dep.testng.version>6.8.21</dep.testng.version>
         <guice.version>4.0</guice.version>
-        <presto.version>0.190</presto.version>
+        <presto.version>0.158-SNAPSHOT</presto.version>
         <airlift.version>0.157</airlift.version>
         <dep.jetty.version>9.0.5.v20130815</dep.jetty.version>
         <dep.jackson.version>1.9.13</dep.jackson.version>
@@ -73,33 +76,60 @@
             <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-commons</artifactId>
-                <version>1.0-alpha1</version>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-plugin-toolkit</artifactId>
+                <version>${presto.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>cn.edu.ruc.iir</groupId>
+                <artifactId>paraflow-collector</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-metaserver</artifactId>
-                <version>1.0-alpha1</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-loader-producer</artifactId>
-                <version>1.0-alpha1</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-loader-consumer</artifactId>
-                <version>1.0-alpha1</version>
+                <version>${project.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-spi</artifactId>
                 <version>${presto.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-hive</artifactId>
                 <version>${presto.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.facebook.presto.hadoop</groupId>
@@ -167,7 +197,6 @@
                 <artifactId>grpc-stub</artifactId>
                 <version>1.4.0</version>
             </dependency>
-
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
@@ -237,7 +266,7 @@
             <dependency>
                 <groupId>org.apache.kafka</groupId>
                 <artifactId>kafka-clients</artifactId>
-                <version>0.11.0.0</version>
+                <version>1.1.0</version>
             </dependency>
             <dependency>
                 <groupId>org.postgresql</groupId>
@@ -324,12 +353,86 @@
                 <artifactId>asm-all</artifactId>
                 <version>5.2</version>
             </dependency>
-
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.12</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-spi</artifactId>
+                <version>0.190</version>
+            </dependency>
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-orc</artifactId>
+                <version>${presto.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-hive</artifactId>
+                <version>${presto.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-hive-cdh4</artifactId>
+                <version>${presto.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-example-http</artifactId>
+                <version>${presto.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-hive</artifactId>
+                <version>${presto.version}</version>
+                <type>test-jar</type>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
+
+            </dependency>
+            <dependency>
+                <groupId>org.testng</groupId>
+                <artifactId>testng</artifactId>
+                <version>6.8.21</version>
+            </dependency>
+            <dependency>
+                <groupId>com.puppycrawl.tools</groupId>
+                <artifactId>checkstyle</artifactId>
+                <version>7.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -404,13 +507,6 @@
                         </configuration>
                     </execution>
                 </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.puppycrawl.tools</groupId>
-                        <artifactId>checkstyle</artifactId>
-                        <version>7.3</version>
-                    </dependency>
-                </dependencies>
             </plugin>
         </plugins>
     </build>
