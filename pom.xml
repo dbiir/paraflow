@@ -18,13 +18,15 @@
     <artifactId>paraflow</artifactId>
     <version>1.0-alpha1</version>
     <modules>
-        <module>paraflow-loader-consumer</module>
-        <module>paraflow-loader-producer</module>
+        <module>paraflow-loader</module>
+        <module>paraflow-collector</module>
         <module>paraflow-metaserver</module>
         <module>paraflow-commons</module>
         <module>paraflow-assembly</module>
         <module>paraflow-connector</module>
         <module>paraflow-http-server</module>
+        <module>paraflow-master</module>
+        <module>paraflow-examples</module>
     </modules>
     <packaging>pom</packaging>
 
@@ -86,6 +88,11 @@
                         <artifactId>protobuf-java</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>cn.edu.ruc.iir</groupId>
+                <artifactId>paraflow-collector</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>

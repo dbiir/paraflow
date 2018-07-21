@@ -1,7 +1,6 @@
 package cn.edu.ruc.iir.paraflow.connector;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
-import cn.edu.ruc.iir.paraflow.commons.utils.ParaFlowConfig;
 import cn.edu.ruc.iir.paraflow.connector.function.Function;
 import cn.edu.ruc.iir.paraflow.connector.function.Function0;
 import cn.edu.ruc.iir.paraflow.connector.type.UnknownType;
