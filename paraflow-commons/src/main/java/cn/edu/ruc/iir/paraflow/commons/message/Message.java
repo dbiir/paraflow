@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
+//todo change values from string array to bytes array
 public class Message
 {
     private final int keyIndex;
@@ -12,6 +13,11 @@ public class Message
     private String topic = "";
     private int fiberId;
     private boolean hasFiberId = false;
+
+    public Message(String[] values)
+    {
+        this(0, values);
+    }
 
     public Message(int keyIndex, String[] values)
     {
