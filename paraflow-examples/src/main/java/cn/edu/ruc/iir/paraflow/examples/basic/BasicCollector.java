@@ -1,11 +1,9 @@
 package cn.edu.ruc.iir.paraflow.examples.basic;
 
-import cn.edu.ruc.iir.paraflow.commons.message.Message;
-import cn.edu.ruc.iir.paraflow.loader.producer.CollectorEnvironment;
-import cn.edu.ruc.iir.paraflow.loader.producer.CollectorRuntime;
-import cn.edu.ruc.iir.paraflow.loader.producer.DataFlow;
-import cn.edu.ruc.iir.paraflow.loader.producer.DataSource;
-import cn.edu.ruc.iir.paraflow.loader.producer.FiberFlow;
+import cn.edu.ruc.iir.paraflow.collector.DataSource;
+import cn.edu.ruc.iir.paraflow.collector.DefaultCollector;
+import cn.edu.ruc.iir.paraflow.collector.StringMessageSerializationSchema;
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 
 import java.util.Objects;
 
@@ -16,24 +14,23 @@ import java.util.Objects;
  */
 public class BasicCollector
 {
-    private CollectorEnvironment env = CollectorEnvironment.getEnvironment();
-
-    public void collectData()
-    {
-        DataSource<String> dataSource = new MockDataSource();
-        DataFlow<String> dataFlow = env.addSource(dataSource);
-        FiberFlow<String> fiberFlow = (FiberFlow<String>) dataFlow
-                .map(v -> new Message(v.split(",")))
-                .keyBy(0)
-                .timeBy(0)
-                .partitionBy(key -> Objects.hashCode(key) % 10)
-                .sink(new MockDataSink());
-        CollectorRuntime.run(fiberFlow);
-    }
+    private BasicCollector()
+    {}
 
     public static void main(String[] args)
     {
-        BasicCollector collector = new BasicCollector();
-        collector.collectData();
+        try {
+            DefaultCollector<String> collector = new DefaultCollector<>(args[0]);
+            for (int i = 0; i < 1; i++) {
+                DataSource dataSource = new MockDataSource();
+                collector.collect(dataSource, 0, 0,
+                        k -> Objects.hashCode(k) % 10,
+                        new StringMessageSerializationSchema<>(),
+                        new MockDataSink());
+            }
+        }
+        catch (ConfigFileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 }

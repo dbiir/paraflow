@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.producer;
+package cn.edu.ruc.iir.paraflow.collector;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
@@ -11,9 +11,9 @@ import java.util.function.Function;
  *
  * @author guodong
  */
-public interface Collector
+public interface Collector<T>
 {
-    void send(String database, String table, Message message);
+    void collect(DataSource dataSource, int keyIdx, int timeIdx, ParaflowFiberPartitioner partitioner, MessageSerializationSchema<T> serializer, DataSink dataSink);
 
     void deleteTopic(String topicName);
 

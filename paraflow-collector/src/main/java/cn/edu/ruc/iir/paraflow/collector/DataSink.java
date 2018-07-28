@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.producer;
+package cn.edu.ruc.iir.paraflow.collector;
 
 /**
  * paraflow
@@ -7,6 +7,11 @@ package cn.edu.ruc.iir.paraflow.loader.producer;
  */
 public abstract class DataSink
 {
+    public enum DataType
+    {
+        Parquet, ORC;
+    }
+
     private final String name;
 
     public DataSink(String name)
@@ -18,6 +23,12 @@ public abstract class DataSink
     {
         return name;
     }
+
+    public abstract String getDb();
+
+    public abstract String getTbl();
+
+    public abstract DataType getType();
 
     @Override
     public abstract String toString();

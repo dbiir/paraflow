@@ -1,13 +1,13 @@
-package cn.edu.ruc.iir.paraflow.loader.producer;
+package cn.edu.ruc.iir.paraflow.collector;
 
-import java.util.List;
+import cn.edu.ruc.iir.paraflow.commons.message.Message;
 
 /**
  * paraflow
  *
  * @author guodong
  */
-public abstract class DataSource<T>
+public abstract class DataSource
 {
     private final String name;
 
@@ -16,11 +16,7 @@ public abstract class DataSource<T>
         this.name = name;
     }
 
-    public abstract T read();
-
-    public abstract T[] readBatch();
-
-    public abstract List<T> readBulk();
+    public abstract Message read();
 
     public String getName()
     {

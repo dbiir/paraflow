@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.producer.utils;
+package cn.edu.ruc.iir.paraflow.collector.utils;
 
 import org.apache.kafka.common.Cluster;
 
@@ -23,11 +23,6 @@ public class DefaultKafkaPartitioner extends KafkaPartitioner
     public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster)
     {
         int partitionNum = cluster.partitionCountForTopic(topic);
-        return partitionByMod((Long) key, partitionNum);
-    }
-
-    private int partitionByMod(long key, int base)
-    {
-        return (int) (key % base);
+        return (int) key % partitionNum;
     }
 }

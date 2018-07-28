@@ -1,6 +1,6 @@
 package cn.edu.ruc.iir.paraflow.examples.basic;
 
-import cn.edu.ruc.iir.paraflow.loader.producer.DataSink;
+import cn.edu.ruc.iir.paraflow.collector.DataSink;
 
 import java.util.Objects;
 
@@ -15,6 +15,24 @@ public class MockDataSink
     public MockDataSink()
     {
         super("mock-sink");
+    }
+
+    @Override
+    public String getDb()
+    {
+        return "test";
+    }
+
+    @Override
+    public String getTbl()
+    {
+        return "mock";
+    }
+
+    @Override
+    public DataType getType()
+    {
+        return DataType.Parquet;
     }
 
     @Override

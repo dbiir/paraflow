@@ -4,72 +4,35 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 
-//todo change values from string array to bytes array
 public class Message
 {
-    private final int keyIndex;
-    private final String[] values;
+    private final byte[] key;
+    private final byte[] value;
     private final long timestamp;
     private String topic = "";
     private int fiberId;
     private boolean hasFiberId = false;
 
-    public Message(String[] values)
+    public Message(byte[] key, byte[] value, long timestamp)
     {
-        this(0, values);
-    }
-
-    public Message(int keyIndex, String[] values)
-    {
-        this(keyIndex, values, Long.MIN_VALUE);
-    }
-
-    public Message(int keyIndex, String[] values, long timestamp)
-    {
-        this.keyIndex = keyIndex;
-        this.values = values;
+        this.key = key;
+        this.value = value;
         this.timestamp = timestamp;
     }
 
-    public Message(int keyIndex, String[] values, long timestamp, String topic)
+    public byte[] getKey()
     {
-        this.keyIndex = keyIndex;
-        this.values = values;
-        this.timestamp = timestamp;
-        this.topic = topic;
+        return key;
     }
 
-    public Message(int keyIndex, String[] values, long timestamp, String topic, int fiberId)
+    public byte[] getValue()
     {
-        this.keyIndex = keyIndex;
-        this.values = values;
-        this.timestamp = timestamp;
-        this.topic = topic;
-        this.fiberId = fiberId;
-        this.hasFiberId = true;
+        return value;
     }
 
-    public String getKey()
+    public long getTimestamp()
     {
-        return this.values[keyIndex];
-    }
-
-    public int getKeyIndex()
-    {
-        return this.keyIndex;
-    }
-
-    public String[] getValue()
-    {
-        return this.values;
-    }
-
-    public Optional<Long> getTimestamp()
-    {
-        if (timestamp != Long.MIN_VALUE) {
-            return Optional.of(timestamp);
-        }
-        return Optional.empty();
+        return timestamp;
     }
 
     public void setTopic(String topic)
@@ -102,13 +65,13 @@ public class Message
     @Override
     public String toString()
     {
-        return String.format("keyIndex: %d, key: %s, timestamp: %d, topic: %s", keyIndex, values[keyIndex], timestamp, topic);
+        return String.format("key: %s, timestamp: %d, topic: %s", Arrays.toString(key), timestamp, topic);
     }
 
     @Override
     public int hashCode()
     {
-        return Objects.hash(keyIndex, timestamp, values, topic);
+        return Objects.hash(key, timestamp, value, topic);
     }
 
     @Override
@@ -119,9 +82,9 @@ public class Message
         }
         if (other instanceof Message) {
             Message otherMsg = (Message) other;
-            return this.keyIndex == otherMsg.keyIndex &&
+            return this.key == otherMsg.key &&
                     this.timestamp == otherMsg.timestamp &&
-                    Arrays.equals(this.values, otherMsg.values);
+                    Arrays.equals(this.value, otherMsg.value);
         }
         return false;
     }

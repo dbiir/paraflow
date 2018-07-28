@@ -1,8 +1,9 @@
-package cn.edu.ruc.iir.paraflow.loader.producer.utils;
+package cn.edu.ruc.iir.paraflow.collector.utils;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.utils.ParaFlowConfig;
 
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,19 +12,19 @@ import java.util.regex.Pattern;
  *
  * @author guodong
  */
-public class ProducerConfig
+public class CollectorConfig
 {
     private ParaFlowConfig paraflowConfig;
 
-    private ProducerConfig()
+    private CollectorConfig()
     {}
 
     private static class MetaConfigHolder
     {
-        private static final ProducerConfig instance = new ProducerConfig();
+        private static final CollectorConfig instance = new CollectorConfig();
     }
 
-    public static final ProducerConfig INSTANCE()
+    public static final CollectorConfig INSTANCE()
     {
         return MetaConfigHolder.instance;
     }
@@ -59,6 +60,11 @@ public class ProducerConfig
         return true;
     }
 
+    public Properties getProperties()
+    {
+        return paraflowConfig.getProperties();
+    }
+
     public int getMetaServerPort()
     {
         return Integer.parseInt(paraflowConfig.getProperty("meta.server.port"));
@@ -86,47 +92,47 @@ public class ProducerConfig
 
     public String getKafkaBootstrapServers()
     {
-        return paraflowConfig.getProperty("kafka.bootstrap.servers");
+        return paraflowConfig.getProperty("bootstrap.servers");
     }
 
     public String getKafkaAcks()
     {
-        return paraflowConfig.getProperty("kafka.acks");
+        return paraflowConfig.getProperty("acks");
     }
 
     public int getKafkaRetries()
     {
-        return Integer.parseInt(paraflowConfig.getProperty("kafka.retries"));
+        return Integer.parseInt(paraflowConfig.getProperty("retries"));
     }
 
     public int getKafkaBatchSize()
     {
-        return Integer.parseInt(paraflowConfig.getProperty("kafka.batch.size"));
+        return Integer.parseInt(paraflowConfig.getProperty("batch.size"));
     }
 
     public int getKafkaLingerMs()
     {
-        return Integer.parseInt(paraflowConfig.getProperty("kafka.linger.ms"));
+        return Integer.parseInt(paraflowConfig.getProperty("linger.ms"));
     }
 
     public int getKafkaBufferMem()
     {
-        return Integer.parseInt(paraflowConfig.getProperty("kafka.buffer.memory"));
+        return Integer.parseInt(paraflowConfig.getProperty("buffer.memory"));
     }
 
     public String getKafkaKeySerializerClass()
     {
-        return paraflowConfig.getProperty("kafka.key.serializer");
+        return paraflowConfig.getProperty("key.serializer");
     }
 
     public String getKafkaValueSerializerClass()
     {
-        return paraflowConfig.getProperty("kafka.value.serializer");
+        return paraflowConfig.getProperty("value.serializer");
     }
 
     public String getKafkaPartitionerClass()
     {
-        return paraflowConfig.getProperty("kafka.partitioner");
+        return paraflowConfig.getProperty("partitioner");
     }
 
     public int getProducerShutdownTimeout()

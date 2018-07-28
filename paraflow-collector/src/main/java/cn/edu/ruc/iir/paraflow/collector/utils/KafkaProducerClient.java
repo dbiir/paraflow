@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.producer.utils;
+package cn.edu.ruc.iir.paraflow.collector.utils;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -19,7 +19,7 @@ public class KafkaProducerClient
     public KafkaProducerClient()
     {
         Properties props = new Properties();
-        ProducerConfig config = ProducerConfig.INSTANCE();
+        CollectorConfig config = CollectorConfig.INSTANCE();
         props.put("bootstrap.servers", config.getKafkaBootstrapServers());
         props.put("acks", config.getKafkaAcks());
         props.put("retries", config.getKafkaRetries());

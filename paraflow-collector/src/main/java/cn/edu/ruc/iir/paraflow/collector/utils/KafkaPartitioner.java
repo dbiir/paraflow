@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.producer.utils;
+package cn.edu.ruc.iir.paraflow.collector.utils;
 
 import org.apache.kafka.clients.producer.Partitioner;
 import org.apache.kafka.common.Cluster;

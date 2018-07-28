@@ -1,13 +1,9 @@
-package cn.edu.ruc.iir.paraflow.loader.producer;
+package cn.edu.ruc.iir.paraflow.collector;
 
+import cn.edu.ruc.iir.paraflow.collector.utils.CollectorConfig;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
-import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
-import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
-import cn.edu.ruc.iir.paraflow.loader.producer.buffer.BlockingQueueBuffer;
-import cn.edu.ruc.iir.paraflow.loader.producer.threads.ProducerThreadManager;
-import cn.edu.ruc.iir.paraflow.loader.producer.utils.ProducerConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
@@ -27,20 +23,21 @@ import java.util.function.Function;
  *
  * @author guodong
  */
-public class DefaultCollector implements Collector
+public class DefaultCollector<T>
+        implements Collector<T>
 {
     private final MetaClient metaClient;
     private final AdminClient kafkaAdminClient;
-    private final BlockingQueueBuffer buffer = BlockingQueueBuffer.INSTANCE();
-    private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();
-    private final long offerTimeout;
+    private final CollectorEnvironment env = CollectorEnvironment.getEnvironment();
+    private final CollectorConfig collectorConfig;
 
-    public DefaultCollector(String configPath) throws ConfigFileNotFoundException
+    public DefaultCollector(String configPath)
+            throws ConfigFileNotFoundException
     {
-        ProducerConfig config = ProducerConfig.INSTANCE();
-            config.init(configPath);
-            config.validate();
-        this.offerTimeout = config.getBufferOfferTimeout();
+        CollectorConfig config = CollectorConfig.INSTANCE();
+        config.init(configPath);
+        config.validate();
+        this.collectorConfig = config;
         // init meta client
         metaClient = new MetaClient(config.getMetaServerHost(),
                 config.getMetaServerPort());
@@ -55,30 +52,29 @@ public class DefaultCollector implements Collector
 
     private void init()
     {
-        // todo init meta cache
-        ProducerThreadManager.INSTANCE().init();
         // register shutdown hook
         Runtime.getRuntime().addShutdownHook(
                 new Thread(this::beforeShutdown)
         );
         Runtime.getRuntime().addShutdownHook(
-                new Thread(ProducerThreadManager.INSTANCE()::shutdown)
+                new Thread(CollectorRuntime::destroy)
         );
-        ProducerThreadManager.INSTANCE().run();
     }
 
     @Override
-    public void send(String database, String table, Message message)
+    public void collect(DataSource dataSource, int keyIdx, int timeIdx,
+                        ParaflowFiberPartitioner partitioner,
+                        MessageSerializationSchema<T> serializer,
+                        DataSink dataSink)
     {
-        message.setTopic(FormTopicName.formTopicName(database, table));
-        while (true) {
-            try {
-                buffer.offer(message, offerTimeout);
-                break;
-            }
-            catch (InterruptedException ignored) {
-            }
-        }
+        DataFlow<T> dataFlow = env.addSource(dataSource);
+        FiberFlow<T> fiberFlow = dataFlow
+                .keyBy(keyIdx)
+                .timeBy(timeIdx)
+                .sink(dataSink)
+                .partitionBy(partitioner)
+                .serializeBy(serializer);
+        CollectorRuntime.run(fiberFlow, collectorConfig.getProperties());
     }
 
     @Override
@@ -160,7 +156,6 @@ public class DefaultCollector implements Collector
     @Override
     public void registerFiberFunc(String database, String table, Function<String, Integer> fiberFunc)
     {
-        funcMapBuffer.put(FormTopicName.formTopicName(database, table), fiberFunc);
     }
 
 //    @Override
@@ -192,7 +187,7 @@ public class DefaultCollector implements Collector
     {
         kafkaAdminClient.close();
         try {
-            metaClient.shutdown(ProducerConfig.INSTANCE().getMetaClientShutdownTimeout());
+            metaClient.shutdown(CollectorConfig.INSTANCE().getMetaClientShutdownTimeout());
         }
         catch (InterruptedException e) {
             metaClient.shutdownNow();

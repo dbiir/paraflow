@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.producer;
+package cn.edu.ruc.iir.paraflow.collector;
 
 /**
  * collector environment
@@ -15,8 +15,8 @@ public class CollectorEnvironment
         return new CollectorEnvironment();
     }
 
-    public <T> DataFlow<T> addSource(DataSource<T> source)
+    public <T> DataFlow<T> addSource(DataSource source)
     {
-        return null;
+        return new FiberFlow<>(source.getName(), source);
     }
 }
