@@ -1,5 +1,23 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package cn.edu.ruc.iir.paraflow.connector;
 
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowColumnHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowDatabase;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableLayoutHandle;
+import cn.edu.ruc.iir.paraflow.connector.impl.ParaflowMetaDataReader;
 import com.facebook.presto.spi.ColumnHandle;
 import com.facebook.presto.spi.ColumnMetadata;
 import com.facebook.presto.spi.ConnectorSession;
@@ -14,6 +32,7 @@ import com.facebook.presto.spi.SchemaTablePrefix;
 import com.facebook.presto.spi.connector.ConnectorMetadata;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
+import io.airlift.log.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,19 +42,24 @@ import java.util.Optional;
 import java.util.Set;
 
 import static cn.edu.ruc.iir.paraflow.connector.Types.checkType;
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
+/**
+ * @author jelly.guodong.jin@gmail.com
+ */
 public class ParaflowMetadata
 implements ConnectorMetadata
 {
     private final String connectorId;
-    private final ParaflowMetadataClient metadataClient;
+    private final ParaflowMetaDataReader paraflowMetaDataReader;
+    private final Logger logger = Logger.get(ParaflowMetadata.class);
 
     @Inject
-    public ParaflowMetadata(ParaflowMetadataClient metadataClient, ParaflowConnectorId connectorId)
+    public ParaflowMetadata(ParaflowMetaDataReader paraflowMetaDataReader, ParaflowConnectorId connectorId)
     {
         this.connectorId = requireNonNull(connectorId.toString(), "connectorId is null");
-        this.metadataClient = requireNonNull(metadataClient, "paraflowMetadataClient is null");
+        this.paraflowMetaDataReader = requireNonNull(paraflowMetaDataReader, "paraflowMetaDataReader is null");
     }
 
     /**
@@ -46,7 +70,7 @@ implements ConnectorMetadata
     @Override
     public List<String> listSchemaNames(ConnectorSession session)
     {
-        return metadataClient.getAllDatabases();
+        return paraflowMetaDataReader.getAllDatabases();
     }
 
     /**
@@ -58,17 +82,14 @@ implements ConnectorMetadata
     @Override
     public ConnectorTableHandle getTableHandle(ConnectorSession session, SchemaTableName tableName)
     {
-        requireNonNull(tableName, "tableName is null");
-        Optional<ParaflowTableHandle> table = metadataClient.getTableHandle(connectorId,
-                tableName.getSchemaName(), tableName.getTableName());
+        Optional<ParaflowTableHandle> table = paraflowMetaDataReader.getTableHandle(connectorId, tableName.getSchemaName(), tableName.getTableName());
         return table.orElse(null);
     }
 
     /**
      * Return a list of table layouts that satisfy the given constraint.
      * <p>
-     * For each layout, connectors must return an "unenforced constraint" representing the part of the
-     * constraint summary that isn't guaranteed by the layout.
+     * For each layout, connectors must return an "unenforced constraint" representing the part of the constraint summary that isn't guaranteed by the layout.
      *
      * @param session session
      * @param table table
@@ -76,14 +97,13 @@ implements ConnectorMetadata
      * @param desiredColumns desired columns
      */
     @Override
-    public List<ConnectorTableLayoutResult> getTableLayouts(ConnectorSession session, ConnectorTableHandle table,
-                                                            Constraint<ColumnHandle> constraint,
-                                                            Optional<Set<ColumnHandle>> desiredColumns)
+    public List<ConnectorTableLayoutResult> getTableLayouts(ConnectorSession session, ConnectorTableHandle table, Constraint<ColumnHandle> constraint, Optional<Set<ColumnHandle>> desiredColumns)
     {
         // get table name from ConnectorTableHandle
         ParaflowTableHandle paraflowTable = checkType(table, ParaflowTableHandle.class, "table");
+        SchemaTableName tableName = paraflowTable.getSchemaTableName();
         // create ParaflowTableLayoutHandle
-        ParaflowTableLayoutHandle tableLayout = new ParaflowTableLayoutHandle(paraflowTable);
+        ParaflowTableLayoutHandle tableLayout = paraflowMetaDataReader.getTableLayout(connectorId, tableName.getSchemaName(), tableName.getTableName()).orElse(null);
         tableLayout.setPredicates(constraint.getSummary() != null ? Optional.of(constraint.getSummary()) : Optional.empty());
         // ConnectorTableLayout layout = new ConnectorTableLayout(ParaflowTableLayoutHandle)
         ConnectorTableLayout layout = getTableLayout(session, tableLayout);
@@ -94,6 +114,7 @@ implements ConnectorMetadata
     @Override
     public ConnectorTableLayout getTableLayout(ConnectorSession session, ConnectorTableLayoutHandle handle)
     {
+        // TODO add fiber and timestamp as new LocalProperty into ConnectorTableLayout ?
         ParaflowTableLayoutHandle layoutHandle = checkType(handle, ParaflowTableLayoutHandle.class, "tableLayoutHandle");
         return new ConnectorTableLayout(layoutHandle);
     }
@@ -108,14 +129,15 @@ implements ConnectorMetadata
     @Override
     public ConnectorTableMetadata getTableMetadata(ConnectorSession session, ConnectorTableHandle table)
     {
-        ParaflowTableHandle paraflowTable = checkType(table, ParaflowTableHandle.class, "table");
-        SchemaTableName tableName = paraflowTable.getSchemaTableName();
+        ParaflowTableHandle paraflowTable = (ParaflowTableHandle)table;
+        checkArgument(paraflowTable.getConnectorId().equals(connectorId), "tableHandle is not for this connector");
+        SchemaTableName tableName = new SchemaTableName(paraflowTable.getSchemaName(), paraflowTable.getTableName());
         return getTableMetadata(tableName);
     }
 
     private ConnectorTableMetadata getTableMetadata(SchemaTableName tableName)
     {
-        List<ColumnMetadata> columns = metadataClient.getTableColMetadata(connectorId, tableName.getSchemaName(),
+        List<ColumnMetadata> columns = paraflowMetaDataReader.getTableColMetadata(connectorId, tableName.getSchemaName(),
                 tableName.getTableName()).orElse(new ArrayList<>());
         return new ConnectorTableMetadata(tableName, columns);
     }
@@ -129,10 +151,24 @@ implements ConnectorMetadata
     @Override
     public List<SchemaTableName> listTables(ConnectorSession session, String schemaNameOrNull)
     {
-        if (schemaNameOrNull == null) {
-            return new ArrayList<>();
+        List<String> schemaNames;
+        if (schemaNameOrNull != null)
+        {
+            schemaNames = ImmutableList.of(schemaNameOrNull);
+        } else
+        {
+            schemaNames = paraflowMetaDataReader.getAllDatabases();
         }
-        return metadataClient.listTables(new SchemaTablePrefix(schemaNameOrNull));
+
+        ImmutableList.Builder<SchemaTableName> builder = ImmutableList.builder();
+        for (String schemaName : schemaNames)
+        {
+            for (String tableName : paraflowMetaDataReader.getTableNames(schemaName))
+            {
+                builder.add(new SchemaTableName(schemaName, tableName));
+            }
+        }
+        return builder.build();
     }
 
     /**
@@ -146,7 +182,7 @@ implements ConnectorMetadata
     public Map<String, ColumnHandle> getColumnHandles(ConnectorSession session, ConnectorTableHandle tableHandle)
     {
         ParaflowTableHandle table = checkType(tableHandle, ParaflowTableHandle.class, "table");
-        List<ParaflowColumnHandle> cols = metadataClient.getTableColumnHandle(connectorId, table.getSchemaName(), table.getTableName())
+        List<ParaflowColumnHandle> cols = paraflowMetaDataReader.getTableColumnHandle(connectorId, table.getSchemaName(), table.getTableName())
                 .orElse(new ArrayList<>());
         Map<String, ColumnHandle> columnMap = new HashMap<>();
         for (ParaflowColumnHandle col : cols) {
@@ -180,9 +216,9 @@ implements ConnectorMetadata
     public Map<SchemaTableName, List<ColumnMetadata>> listTableColumns(ConnectorSession session, SchemaTablePrefix prefix)
     {
         Map<SchemaTableName, List<ColumnMetadata>> tableColumns = new HashMap<>();
-        List<SchemaTableName> tableNames = metadataClient.listTables(prefix);
+        List<SchemaTableName> tableNames = paraflowMetaDataReader.listTables(prefix);
         for (SchemaTableName table : tableNames) {
-            List<ColumnMetadata> columnMetadatas = metadataClient.getTableColMetadata(connectorId, table.getSchemaName(),
+            List<ColumnMetadata> columnMetadatas = paraflowMetaDataReader.getTableColMetadata(connectorId, table.getSchemaName(),
                     table.getTableName()).orElse(new ArrayList<>());
             tableColumns.putIfAbsent(table, columnMetadatas);
         }
@@ -200,6 +236,27 @@ implements ConnectorMetadata
     public void createSchema(ConnectorSession session, String schemaName, Map<String, Object> properties)
     {
         ParaflowDatabase database = new ParaflowDatabase(schemaName);
-        metadataClient.createDatabase(session, database);
+        paraflowMetaDataReader.createDatabase(session, database);
     }
+
+    /**
+     * Creates a table using the specified table metadata.
+     *
+     * @param session sesion
+     * @param tableMetadata table metadata
+     */
+//    @Override
+//    public void createTable(ConnectorSession session, ConnectorTableMetadata tableMetadata)
+//    {
+//        paraflowMetaDataReader.createTable(session, tableMetadata);
+//    }
+//
+//    /**
+//     * Creates a table with fiber
+//     * */
+//    @Override
+//    public void createTableWithFiber(ConnectorSession session, ConnectorTableMetadata tableMetadata, String fiberKey, String function, String timeKey)
+//    {
+//        paraflowMetaDataReader.createTableWithFiber(session, tableMetadata, fiberKey, function, timeKey);
+//    }
 }

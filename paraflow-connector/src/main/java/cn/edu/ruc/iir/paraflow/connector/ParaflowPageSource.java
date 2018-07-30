@@ -14,6 +14,7 @@
 package cn.edu.ruc.iir.paraflow.connector;
 
 import cn.edu.ruc.iir.paraflow.connector.exception.ParaflowCursorException;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowColumnHandle;
 import com.facebook.presto.hive.parquet.ParquetDataSource;
 import com.facebook.presto.hive.parquet.ParquetTypeUtils;
 import com.facebook.presto.hive.parquet.RichColumnDescriptor;
@@ -46,7 +47,7 @@ import static java.util.Objects.requireNonNull;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowPageSource
-implements ConnectorPageSource
+        implements ConnectorPageSource
 {
     private static final int MAX_VECTOR_LENGTH = 1024;
     private static final long GUESSED_MEMORY_USAGE = new DataSize(16, DataSize.Unit.MEGABYTE).toBytes();
@@ -107,7 +108,7 @@ implements ConnectorPageSource
      * This is normally the same size as the split.  If size is not available,
      * this method should return zero.
      */
-    @Override
+//    @Override
     public long getTotalBytes()
     {
         return totalBytes;
@@ -272,7 +273,7 @@ implements ConnectorPageSource
     }
 
     private final class ParquetBlockLoader
-    implements LazyBlockLoader<LazyBlock>
+            implements LazyBlockLoader<LazyBlock>
     {
         private final int expectedBatchId = batchId;
         private final ColumnDescriptor columnDescriptor;

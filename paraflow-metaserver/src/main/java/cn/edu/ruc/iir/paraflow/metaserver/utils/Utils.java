@@ -28,11 +28,11 @@ public class Utils
             base = base + "/";
         }
         if (dbName.startsWith("/")) {
-            dbName = dbName.substring(1, dbName.length()) + "/";
+            dbName = dbName.substring(1, dbName.length());
         }
         if (tblName.startsWith("/")) {
             tblName = tblName.substring(1, tblName.length());
         }
-        return base + dbName + tblName;
+        return base + dbName + "/" + tblName;
     }
 }

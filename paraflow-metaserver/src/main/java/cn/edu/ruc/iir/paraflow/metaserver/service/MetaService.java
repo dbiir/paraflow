@@ -28,6 +28,7 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.DeleteTblPrivAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.FilterBlockIndexAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.FilterBlockIndexByFiberAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetColumnAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.GetColumnNameAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDatabaseAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDatabaseIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDbParamAction;
@@ -45,6 +46,7 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.GetUserIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetUserNameAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.ListColumnsAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.ListColumnsDataTypeAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.ListColumnsIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.ListDatabasesAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.ListTablesAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.RenameColumnAction;
@@ -255,6 +257,43 @@ public class MetaService extends MetaGrpc.MetaImplBase
             }
         }
     }
+
+    @Override
+    public void listColumnsId(MetaProto.DbTblParam dbTblParam,
+                            StreamObserver<MetaProto.StringListType> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(dbTblParam);
+            input.setProperties("dbName", dbTblParam.getDatabase().getDatabase());
+            input.setProperties("tblName", dbTblParam.getTable().getTable());
+            txController.setAutoCommit(true);
+            txController.addAction(new GetDatabaseIdAction());
+            txController.addAction(new GetTableIdAction());
+            txController.addAction(new ListColumnsIdAction());
+            ActionResponse result = txController.commit(input);
+            MetaProto.StringListType stringListType =
+                    (MetaProto.StringListType) result.getParam().get();
+            responseStreamObserver.onNext(stringListType);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            MetaProto.StringListType stringList = MetaProto.StringListType.newBuilder()
+                    .setIsEmpty(true)
+                    .build();
+            responseStreamObserver.onNext(stringList);
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+
     @Override
     public void listColumnsDataType(MetaProto.DbTblParam dbTblParam,
                                        StreamObserver<MetaProto.StringListType> responseStreamObserver)
@@ -391,6 +430,39 @@ public class MetaService extends MetaGrpc.MetaImplBase
         catch (ParaFlowException e) {
             MetaProto.ColParam colParam = MetaProto.ColParam.newBuilder()
                     .setIsEmpty(true)
+                    .build();
+            responseStreamObserver.onNext(colParam);
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+
+    @Override
+    public void getColumnName(MetaProto.DbTblColIdParam dbTblColIdParam,
+                          StreamObserver<MetaProto.ColNameParam> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(dbTblColIdParam);
+            input.setProperties("dbId", dbTblColIdParam.getDbId());
+            input.setProperties("tblId", dbTblColIdParam.getTblId());
+            input.setProperties("colId", dbTblColIdParam.getColId());
+            txController.setAutoCommit(true);
+            txController.addAction(new GetColumnNameAction());
+            ActionResponse result = txController.commit(input);
+            MetaProto.ColNameParam colParam = (MetaProto.ColNameParam) result.getParam().get();
+            responseStreamObserver.onNext(colParam);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            MetaProto.ColNameParam colParam = MetaProto.ColNameParam.newBuilder()
                     .build();
             responseStreamObserver.onNext(colParam);
             responseStreamObserver.onCompleted();

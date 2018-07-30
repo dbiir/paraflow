@@ -16,33 +16,23 @@ package cn.edu.ruc.iir.paraflow.connector;
 import cn.edu.ruc.iir.paraflow.connector.exception.TableNotFoundException;
 import cn.edu.ruc.iir.paraflow.connector.function.Function;
 import cn.edu.ruc.iir.paraflow.connector.function.Function0;
-import com.facebook.presto.spi.ColumnHandle;
-import com.facebook.presto.spi.ConnectorSession;
-import com.facebook.presto.spi.ConnectorSplit;
-import com.facebook.presto.spi.ConnectorSplitSource;
-import com.facebook.presto.spi.ConnectorTableLayoutHandle;
-import com.facebook.presto.spi.FixedSplitSource;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableLayoutHandle;
+import cn.edu.ruc.iir.paraflow.connector.impl.ParaflowMetaDataReader;
+import com.facebook.presto.spi.*;
 import com.facebook.presto.spi.connector.ConnectorSplitManager;
 import com.facebook.presto.spi.connector.ConnectorTransactionHandle;
-import com.facebook.presto.spi.predicate.Domain;
-import com.facebook.presto.spi.predicate.Marker;
-import com.facebook.presto.spi.predicate.Range;
-import com.facebook.presto.spi.predicate.SortedRangeSet;
-import com.facebook.presto.spi.predicate.TupleDomain;
-import com.facebook.presto.spi.predicate.ValueSet;
+import com.facebook.presto.spi.predicate.*;
 import com.google.inject.Inject;
 import io.airlift.slice.Slice;
 import org.apache.hadoop.fs.Path;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static cn.edu.ruc.iir.paraflow.connector.Types.checkType;
 import static java.util.Objects.requireNonNull;
+
 /**
  * @author jelly.guodong.jin@gmail.com
  */
@@ -50,13 +40,13 @@ public class ParaflowSplitManager
 implements ConnectorSplitManager
 {
     private final ParaflowConnectorId connectorId;
-    private final ParaflowMetadataClient metaDataQuer;
+    private final ParaflowMetaDataReader metaDataQuer;
     private final FSFactory fsFactory;
 
     @Inject
     public ParaflowSplitManager(
             ParaflowConnectorId connectorId,
-            ParaflowMetadataClient metaDataQuer,
+            ParaflowMetaDataReader metaDataQuer,
             FSFactory fsFactory)
     {
         this.connectorId = requireNonNull(connectorId, "connectorId is null");

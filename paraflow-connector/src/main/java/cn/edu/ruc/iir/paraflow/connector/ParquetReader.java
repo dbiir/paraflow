@@ -19,14 +19,15 @@ import com.facebook.presto.hive.parquet.RichColumnDescriptor;
 import com.facebook.presto.hive.parquet.reader.ParquetColumnChunk;
 import com.facebook.presto.hive.parquet.reader.ParquetColumnChunkDescriptor;
 import com.facebook.presto.hive.parquet.reader.ParquetColumnReader;
-import com.facebook.presto.spi.block.ArrayBlock;
 import com.facebook.presto.spi.block.Block;
-import com.facebook.presto.spi.block.InterleavedBlock;
+import com.facebook.presto.spi.block.RowBlock;
 import com.facebook.presto.spi.block.RunLengthEncodedBlock;
 import com.facebook.presto.spi.type.NamedTypeSignature;
 import com.facebook.presto.spi.type.Type;
 import com.facebook.presto.spi.type.TypeManager;
 import com.facebook.presto.spi.type.TypeSignatureParameter;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import parquet.column.ColumnDescriptor;
 import parquet.hadoop.metadata.BlockMetaData;
 import parquet.hadoop.metadata.ColumnChunkMetaData;
@@ -46,8 +47,6 @@ import static com.facebook.presto.hive.parquet.ParquetTypeUtils.getDescriptor;
 import static com.facebook.presto.hive.parquet.ParquetValidationUtils.validateParquet;
 import static com.facebook.presto.spi.type.StandardTypes.ROW;
 import static com.google.common.primitives.Ints.checkedCast;
-import static io.airlift.slice.Slices.allocate;
-import static io.airlift.slice.Slices.wrappedIntArray;
 import static java.lang.Math.min;
 
 public class ParquetReader
@@ -129,7 +128,7 @@ public class ParquetReader
         return true;
     }
 
-    public ArrayBlock readStruct(Type type, List<String> path)
+    public Block readStruct(Type type, List<String> path)
             throws IOException
     {
         List<TypeSignatureParameter> parameters = type.getTypeSignature().getParameters();
@@ -155,15 +154,21 @@ public class ParquetReader
             path.remove(name);
         }
 
-        InterleavedBlock interleavedBlock = new InterleavedBlock(blocks);
+        int blockSize = blocks[0].getPositionCount();
         int[] offsets = new int[batchSize];
         for (int i = 0; i < batchSize; i++) {
             offsets[i] = (i + 1) * parameters.size();
         }
-        return new ArrayBlock(interleavedBlock, wrappedIntArray(offsets), 0, allocate(batchSize));
+        return new RowBlock(0, blockSize, new boolean[blockSize], offsets, blocks);
     }
 
     public Block readPrimitive(ColumnDescriptor columnDescriptor, Type type)
+            throws IOException
+    {
+        return readPrimitive(columnDescriptor, type, new IntArrayList());
+    }
+
+    public Block readPrimitive(ColumnDescriptor columnDescriptor, Type type, IntList offsets)
             throws IOException
     {
         ParquetColumnReader columnReader = columnReadersMap.get(columnDescriptor);
@@ -178,7 +183,7 @@ public class ParquetReader
             ParquetColumnChunk columnChunk = new ParquetColumnChunk(descriptor, buffer, 0);
             columnReader.setPageReader(columnChunk.readAllPages());
         }
-        return columnReader.readPrimitive(type);
+        return columnReader.readPrimitive(type, offsets);
     }
 
     private ColumnChunkMetaData getColumnChunkMetaData(ColumnDescriptor columnDescriptor)

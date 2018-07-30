@@ -13,6 +13,7 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
+import cn.edu.ruc.iir.paraflow.connector.impl.ParaflowMetaDataReader;
 import com.google.inject.Inject;
 
 import static java.util.Objects.requireNonNull;
@@ -23,22 +24,22 @@ import static java.util.Objects.requireNonNull;
 public class ParaflowMetadataFactory
 {
     private final ParaflowConnectorId connectorId;
-    private final ParaflowMetadataClient metaDataClient;
+    private final ParaflowMetaDataReader metaDataQuer;
 
     @Inject
-    public ParaflowMetadataFactory(ParaflowConnectorId connectorId, ParaflowMetadataClient metaDataClient)
+    public ParaflowMetadataFactory(ParaflowConnectorId connectorId, ParaflowMetaDataReader metaDataQuer)
     {
         this.connectorId = requireNonNull(connectorId, "connectorId is null");
-        this.metaDataClient = requireNonNull(metaDataClient, "metaServer is null");
+        this.metaDataQuer = requireNonNull(metaDataQuer, "metaServer is null");
     }
 
     public ParaflowMetadata create()
     {
-        return new ParaflowMetadata(metaDataClient, connectorId);
+        return new ParaflowMetadata(metaDataQuer, connectorId);
     }
 
     public void shutdown()
     {
-        metaDataClient.shutdown();
+        metaDataQuer.shutdown();
     }
 }

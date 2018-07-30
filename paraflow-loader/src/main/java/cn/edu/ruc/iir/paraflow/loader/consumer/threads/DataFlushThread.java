@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
 
+import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.BufferSegment;
 import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.FlushQueueBuffer;
 import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
@@ -21,6 +22,20 @@ public abstract class DataFlushThread extends DataThread
     {
         super(threadName);
         ConsumerConfig config = ConsumerConfig.INSTANCE();
+        metaClient = new MetaClient(config.getMetaServerHost(),
+                config.getMetaServerPort());
+    }
+
+    public DataFlushThread(String threadName, String configPath)
+    {
+        super(threadName);
+        ConsumerConfig config = ConsumerConfig.INSTANCE();
+        try {
+            config.init(configPath);
+        }
+        catch (ConfigFileNotFoundException e) {
+            e.printStackTrace();
+        }
         metaClient = new MetaClient(config.getMetaServerHost(),
                 config.getMetaServerPort());
     }
