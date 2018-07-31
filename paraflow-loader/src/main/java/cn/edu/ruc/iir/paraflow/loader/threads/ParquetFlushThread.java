@@ -1,7 +1,7 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
+package cn.edu.ruc.iir.paraflow.loader.threads;
 
-import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.BufferSegment;
-import cn.edu.ruc.iir.paraflow.loader.consumer.utils.FileNameGenerator;
+import cn.edu.ruc.iir.paraflow.loader.buffer.BufferSegment;
+import cn.edu.ruc.iir.paraflow.loader.utils.FileNameGenerator;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;

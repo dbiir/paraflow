@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer;
+package cn.edu.ruc.iir.paraflow.loader;
 
 import java.util.function.Function;
 

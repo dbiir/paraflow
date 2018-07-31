@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer.utils;
+package cn.edu.ruc.iir.paraflow.loader.utils;
 
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;

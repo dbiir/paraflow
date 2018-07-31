@@ -1,6 +1,6 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
+package cn.edu.ruc.iir.paraflow.loader.threads;
 
-import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.BufferSegment;
+import cn.edu.ruc.iir.paraflow.loader.buffer.BufferSegment;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;

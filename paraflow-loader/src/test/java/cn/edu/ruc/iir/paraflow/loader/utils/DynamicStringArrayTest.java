@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer.utils;
+package cn.edu.ruc.iir.paraflow.loader.utils;
 
 import org.junit.Test;
 

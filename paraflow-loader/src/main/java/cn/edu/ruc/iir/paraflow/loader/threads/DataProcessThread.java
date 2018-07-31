@@ -1,10 +1,10 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
+package cn.edu.ruc.iir.paraflow.loader.threads;
 
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
-import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.BufferPool;
-import cn.edu.ruc.iir.paraflow.loader.consumer.buffer.ReceiveQueueBuffer;
-import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
+import cn.edu.ruc.iir.paraflow.loader.buffer.BufferPool;
+import cn.edu.ruc.iir.paraflow.loader.buffer.ReceiveQueueBuffer;
+import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer.utils;
+package cn.edu.ruc.iir.paraflow.loader.utils;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import org.apache.kafka.clients.consumer.Consumer;

@@ -1,9 +1,9 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer.example;
+package cn.edu.ruc.iir.paraflow.loader.example;
 
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.func.DeserializableFunction;
-import cn.edu.ruc.iir.paraflow.loader.consumer.DefaultConsumer;
+import cn.edu.ruc.iir.paraflow.loader.DefaultConsumer;
 import org.apache.kafka.common.TopicPartition;
 
 import java.util.LinkedList;

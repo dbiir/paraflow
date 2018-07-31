@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer.utils;
+package cn.edu.ruc.iir.paraflow.loader.utils;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.utils.ParaFlowConfig;
 
@@ -62,7 +62,7 @@ public class ConsumerConfig
 
     public String getKafkaBootstrapServers()
     {
-        return paraflowConfig.getProperty("kafka.bootstrap.servers");
+        return paraflowConfig.getProperty("bootstrap.servers");
     }
 
     public int getMetaServerPort()

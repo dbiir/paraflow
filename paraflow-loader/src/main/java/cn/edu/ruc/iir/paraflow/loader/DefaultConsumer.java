@@ -1,11 +1,11 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer;
+package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
 import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
-import cn.edu.ruc.iir.paraflow.loader.consumer.threads.DataThreadManager;
-import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
+import cn.edu.ruc.iir.paraflow.loader.threads.DataThreadManager;
+import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.TopicPartition;
 

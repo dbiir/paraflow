@@ -1,8 +1,8 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
+package cn.edu.ruc.iir.paraflow.loader.threads;
 
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
-import cn.edu.ruc.iir.paraflow.loader.consumer.utils.ConsumerConfig;
-import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageSizeCalculator;
+import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
+import cn.edu.ruc.iir.paraflow.loader.utils.MessageSizeCalculator;
 import org.apache.kafka.common.TopicPartition;
 
 import java.util.LinkedList;

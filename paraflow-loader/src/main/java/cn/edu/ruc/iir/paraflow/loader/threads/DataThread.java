@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer.threads;
+package cn.edu.ruc.iir.paraflow.loader.threads;
 
 /**
  * paraflow

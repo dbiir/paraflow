@@ -1,8 +1,8 @@
-package cn.edu.ruc.iir.paraflow.loader.consumer.buffer;
+package cn.edu.ruc.iir.paraflow.loader.buffer;
 
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
-import cn.edu.ruc.iir.paraflow.loader.consumer.utils.MessageSizeCalculator;
+import cn.edu.ruc.iir.paraflow.loader.utils.MessageSizeCalculator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -94,16 +94,16 @@ public class BufferPool
                 continue;
             }
             fiberMessages.sort((o1, o2) -> {
-                if (o1.getTimestamp().get().equals(o2.getTimestamp().get())) {
+                if (o1.getTimestamp() == (o2.getTimestamp())) {
                     return 0;
                 }
-                return o1.getTimestamp().get() > o2.getTimestamp().get() ? 1 : -1;
+                return o1.getTimestamp() > o2.getTimestamp() ? 1 : -1;
             });
             timestamps[TIMESTAMP_STRIDE * index + BEGIN_TIME_OFFSET] =
-                    fiberMessages.get(0).getTimestamp().get();
+                    fiberMessages.get(0).getTimestamp();
             timestamps[TIMESTAMP_STRIDE * index + END_TIME_OFFSET] =
-                    fiberMessages.get(fiberMessages.size() - 1).getTimestamp().get();
-            fiberMessages.forEach(msg -> segment.addValue(msg.getValue()));
+                    fiberMessages.get(fiberMessages.size() - 1).getTimestamp();
+            fiberMessages.forEach(msg -> segment.addValue(new String[0]));
             fiberMessages.clear();
             index++;
         }
