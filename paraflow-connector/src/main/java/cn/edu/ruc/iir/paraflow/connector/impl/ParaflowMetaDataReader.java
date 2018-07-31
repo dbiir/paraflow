@@ -1,63 +1,52 @@
-package cn.edu.ruc.iir.paraflow.connector;
+package cn.edu.ruc.iir.paraflow.connector.impl;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
+import cn.edu.ruc.iir.paraflow.commons.utils.ConfigFactory;
+import cn.edu.ruc.iir.paraflow.connector.StorageFormat;
 import cn.edu.ruc.iir.paraflow.connector.function.Function;
 import cn.edu.ruc.iir.paraflow.connector.function.Function0;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowColumnHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowDatabase;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableHandle;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableLayoutHandle;
 import cn.edu.ruc.iir.paraflow.connector.type.UnknownType;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
-import com.facebook.presto.spi.ColumnMetadata;
-import com.facebook.presto.spi.ConnectorSession;
-import com.facebook.presto.spi.ConnectorTableMetadata;
-import com.facebook.presto.spi.SchemaTableName;
-import com.facebook.presto.spi.SchemaTablePrefix;
-import com.facebook.presto.spi.type.BigintType;
-import com.facebook.presto.spi.type.BooleanType;
-import com.facebook.presto.spi.type.CharType;
-import com.facebook.presto.spi.type.DateType;
-import com.facebook.presto.spi.type.DecimalType;
-import com.facebook.presto.spi.type.DoubleType;
-import com.facebook.presto.spi.type.IntegerType;
-import com.facebook.presto.spi.type.RealType;
-import com.facebook.presto.spi.type.SmallintType;
-import com.facebook.presto.spi.type.TimeType;
-import com.facebook.presto.spi.type.TimestampType;
-import com.facebook.presto.spi.type.TinyintType;
-import com.facebook.presto.spi.type.Type;
-import com.facebook.presto.spi.type.VarcharType;
+import com.facebook.presto.spi.*;
+import com.facebook.presto.spi.type.*;
+import com.google.inject.Inject;
 import io.airlift.log.Logger;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static cn.edu.ruc.iir.paraflow.commons.proto.StatusProto.ResponseStatus.State.STATUS_OK;
 import static java.util.Objects.requireNonNull;
 
-public class ParaflowMetadataClient
+public class ParaflowMetaDataReader
 {
-    private static final Logger logger = Logger.get(ParaflowMetadataClient.class);
-    private final MetaClient metaClient = new MetaClient("127.0.0.1", 10012);
-    FSFactory fsFactory;
-
-    private FileSystem fileSystem;
+    private static final Logger log = Logger.get(ParaflowMetaDataReader.class);
+    private static final Map<String, String> sqlTable = new HashMap<>();
+    private final MetaClient metaClient;
+    private final ParaflowPrestoConfig config;
 
     // read config. check if meta table already exists in database, or else initialize tables.
-    public ParaflowMetadataClient(FSFactory fsFactory)
+    @Inject
+    public ParaflowMetaDataReader(ParaflowPrestoConfig config)
     {
-        this.fsFactory = fsFactory;
-        fileSystem = fsFactory.getFS().get();
+        this.config = config;
+        ConfigFactory configFactory = config.getFactory();
+        String host = configFactory.getProperty("metadata.server.host");
+        int port = Integer.parseInt(configFactory.getProperty("metadata.server.port"));
+        this.metaClient = new MetaClient(host, port);
     }
 
     public List<String> getAllDatabases()
     {
         MetaProto.StringListType stringList = metaClient.listDatabases();
-        logger.debug("Get all databases");
+        log.debug("Get all databases");
         List<String> resultL = new ArrayList<>();
         int count = stringList.getStrCount();
         for (int i = 0; i < count; i++) {
@@ -68,11 +57,11 @@ public class ParaflowMetadataClient
 
     private String getDatabaseId(String db)
     {
-        logger.debug("Get database " + db);
+        log.debug("Get database " + db);
         MetaProto.DbParam dbParam = metaClient.getDatabase(db);
 
         if (dbParam.getIsEmpty()) {
-            logger.debug("Find no database with name " + db);
+            log.debug("Find no database with name " + db);
             return null;
         }
 
@@ -81,12 +70,12 @@ public class ParaflowMetadataClient
 
     public List<SchemaTableName> listTables(SchemaTablePrefix prefix)
     {
-        logger.info("List all tables with prefix " + prefix.toString());
+        log.info("List all tables with prefix " + prefix.toString());
         List<SchemaTableName> tables = new ArrayList<>();
         String dbPrefix = prefix.getSchemaName();
-        logger.debug("listTables dbPrefix: " + dbPrefix);
+        log.debug("listTables dbPrefix: " + dbPrefix);
         String tblPrefix = prefix.getTableName();
-        logger.debug("listTables tblPrefix: " + tblPrefix);
+        log.debug("listTables tblPrefix: " + tblPrefix);
 
         // if dbPrefix not mean to match all
         String tblName;
@@ -98,14 +87,14 @@ public class ParaflowMetadataClient
             }
             else {
                 MetaProto.StringListType stringListType = metaClient.listTables(dbPrefix);
-                logger.info("record size: " + stringListType.getStrCount());
+                log.info("record size: " + stringListType.getStrCount());
                 if (stringListType.getStrCount() == 0) {
                     return tables;
                 }
                 for (int i = 0; i < stringListType.getStrCount(); i++) {
                     tblName = stringListType.getStr(0);
                     dbName = dbPrefix;
-                    logger.debug("listTables tableName: " + formName(dbName, tblName));
+                    log.debug("listTables tableName: " + formName(dbName, tblName));
                     tables.add(new SchemaTableName(dbName, tblName));
                 }
             }
@@ -113,6 +102,53 @@ public class ParaflowMetadataClient
         return tables;
     }
 
+    public List<SchemaTableName> listTables(String dbPrefix)
+    {
+        log.info("List all tables with prefix " + dbPrefix);
+        List<SchemaTableName> tables = new ArrayList<>();
+
+        // if dbPrefix not mean to match all
+        String tblName;
+        String dbName;
+        if (dbPrefix != null) {
+                MetaProto.StringListType stringListType = metaClient.listTables(dbPrefix);
+                log.info("record size: " + stringListType.getStrCount());
+                if (stringListType.getStrCount() == 0) {
+                    return tables;
+                }
+                for (int i = 0; i < stringListType.getStrCount(); i++) {
+                    tblName = stringListType.getStr(0);
+                    dbName = dbPrefix;
+                    log.info("listTables tableName: " + formName(dbName, tblName));
+                    tables.add(new SchemaTableName(dbName, tblName));
+                }
+        }
+        return tables;
+    }
+
+    public List<String> getTableNames(String dbPrefix)
+    {
+        log.info("List all tables with prefix " + dbPrefix);
+        List<String> tables = new ArrayList<>();
+
+        // if dbPrefix not mean to match all
+        String tblName;
+        String dbName;
+        if (dbPrefix != null) {
+            MetaProto.StringListType stringListType = metaClient.listTables(dbPrefix);
+            log.info("record size: " + stringListType.getStrCount());
+            if (stringListType.getStrCount() == 0) {
+                return tables;
+            }
+            for (int i = 0; i < stringListType.getStrCount(); i++) {
+                tblName = stringListType.getStr(i);
+                dbName = dbPrefix;
+                log.info("listTables tableName: " + formName(dbName, tblName));
+                tables.add(tblName);
+            }
+        }
+        return tables;
+    }
     private String getTableId(String dbName, String tblName)
     {
         MetaProto.TblParam tblParam = metaClient.getTable(dbName, tblName);
@@ -158,17 +194,18 @@ public class ParaflowMetadataClient
 //        }
 //        metadatas = metadatasOptional.get();
 //
-//        ParaflowTable hdfsTable = new ParaflowTable(table, tableLayout, columns, metadatas);
-//        return Optional.of(hdfsTable);
+//        ParaflowTable ParaflowTable = new ParaflowTable(table, tableLayout, columns, metadatas);
+//        return Optional.of(ParaflowTable);
 //    }
 
     public Optional<ParaflowTableHandle> getTableHandle(String connectorId, String dbName, String tblName)
     {
-        logger.debug("Get table handle " + formName(dbName, tblName));
+        log.debug("Get table handle " + formName(dbName, tblName));
         ParaflowTableHandle table;
         MetaProto.TblParam tblParam = metaClient.getTable(dbName, tblName);
+        //MetaProto.StringListType paths = metaClient.filterBlockIndex(dbName, tblName, -1, -1);
         if (tblParam.getIsEmpty()) {
-            logger.error("Match more/less than one table");
+            log.error("Match more/less than one table");
             return Optional.empty();
         }
         String location = tblParam.getLocationUrl();
@@ -182,26 +219,26 @@ public class ParaflowMetadataClient
 
     public Optional<ParaflowTableLayoutHandle> getTableLayout(String connectorId, String dbName, String tblName)
     {
-        logger.debug("Get table layout " + formName(dbName, tblName));
+        log.debug("Get table layout " + formName(dbName, tblName));
         ParaflowTableLayoutHandle tableLayout;
         MetaProto.TblParam tblParam = metaClient.getTable(dbName, tblName);
         if (tblParam.getIsEmpty()) {
-            logger.error("Match more/less than one table");
+            log.error("Match more/less than one table");
             return Optional.empty();
         }
         ParaflowTableHandle tableHandle = getTableHandle(connectorId, dbName, tblName).orElse(null);
         if (tableHandle == null) {
-            logger.error("Match no table handle");
+            log.error("Match no table handle");
             return Optional.empty();
         }
-        MetaProto.ColListType colList = tblParam.getColList();
         int fiberColId = tblParam.getFiberColId();
-        String fiberColName = colList.getColumn(fiberColId).getColName();
-        String timeColName = String.valueOf(tblParam.getCreateTime());
+        int timeColId = tblParam.getTimeColId();
+        String fiberColName = metaClient.getColumnName(tblParam.getDbId(), tblParam.getTblId(), fiberColId).getColumn();
+        String timeColName = metaClient.getColumnName(tblParam.getDbId(), tblParam.getTblId(), timeColId).getColumn();
         String fiberFunc = tblParam.getFuncName();
         Function function = parseFunction(fiberFunc);
         if (function == null) {
-            logger.error("Function parse error");
+            log.error("Function parse error");
             return Optional.empty();
         }
 
@@ -222,21 +259,21 @@ public class ParaflowMetadataClient
      * */
     public Optional<List<ParaflowColumnHandle>> getTableColumnHandle(String connectorId, String dbName, String tblName)
     {
-        logger.debug("Get list of column handles of table " + formName(dbName, tblName));
+        log.debug("Get list of column handles of table " + formName(dbName, tblName));
         List<ParaflowColumnHandle> columnHandles = new ArrayList<>();
         String colName;
-        String colTypeName;
+        int colTypeName;
         String dataTypeName;
         MetaProto.StringListType listColumns = metaClient.listColumns(dbName, tblName);
         if (listColumns.getIsEmpty()) {
-            logger.warn("No col matches!");
+            log.warn("No col matches!");
             return Optional.empty();
         }
         for (int i = 0; i < listColumns.getStrCount(); i++) {
             colName = listColumns.getStr(i);
             MetaProto.ColParam colParam = metaClient.getColumn(dbName, tblName, colName);
-            colTypeName = String.valueOf(colParam.getColType());
-            dataTypeName = String.valueOf(colParam.getDataType());
+            colTypeName = colParam.getColType();
+            dataTypeName = colParam.getDataType();
             // Deal with col type
             ParaflowColumnHandle.ColumnType colType = getColType(colTypeName);
             // Deal with data type
@@ -254,22 +291,12 @@ public class ParaflowMetadataClient
     {
         MetaProto.ColParam colParam = metaClient.getColumn(dbName, tblName, colName);
         if (colParam.getIsEmpty()) {
-            logger.error("Match more/less than one column");
+            log.error("Match more/less than one column");
         }
         int colTypeId = colParam.getColType();
-        String colTypeName = "";
-        if (colTypeId == 0) {
-            colTypeName = "REGULAR";
-        }
-        else if (colTypeId == 1) {
-            colTypeName = "FIBER";
-        }
-        else if (colTypeId == 2) {
-            colTypeName = "TIMESTAMP";
-        }
         String dataType = colParam.getDataType();
         // Deal with colType
-        ParaflowColumnHandle.ColumnType colType = getColType(colTypeName);
+        ParaflowColumnHandle.ColumnType colType = getColType(colTypeId);
         // Deal with type
         Type type = getType(dataType);
         return new ParaflowColumnHandle(colName, type, "", colType, connectorId);
@@ -277,12 +304,12 @@ public class ParaflowMetadataClient
 
     public Optional<List<ColumnMetadata>> getTableColMetadata(String connectorId, String dbName, String tblName)
     {
-        logger.debug("Get list of column metadata of table " + formName(dbName, tblName));
+        log.debug("Get list of column metadata of table " + formName(dbName, tblName));
         List<ColumnMetadata> colMetadatas = new ArrayList<>();
         MetaProto.StringListType dataTypeList = metaClient.listColumnsDataType(dbName, tblName);
         MetaProto.StringListType colNameList = metaClient.listColumns(dbName, tblName);
         if (dataTypeList.getIsEmpty() || colNameList.getIsEmpty()) {
-            logger.warn("No col matches!");
+            log.warn("No col matches!");
             return Optional.empty();
         }
         for (int i = 0; i < dataTypeList.getStrCount(); i++) {
@@ -333,7 +360,7 @@ public class ParaflowMetadataClient
     private void createDatabase(ParaflowDatabase database)
     {
         database.setLocation(formPath(database.getName()).toString());
-        logger.debug("Create database " + database.getName());
+        log.debug("Create database " + database.getName());
         createDatabase(database.getName(),
                 database.getLocation());
     }
@@ -342,16 +369,16 @@ public class ParaflowMetadataClient
     {
         StatusProto.ResponseStatus responseStatus = metaClient.createDatabase(dbName, dbPath, " "); //????????????????????????
         if (responseStatus.getStatus() == STATUS_OK) {
-            logger.error("Create database" + dbName + " successed!");
+            log.error("Create database" + dbName + " successed!");
         }
         else {
-            logger.error("Create database" + dbName + " failed!");
+            log.error("Create database" + dbName + " failed!");
         }
     }
 
     public void createTable(ConnectorSession session, ConnectorTableMetadata tableMetadata)
     {
-        logger.debug("Create table " + tableMetadata.getTable().getTableName());
+        log.debug("Create table " + tableMetadata.getTable().getTableName());
         String tblName = tableMetadata.getTable().getTableName();
         String dbName = tableMetadata.getTable().getSchemaName();
         List<ColumnMetadata> columns = tableMetadata.getColumns();
@@ -368,7 +395,7 @@ public class ParaflowMetadataClient
 
     public void createTableWithFiber(ConnectorSession session, ConnectorTableMetadata tableMetadata, String fiberKey, String function, String timeKey)
     {
-        logger.debug("Create table with fiber " + tableMetadata.getTable().getTableName());
+        log.debug("Create table with fiber " + tableMetadata.getTable().getTableName());
         // check fiberKey, function and timeKey
         List<ColumnMetadata> columns = tableMetadata.getColumns();
 //        List<String> columnNames = columns.stream()
@@ -775,21 +802,21 @@ public class ParaflowMetadataClient
         return resultL;
     }
 
-    private ParaflowColumnHandle.ColumnType getColType(String typeName)
+    private ParaflowColumnHandle.ColumnType getColType(int typeName)
     {
-        logger.debug("Get col type " + typeName);
-        switch (typeName.toUpperCase()) {
-            case "FIBER": return ParaflowColumnHandle.ColumnType.FIBER_COL;
-            case "TIME": return ParaflowColumnHandle.ColumnType.TIME_COL;
-            case "REGULAR": return ParaflowColumnHandle.ColumnType.REGULAR;
-            default : logger.error("No match col type!");
+        log.debug("Get col type " + typeName);
+        switch (typeName) {
+            case 1: return ParaflowColumnHandle.ColumnType.FIBER;
+            case 2: return ParaflowColumnHandle.ColumnType.TIMESTAMP;
+            case 0: return ParaflowColumnHandle.ColumnType.REGULAR;
+            default : log.error("No match col type!");
                 return ParaflowColumnHandle.ColumnType.NOTVALID;
         }
     }
 
     private Type getType(String typeName)
     {
-        logger.debug("Get type " + typeName);
+        log.debug("Get type " + typeName);
         typeName = typeName.toLowerCase();
         // check if type is varchar(xx)
         Pattern vcpattern = Pattern.compile("varchar\\(\\s*(\\d+)\\s*\\)");
@@ -848,41 +875,54 @@ public class ParaflowMetadataClient
         return null;
     }
 
+    public Path formPath(String dirOrFile)
+    {
+        String base = this.config.getHDFSWarehouse();
+        String path = dirOrFile;
+        while (base.endsWith("/")) {
+            base = base.substring(0, base.length() - 2);
+        }
+        if (!path.startsWith("/")) {
+            path = "/" + path;
+        }
+        return Path.mergePaths(new Path(base), new Path(path));
+    }
+
     // form concatenated name from database and table
     private String formName(String database, String table)
     {
         return database + "." + table;
     }
 
-    private Path formPath(String dirOrFile1, String dirOrFile2)
-    {
-        String base = "";
-        String path1 = dirOrFile1;
-        String path2 = dirOrFile2;
-        while (base.endsWith("/")) {
-            base = base.substring(0, base.length() - 2);
-        }
-        if (!path1.startsWith("/")) {
-            path1 = "/" + path1;
-        }
-        if (path1.endsWith("/")) {
-            path1 = path1.substring(0, path1.length() - 2);
-        }
-        if (!path2.startsWith("/")) {
-            path2 = "/" + path2;
-        }
-        return Path.mergePaths(Path.mergePaths(new Path(base), new Path(path1)), new Path(path2));
-    }
-
-    private Path formPath(String dirOrFile)
-    {
-        String base = "";
-        while (base.endsWith("/")) {
-            base = base.substring(0, base.length() - 2);
-        }
-        if (!dirOrFile.startsWith("/")) {
-            dirOrFile = "/" + dirOrFile;
-        }
-        return Path.mergePaths(new Path(base), new Path(dirOrFile));
-    }
+//    private Path formPath(String dirOrFile1, String dirOrFile2)
+//    {
+//        String base = config.getMetaserverStore();
+//        String path1 = dirOrFile1;
+//        String path2 = dirOrFile2;
+//        while (base.endsWith("/")) {
+//            base = base.substring(0, base.length() - 2);
+//        }
+//        if (!path1.startsWith("/")) {
+//            path1 = "/" + path1;
+//        }
+//        if (path1.endsWith("/")) {
+//            path1 = path1.substring(0, path1.length() - 2);
+//        }
+//        if (!path2.startsWith("/")) {
+//            path2 = "/" + path2;
+//        }
+//        return Path.mergePaths(Path.mergePaths(new Path(base), new Path(path1)), new Path(path2));
+//    }
+//
+//    private Path formPath(String dirOrFile)
+//    {
+//        String base = config.getMetaserverStore();
+//        while (base.endsWith("/")) {
+//            base = base.substring(0, base.length() - 2);
+//        }
+//        if (!dirOrFile.startsWith("/")) {
+//            dirOrFile = "/" + dirOrFile;
+//        }
+//        return Path.mergePaths(new Path(base), new Path(dirOrFile));
+//    }
 }

@@ -19,6 +19,11 @@ import com.google.common.collect.ImmutableList;
 
 import static com.google.common.base.MoreObjects.firstNonNull;
 
+/**
+ * presto-hdfs
+ *
+ * @author jelly.guodong.jin@gmail.com
+ */
 public class ParaflowPlugin
 implements Plugin
 {

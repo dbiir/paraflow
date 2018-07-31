@@ -47,6 +47,7 @@ public class GetTblParamAction extends Action
                     .setLocationUrl(tblParam.getLocationUrl())
                     .setStorageFormatName(sfName)
                     .setFiberColId(tblParam.getFiberColId())
+                    .setTimeColId(tblParam.getTimeColId())
                     .setFuncName(funcName)
                     .setTblId(Long.parseLong(input.getProperties("tblId").get().toString()))
                     .setDbId(Long.parseLong(input.getProperties("dbId").get().toString()))

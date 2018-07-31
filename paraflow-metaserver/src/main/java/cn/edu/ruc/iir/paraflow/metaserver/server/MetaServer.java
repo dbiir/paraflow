@@ -155,6 +155,10 @@ public class MetaServer
 
     public static void main(String[] args)
     {
+        if (args.length == 0) {
+            System.out.println("Default args: /home/tao/software/station/DBIIR/paraflow/dist/conf/metaserver.conf");
+            args = new String[]{"/home/tao/software/station/DBIIR/paraflow/dist/conf/metaserver.conf"};
+        }
         MetaServer server = new MetaServer(args[0]);
         server.start();
     }

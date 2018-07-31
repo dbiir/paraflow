@@ -15,12 +15,12 @@ public class MetaConfig
 {
     private ParaFlowConfig paraflowConfig;
 
-    private MetaConfig()
+    public MetaConfig()
     {}
 
     private static class MetaConfigHolder
     {
-        private static final MetaConfig instance = new MetaConfig();
+        public static final MetaConfig instance = new MetaConfig();
     }
 
     public static final MetaConfig INSTANCE()

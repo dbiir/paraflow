@@ -14,6 +14,7 @@
 package cn.edu.ruc.iir.paraflow.connector;
 
 import cn.edu.ruc.iir.paraflow.connector.exception.ParaflowSplitNotOpenException;
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowColumnHandle;
 import com.facebook.presto.hive.parquet.HdfsParquetDataSource;
 import com.facebook.presto.hive.parquet.ParquetDataSource;
 import com.facebook.presto.spi.ColumnHandle;
@@ -48,7 +49,7 @@ import static java.util.Objects.requireNonNull;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowPageSourceProvider
-implements ConnectorPageSourceProvider
+        implements ConnectorPageSourceProvider
 {
     private final TypeManager typeManager;
     private final FSFactory fsFactory;
@@ -89,7 +90,7 @@ implements ConnectorPageSourceProvider
             long length,
             List<ParaflowColumnHandle> columns)
     {
-        Optional<FileSystem> fileSystemOptional = fsFactory.getFS(path);
+        Optional<FileSystem> fileSystemOptional = fsFactory.getFileSystem();
         FileSystem fileSystem;
         ParquetDataSource dataSource;
         if (fileSystemOptional.isPresent()) {
