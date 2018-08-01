@@ -39,7 +39,7 @@ public class ParquetFlushThreadTest extends DataFlushThread
     {
         System.out.println("Parquet file flush out!!!");
         String dbName = "fruit";
-        String tblName = "grip";
+        String tblName = "alltype";
         long beginTime = 1532313547665L;
         long endTime = 1532313547665L;
 
@@ -97,8 +97,14 @@ public class ParquetFlushThreadTest extends DataFlushThread
                         ParquetProperties.WriterVersion.PARQUET_2_0,
                         conf
                 );
-                for (int j = 0; j < 100000000; j++) {
-                    String value = "4,5,6";
+                String[] names = new String[]{"tyx", "jgd", "bhq"};
+                int[] ages = new int[]{23, 25, 28};
+                for (int j = 0; j < 1000; j++) {
+                    String value = "";
+                    value += ages[j % 3] + ",";
+                    value += j % 2 + ",";
+                    value += names[j % 3];
+
                     String[] contents = value.split(",");
                     Group group = factory.newGroup();
                     for (int i = 0; i < contents.length; i++) {
