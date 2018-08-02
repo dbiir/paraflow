@@ -101,12 +101,7 @@
             </dependency>
             <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>
-                <artifactId>paraflow-loader-producer</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.edu.ruc.iir</groupId>
-                <artifactId>paraflow-loader-consumer</artifactId>
+                <artifactId>paraflow-loader</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

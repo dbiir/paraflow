@@ -21,7 +21,6 @@ public class ParaflowKafkaProducer
 {
     private final String topic;
     private final ParaflowFiberPartitioner partitioner;
-    private final Properties config;
     private final KafkaProducer<byte[], byte[]> kafkaProducer;
     private final AtomicLong ackRecords = new AtomicLong();
     private final Stats stats;
@@ -31,14 +30,13 @@ public class ParaflowKafkaProducer
     {
         this.topic = topic;
         this.partitioner = partitioner;
-        this.config = config;
 
         // set the producer configuration properties for kafka record key and value serializers
         if (!config.containsKey(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)) {
-            this.config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
+            config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
         }
         if (!config.containsKey(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG)) {
-            this.config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
+            config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
         }
         if (!config.containsKey(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG)) {
             throw new IllegalArgumentException(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG + " must be specified in the config");
@@ -73,7 +71,7 @@ public class ParaflowKafkaProducer
         private final int bytes;
         private final Stats stats;
 
-        public ProducerCallback(int bytes, Stats stats)
+        ProducerCallback(int bytes, Stats stats)
         {
             this.bytes = bytes;
             this.stats = stats;

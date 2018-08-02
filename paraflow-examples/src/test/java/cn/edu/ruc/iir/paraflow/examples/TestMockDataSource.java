@@ -1,7 +1,7 @@
 package cn.edu.ruc.iir.paraflow.examples;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
-import cn.edu.ruc.iir.paraflow.examples.basic.MockDataSource;
+import cn.edu.ruc.iir.paraflow.examples.collector.MockDataSource;
 import org.testng.annotations.Test;
 
 /**

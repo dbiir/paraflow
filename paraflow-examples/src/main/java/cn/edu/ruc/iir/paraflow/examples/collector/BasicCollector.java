@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.examples.basic;
+package cn.edu.ruc.iir.paraflow.examples.collector;
 
 import cn.edu.ruc.iir.paraflow.collector.DataSource;
 import cn.edu.ruc.iir.paraflow.collector.DefaultCollector;

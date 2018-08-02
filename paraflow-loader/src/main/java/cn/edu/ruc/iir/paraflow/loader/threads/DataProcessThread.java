@@ -2,13 +2,14 @@ package cn.edu.ruc.iir.paraflow.loader.threads;
 
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
+import cn.edu.ruc.iir.paraflow.loader.Processor;
 import cn.edu.ruc.iir.paraflow.loader.buffer.BufferPool;
 import cn.edu.ruc.iir.paraflow.loader.buffer.ReceiveQueueBuffer;
 import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
 
 import java.util.List;
 
-public class DataProcessThread extends DataThread
+public class DataProcessThread extends Processor
 {
     private final ReceiveQueueBuffer buffer = ReceiveQueueBuffer.INSTANCE();
     private final BufferPool bufferPool;
@@ -27,10 +28,9 @@ public class DataProcessThread extends DataThread
     @Override
     public void run()
     {
-        System.out.println(threadName + " started.");
         try {
             while (true) {
-                if (isReadyToStop && buffer.isEmpty()) { //loop end condition
+                if (buffer.isEmpty()) { //loop end condition
                     System.out.println("Thread stop");
                     return;
                 }
@@ -51,9 +51,6 @@ public class DataProcessThread extends DataThread
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
-        finally {
-            System.out.println(threadName + " stopped");
         }
     }
 }

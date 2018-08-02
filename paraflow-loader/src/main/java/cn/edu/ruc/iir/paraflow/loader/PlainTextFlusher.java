@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.threads;
+package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.loader.buffer.BufferSegment;
 
@@ -15,9 +15,9 @@ import java.util.concurrent.ThreadLocalRandom;
  *
  * @author guodong
  */
-public class PlainTextFlushThread extends DataFlushThread
+public class PlainTextFlusher extends DataFlusher
 {
-    public PlainTextFlushThread(String threadName)
+    public PlainTextFlusher(String threadName)
     {
         super(threadName);
     }

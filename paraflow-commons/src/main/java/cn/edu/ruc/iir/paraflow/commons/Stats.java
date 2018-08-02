@@ -34,7 +34,7 @@ public class Stats
     {
         double recPerSec = 1000.0 * windowCount / (double) elapsed;
         double mbPerSec = 1000.0 * windowBytes / (double) elapsed / (1024.0 * 1024.0);
-        System.out.printf("%d records sent, %.1f records/sec (%.2f MB/sec)\n", windowCount, recPerSec, mbPerSec);
+        System.out.printf("%d records processed, %.1f records/sec (%.2f MB/sec)\n", windowCount, recPerSec, mbPerSec);
     }
 
     private void newWindow()

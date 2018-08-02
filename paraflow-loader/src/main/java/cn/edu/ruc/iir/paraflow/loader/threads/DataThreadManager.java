@@ -1,6 +1,9 @@
 package cn.edu.ruc.iir.paraflow.loader.threads;
 
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
+import cn.edu.ruc.iir.paraflow.loader.DataFlusher;
+import cn.edu.ruc.iir.paraflow.loader.DataPuller;
+import cn.edu.ruc.iir.paraflow.loader.ParquetFlusher;
 import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
 import cn.edu.ruc.iir.paraflow.loader.utils.MessageSizeCalculator;
 import org.apache.kafka.common.TopicPartition;
@@ -24,9 +27,9 @@ public class DataThreadManager
     private final int processThreadNum;
     private final int flushThreadNum;
 
-    private final DataPullThread[] pullThreads;
+    private final DataPuller[] pullThreads;
     private final DataProcessThread[] processThreads;
-    private final DataFlushThread[] flushThreads;
+    private final DataFlusher[] flushThreads;
 
     private DataThreadManager()
     {
@@ -36,9 +39,9 @@ public class DataThreadManager
         this.flushThreadNum = consumerConfig.getDataFlushThreadNum();
         this.executorService = Executors.newCachedThreadPool();
 
-        this.pullThreads = new DataPullThread[pullThreadNum];
+        this.pullThreads = new DataPuller[pullThreadNum];
         this.processThreads = new DataProcessThread[processThreadNum];
-        this.flushThreads = new DataFlushThread[flushThreadNum];
+        this.flushThreads = new DataFlusher[flushThreadNum];
     }
 
     private static class DataThreadManagerHolder
@@ -61,18 +64,18 @@ public class DataThreadManager
         for (int i = 0; i < topicPartitions.size(); i++) {
             fiberPartitions[i % pullThreadNum].add(topicPartitions.get(i));
         }
-        for (int i = 0; i < pullThreadNum; i++) {
-            pullThreads[i] = new DataPullThread("data-pull-thread-" + i, fiberPartitions[i]);
-        }
+//        for (int i = 0; i < pullThreadNum; i++) {
+//            pullThreads[i] = new DataPuller("data-pull-thread-" + i, fiberPartitions[i]);
+//        }
         // init process thread
         for (int i = 0; i < processThreadNum; i++) {
             processThreads[i] = new DataProcessThread("data-process-thread-" + i, topicFibers);
         }
         // init flush thread
         for (int i = 0; i < flushThreadNum; i++) {
-//            flushThreads[i] = new PlainTextFlushThread("data-flush-thread-" + i);
-//            flushThreads[i] = new OrcFlushThread("data-flush-thread-" + i);
-            flushThreads[i] = new ParquetFlushThread("data-flush-thread-" + i);
+//            flushThreads[i] = new PlainTextFlusher("data-flush-thread-" + i);
+//            flushThreads[i] = new OrcFlusher("data-flush-thread-" + i);
+            flushThreads[i] = new ParquetFlusher("data-flush-thread-" + i);
         }
     }
 
@@ -91,14 +94,14 @@ public class DataThreadManager
 
     public void shutdown()
     {
-        for (DataPullThread pullThread : pullThreads) {
-            pullThread.shutdown();
+        for (DataPuller pullThread : pullThreads) {
+            pullThread.stop();
         }
         for (DataProcessThread processThread : processThreads) {
-            processThread.shutdown();
+            processThread.stop();
         }
-        for (DataFlushThread flushThread : flushThreads) {
-            flushThread.shutdown();
+        for (DataFlusher flushThread : flushThreads) {
+            flushThread.stop();
         }
         MessageSizeCalculator.metaClient.shutdownNow();
         try {

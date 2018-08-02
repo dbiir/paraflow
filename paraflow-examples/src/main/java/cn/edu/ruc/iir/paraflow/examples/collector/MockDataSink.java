@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.examples.basic;
+package cn.edu.ruc.iir.paraflow.examples.collector;
 
 import cn.edu.ruc.iir.paraflow.collector.DataSink;
 
@@ -26,7 +26,7 @@ public class MockDataSink
     @Override
     public String getTbl()
     {
-        return "mock";
+        return "0802";
     }
 
     @Override

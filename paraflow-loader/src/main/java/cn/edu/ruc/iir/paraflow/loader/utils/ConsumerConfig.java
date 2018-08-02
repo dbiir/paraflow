@@ -2,6 +2,7 @@ package cn.edu.ruc.iir.paraflow.loader.utils;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.utils.ParaFlowConfig;
 
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,11 +43,6 @@ public class ConsumerConfig
             getMetaServerPort();
             getGroupId();
             getKafkaBootstrapServers();
-            getKafkaAcks();
-            getKafkaRetries();
-            getKafkaBatchSize();
-            getKafkaLingerMs();
-            getKafkaBufferMem();
             getKafkaKeyDeserializerClass();
             getKafkaValueDeserializerClass();
             getKafkaPartitionerClass();
@@ -58,6 +54,11 @@ public class ConsumerConfig
             return false;
         }
         return true;
+    }
+
+    public Properties getProperties()
+    {
+        return paraflowConfig.getProperties();
     }
 
     public String getKafkaBootstrapServers()
@@ -80,39 +81,14 @@ public class ConsumerConfig
         return paraflowConfig.getProperty("consumer.group.id");
     }
 
-    public String getKafkaAcks()
-    {
-        return paraflowConfig.getProperty("kafka.acks");
-    }
-
-    public int getKafkaRetries()
-    {
-        return Integer.parseInt(paraflowConfig.getProperty("kafka.retries"));
-    }
-
-    public int getKafkaBatchSize()
-    {
-        return Integer.parseInt(paraflowConfig.getProperty("kafka.batch.size"));
-    }
-
-    public int getKafkaLingerMs()
-    {
-        return Integer.parseInt(paraflowConfig.getProperty("kafka.linger.ms"));
-    }
-
-    public int getKafkaBufferMem()
-    {
-        return Integer.parseInt(paraflowConfig.getProperty("kafka.buffer.memory"));
-    }
-
     public String getKafkaKeyDeserializerClass()
     {
-        return paraflowConfig.getProperty("kafka.key.deserializer");
+        return paraflowConfig.getProperty("key.deserializer");
     }
 
     public String getKafkaValueDeserializerClass()
     {
-        return paraflowConfig.getProperty("kafka.value.deserializer");
+        return paraflowConfig.getProperty("value.deserializer");
     }
 
     public String getKafkaPartitionerClass()
@@ -159,11 +135,6 @@ public class ConsumerConfig
     public long getBufferPoolSize()
     {
         return Long.parseLong(paraflowConfig.getProperty("consumer.buffer.pool.size"));
-    }
-
-    public long getBufferPollTimeout()
-    {
-        return Long.parseLong(paraflowConfig.getProperty("consumer.buffer.poll.timeout"));
     }
 
     public int getMetaClientShutdownTimeout()

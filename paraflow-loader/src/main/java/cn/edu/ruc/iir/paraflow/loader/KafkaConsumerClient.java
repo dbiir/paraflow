@@ -1,6 +1,7 @@
-package cn.edu.ruc.iir.paraflow.loader.utils;
+package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.commons.message.Message;
+import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -18,10 +19,6 @@ public class KafkaConsumerClient
         Properties props = new Properties();
         ConsumerConfig config = ConsumerConfig.INSTANCE();
         props.put("bootstrap.servers", config.getKafkaBootstrapServers());
-        props.put("acks", config.getKafkaAcks());
-        props.put("retries", config.getKafkaRetries());
-        props.put("batch.size", config.getKafkaBatchSize());
-        props.put("buffer.memory", config.getKafkaBufferMem());
         props.put("key.deserializer", config.getKafkaKeyDeserializerClass());
         props.put("value.deserializer", config.getKafkaValueDeserializerClass());
         consumer = new KafkaConsumer<>(props);

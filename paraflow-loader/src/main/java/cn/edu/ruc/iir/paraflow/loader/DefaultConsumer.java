@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.function.Function;
 
-public class DefaultConsumer implements Consumer
+public class DefaultConsumer
 {
     private final AdminClient kafkaAdminClient;
     private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();

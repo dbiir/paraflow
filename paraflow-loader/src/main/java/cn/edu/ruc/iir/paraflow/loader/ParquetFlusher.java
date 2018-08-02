@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.threads;
+package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.loader.buffer.BufferSegment;
 import cn.edu.ruc.iir.paraflow.loader.utils.FileNameGenerator;
@@ -21,11 +21,11 @@ import java.io.IOException;
  *
  * @author guodong
  */
-public class ParquetFlushThread extends DataFlushThread
+public class ParquetFlusher extends DataFlusher
 {
     private Configuration conf = new Configuration();
 
-    public ParquetFlushThread(String threadName)
+    public ParquetFlusher(String threadName)
     {
         super(threadName);
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());

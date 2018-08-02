@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.loader.threads;
+package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.loader.buffer.BufferSegment;
 import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
@@ -20,13 +20,13 @@ import java.io.IOException;
  *
  * @author guodong
  */
-public class OrcFlushThread extends DataFlushThread
+public class OrcFlusher extends DataFlusher
 {
     private long orcFileStripeSize;
     private int orcFileBufferSize;
     private long orcFileBlockSize;
 
-    public OrcFlushThread(String threadName)
+    public OrcFlusher(String threadName)
     {
         super(threadName);
         ConsumerConfig config = ConsumerConfig.INSTANCE();
