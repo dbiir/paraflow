@@ -82,13 +82,13 @@ public class DataThreadManager
     public void run()
     {
         for (int i = 0; i < pullThreadNum; i++) {
-            executorService.submit(pullThreads[i]);
+//            executorService.submit(pullThreads[i]);
         }
         for (int i = 0; i < processThreadNum; i++) {
-            executorService.submit(processThreads[i]);
+//            executorService.submit(processThreads[i]);
         }
         for (int i = 0; i < flushThreadNum; i++) {
-            executorService.submit(flushThreads[i]);
+//            executorService.submit(flushThreads[i]);
         }
     }
 

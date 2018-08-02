@@ -1,6 +1,6 @@
 package cn.edu.ruc.iir.paraflow.collector;
 
-import cn.edu.ruc.iir.paraflow.commons.message.Message;
+import cn.edu.ruc.iir.paraflow.commons.Message;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

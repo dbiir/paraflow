@@ -1,6 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader.buffer;
 
-import cn.edu.ruc.iir.paraflow.commons.message.Message;
+import cn.edu.ruc.iir.paraflow.commons.Message;
 
 import java.util.LinkedList;
 import java.util.concurrent.BlockingQueue;

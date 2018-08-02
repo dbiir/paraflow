@@ -1,7 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader.threads;
 
+import cn.edu.ruc.iir.paraflow.commons.Message;
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
-import cn.edu.ruc.iir.paraflow.commons.message.Message;
 import cn.edu.ruc.iir.paraflow.loader.Processor;
 import cn.edu.ruc.iir.paraflow.loader.buffer.BufferPool;
 import cn.edu.ruc.iir.paraflow.loader.buffer.ReceiveQueueBuffer;
@@ -16,7 +16,7 @@ public class DataProcessThread extends Processor
 
     public DataProcessThread(String threadName, List<TopicFiber> topicFibers)
     {
-        super(threadName);
+        super(threadName, 1);
         ConsumerConfig config = ConsumerConfig.INSTANCE();
         long blockSize = config.getBufferPoolSize();
         this.bufferPool = new BufferPool(topicFibers, blockSize, blockSize);

@@ -79,17 +79,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-plugin-toolkit</artifactId>
-                <version>${presto.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.protobuf</groupId>
-                        <artifactId>protobuf-java</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-collector</artifactId>
                 <version>${project.version}</version>
@@ -103,6 +92,17 @@
                 <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-loader</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-plugin-toolkit</artifactId>
+                <version>${presto.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.facebook.presto</groupId>
@@ -135,6 +135,11 @@
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
                 <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lmax</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>3.4.0</version>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>

@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.commons.message;
+package cn.edu.ruc.iir.paraflow.commons;
 
 import java.util.Arrays;
 import java.util.Objects;

@@ -1,7 +1,7 @@
 package cn.edu.ruc.iir.paraflow.examples.collector;
 
 import cn.edu.ruc.iir.paraflow.collector.DataSource;
-import cn.edu.ruc.iir.paraflow.commons.message.Message;
+import cn.edu.ruc.iir.paraflow.commons.Message;
 
 import java.util.Objects;
 import java.util.Random;
@@ -27,6 +27,7 @@ public class MockDataSource
         int key = random.nextInt(1000);
         long timestamp = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder();
+        // key<int>, v1<int>, v2<string>, v3<int>, v4<long>
         sb.append(key).append(",")
                 .append(2 * key).append(",")
                 .append("alicebobdavidalicebobdavidalicebobdavidalicebobdavidalicebobdavidalicebobdavidalicebobdavidalicebobdavid")

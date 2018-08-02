@@ -1,7 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader.buffer;
 
 import cn.edu.ruc.iir.paraflow.commons.TopicFiber;
-import cn.edu.ruc.iir.paraflow.commons.message.Message;
+import cn.edu.ruc.iir.paraflow.commons.Message;
 import cn.edu.ruc.iir.paraflow.loader.utils.MessageSizeCalculator;
 
 import java.util.LinkedList;

@@ -1,6 +1,5 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
-import cn.edu.ruc.iir.paraflow.loader.Processor;
 import cn.edu.ruc.iir.paraflow.loader.buffer.BufferSegment;
 import cn.edu.ruc.iir.paraflow.loader.buffer.FlushQueueBuffer;
 import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
@@ -13,14 +12,15 @@ import java.util.Optional;
  *
  * @author guodong
  */
-public abstract class DataFlusher extends Processor
+public abstract class DataFlusher
+        extends Processor
 {
     private final FlushQueueBuffer flushQueueBuffer = FlushQueueBuffer.INSTANCE();
     protected final MetaClient metaClient;
 
     public DataFlusher(String threadName)
     {
-        super(threadName);
+        super(threadName, 1);
         ConsumerConfig config = ConsumerConfig.INSTANCE();
         metaClient = new MetaClient(config.getMetaServerHost(),
                 config.getMetaServerPort());
@@ -29,7 +29,7 @@ public abstract class DataFlusher extends Processor
     @Override
     public void run()
     {
-        System.out.println(threadName + " started.");
+        System.out.println(super.name + " started");
         try {
             while (true) {
                 if (isReadyToStop.get() && flushQueueBuffer.isEmpty()) {
@@ -64,7 +64,7 @@ public abstract class DataFlusher extends Processor
             e.printStackTrace();
         }
         finally {
-            System.out.println(threadName + " stopped");
+            System.out.println(super.name + " stopped");
         }
     }
 

@@ -15,28 +15,43 @@ public class DataPuller
 {
     private final Consumer<byte[], byte[]> consumer;
     private final Stats stats;
+    private final DataTransformer transformer;
 
-    public DataPuller(String threadName, List<TopicPartition> topicPartitions, Properties conf)
+    public DataPuller(String threadName,
+                      int parallelism,
+                      List<TopicPartition> topicPartitions,
+                      Properties conf,
+                      DataTransformer transformer)
     {
-        super(threadName);
+        super(threadName, parallelism);
         ParaflowKafkaConsumer kafkaConsumer = new ParaflowKafkaConsumer(topicPartitions, conf);
         this.consumer = kafkaConsumer.getConsumer();
         this.stats = new Stats(3000);
+        this.transformer = transformer;
     }
 
     @Override
     public void run()
     {
-        System.out.println(threadName + " started.");
+        System.out.println(super.name + " started.");
         try {
             while (!isReadyToStop.get()) {
                 ConsumerRecords<byte[], byte[]> records = consumer.poll(1000);
+                int bytes = 0;
+                int counter = 0;
                 for (ConsumerRecord<byte[], byte[]> record : records) {
-                    stats.record(record.value().length, 1);
+                    byte[] value = record.value();
+                    // transform a kafka record into a paraflow record
+                    ParaflowRecord paraflowRecord = transformer.transform(value, record.partition());
+                    // update statistics
+                    bytes += value.length;
+                    counter++;
                 }
+                stats.record(bytes, counter);
             }
         }
         catch (WakeupException e) {
+            e.printStackTrace();
             if (isReadyToStop.get()) {
                 System.out.println("Thread stop");
                 consumer.close();

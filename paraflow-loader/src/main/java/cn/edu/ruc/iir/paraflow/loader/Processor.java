@@ -8,24 +8,27 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author guodong
  */
 public abstract class Processor
-        implements Runnable
 {
-    String threadName;
+    private final int parallelism;
+    final String name;
     AtomicBoolean isReadyToStop = new AtomicBoolean(false);
 
-    public Processor(String threadName)
+    public Processor(String name, int parallelism)
     {
-        this.threadName = threadName;
+        this.name = name;
+        this.parallelism = parallelism;
     }
 
-    void readyToStop()
-    {
-        this.isReadyToStop.set(true);
-    }
+    public abstract void run();
 
     public String getName()
     {
-        return threadName;
+        return name;
+    }
+
+    public int getParallelism()
+    {
+        return parallelism;
     }
 
     public void stop()
