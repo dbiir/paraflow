@@ -137,9 +137,10 @@
                 <version>${guice.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.lmax</groupId>
+                <groupId>com.conversantmedia</groupId>
                 <artifactId>disruptor</artifactId>
-                <version>3.4.0</version>
+                <version>1.2.12</version>
+                <classifier>jdk8</classifier>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>

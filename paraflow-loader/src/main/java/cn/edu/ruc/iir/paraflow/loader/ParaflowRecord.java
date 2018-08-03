@@ -9,16 +9,16 @@ public class ParaflowRecord
 {
     private Object key;
     private long timestamp;
-    private long fiberId;
+    private int fiberId;
     private Object[] values;
 
-//    public ParaflowRecord(Object key, long timestamp, long fiberId, Object... values)
-//    {
-//        this.key = key;
-//        this.timestamp = timestamp;
-//        this.fiberId = fiberId;
-//        this.values = values;
-//    }
+    public ParaflowRecord(Object key, long timestamp, int fiberId, Object... values)
+    {
+        this.key = key;
+        this.timestamp = timestamp;
+        this.fiberId = fiberId;
+        this.values = values;
+    }
 
     public Object getKey()
     {
@@ -30,7 +30,7 @@ public class ParaflowRecord
         return timestamp;
     }
 
-    public long getFiberId()
+    public int getFiberId()
     {
         return fiberId;
     }

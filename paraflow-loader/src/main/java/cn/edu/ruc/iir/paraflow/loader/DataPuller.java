@@ -1,6 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.commons.Stats;
+import com.conversantmedia.util.concurrent.ConcurrentQueue;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -16,18 +17,21 @@ public class DataPuller
     private final Consumer<byte[], byte[]> consumer;
     private final Stats stats;
     private final DataTransformer transformer;
+    private final ConcurrentQueue<ParaflowRecord> concurrentQueue;
 
     public DataPuller(String threadName,
                       int parallelism,
                       List<TopicPartition> topicPartitions,
                       Properties conf,
-                      DataTransformer transformer)
+                      DataTransformer transformer,
+                      ConcurrentQueue<ParaflowRecord> concurrentQueue)
     {
         super(threadName, parallelism);
         ParaflowKafkaConsumer kafkaConsumer = new ParaflowKafkaConsumer(topicPartitions, conf);
         this.consumer = kafkaConsumer.getConsumer();
         this.stats = new Stats(3000);
         this.transformer = transformer;
+        this.concurrentQueue = concurrentQueue;
     }
 
     @Override
@@ -43,6 +47,9 @@ public class DataPuller
                     byte[] value = record.value();
                     // transform a kafka record into a paraflow record
                     ParaflowRecord paraflowRecord = transformer.transform(value, record.partition());
+                    while (!concurrentQueue.offer(paraflowRecord)) {
+                        // do nothing
+                    }
                     // update statistics
                     bytes += value.length;
                     counter++;

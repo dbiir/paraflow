@@ -25,8 +25,9 @@
             <artifactId>paraflow-metaserver</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.lmax</groupId>
+            <groupId>com.conversantmedia</groupId>
             <artifactId>disruptor</artifactId>
+            <classifier>jdk8</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.hadoop</groupId>

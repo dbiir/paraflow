@@ -1,63 +1,84 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
-import cn.edu.ruc.iir.paraflow.commons.utils.FiberFuncMapBuffer;
-import cn.edu.ruc.iir.paraflow.commons.utils.FormTopicName;
-import cn.edu.ruc.iir.paraflow.loader.threads.DataThreadManager;
 import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
-import org.apache.kafka.clients.admin.AdminClient;
+import com.conversantmedia.util.concurrent.ConcurrentQueue;
+import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
+import com.conversantmedia.util.concurrent.PushPullConcurrentQueue;
+import com.conversantmedia.util.concurrent.SpinPolicy;
+import org.apache.kafka.common.TopicPartition;
 
-import java.util.Properties;
-import java.util.function.Function;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 
+/**
+ * paraflow default loader
+ *
+ * default pipeline:
+ *                                     ConcurrentQueue             BlockingQueue
+ *         DataPuller(DataTransformer) ---------------> DataSorter -------
+ *                        ... ...                                        |
+ *         DataPuller(DataTransformer) ---------------> DataSorter -------------> DataCompactor
+ *                        ... ...                                        |              |
+ *         DataPuller(DataTransformer) ---------------> DataSorter -------              |
+ *                                                                                      .          Future
+ *                                                                                SegmentContainer ------> DataFlusher
+ *                                                                                      |           async
+ *                                                                                      |
+ *                                                                                      .
+ *                                                                                 QueryEngine
+ * */
 public class DefaultLoader
 {
-    private final AdminClient kafkaAdminClient;
-    private final FiberFuncMapBuffer funcMapBuffer = FiberFuncMapBuffer.INSTANCE();
-    private ProcessPipeline pipeline;
+    private final ProcessPipeline pipeline;
+    private final ConsumerConfig config;
 
-    public DefaultLoader(String configPath) throws ConfigFileNotFoundException
+    public DefaultLoader(String configPath)
+            throws ConfigFileNotFoundException
     {
-        ConsumerConfig config = ConsumerConfig.INSTANCE();
-        config.init(configPath);
-        config.validate();
-        Properties props = new Properties();
-        props.setProperty("bootstrap.servers", config.getKafkaBootstrapServers());
-        props.setProperty("client.id", "consumerAdmin");
-        props.setProperty("metadata.max.age.ms", "3000");
-        props.setProperty("group.id", config.getGroupId());
-        props.setProperty("enable.auto.commit", "true");
-        props.setProperty("auto.commit.interval.ms", "1000");
-        props.setProperty("session.timeout.ms", "30000");
-        kafkaAdminClient = AdminClient.create(props);
         this.pipeline = new ProcessPipeline();
+        this.config = ConsumerConfig.INSTANCE();
+        config.init(configPath);
         init();
     }
 
     private void init()
     {
         Runtime.getRuntime().addShutdownHook(
-                new Thread(this::beforeShutdown)
+                new Thread(pipeline::stop)
         );
-        Runtime.getRuntime().addShutdownHook(
-                new Thread(DataThreadManager.INSTANCE()::shutdown)
-        );
-        // construct default pipeline
     }
 
-    public void consume()
+    public void consume(List<TopicPartition> topicPartitions, DataTransformer dataTransformer,
+                        int parallelism, long lifetime, int sorterBufferCapacity,
+                        int pullerSorterQueueCapacity, int sorterCompactorQueueCapacity)
     {
+        // assign topic partitions to each data puller
+        Map<Integer, List<TopicPartition>> partitionMapping = new HashMap<>();
+        for (int i = 0; i < topicPartitions.size(); i++) {
+            int idx = i % parallelism;
+            if (!partitionMapping.containsKey(idx)) {
+                partitionMapping.put(idx, new ArrayList<>());
+            }
+            partitionMapping.get(idx).add(topicPartitions.get(i));
+        }
+        // add data pullers and sorters
+        for (int pullerId : partitionMapping.keySet()) {
+            ConcurrentQueue<ParaflowRecord> pullerSorterConcurrentQueue = new PushPullConcurrentQueue<>(pullerSorterQueueCapacity);
+            DataPuller dataPuller = new DataPuller("puller-" + pullerId, 1,
+                    partitionMapping.get(pullerId), config.getProperties(), dataTransformer, pullerSorterConcurrentQueue);
+            DataSorter dataSorter = new DataSorter("sorter-" + pullerId, 1, lifetime, sorterBufferCapacity,
+                    pullerSorterConcurrentQueue, partitionMapping.get(pullerId).size());
+            pipeline.addProcessor(dataPuller);
+            pipeline.addProcessor(dataSorter);
+        }
+        // add a data compactor
+        BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue =
+                new DisruptorBlockingQueue<>(sorterCompactorQueueCapacity, SpinPolicy.SPINNING);
+        // start the pipeline
         pipeline.start();
-    }
-
-    public void registerFiberFunc(String database, String table, Function<String, Integer> fiberFunc)
-    {
-        funcMapBuffer.put(FormTopicName.formTopicName(database, table), fiberFunc);
-    }
-
-    private void beforeShutdown()
-    {
-        kafkaAdminClient.close();
-        pipeline.stop();
     }
 }

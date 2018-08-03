@@ -1,16 +1,13 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
-import com.lmax.disruptor.dsl.Disruptor;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 
 /**
  * paraflow loader process pipeline
- * basic pipeline setup: DataPuller -> DataTransformer -> DataCompactor -> DataFlusher
+
  * @author guodong
  */
 public class ProcessPipeline
@@ -25,9 +22,6 @@ public class ProcessPipeline
         this.runningProcessors = new ArrayList<>();
         this.executorService = Executors.newFixedThreadPool(
                 Runtime.getRuntime().availableProcessors() * 2);
-        ThreadFactory threadFactory = r -> new Thread(r, "paraflow-thread");
-        Disruptor<ParaflowRecord> disruptor = new Disruptor<>(
-                ParaflowRecord::new, 1024, threadFactory);
     }
 
     public void addProcessor(Processor processor)

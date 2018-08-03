@@ -11,7 +11,7 @@ public abstract class Processor
 {
     private final int parallelism;
     final String name;
-    AtomicBoolean isReadyToStop = new AtomicBoolean(false);
+    final AtomicBoolean isReadyToStop = new AtomicBoolean(false);
 
     public Processor(String name, int parallelism)
     {
