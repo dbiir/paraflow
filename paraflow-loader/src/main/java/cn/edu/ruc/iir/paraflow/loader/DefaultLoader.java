@@ -18,15 +18,15 @@ import java.util.concurrent.BlockingQueue;
  * paraflow default loader
  *
  * default pipeline:
- *                                                                                                              QueryEngine
- *                                     ConcurrentQueue             BlockingQueue                                     .
- *         DataPuller(DataTransformer) ---------------> DataSorter -------                                           |
- *                        ... ...                                        |                      BlockingQueue        |
- *         DataPuller(DataTransformer) ---------------> DataSorter -------------> DataCompactor -------------> SegmentContainer (in-memory files)
- *                        ... ...                                        |                                           |
- *         DataPuller(DataTransformer) ---------------> DataSorter -------                                           |
- *                                                                                                                   . async flushing to the disk
- *                                                                                                               DataFlusher
+ *                                                                                                       QueryEngine
+ *                                     ConcurrentQueue             BlockingQueue                              .
+ *         DataPuller(DataTransformer) ---------------> DataSorter -------                                    |
+ *                        ... ...                                        |                                    |
+ *         DataPuller(DataTransformer) ---------------> DataSorter -------------> DataCompactor ----. SegmentContainer ([youngZone] [adultZone] [oldZone])
+ *                        ... ...                                        |                                    |
+ *         DataPuller(DataTransformer) ---------------> DataSorter -------                                    |
+ *                                                                                                            . async flushing to files (in-memory)
+ *                                                                                                       SegmentWriter ---. SegmentFlusher (flushing in-memory files to the disk)
  * */
 public class DefaultLoader
 {
@@ -51,8 +51,8 @@ public class DefaultLoader
 
     public void consume(List<TopicPartition> topicPartitions, DataTransformer dataTransformer,
                         int parallelism, long lifetime, int sorterBufferCapacity,
-                        int pullerSorterQueueCapacity, int sorterCompactorQueueCapacity,
-                        int compactorContainerQueueCapacity, int compactorThreshold)
+                        int pullerSorterQueueCapacity, int sorterCompactorQueueCapacity, int compactorThreshold,
+                        int containerYoungZoneCapacity, int containerAdultZoneCapacity)
     {
         // assign topic partitions to each data puller
         Map<Integer, List<TopicPartition>> partitionMapping = new HashMap<>();
@@ -77,12 +77,11 @@ public class DefaultLoader
             pipeline.addProcessor(dataPuller);
             pipeline.addProcessor(dataSorter);
         }
-        // the blocking queue between the compactor and the segment container
-        BlockingQueue<ParaflowSegment> compactorContainerBlockingQueue =
-                new DisruptorBlockingQueue<>(compactorContainerQueueCapacity, SpinPolicy.SPINNING);
+        // init segment container
+        SegmentContainer.INSTANCE().init(containerYoungZoneCapacity, containerAdultZoneCapacity);
         // add a data compactor
         DataCompactor dataCompactor = new DataCompactor("compactor", 1, compactorThreshold,
-                topicPartitions.size(), sorterCompactorBlockingQueue, compactorContainerBlockingQueue);
+                topicPartitions.size(), sorterCompactorBlockingQueue);
         pipeline.addProcessor(dataCompactor);
         // start the pipeline
         pipeline.start();

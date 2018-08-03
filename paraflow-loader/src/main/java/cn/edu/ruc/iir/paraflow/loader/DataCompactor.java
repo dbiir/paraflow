@@ -17,20 +17,19 @@ public class DataCompactor
     private final int threshold;
     private final int partitionNum;
     private final BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue;
-    private final BlockingQueue<ParaflowSegment> compactorContainerBlockingQueue;
     private final ArrayList<ParaflowRecord>[] tempBuffer;
+    private final SegmentContainer segmentContainer;
     private int recordNum = 0;
 
     public DataCompactor(String name, int parallelism, int threshold, int partitionNum,
-                         BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue,
-                         BlockingQueue<ParaflowSegment> compactorContainerBlockingQueue)
+                         BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue)
     {
         super(name, parallelism);
         this.threshold = threshold;
         this.partitionNum = partitionNum;
         this.sorterCompactorBlockingQueue = sorterCompactorBlockingQueue;
-        this.compactorContainerBlockingQueue = compactorContainerBlockingQueue;
         this.tempBuffer = new ArrayList[partitionNum];
+        this.segmentContainer = SegmentContainer.INSTANCE();
     }
 
     @Override
@@ -58,7 +57,7 @@ public class DataCompactor
                 if (recordNum >= threshold) {
                     // compact
                     ParaflowSegment segment = compact();
-                    compactorContainerBlockingQueue.offer(segment);
+                    segmentContainer.addSegment(segment);
                 }
             }
         }
