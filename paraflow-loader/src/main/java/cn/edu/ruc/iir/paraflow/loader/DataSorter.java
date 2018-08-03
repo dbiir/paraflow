@@ -72,14 +72,14 @@ public class DataSorter
     {
         // sort all fibers
         if (fiberId == -1) {
-            for (int i = 0; i < fiberBuffers.length; i++) {
-                ParaflowRecord[] fiberBuffer = fiberBuffers[i];
-                if (fiberBuffer == null) {
-                    continue;
+            Arrays.stream(fiberBuffers).parallel().forEach(fiberBuffer -> {
+                if (fiberBuffer != null) {
+                    Arrays.sort(fiberBuffer, Comparator.comparingLong(ParaflowRecord::getTimestamp));
+                    ParaflowSortedBuffer sortedBuffer = new ParaflowSortedBuffer(fiberBuffers);
+                    sorterCompactorBlockingQueue.offer(sortedBuffer);
                 }
-                Arrays.sort(fiberBuffer, Comparator.comparingLong(ParaflowRecord::getTimestamp));
-                ParaflowSortedBuffer sortedBuffer = new ParaflowSortedBuffer(fiberBuffers);
-                sorterCompactorBlockingQueue.offer(sortedBuffer);
+            });
+            for (int i = 0; i < fiberBuffers.length; i++) {
                 fiberIndices[i] = 0;
             }
             // reset life start time
