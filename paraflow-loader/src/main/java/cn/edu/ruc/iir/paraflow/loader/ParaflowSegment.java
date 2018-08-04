@@ -14,6 +14,8 @@ public class ParaflowSegment
     private final ParaflowRecord[][] records;   // records of each fiber
     private final long[] fiberMinTimestamps;    // minimal timestamps of each fiber
     private final long[] fiberMaxTimestamps;    // maximum timestamps of each fiber
+    private String db;
+    private String table;
     private String path = "";                   // path of the in-memory file or on-disk file; if ON_HEAP, path is empty
     private StorageLevel storageLevel;
 
@@ -26,11 +28,32 @@ public class ParaflowSegment
             fiberMinTimestamps[i] = records[i][0].getTimestamp();
             fiberMaxTimestamps[i] = records[i][records.length - 1].getTimestamp();
         }
+        this.storageLevel = StorageLevel.ON_HEAP;
     }
 
     public ParaflowRecord[][] getRecords()
     {
         return records;
+    }
+
+    public void setDb(String db)
+    {
+        this.db = db;
+    }
+
+    public String getDb()
+    {
+        return db;
+    }
+
+    public void setTable(String table)
+    {
+        this.table = table;
+    }
+
+    public String getTable()
+    {
+        return table;
     }
 
     public void setPath(String path)

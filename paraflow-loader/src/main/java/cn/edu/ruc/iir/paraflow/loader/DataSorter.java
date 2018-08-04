@@ -22,12 +22,12 @@ public class DataSorter
     private final int[] fiberIndices;
     private long lifeStart = 0L;
 
-    public DataSorter(String name, int parallelism, long lifetime, int capacity,
+    public DataSorter(String name, String db, String table, int parallelism, long lifetime, int capacity,
                       ConcurrentQueue<ParaflowRecord> pullerSorterConcurrentQueue,
                       BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue,
                       int partitionNum)
     {
-        super(name, parallelism);
+        super(name, db, table, parallelism);
         this.lifetime = lifetime;
         this.capacity = capacity;
         this.pullerSorterConcurrentQueue = pullerSorterConcurrentQueue;

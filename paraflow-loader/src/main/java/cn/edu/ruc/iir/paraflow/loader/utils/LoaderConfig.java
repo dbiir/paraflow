@@ -1,4 +1,5 @@
 package cn.edu.ruc.iir.paraflow.loader.utils;
+
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.utils.ParaFlowConfig;
 
@@ -96,14 +97,23 @@ public class LoaderConfig
         return paraflowConfig.getProperty("meta.server.host");
     }
 
+    public String getMemoryWarehouse()
+    {
+        if (paraflowConfig.getProperty("memory.warehouse").endsWith("/")) {
+            return paraflowConfig.getProperty("memory.warehouse");
+        }
+        else {
+            return paraflowConfig.getProperty("memory.warehouse") + "/";
+        }
+    }
+
     public String getHDFSWarehouse()
     {
         if (paraflowConfig.getProperty("hdfs.warehouse").endsWith("/")) {
-            return paraflowConfig.getProperty("hdfs.warehouse").substring(
-                    0, paraflowConfig.getProperty("hdfs.warehouse").length() - 2);
+            return paraflowConfig.getProperty("hdfs.warehouse");
         }
         else {
-            return paraflowConfig.getProperty("hdfs.warehouse");
+            return paraflowConfig.getProperty("hdfs.warehouse") + "/";
         }
     }
 
@@ -120,5 +130,35 @@ public class LoaderConfig
     public long getOrcFileBlockSize()
     {
         return Long.parseLong(paraflowConfig.getProperty("orc.file.block.size"));
+    }
+
+    public String getParquetCompressionCodec()
+    {
+        return paraflowConfig.getProperty("parquet.compression.codec");
+    }
+
+    public int getParquetBlockSize()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("parquet.block.size"));
+    }
+
+    public int getParquetPageSize()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("parquet.page.size"));
+    }
+
+    public int getParquetDictionaryPageSize()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("parquet.dictionary.page.size"));
+    }
+
+    public boolean isParquetDictionaryEnabled()
+    {
+        return paraflowConfig.getProperty("parquet.dictionary.enable").equalsIgnoreCase("true");
+    }
+
+    public boolean isParquetValidating()
+    {
+        return paraflowConfig.getProperty("parquet.validating").equalsIgnoreCase("true");
     }
 }

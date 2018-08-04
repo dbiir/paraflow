@@ -63,7 +63,7 @@ public class ParaFlowConfig
 
     public String getProperty(String key)
     {
-        return this.properties.getProperty(key);
+        return this.properties.getProperty(key).trim();
     }
 
     public Properties getProperties()

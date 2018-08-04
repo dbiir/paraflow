@@ -7,7 +7,7 @@
 //import org.apache.parquet.example.data.Group;
 //import org.apache.parquet.example.data.GroupFactory;
 //import org.apache.parquet.example.data.simple.SimpleGroupFactory;
-//import org.apache.parquet.hadoop.ParquetWriter;
+//import org.apache.parquet.hadoop.ParquetSegmentWriter;
 //import org.apache.parquet.hadoop.example.GroupWriteSupport;
 //import org.apache.parquet.schema.MessageType;
 //import org.apache.parquet.schema.MessageTypeParser;
@@ -93,13 +93,13 @@
 //                GroupFactory factory = new SimpleGroupFactory(schema);
 //                GroupWriteSupport writeSupport = new GroupWriteSupport();
 //                GroupWriteSupport.setSchema(schema, conf);
-//                ParquetWriter<Group> writer = new ParquetWriter<Group>(file, writeSupport,
-//                        ParquetWriter.DEFAULT_COMPRESSION_CODEC_NAME,
-//                        ParquetWriter.DEFAULT_BLOCK_SIZE,
-//                        ParquetWriter.DEFAULT_PAGE_SIZE,
-//                        ParquetWriter.DEFAULT_PAGE_SIZE,
+//                ParquetSegmentWriter<Group> writer = new ParquetSegmentWriter<Group>(file, writeSupport,
+//                        ParquetSegmentWriter.DEFAULT_COMPRESSION_CODEC_NAME,
+//                        ParquetSegmentWriter.DEFAULT_BLOCK_SIZE,
+//                        ParquetSegmentWriter.DEFAULT_PAGE_SIZE,
+//                        ParquetSegmentWriter.DEFAULT_PAGE_SIZE,
 //                        false,
-//                        ParquetWriter.DEFAULT_IS_VALIDATING_ENABLED,
+//                        ParquetSegmentWriter.DEFAULT_IS_VALIDATING_ENABLED,
 //                        ParquetProperties.WriterVersion.PARQUET_2_0,
 //                        conf
 //                );

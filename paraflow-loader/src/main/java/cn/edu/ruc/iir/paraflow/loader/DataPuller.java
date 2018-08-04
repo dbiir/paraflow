@@ -19,14 +19,13 @@ public class DataPuller
     private final DataTransformer transformer;
     private final ConcurrentQueue<ParaflowRecord> concurrentQueue;
 
-    public DataPuller(String threadName,
-                      int parallelism,
+    public DataPuller(String threadName, String db, String table, int parallelism,
                       List<TopicPartition> topicPartitions,
                       Properties conf,
                       DataTransformer transformer,
                       ConcurrentQueue<ParaflowRecord> concurrentQueue)
     {
-        super(threadName, parallelism);
+        super(threadName, db, table, parallelism);
         ParaflowKafkaConsumer kafkaConsumer = new ParaflowKafkaConsumer(topicPartitions, conf);
         this.consumer = kafkaConsumer.getConsumer();
         this.stats = new Stats(3000);

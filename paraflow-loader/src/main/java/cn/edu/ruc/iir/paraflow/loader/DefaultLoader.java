@@ -100,18 +100,18 @@ public class DefaultLoader
         for (int pullerId : partitionMapping.keySet()) {
             ConcurrentQueue<ParaflowRecord> pullerSorterConcurrentQueue =
                     new PushPullConcurrentQueue<>(config.getPullerSorterCapacity());
-            DataPuller dataPuller = new DataPuller("puller-" + pullerId, 1,
+            DataPuller dataPuller = new DataPuller("puller-" + pullerId, db, table, 1,
                     partitionMapping.get(pullerId), config.getProperties(), transformer, pullerSorterConcurrentQueue);
-            DataSorter dataSorter = new DataSorter("sorter-" + pullerId, 1, config.getLoaderLifetime(),
+            DataSorter dataSorter = new DataSorter("sorter-" + pullerId, db, table, 1, config.getLoaderLifetime(),
                     config.getSortedBufferCapacity(), pullerSorterConcurrentQueue, sorterCompactorBlockingQueue,
                     partitionMapping.get(pullerId).size());
             pipeline.addProcessor(dataPuller);
             pipeline.addProcessor(dataSorter);
         }
         // init segment container
-        SegmentContainer.INSTANCE().init(config.getContainerYoungZoneCapacity(), config.getContainerAdultZoneCapacity());
+        SegmentContainer.INSTANCE().init(config.getContainerYoungZoneCapacity(), config.getContainerAdultZoneCapacity(), partitionFrom, partitionTo);
         // add a data compactor
-        DataCompactor dataCompactor = new DataCompactor("compactor", 1, config.getCompactorThreshold(),
+        DataCompactor dataCompactor = new DataCompactor("compactor", db, table, 1, config.getCompactorThreshold(),
                 partitionNum, sorterCompactorBlockingQueue);
         pipeline.addProcessor(dataCompactor);
         // start the pipeline

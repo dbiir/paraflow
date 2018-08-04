@@ -21,6 +21,8 @@ public class SegmentContainer
     private ReadWriteLock[] adultLocks;     // readWriteLock for adult segments
     private int youngCapacity;
     private int adultCapacity;
+    private int partitionFrom;
+    private int partitionTo;
 
     private SegmentContainer()
     {}
@@ -35,13 +37,15 @@ public class SegmentContainer
         return SegmentContainerHolder.instance;
     }
 
-    public synchronized void init(int youngCapacity, int adultCapacity)
+    public synchronized void init(int youngCapacity, int adultCapacity, int partitionFrom, int partitionTo)
     {
         if (initialized.get()) {
             return;
         }
         this.youngCapacity = youngCapacity;
         this.adultCapacity = adultCapacity;
+        this.partitionFrom = partitionFrom;
+        this.partitionTo = partitionTo;
         this.youngZone = new ParaflowSegment[youngCapacity];
         this.adultZone = new ParaflowSegment[adultCapacity];
         this.adultLocks = new ReadWriteLock[adultCapacity];
@@ -86,10 +90,10 @@ public class SegmentContainer
             while (!adultLocks[adultWriteIndex].writeLock().tryLock()) {
                 Thread.sleep(1000);
             }
-            new Thread(new ParquetWriter(segment, adultLocks[adultWriteIndex], lock -> {
+            new Thread(new ParquetSegmentWriter(segment, adultLocks[adultWriteIndex], lock -> {
                 adultZone[adultWriteIndex] = segment;
                 lock.writeLock().unlock();
-            })).start();
+            }, partitionFrom, partitionTo)).start();
             adultWriteIndex++;
             if (adultWriteIndex >= adultCapacity) {
                 adultWriteIndex = 0;

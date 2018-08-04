@@ -21,10 +21,10 @@ public class DataCompactor
     private final SegmentContainer segmentContainer;
     private int recordNum = 0;
 
-    public DataCompactor(String name, int parallelism, int threshold, int partitionNum,
+    public DataCompactor(String name, String db, String table, int parallelism, int threshold, int partitionNum,
                          BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue)
     {
-        super(name, parallelism);
+        super(name, db, table, parallelism);
         this.threshold = threshold;
         this.partitionNum = partitionNum;
         this.sorterCompactorBlockingQueue = sorterCompactorBlockingQueue;
@@ -57,6 +57,8 @@ public class DataCompactor
                 if (recordNum >= threshold) {
                     // compact
                     ParaflowSegment segment = compact();
+                    segment.setDb(db);
+                    segment.setTable(table);
                     segmentContainer.addSegment(segment);
                 }
             }
