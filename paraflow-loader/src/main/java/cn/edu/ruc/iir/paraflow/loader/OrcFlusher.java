@@ -1,7 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.loader.buffer.BufferSegment;
-import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
+import cn.edu.ruc.iir.paraflow.loader.utils.LoaderConfig;
 import cn.edu.ruc.iir.paraflow.loader.utils.FileNameGenerator;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.apache.hadoop.conf.Configuration;
@@ -29,7 +29,7 @@ public class OrcFlusher extends DataFlusher
     public OrcFlusher(String threadName)
     {
         super(threadName);
-        ConsumerConfig config = ConsumerConfig.INSTANCE();
+        LoaderConfig config = LoaderConfig.INSTANCE();
         this.orcFileStripeSize = config.getOrcFileStripeSize();
         this.orcFileBufferSize = config.getOrcFileBufferSize();
         this.orcFileBlockSize = config.getOrcFileBlockSize();

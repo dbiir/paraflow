@@ -9,7 +9,7 @@ public class FileNameGenerator
 
     public static String generator(String dbName, String tblName, long beginTime, long endTime)
     {
-        ConsumerConfig config = ConsumerConfig.INSTANCE();
+        LoaderConfig config = LoaderConfig.INSTANCE();
         String hdfsWarehouse = config.getHDFSWarehouse();
         ThreadLocalRandom tlr = ThreadLocalRandom.current();
         long random = tlr.nextLong();

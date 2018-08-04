@@ -27,10 +27,10 @@ public class BasicDataPuller
             topicPartitions.add(new TopicPartition(topicName, i));
         }
         try {
-            DefaultLoader loader = new DefaultLoader(args[0]);
-            loader.consume(topicPartitions, new MockTableTransformer(),
-                    Runtime.getRuntime().availableProcessors() * 2,
-                    5000, 500000, 500000, 5000);
+            DefaultLoader loader = new DefaultLoader();
+//            loader.consume(topicPartitions, new MockTableTransformer(),
+//                    Runtime.getRuntime().availableProcessors() * 2,
+//                    5000, 500000, 500000, 5000);
         }
         catch (ConfigFileNotFoundException e) {
             e.printStackTrace();

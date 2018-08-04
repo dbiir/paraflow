@@ -1,7 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
-import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
+import cn.edu.ruc.iir.paraflow.loader.utils.LoaderConfig;
 import com.conversantmedia.util.concurrent.ConcurrentQueue;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.PushPullConcurrentQueue;
@@ -22,7 +22,7 @@ import java.util.concurrent.BlockingQueue;
  *                                     ConcurrentQueue             BlockingQueue                              .
  *         DataPuller(DataTransformer) ---------------> DataSorter -------                                    |
  *                        ... ...                                        |                                    |
- *         DataPuller(DataTransformer) ---------------> DataSorter -------------> DataCompactor ----. SegmentContainer ([youngZone] [adultZone] [oldZone])
+ *         DataPuller(DataTransformer) ---------------> DataSorter -------------> DataCompactor ----. SegmentContainer ([youngZone] [adultZone])
  *                        ... ...                                        |                                    |
  *         DataPuller(DataTransformer) ---------------> DataSorter -------                                    |
  *                                                                                                            . async flushing to files (in-memory)
@@ -31,14 +31,14 @@ import java.util.concurrent.BlockingQueue;
 public class DefaultLoader
 {
     private final ProcessPipeline pipeline;
-    private final ConsumerConfig config;
+    private final LoaderConfig config;
 
-    public DefaultLoader(String configPath)
+    public DefaultLoader()
             throws ConfigFileNotFoundException
     {
         this.pipeline = new ProcessPipeline();
-        this.config = ConsumerConfig.INSTANCE();
-        config.init(configPath);
+        this.config = LoaderConfig.INSTANCE();
+        config.init();
         init();
     }
 

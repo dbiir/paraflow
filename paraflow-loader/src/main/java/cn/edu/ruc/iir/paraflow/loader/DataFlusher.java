@@ -2,7 +2,7 @@ package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.loader.buffer.BufferSegment;
 import cn.edu.ruc.iir.paraflow.loader.buffer.FlushQueueBuffer;
-import cn.edu.ruc.iir.paraflow.loader.utils.ConsumerConfig;
+import cn.edu.ruc.iir.paraflow.loader.utils.LoaderConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 
 import java.util.Optional;
@@ -21,7 +21,7 @@ public abstract class DataFlusher
     public DataFlusher(String threadName)
     {
         super(threadName, 1);
-        ConsumerConfig config = ConsumerConfig.INSTANCE();
+        LoaderConfig config = LoaderConfig.INSTANCE();
         metaClient = new MetaClient(config.getMetaServerHost(),
                 config.getMetaServerPort());
     }

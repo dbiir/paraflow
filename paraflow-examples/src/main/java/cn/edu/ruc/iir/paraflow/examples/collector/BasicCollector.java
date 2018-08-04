@@ -20,7 +20,7 @@ public class BasicCollector
     public static void main(String[] args)
     {
         try {
-            DefaultCollector<String> collector = new DefaultCollector<>(args[0]);
+            DefaultCollector<String> collector = new DefaultCollector<>();
             for (int i = 0; i < 1; i++) {
                 DataSource dataSource = new MockDataSource();
                 collector.collect(dataSource, 0, 0,

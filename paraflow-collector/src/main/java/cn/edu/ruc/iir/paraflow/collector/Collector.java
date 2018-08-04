@@ -1,10 +1,8 @@
 package cn.edu.ruc.iir.paraflow.collector;
 
-import cn.edu.ruc.iir.paraflow.commons.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
 import java.util.List;
-import java.util.function.Function;
 
 /**
  * paraflow connector
@@ -51,12 +49,6 @@ public interface Collector<T>
                                                 String fiberFuncName,
                                                 List<String> columnName,
                                                 List<String> dataType);
-
-    void registerFiberFunc(String database, String table, Function<String, Integer> fiberFunc);
-
-    void registerFilter(String database, String table, Function<Message, Boolean> filterFunc);
-
-    void registerTransformer(String database, String table, Function<Message, Message> transformerFunc);
 
     void shutdown();
 }

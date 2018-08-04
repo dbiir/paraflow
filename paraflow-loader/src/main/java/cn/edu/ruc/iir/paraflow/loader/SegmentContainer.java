@@ -1,9 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -15,16 +12,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class SegmentContainer
 {
     private final AtomicBoolean initialized = new AtomicBoolean(false);
-    private final ReadWriteLock containerLock = new ReentrantReadWriteLock();
-    private final AtomicInteger youngReadIndex = new AtomicInteger(0);
-    private final AtomicInteger youngWriteIndex = new AtomicInteger(0);
-    private final AtomicInteger adultReadIndex = new AtomicInteger(0);
-    private final AtomicInteger adultWriteIndex = new AtomicInteger(0);
-    private final ReadWriteLock youngZoneLock = new ReentrantReadWriteLock();
-    private final ReadWriteLock adultZoneLock = new ReentrantReadWriteLock();
+    private int youngReadIndex = 0;
+    private int youngWriteIndex = 0;
+    private int adultReadIndex = 0;
+    private int adultWriteIndex = 0;
     private ParaflowSegment[] youngZone;    // container for on-heap segments
     private ParaflowSegment[] adultZone;    // container for off-heap segments
-    private ReadWriteLock[] youngLocks;     // readWriteLock for young segments
     private ReadWriteLock[] adultLocks;     // readWriteLock for adult segments
     private int youngCapacity;
     private int adultCapacity;
@@ -51,11 +44,7 @@ public class SegmentContainer
         this.adultCapacity = adultCapacity;
         this.youngZone = new ParaflowSegment[youngCapacity];
         this.adultZone = new ParaflowSegment[adultCapacity];
-        this.youngLocks = new ReadWriteLock[youngCapacity];
         this.adultLocks = new ReadWriteLock[adultCapacity];
-        for (int i = 0; i < youngCapacity; i++) {
-            youngLocks[i] = new ReentrantReadWriteLock();
-        }
         for (int i = 0; i < adultCapacity; i++) {
             adultLocks[i] = new ReentrantReadWriteLock();
         }
@@ -64,35 +53,61 @@ public class SegmentContainer
 
     public void addSegment(ParaflowSegment segment)
     {
-        youngZoneLock.readLock().lock();
-        if (youngWriteIndex.get() >= youngCapacity && youngReadIndex.get() < youngCapacity) {
-            writeSegment(youngZone[youngReadIndex.getAndIncrement()]);
-            youngWriteIndex.set(0);
-            youngZone[youngWriteIndex.get()] = null;
+        if (youngReadIndex == youngWriteIndex && youngReadIndex != 0) {
+            growUp(youngZone[youngReadIndex]);
+            youngReadIndex++;
         }
-        youngZoneLock.readLock().unlock();
-        youngZone[youngWriteIndex.getAndIncrement()] = segment;
-        // add to container; if container is full, flush the oldest segment to a memory file, maintain segment object, but set content to null
+        youngZone[youngWriteIndex++] = segment;
+        if (youngWriteIndex >= youngCapacity) {
+            youngWriteIndex = 0;
+        }
     }
 
-    private void writeSegment(ParaflowSegment segment)
+    private void growUp(ParaflowSegment segment)
     {
-        // write to in-memory file, and set storage level and path for the segment, and move it to adultZone
+        // if no space left, flush out one segment to disk
+        if (adultReadIndex == adultWriteIndex && adultReadIndex != 0) {
+            try {
+                while (!adultLocks[adultReadIndex].readLock().tryLock()) {
+                    Thread.sleep(100);
+                }
+                new Thread(new SegmentFlusher(segment, adultLocks[adultReadIndex], lock -> {
+                    lock.readLock().unlock();
+                })).start();
+                adultReadIndex++;
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        // write the segment
+        try {
+            // wait until the segment at readIndex is already flushed to disk
+            while (!adultLocks[adultWriteIndex].writeLock().tryLock()) {
+                Thread.sleep(1000);
+            }
+            new Thread(new ParquetWriter(segment, adultLocks[adultWriteIndex], lock -> {
+                adultZone[adultWriteIndex] = segment;
+                lock.writeLock().unlock();
+            })).start();
+            adultWriteIndex++;
+            if (adultWriteIndex >= adultCapacity) {
+                adultWriteIndex = 0;
+            }
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void flushSegment(ParaflowSegment segment)
+    public String readOnHeapSegment(int index)
     {
-        // flush off-heap memory to the disk, and update metadata in MetaServer
+        adultLocks[index].readLock().lock();
+        return adultZone[index].getPath();
     }
 
-    public List<ParaflowRecord> readSegments(int[] fiberIds, long[] minTimestamps, long[] maxTimestamps)
+    public void doneRead(int index)
     {
-        // lock all
-        // filter all segments
-        // unlock all
-        // lock filtered on-heap/off-heap segments
-        // read content
-        // unlock filtered on-heap/off-heap segments
-        return new ArrayList<>();
+        adultLocks[index].readLock().unlock();
     }
 }

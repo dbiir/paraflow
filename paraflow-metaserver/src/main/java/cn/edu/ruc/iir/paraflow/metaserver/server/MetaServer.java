@@ -22,12 +22,10 @@ public class MetaServer
 {
     private static final Logger logger = LogManager.getLogger(MetaServer.class);
 
-    private final String metaConfigPath;
     private Server server = null;
 
-    private MetaServer(String metaConfigPath)
+    private MetaServer()
     {
-        this.metaConfigPath = metaConfigPath;
     }
 
     /**
@@ -46,8 +44,7 @@ public class MetaServer
         pipeline.addStartupHook(
                 () -> {
                     MetaConfig metaConfig = MetaConfig.INSTANCE();
-                    metaConfig.init(metaConfigPath);
-                    metaConfig.validate();
+                    metaConfig.init();
                 }
         );
 
@@ -155,7 +152,7 @@ public class MetaServer
 
     public static void main(String[] args)
     {
-        MetaServer server = new MetaServer(args[0]);
+        MetaServer server = new MetaServer();
         server.start();
     }
 }

@@ -2,7 +2,6 @@ package cn.edu.ruc.iir.paraflow.collector;
 
 import cn.edu.ruc.iir.paraflow.collector.utils.CollectorConfig;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
-import cn.edu.ruc.iir.paraflow.commons.Message;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -16,7 +15,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
 
 /**
  * paraflow
@@ -31,12 +29,11 @@ public class DefaultCollector<T>
     private final CollectorEnvironment env = CollectorEnvironment.getEnvironment();
     private final CollectorConfig collectorConfig;
 
-    public DefaultCollector(String configPath)
+    public DefaultCollector()
             throws ConfigFileNotFoundException
     {
         CollectorConfig config = CollectorConfig.INSTANCE();
-        config.init(configPath);
-        config.validate();
+        config.init();
         this.collectorConfig = config;
         // init meta client
         metaClient = new MetaClient(config.getMetaServerHost(),
@@ -154,30 +151,6 @@ public class DefaultCollector<T>
     }
 
     @Override
-    public void registerFiberFunc(String database, String table, Function<String, Integer> fiberFunc)
-    {
-    }
-
-//    @Override
-//    public StatusProto.ResponseStatus createFiberFunc(String funcName, SerializableFunction<String, Long> func) throws IOException
-//    {
-////        return metaClient.createFiberFunc(funcName, func);
-//        return StatusProto.ResponseStatus.newBuilder().build();
-//    }
-
-    @Override
-    public void registerFilter(String database, String table, Function<Message, Boolean> filterFunc)
-    {
-        // todo register filters currently not supported
-    }
-
-    @Override
-    public void registerTransformer(String database, String table, Function<Message, Message> transformerFunc)
-    {
-        // todo register transformer currently not supported
-    }
-
-    @Override
     public void shutdown()
     {
         Runtime.getRuntime().exit(0);
@@ -187,10 +160,10 @@ public class DefaultCollector<T>
     {
         kafkaAdminClient.close();
         try {
-            metaClient.shutdown(CollectorConfig.INSTANCE().getMetaClientShutdownTimeout());
+            metaClient.shutdown(1);
         }
         catch (InterruptedException e) {
-            metaClient.shutdownNow();
+            e.printStackTrace();
         }
     }
 }

@@ -1,6 +1,6 @@
 .idea
 *.iml
-dist/lib
+dist/libs
 dist/plugin
 dist/bin/launcher*
 dist/bin/procname

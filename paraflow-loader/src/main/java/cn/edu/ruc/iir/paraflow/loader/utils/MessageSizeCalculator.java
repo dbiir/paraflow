@@ -5,7 +5,7 @@ import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 
 public class MessageSizeCalculator
 {
-    private static ConsumerConfig config = ConsumerConfig.INSTANCE();
+    private static LoaderConfig config = LoaderConfig.INSTANCE();
     public static MetaClient metaClient
             = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
 
