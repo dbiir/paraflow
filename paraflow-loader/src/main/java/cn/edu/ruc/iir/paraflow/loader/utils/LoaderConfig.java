@@ -31,6 +31,61 @@ public class LoaderConfig
         return paraflowConfig.getProperties();
     }
 
+    public boolean contains(String key)
+    {
+        return paraflowConfig.getProperties().contains(key);
+    }
+
+    public String getLoaderId()
+    {
+        return paraflowConfig.getProperty("loader.id");
+    }
+
+    public long getLoaderLifetime()
+    {
+        return Long.parseLong(paraflowConfig.getProperty("loader.lifetime"));
+    }
+
+    public int getPullerParallelism()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("puller.parallelism"));
+    }
+
+    public int getPullerSorterCapacity()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("pullerSorter.capacity"));
+    }
+
+    public int getSorterCompactorCapacity()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("sorterCompactor.capacity"));
+    }
+
+    public int getSortedBufferCapacity()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("sortedBuffer.capacity"));
+    }
+
+    public int getContainerYoungZoneCapacity()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("youngZone.capacity"));
+    }
+
+    public int getContainerAdultZoneCapacity()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("adultZone.capacity"));
+    }
+
+    public int getCompactorThreshold()
+    {
+        return Integer.parseInt(paraflowConfig.getProperty("compactor.threshold"));
+    }
+
+    public String getTransformerClass()
+    {
+        return paraflowConfig.getProperty("transformer.class");
+    }
+
     public int getMetaServerPort()
     {
         return Integer.parseInt(paraflowConfig.getProperty("meta.server.port"));

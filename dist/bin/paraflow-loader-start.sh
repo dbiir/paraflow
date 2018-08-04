@@ -2,7 +2,7 @@
 
 if [ $# -lt 1 ];
 then
-  echo "USAGE: $0 [-daemon] topic partitionFrom partitionTo"
+  echo "USAGE: $0 [-daemon] db table partitionFrom partitionTo"
   exit 1
 fi
 base_dir=$(dirname $0)
@@ -29,4 +29,4 @@ esac
 
 MAIN_CLASS=$1
 
-exec $base_dir/paraflow-run-class.sh cn.edu.ruc.iir.paraflow.loader.DefaultLoader "$@"
+exec $base_dir/paraflow-run-class.sh cn.edu.ruc.iir.paraflow.loader.LoaderServer "$@"

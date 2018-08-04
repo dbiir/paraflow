@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 /**
  * paraflow default loader
  *
@@ -32,13 +34,21 @@ public class DefaultLoader
 {
     private final ProcessPipeline pipeline;
     private final LoaderConfig config;
+    private final String db;
+    private final String table;
+    private final int partitionFrom;
+    private final int partitionTo;
 
-    public DefaultLoader()
+    public DefaultLoader(String db, String table, int partitionFrom, int partitionTo)
             throws ConfigFileNotFoundException
     {
         this.pipeline = new ProcessPipeline();
         this.config = LoaderConfig.INSTANCE();
         config.init();
+        this.db = db;
+        this.table = table;
+        this.partitionFrom = partitionFrom;
+        this.partitionTo = partitionTo;
         init();
     }
 
@@ -49,39 +59,60 @@ public class DefaultLoader
         );
     }
 
-    public void consume(List<TopicPartition> topicPartitions, DataTransformer dataTransformer,
-                        int parallelism, long lifetime, int sorterBufferCapacity,
-                        int pullerSorterQueueCapacity, int sorterCompactorQueueCapacity, int compactorThreshold,
-                        int containerYoungZoneCapacity, int containerAdultZoneCapacity)
+    public void run()
     {
+        // get puller parallelism
+        int pullerParallelism = Runtime.getRuntime().availableProcessors() * 2;
+        if (config.contains("puller.parallelism")) {
+            pullerParallelism = config.getPullerParallelism();
+        }
+        // get topic
+        String topic = db + "-" + table;
         // assign topic partitions to each data puller
+        checkArgument(partitionFrom >= partitionTo);
+        int partitionNum = partitionTo - partitionFrom + 1;
         Map<Integer, List<TopicPartition>> partitionMapping = new HashMap<>();
-        for (int i = 0; i < topicPartitions.size(); i++) {
-            int idx = i % parallelism;
+        for (int i = partitionFrom; i <= partitionTo; i++) {
+            int idx = i % pullerParallelism;
             if (!partitionMapping.containsKey(idx)) {
                 partitionMapping.put(idx, new ArrayList<>());
             }
-            partitionMapping.get(idx).add(topicPartitions.get(i));
+            partitionMapping.get(idx).add(new TopicPartition(topic, i));
         }
         // the blocking queue between sorters and the compactor
         BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue =
-                new DisruptorBlockingQueue<>(sorterCompactorQueueCapacity, SpinPolicy.SPINNING);
+                new DisruptorBlockingQueue<>(config.getSorterCompactorCapacity(), SpinPolicy.SPINNING);
+        // get transformer
+        String transformerClass = config.getTransformerClass();
+        DataTransformer transformer = null;
+        try {
+            Class clazz = DefaultLoader.class.getClassLoader().loadClass(transformerClass);
+            transformer = (DataTransformer) clazz.newInstance();
+        }
+        catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
+        if (transformer == null) {
+            System.out.println("No data transformer available");
+            return;
+        }
         // add data pullers and sorters
         for (int pullerId : partitionMapping.keySet()) {
             ConcurrentQueue<ParaflowRecord> pullerSorterConcurrentQueue =
-                    new PushPullConcurrentQueue<>(pullerSorterQueueCapacity);
+                    new PushPullConcurrentQueue<>(config.getPullerSorterCapacity());
             DataPuller dataPuller = new DataPuller("puller-" + pullerId, 1,
-                    partitionMapping.get(pullerId), config.getProperties(), dataTransformer, pullerSorterConcurrentQueue);
-            DataSorter dataSorter = new DataSorter("sorter-" + pullerId, 1, lifetime, sorterBufferCapacity,
-                    pullerSorterConcurrentQueue, sorterCompactorBlockingQueue, partitionMapping.get(pullerId).size());
+                    partitionMapping.get(pullerId), config.getProperties(), transformer, pullerSorterConcurrentQueue);
+            DataSorter dataSorter = new DataSorter("sorter-" + pullerId, 1, config.getLoaderLifetime(),
+                    config.getSortedBufferCapacity(), pullerSorterConcurrentQueue, sorterCompactorBlockingQueue,
+                    partitionMapping.get(pullerId).size());
             pipeline.addProcessor(dataPuller);
             pipeline.addProcessor(dataSorter);
         }
         // init segment container
-        SegmentContainer.INSTANCE().init(containerYoungZoneCapacity, containerAdultZoneCapacity);
+        SegmentContainer.INSTANCE().init(config.getContainerYoungZoneCapacity(), config.getContainerAdultZoneCapacity());
         // add a data compactor
-        DataCompactor dataCompactor = new DataCompactor("compactor", 1, compactorThreshold,
-                topicPartitions.size(), sorterCompactorBlockingQueue);
+        DataCompactor dataCompactor = new DataCompactor("compactor", 1, config.getCompactorThreshold(),
+                partitionNum, sorterCompactorBlockingQueue);
         pipeline.addProcessor(dataCompactor);
         // start the pipeline
         pipeline.start();

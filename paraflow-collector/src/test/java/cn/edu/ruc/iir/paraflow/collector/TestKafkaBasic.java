@@ -14,7 +14,7 @@ public class TestKafkaBasic
     public void createTopic()
     {
         try {
-            DefaultCollector<String> collector = new DefaultCollector<>("");
+            DefaultCollector<String> collector = new DefaultCollector<>();
             collector.createTopic("exampledb-exampletbl", 10, (short) 1);
         }
         catch (ConfigFileNotFoundException e) {

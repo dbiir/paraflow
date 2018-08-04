@@ -22,11 +22,11 @@
             <directoryMode>0755</directoryMode>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../dist/conf</directory>
+            <directory>${project.basedir}/../dist/config</directory>
             <outputDirectory>/conf</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../dist/lib</directory>
+            <directory>${project.basedir}/../dist/libs</directory>
             <outputDirectory>/lib</outputDirectory>
         </fileSet>
         <fileSet>
