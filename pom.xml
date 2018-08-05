@@ -82,17 +82,6 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-plugin-toolkit</artifactId>
-                <version>${presto.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.protobuf</groupId>
-                        <artifactId>protobuf-java</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-collector</artifactId>
                 <version>${project.version}</version>
@@ -104,13 +93,19 @@
             </dependency>
             <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>
-                <artifactId>paraflow-loader-producer</artifactId>
+                <artifactId>paraflow-loader</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>cn.edu.ruc.iir</groupId>
-                <artifactId>paraflow-loader-consumer</artifactId>
-                <version>${project.version}</version>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-plugin-toolkit</artifactId>
+                <version>${presto.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             <dependency>
                 <groupId>com.facebook.presto</groupId>
@@ -143,6 +138,12 @@
                 <groupId>com.google.inject</groupId>
                 <artifactId>guice</artifactId>
                 <version>${guice.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.conversantmedia</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>1.2.12</version>
+                <classifier>jdk8</classifier>
             </dependency>
             <dependency>
                 <groupId>com.sun.jersey</groupId>
