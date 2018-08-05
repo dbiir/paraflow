@@ -10,6 +10,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>paraflow-connector</artifactId>
+    <description>Presto - Paraflow Connector</description>
+    <packaging>presto-plugin</packaging>
 
     <properties>
         <main.basedir>${project.parent.basedir}</main.basedir>
@@ -115,15 +117,12 @@
             <artifactId>testng</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
-    <build>
-        <extensions>
-            <extension>
-                <groupId>kr.motd.maven</groupId>
-                <artifactId>os-maven-plugin</artifactId>
-                <version>1.5.0.Final</version>
-            </extension>
-        </extensions>
-    </build>
 </project>

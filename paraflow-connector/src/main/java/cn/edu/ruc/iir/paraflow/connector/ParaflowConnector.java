@@ -13,6 +13,7 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
+import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTransactionHandle;
 import com.facebook.presto.spi.connector.Connector;
 import com.facebook.presto.spi.connector.ConnectorMetadata;
 import com.facebook.presto.spi.connector.ConnectorPageSourceProvider;

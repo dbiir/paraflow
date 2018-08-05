@@ -24,10 +24,11 @@ public class TestMetaClient
     }
 
     @Test
+    // User is not found. Please create the user first.
     public void step01_ClientCreateUserTest()
     {
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
-        StatusProto.ResponseStatus status = client.createUser("alice", "123456");
+        StatusProto.ResponseStatus status = client.createUser("paraflow", "paraflow");
         assertEquals(expect, status);
     }
 
@@ -35,7 +36,7 @@ public class TestMetaClient
     public void step02_ClientCreateDatabaseTest()
     {
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
-        StatusProto.ResponseStatus status = client.createDatabase("food", "hdfs://127.0.0.1:5432/metadata/food", "alice");
+        StatusProto.ResponseStatus status = client.createDatabase("food", "hdfs://127.0.0.1:5432/metadata/food", "paraflow");
         assertEquals(expect, status);
     }
 
@@ -43,7 +44,7 @@ public class TestMetaClient
     public void step03_ClientCreateDatabase2Test()
     {
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
-        StatusProto.ResponseStatus status = client.createDatabase("fruit", "alice");
+        StatusProto.ResponseStatus status = client.createDatabase("fruit", "paraflow");
         assertEquals(expect, status);
     }
 
@@ -75,7 +76,7 @@ public class TestMetaClient
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         String string = "I am a girl";
         byte[] funcContent = string.getBytes();
-        StatusProto.ResponseStatus status = client.createFunc("FuncName", funcContent);
+        StatusProto.ResponseStatus status = client.createFunc("function0", funcContent);
         assertEquals(expect, status);
     }
 
@@ -109,8 +110,8 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
-        StatusProto.ResponseStatus status = client.createRegularTable("food", "rice",
-                "alice", "hdfs:/127.0.0.1/:5432/metadata/food/rice",
+        StatusProto.ResponseStatus status = client.createRegularTable("fruit", "grip",
+                "paraflow", "hdfs://10.77.40.236:9000/paraflow_meta/fruit",
                 "StorageFormatName", columnName, dataType);
         assertEquals(expect, status);
     }
@@ -132,7 +133,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         StatusProto.ResponseStatus status = client.createRegularTable("food", "noodles",
-                "alice", "StorageFormatName", columnName, dataType);
+                "paraflow", "StorageFormatName", columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -153,7 +154,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         StatusProto.ResponseStatus status = client.createFiberTable("fruit", "grip",
-                "alice", "StorageFormatName", 0,
+                "paraflow", "StorageFormatName", 0,
                 "FuncName", 1, columnName, dataType);
         assertEquals(expect, status);
     }
@@ -175,7 +176,7 @@ public class TestMetaClient
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         StatusProto.ResponseStatus status = client.createFiberTable("fruit", "banana",
-                "alice", "StorageFormatName", 0, "FuncName", 1, columnName, dataType);
+                "paraflow", "StorageFormatName", 0, "FuncName", 1, columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -187,6 +188,7 @@ public class TestMetaClient
         assertEquals(expect, stringList);
     }
 
+    // no test
     @Test
     public void step11_ClientListTableTest()
     {
@@ -198,7 +200,7 @@ public class TestMetaClient
     @Test
     public void step12_ClientGetDatabaseTest()
     {
-        MetaProto.DbParam expect = MetaProto.DbParam.newBuilder().setDbName("food").setLocationUrl("hdfs://127.0.0.1:5432/metadata/food").setUserName("alice").build();
+        MetaProto.DbParam expect = MetaProto.DbParam.newBuilder().setDbName("food").setLocationUrl("hdfs://127.0.0.1:5432/metadata/food").setUserName("paraflow").build();
         MetaProto.DbParam database = client.getDatabase("food");
         assertEquals(expect, database);
     }
@@ -206,9 +208,9 @@ public class TestMetaClient
     @Test
     public void step13_ClientGetTableTest()
     {
-        //MetaProto.TblParam expect = MetaProto.TblParam.newBuilder().setDbName("food").setTblName("rice").setTblType(0).setUserName("alice").setCreateTime(1503237074296).setLastAccessTime(1503237074296).setLocationUrl("hdfs://127.0.0.1:9000/metadata/food/rice").setStorageFormatId(1).setFiberColId(-1).setFuncId(1).build();
-        MetaProto.TblParam table = client.getTable("food", "rice");
-        //assertEquals(expect, table);
+        MetaProto.TblParam expect = MetaProto.TblParam.newBuilder().setDbName("fruit").setTblName("grip").setTblType(0).setUserName("paraflow").setCreateTime(1503237074296L).setLastAccessTime(1503237074296L).setLocationUrl("hdfs://127.0.0.1:9000/metadata/food/rice").setFiberColId(-1).setTimeColId(1).build();
+        MetaProto.TblParam table = client.getTable("fruit", "grip");
+        assertEquals(expect, table);
     }
 
     @Test
@@ -239,7 +241,7 @@ public class TestMetaClient
     public void step17_ClientCreateTblPrivTest()
     {
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
-        StatusProto.ResponseStatus status = client.createTblPriv("food", "rice", "alice", 1);
+        StatusProto.ResponseStatus status = client.createTblPriv("food", "rice", "paraflow", 1);
         assertEquals(expect, status);
     }
 

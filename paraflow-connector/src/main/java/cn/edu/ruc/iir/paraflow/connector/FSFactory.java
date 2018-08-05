@@ -13,26 +13,24 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
-import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
+import cn.edu.ruc.iir.paraflow.commons.utils.ConfigFactory;
+import cn.edu.ruc.iir.paraflow.connector.exception.ConfigurationException;
+import cn.edu.ruc.iir.paraflow.connector.impl.ParaflowPrestoConfig;
 import com.facebook.presto.spi.HostAddress;
+import com.facebook.presto.spi.PrestoException;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import io.airlift.log.Logger;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.BlockLocation;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.LocalFileSystem;
-import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.*;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystemNotFoundException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+
+import static cn.edu.ruc.iir.paraflow.connector.exception.ParaflowErrorCode.PARAFLOW_CONFIG_ERROR;
+import static cn.edu.ruc.iir.paraflow.connector.exception.ParaflowErrorCode.PARAFLOW_HDFS_FILE_ERROR;
 
 /**
  * @author jelly.guodong.jin@gmail.com
@@ -40,73 +38,70 @@ import java.util.Set;
 public final class FSFactory
 {
     private Configuration conf = new Configuration();
-    private final MetaConfig config;
+    private FileSystem fileSystem;
+    private final ParaflowPrestoConfig config;
     private final Logger log = Logger.get(FSFactory.class.getName());
 
     @Inject
-    public FSFactory(MetaConfig config)
+    public FSFactory(ParaflowPrestoConfig config)
     {
         this.config = config;
-    }
-
-    public Optional<FileSystem> getFS()
-    {
-        return getFS(config.getHDFSWarehouse());
-    }
-
-    public Optional<FileSystem> getFS(String path)
-    {
-        conf.set("fs.hdfs.impl", DistributedFileSystem.class.getName());
-        conf.set("fs.file.impl", LocalFileSystem.class.getName());
-        if (path.isEmpty()) {
-            try {
-                return Optional.of(new Path(config.getHDFSWarehouse()).getFileSystem(conf));
+        Configuration hdfsConfig = new Configuration(false);
+        ConfigFactory configFactory = config.getFactory();
+        File hdfsConfigDir = new File(configFactory.getProperty("hdfs.config.dir"));
+        hdfsConfig.set("fs.hdfs.impl", DistributedFileSystem.class.getName());
+        hdfsConfig.set("fs.file.impl", LocalFileSystem.class.getName());
+        try
+        {
+            if (hdfsConfigDir.exists() && hdfsConfigDir.isDirectory())
+            {
+                File[] hdfsConfigFiles = hdfsConfigDir.listFiles((file, s) -> s.endsWith("core-site.xml") || s.endsWith("hdfs-site.xml"));
+                if (hdfsConfigFiles != null && hdfsConfigFiles.length == 2)
+                {
+                    hdfsConfig.addResource(hdfsConfigFiles[0].toURI().toURL());
+                    hdfsConfig.addResource(hdfsConfigFiles[1].toURI().toURL());
+                }
+            } else
+            {
+                log.error("can not read hdfs configuration file in paraflow connector. hdfs.config.dir=" + hdfsConfigDir);
+                throw new PrestoException(PARAFLOW_HDFS_FILE_ERROR, new ConfigurationException());
             }
-            catch (IOException e) {
-                log.error(e);
-                return Optional.empty();
-            }
-        }
-        try {
-            return Optional.of(formPath(path).getFileSystem(conf));
-        }
-        catch (IOException e) {
+            fileSystem = FileSystem.get(hdfsConfig);
+        } catch (IOException e)
+        {
             log.error(e);
-            return Optional.empty();
+            throw new PrestoException(PARAFLOW_CONFIG_ERROR, e);
         }
     }
 
-    public Optional<FileSystem> getFS(Path path)
+    public Optional<FileSystem> getFileSystem()
     {
-        conf.set("fs.hdfs.impl", DistributedFileSystem.class.getName());
-        conf.set("fs.file.impl", LocalFileSystem.class.getName());
-        try {
-            return Optional.of(path.getFileSystem(conf));
-        }
-        catch (IOException e) {
-            log.error(e);
-            return Optional.empty();
-        }
+        return Optional.of(this.fileSystem);
     }
 
     public List<Path> listFiles(Path dirPath)
     {
         List<Path> files = new ArrayList<>();
-        if (!getFS().isPresent()) {
-            throw new FileSystemNotFoundException("");
-        }
-        FileStatus[] fileStatuses = new FileStatus[0];
-        try {
-            fileStatuses = getFS().get().listStatus(dirPath);
-        }
-        catch (IOException e) {
-            log.error(e);
-        }
-        for (FileStatus f : fileStatuses) {
-            if (f.isFile()) {
-                files.add(f.getPath());
+        FileStatus[] fileStatuses = null;
+        try
+        {
+            fileStatuses = this.fileSystem.listStatus(dirPath);
+            if (fileStatuses != null)
+            {
+                for (FileStatus f : fileStatuses)
+                {
+                    if (f.isFile())
+                    {
+                        files.add(f.getPath());
+                    }
+                }
             }
+        } catch (IOException e)
+        {
+            log.error(e);
+            throw new PrestoException(PARAFLOW_HDFS_FILE_ERROR, e);
         }
+
         return files;
     }
 
@@ -114,12 +109,9 @@ public final class FSFactory
     public List<HostAddress> getBlockLocations(Path file, long start, long len)
     {
         Set<HostAddress> addresses = new HashSet<>();
-        if (!getFS().isPresent()) {
-            throw new FileSystemNotFoundException("");
-        }
         BlockLocation[] locations = new BlockLocation[0];
         try {
-            locations = getFS().get().getFileBlockLocations(file, start, len);
+            locations = this.fileSystem.getFileBlockLocations(file, start, len);
         }
         catch (IOException e) {
             log.error(e);
@@ -145,16 +137,4 @@ public final class FSFactory
         return builder.build();
     }
 
-    public Path formPath(String dirOrFile)
-    {
-        String base = config.getHDFSWarehouse();
-        String path = dirOrFile;
-        while (base.endsWith("/")) {
-            base = base.substring(0, base.length() - 2);
-        }
-        if (!path.startsWith("/")) {
-            path = "/" + path;
-        }
-        return Path.mergePaths(new Path(base), new Path(path));
-    }
 }

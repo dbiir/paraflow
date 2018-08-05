@@ -65,9 +65,12 @@
         <hadoop.version>2.7.3</hadoop.version>
         <dep.testng.version>6.8.21</dep.testng.version>
         <guice.version>4.0</guice.version>
-        <presto.version>0.158-SNAPSHOT</presto.version>
-        <airlift.version>0.157</airlift.version>
+        <presto.version>0.192</presto.version>
+        <airlift.version>0.161</airlift.version>
+        <dep.airlift.slice.version>0.32</dep.airlift.slice.version>
+        <dep.airlift.units.version>1.0</dep.airlift.units.version>
         <dep.jetty.version>9.0.5.v20130815</dep.jetty.version>
+        <dep.log4j.version>2.1</dep.log4j.version>
         <dep.jackson.version>1.9.13</dep.jackson.version>
     </properties>
 
@@ -176,12 +179,12 @@
             <dependency>
                 <groupId>io.airlift</groupId>
                 <artifactId>slice</artifactId>
-                <version>0.32</version>
+                <version>${dep.airlift.slice.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.airlift</groupId>
                 <artifactId>units</artifactId>
-                <version>1.0</version>
+                <version>${dep.airlift.units.version}</version>
             </dependency>
             <dependency>
                 <groupId>io.grpc</groupId>
@@ -249,20 +252,21 @@
                 <artifactId>activejdbc</artifactId>
                 <version>1.4.13</version>
             </dependency>
+            <!-- logging -->
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.2</version>
+            </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-api</artifactId>
-                <version>2.8.2</version>
+                <version>${dep.log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-core</artifactId>
-                <version>2.8.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-nop</artifactId>
-                <version>1.7.21</version>
+                <version>${dep.log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.kafka</groupId>
@@ -362,23 +366,7 @@
             </dependency>
             <dependency>
                 <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-spi</artifactId>
-                <version>0.190</version>
-            </dependency>
-            <dependency>
-                <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-orc</artifactId>
-                <version>${presto.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.protobuf</groupId>
-                        <artifactId>protobuf-java</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-hive</artifactId>
                 <version>${presto.version}</version>
                 <exclusions>
                     <exclusion>
@@ -461,53 +449,59 @@
                     <artifactId>jetty-maven-plugin</artifactId>
                     <version>${dep.jetty.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.7.0</version>
+                    <configuration>
+                        <source>${java.source.version}</source>
+                        <target>${java.target.version}</target>
+                        <encoding>UTF-8</encoding>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.19.1</version>
+                    <configuration>
+                        <skipTests>true</skipTests>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>2.17</version>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                <skip>${check.skip-checkstyle}</skip>
+                                <failOnViolation>${check.fail-checkstyle}</failOnViolation>
+                                <consoleOutput>true</consoleOutput>
+                                <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                                <configLocation>${main.basedir}/src/checkstyles/checks.xml</configLocation>
+                                <sourceDirectories>
+                                    <directory>${project.build.sourceDirectory}</directory>
+                                </sourceDirectories>
+                                <testSourceDirectories>
+                                    <directory>${project.build.testSourceDirectory}</directory>
+                                </testSourceDirectories>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.7.0</version>
-                <configuration>
-                    <source>${java.source.version}</source>
-                    <target>${java.target.version}</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.19.1</version>
-                <configuration>
-                    <skipTests>true</skipTests>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>2.17</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                        <configuration>
-                            <skip>${check.skip-checkstyle}</skip>
-                            <failOnViolation>${check.fail-checkstyle}</failOnViolation>
-                            <consoleOutput>true</consoleOutput>
-                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                            <configLocation>${main.basedir}/src/checkstyles/checks.xml</configLocation>
-                            <sourceDirectories>
-                                <directory>${project.build.sourceDirectory}</directory>
-                            </sourceDirectories>
-                            <testSourceDirectories>
-                                <directory>${project.build.testSourceDirectory}</directory>
-                            </testSourceDirectories>
-                        </configuration>
-                    </execution>
-                </executions>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-maven-plugin</artifactId>
+                <version>0.3</version>
+                <extensions>true</extensions>
             </plugin>
         </plugins>
     </build>

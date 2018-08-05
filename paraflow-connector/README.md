@@ -150,3 +150,9 @@ Table:
 + Kafka setup, producer and consumer: Mar 17
 + Kafka distributed consumer framework: Mar 17 -- Mar 24
 + Kafka consumer multiple thread model: Mar 17 -- Mar 24
+
+### Run
+```
+./bin/launcher start
+./bin/presto --server localhost:8081 --catalog paraflow-presto --schema fruit
+```

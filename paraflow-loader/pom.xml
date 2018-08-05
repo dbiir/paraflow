@@ -13,16 +13,21 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.apache.kafka</groupId>
-            <artifactId>kafka-clients</artifactId>
-        </dependency>
-        <dependency>
             <groupId>cn.edu.ruc.iir</groupId>
             <artifactId>paraflow-commons</artifactId>
         </dependency>
         <dependency>
             <groupId>cn.edu.ruc.iir</groupId>
             <artifactId>paraflow-metaserver</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
         </dependency>
         <dependency>
             <groupId>com.conversantmedia</groupId>
@@ -65,11 +70,6 @@
             <groupId>org.apache.parquet</groupId>
             <artifactId>parquet-format</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-all</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
