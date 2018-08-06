@@ -27,6 +27,7 @@
         <module>paraflow-http-server</module>
         <module>paraflow-master</module>
         <module>paraflow-examples</module>
+        <module>paraflow-benchmark</module>
     </modules>
     <packaging>pom</packaging>
 
