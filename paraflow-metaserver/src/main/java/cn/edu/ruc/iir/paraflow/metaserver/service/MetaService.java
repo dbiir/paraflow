@@ -7,8 +7,6 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.CreateBlockIndexAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateColumnAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateDatabaseAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateDbParamAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.CreateFuncAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.CreateStorageFormatAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateTableAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateTblParamAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.CreateTblPrivAction;
@@ -33,12 +31,6 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.GetDatabaseAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDatabaseIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDbParamAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetDbTblIdAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.GetFuncAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.GetFuncIdAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.GetFuncNameAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.GetStorageFormatAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.GetStorageFormatIdAction;
-import cn.edu.ruc.iir.paraflow.metaserver.action.GetStorageFormatNameAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetTableAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetTableIdAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.GetTblParamAction;
@@ -133,12 +125,9 @@ public class MetaService extends MetaGrpc.MetaImplBase
             txController.setAutoCommit(false);
             txController.addAction(new GetUserIdAction());
             txController.addAction(new GetDatabaseIdAction());
-            txController.addAction(new GetStorageFormatIdAction());
-            txController.addAction(new GetFuncIdAction());
             txController.addAction(new CreateTableAction());
             txController.addAction(new GetTableIdAction());
             txController.addAction(new CreateColumnAction());
-//            txController.addAction(new CreateTblFuncAction());
             txController.commit(input);
             responseStreamObserver.onNext(MetaConstants.OKStatus);
             responseStreamObserver.onCompleted();
@@ -382,8 +371,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
             txController.addAction(new GetDatabaseIdAction());
             txController.addAction(new GetTableAction());
             txController.addAction(new GetUserNameAction());
-            txController.addAction(new GetStorageFormatNameAction());
-            txController.addAction(new GetFuncNameAction());
             txController.addAction(new GetTblParamAction());
             ActionResponse result = txController.commit(input);
             MetaProto.TblParam tblParam =
@@ -723,126 +710,6 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (ParaFlowException e) {
             responseStreamObserver.onNext(e.getResponseStatus());
-            responseStreamObserver.onCompleted();
-            e.handle();
-        }
-        finally {
-            if (txController != null) {
-                txController.close();
-            }
-        }
-    }
-
-    @Override
-    public void createStorageFormat(MetaProto.StorageFormatParam storageFormat,
-                                    StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
-    {
-        TransactionController txController = null;
-        try {
-            txController = ConnectionPool.INSTANCE().getTxController();
-            ActionResponse input = new ActionResponse();
-            input.setParam(storageFormat);
-            txController.setAutoCommit(false);
-            txController.addAction(new CreateStorageFormatAction());
-            txController.commit(input);
-            responseStreamObserver.onNext(MetaConstants.OKStatus);
-            responseStreamObserver.onCompleted();
-        }
-        catch (ParaFlowException e) {
-            responseStreamObserver.onNext(e.getResponseStatus());
-            responseStreamObserver.onCompleted();
-            e.handle();
-        }
-        finally {
-            if (txController != null) {
-                txController.close();
-            }
-        }
-    }
-
-    @Override
-    public void getStorageFormat(MetaProto.GetStorageFormatParam getStorageFormatParam,
-                                 StreamObserver<MetaProto.StorageFormatParam> responseStreamObserver)
-    {
-        TransactionController txController = null;
-        try {
-            txController = ConnectionPool.INSTANCE().getTxController();
-            ActionResponse input = new ActionResponse();
-            input.setParam(getStorageFormatParam);
-            input.setProperties("sfName", getStorageFormatParam.getStorageFormatName());
-            txController.setAutoCommit(false);
-            txController.addAction(new GetStorageFormatAction());
-            ActionResponse actionResponse = txController.commit(input);
-            MetaProto.StorageFormatParam storageFormatParam
-                    = (MetaProto.StorageFormatParam) actionResponse.getParam().get();
-            responseStreamObserver.onNext(storageFormatParam);
-            responseStreamObserver.onCompleted();
-        }
-        catch (ParaFlowException e) {
-            MetaProto.StorageFormatParam storageFormat
-                    = MetaProto.StorageFormatParam.newBuilder()
-                    .setIsEmpty(true)
-                    .build();
-            responseStreamObserver.onNext(storageFormat);
-            responseStreamObserver.onCompleted();
-            e.handle();
-        }
-        finally {
-            if (txController != null) {
-                txController.close();
-            }
-        }
-    }
-
-    @Override
-    public void createFunc(MetaProto.FuncParam func,
-                                StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
-    {
-        TransactionController txController = null;
-        try {
-            txController = ConnectionPool.INSTANCE().getTxController();
-            ActionResponse input = new ActionResponse();
-            input.setParam(func);
-            txController.setAutoCommit(false);
-            txController.addAction(new CreateFuncAction());
-            txController.commit(input);
-            responseStreamObserver.onNext(MetaConstants.OKStatus);
-            responseStreamObserver.onCompleted();
-        }
-        catch (ParaFlowException e) {
-            responseStreamObserver.onNext(e.getResponseStatus());
-            responseStreamObserver.onCompleted();
-            e.handle();
-        }
-        finally {
-            if (txController != null) {
-                txController.close();
-            }
-        }
-    }
-
-    @Override
-    public void getFunc(MetaProto.GetFuncParam getFuncParam,
-                             StreamObserver<MetaProto.FuncParam> responseStreamObserver)
-    {
-        TransactionController txController = null;
-        try {
-            txController = ConnectionPool.INSTANCE().getTxController();
-            ActionResponse input = new ActionResponse();
-            input.setParam(getFuncParam);
-            input.setProperties("funcName", getFuncParam.getFuncName());
-            txController.setAutoCommit(false);
-            txController.addAction(new GetFuncAction());
-            ActionResponse actionResponse = txController.commit(input);
-            MetaProto.FuncParam funcParam
-                    = (MetaProto.FuncParam) actionResponse.getParam().get();
-            responseStreamObserver.onNext(funcParam);
-            responseStreamObserver.onCompleted();
-        }
-        catch (ParaFlowException e) {
-            MetaProto.FuncParam funcParam
-                    = MetaProto.FuncParam.newBuilder().setIsEmpty(true).build();
-            responseStreamObserver.onNext(funcParam);
             responseStreamObserver.onCompleted();
             e.handle();
         }

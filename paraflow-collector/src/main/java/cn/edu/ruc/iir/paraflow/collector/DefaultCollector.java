@@ -109,45 +109,17 @@ public class DefaultCollector<T>
     }
 
     @Override
-    public StatusProto.ResponseStatus createRegularTable(
-            String dbName,
-            String tblName,
-            String userName,
-            String locationUrl,
-            String storageFormatName,
-            List<String> columnName,
-            List<String> dataType)
-    {
-        return metaClient.createRegularTable(dbName, tblName, userName, locationUrl, storageFormatName, columnName, dataType);
-    }
-
-    @Override
-    public StatusProto.ResponseStatus createFiberTable(String dbName,
+    public StatusProto.ResponseStatus createTable(String dbName,
                                                        String tblName,
                                                        String userName,
                                                        String storageFormatName,
                                                        int fiberColIndex,
                                                        int timestampColIndex,
-                                                       String fiberFuncName,
+                                                       String fiberPartitioner,
                                                        List<String> columnName,
                                                        List<String> dataType)
     {
-        return metaClient.createFiberTable(dbName, tblName, userName, storageFormatName, fiberColIndex, fiberFuncName, timestampColIndex, columnName, dataType);
-    }
-
-    @Override
-    public StatusProto.ResponseStatus createFiberTable(String dbName,
-                                                       String tblName,
-                                                       String userName,
-                                                       String locationUrl,
-                                                       String storageFormatName,
-                                                       int fiberColIndex,
-                                                       int timestampColIndex,
-                                                       String fiberFuncName,
-                                                       List<String> columnName,
-                                                       List<String> dataType)
-    {
-        return metaClient.createFiberTable(dbName, tblName, userName, storageFormatName, fiberColIndex, fiberFuncName, timestampColIndex, columnName, dataType);
+        return metaClient.createTable(dbName, tblName, userName, storageFormatName, fiberColIndex, fiberPartitioner, timestampColIndex, columnName, dataType);
     }
 
     @Override

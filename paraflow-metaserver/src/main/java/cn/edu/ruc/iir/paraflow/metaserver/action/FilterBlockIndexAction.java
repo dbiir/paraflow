@@ -42,15 +42,13 @@ public class FilterBlockIndexAction extends Action
                 //query
                 sqlStatement = SQLTemplate.filterBlockIndex(tblId);
             }
-            else if (filterBlockIndexParam.getTimeBegin() == -1
-                    && filterBlockIndexParam.getTimeEnd() != -1) {
+            else if (filterBlockIndexParam.getTimeBegin() == -1) {
                 //query
                 sqlStatement = SQLTemplate.filterBlockIndexEnd(
                         tblId,
                         filterBlockIndexParam.getTimeEnd());
             }
-            else if (filterBlockIndexParam.getTimeBegin() != -1
-                    && filterBlockIndexParam.getTimeEnd() == -1) {
+            else if (filterBlockIndexParam.getTimeEnd() == -1) {
                 //query
                 sqlStatement = SQLTemplate.filterBlockIndexBegin(
                         tblId,

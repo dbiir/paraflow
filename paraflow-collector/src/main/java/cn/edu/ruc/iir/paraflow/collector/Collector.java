@@ -21,28 +21,9 @@ public interface Collector<T>
 
     StatusProto.ResponseStatus createDatabase(String databaseName, String userName, String locationUrl);
 
-    StatusProto.ResponseStatus createRegularTable(String dbName,
-                                                  String tblName,
-                                                  String userName,
-                                                  String locationUrl,
-                                                  String storageFormatName,
-                                                  List<String> columnName,
-                                                  List<String> dataType);
-
-    StatusProto.ResponseStatus createFiberTable(String dbName,
+    StatusProto.ResponseStatus createTable(String dbName,
                                                 String tblName,
                                                 String userName,
-                                                String storageFormatName,
-                                                int fiberColIndex,
-                                                int timestampColIndex,
-                                                String fiberFuncName,
-                                                List<String> columnName,
-                                                List<String> dataType);
-
-    StatusProto.ResponseStatus createFiberTable(String dbName,
-                                                String tblName,
-                                                String userName,
-                                                String locationUrl,
                                                 String storageFormatName,
                                                 int fiberColIndex,
                                                 int timestampColIndex,

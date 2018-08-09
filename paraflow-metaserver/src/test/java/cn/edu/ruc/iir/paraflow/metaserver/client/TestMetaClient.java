@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestMetaClient
 {
-    MetaClient client;
+    private MetaClient client;
 
     @Before
     public void init()
@@ -49,52 +49,6 @@ public class TestMetaClient
     }
 
     @Test
-    public void step04_ClientCreateStorageFormatTest()
-    {
-        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
-        StatusProto.ResponseStatus status = client.createStorageFormat("StorageFormatName", "snappy", "serialFormat");
-        assertEquals(expect, status);
-    }
-
-    @Test
-    public void step05_ClientGetStorageFormatTest()
-    {
-        MetaProto.StorageFormatParam expect =
-                MetaProto.StorageFormatParam.newBuilder()
-                .setStorageFormatName("StorageFormatName")
-                .setCompression("snappy")
-                .setSerialFormat("serialFormat")
-                .build();
-        MetaProto.StorageFormatParam storageFormat =
-                client.getStorageFormat("StorageFormatName");
-        assertEquals(expect, storageFormat);
-    }
-
-    @Test
-    public void step06_ClientCreateFuncTest()
-    {
-        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
-        String string = "I am a girl";
-        byte[] funcContent = string.getBytes();
-        StatusProto.ResponseStatus status = client.createFunc("function0", funcContent);
-        assertEquals(expect, status);
-    }
-
-//    @Test
-//    public void step07_ClientGetFuncTest()
-//    {
-//        String string = "I am a girl";
-//        byte[] funcContent = string.getBytes();
-//        ByteString byteString = ByteString.copyFrom(funcContent);
-//        MetaProto.FuncParam expect = MetaProto.FuncParam.newBuilder()
-//                .setFuncName("FuncName")
-//                .setFuncContent(byteString)
-//                .build();
-//        MetaProto.FuncParam funcParam = client.getFunc("FuncName");
-//        assertEquals(expect, funcParam);
-//    }
-
-    @Test
     public void step06_ClientCreateRegularTableTest()
     {
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
@@ -102,17 +56,15 @@ public class TestMetaClient
         columnName.add("smell");
         columnName.add("color");
         columnName.add("feel");
-        ArrayList<String> columnType = new ArrayList<>();
-        columnType.add("regular");
-        columnType.add("regular");
-        columnType.add("regular");
         ArrayList<String> dataType = new ArrayList<>();
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
-        StatusProto.ResponseStatus status = client.createRegularTable("fruit", "grip",
+        StatusProto.ResponseStatus status = client.createTable("fruit", "grip",
                 "paraflow", "hdfs://10.77.40.236:9000/paraflow_meta/fruit",
-                "StorageFormatName", columnName, dataType);
+                "StorageFormatName", 0,
+                "cn.edu.ruc.paraflow.examples.collector.BasicFiberPartitioner",
+                1, columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -124,16 +76,14 @@ public class TestMetaClient
         columnName.add("smell");
         columnName.add("color");
         columnName.add("feel");
-        ArrayList<String> columnType = new ArrayList<>();
-        columnType.add("regular");
-        columnType.add("regular");
-        columnType.add("regular");
         ArrayList<String> dataType = new ArrayList<>();
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
-        StatusProto.ResponseStatus status = client.createRegularTable("food", "noodles",
-                "paraflow", "StorageFormatName", columnName, dataType);
+        StatusProto.ResponseStatus status = client.createTable("food", "noodles",
+                "paraflow", "StorageFormatName", 0,
+                "cn.edu.ruc.paraflow.examples.collector.BasicFiberPartitioner", 1,
+                columnName, dataType);
         assertEquals(expect, status);
     }
 
@@ -145,15 +95,11 @@ public class TestMetaClient
         columnName.add("smell");
         columnName.add("color");
         columnName.add("feel");
-        ArrayList<String> columnType = new ArrayList<>();
-        columnType.add("regular");
-        columnType.add("regular");
-        columnType.add("regular");
         ArrayList<String> dataType = new ArrayList<>();
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
-        StatusProto.ResponseStatus status = client.createFiberTable("fruit", "grip",
+        StatusProto.ResponseStatus status = client.createTable("fruit", "grip",
                 "paraflow", "StorageFormatName", 0,
                 "FuncName", 1, columnName, dataType);
         assertEquals(expect, status);
@@ -167,15 +113,11 @@ public class TestMetaClient
         columnName.add("smell");
         columnName.add("color");
         columnName.add("feel");
-        ArrayList<String> columnType = new ArrayList<>();
-        columnType.add("regular");
-        columnType.add("regular");
-        columnType.add("regular");
         ArrayList<String> dataType = new ArrayList<>();
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
         dataType.add("varchar(20)");
-        StatusProto.ResponseStatus status = client.createFiberTable("fruit", "banana",
+        StatusProto.ResponseStatus status = client.createTable("fruit", "banana",
                 "paraflow", "StorageFormatName", 0, "FuncName", 1, columnName, dataType);
         assertEquals(expect, status);
     }

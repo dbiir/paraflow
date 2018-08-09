@@ -29,10 +29,6 @@ service Meta {
     rpc createDbParam(DbParamParam) returns (ResponseStatus) {}
     rpc createTblParam(TblParamParam) returns (ResponseStatus) {}
     rpc createTblPriv(TblPrivParam) returns (ResponseStatus) {}
-    rpc createStorageFormat(StorageFormatParam) returns (ResponseStatus) {}
-    rpc getStorageFormat(GetStorageFormatParam) returns (StorageFormatParam) {}
-    rpc createFunc(FuncParam) returns (ResponseStatus) {}
-    rpc getFunc(GetFuncParam) returns (FuncParam) {}
     rpc createBlockIndex(BlockIndexParam) returns (ResponseStatus) {}
     rpc createUser(UserParam) returns (ResponseStatus) {}
     rpc filterBlockIndex(FilterBlockIndexParam) returns (StringListType) {}
@@ -288,25 +284,4 @@ message TblPrivParam {
     string userName = 3;
     int32 privType = 4;
     int64 grantTime = 5;
-}
-
-message StorageFormatParam {
-    bool isEmpty = 1;
-    string storageFormatName = 2;
-    string compression = 3;
-    string serialFormat = 4;
-}
-
-message FuncParam {
-    bool isEmpty = 1;
-    string funcName = 2;
-    bytes funcContent = 3;
-}
-
-message GetFuncParam {
-    string funcName = 1;
-}
-
-message GetStorageFormatParam {
-    string storageFormatName = 1;
 }

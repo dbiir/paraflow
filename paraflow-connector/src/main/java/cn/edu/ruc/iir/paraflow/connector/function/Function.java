@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @JsonSubTypes({@JsonSubTypes.Type(value = Function0.class, name = "function0")})
 public interface Function
 {
-    long apply(String v);
+    int apply(String v);
     long apply(int v);
     long apply(long v);
 

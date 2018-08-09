@@ -5,8 +5,6 @@ import cn.edu.ruc.iir.paraflow.collector.DefaultCollector;
 import cn.edu.ruc.iir.paraflow.collector.StringMessageSerializationSchema;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 
-import java.util.Objects;
-
 /**
  * paraflow
  *
@@ -24,7 +22,7 @@ public class BasicCollector
             for (int i = 0; i < 1; i++) {
                 DataSource dataSource = new MockDataSource();
                 collector.collect(dataSource, 0, 0,
-                        k -> Objects.hashCode(k) % 10,
+                        new BasicParaflowFiberPartitioner(),
                         new StringMessageSerializationSchema<>(),
                         new MockDataSink());
             }
