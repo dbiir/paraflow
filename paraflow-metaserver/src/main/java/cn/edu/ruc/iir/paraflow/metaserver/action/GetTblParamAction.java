@@ -28,7 +28,7 @@ public class GetTblParamAction extends Action
         Optional<Object> paramOp = input.getParam();
         Optional<Object> userNameOp = input.getProperties("userName");
         Optional<Object> sfNameOp = input.getProperties("sfName");
-        Optional<Object> funcNameOp = input.getProperties("funcName");
+        Optional<Object> funcNameOp = input.getProperties("fiberFuncName");
         if (paramOp.isPresent()
                 && userNameOp.isPresent()
                 && sfNameOp.isPresent()

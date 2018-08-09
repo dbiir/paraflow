@@ -1,7 +1,6 @@
 package cn.edu.ruc.iir.paraflow.connector.impl;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
-import cn.edu.ruc.iir.paraflow.commons.utils.ConfigFactory;
 import cn.edu.ruc.iir.paraflow.connector.StorageFormat;
 import cn.edu.ruc.iir.paraflow.connector.function.Function;
 import cn.edu.ruc.iir.paraflow.connector.function.Function0;
@@ -56,10 +55,7 @@ public class ParaflowMetaDataReader
     public ParaflowMetaDataReader(ParaflowPrestoConfig config)
     {
         this.config = config;
-        ConfigFactory configFactory = config.getFactory();
-        String host = configFactory.getProperty("metadata.server.host");
-        int port = Integer.parseInt(configFactory.getProperty("metadata.server.port"));
-        this.metaClient = new MetaClient(host, port);
+        this.metaClient = new MetaClient(config.getMetaserverHost(), config.getMetaserverPort());
     }
 
     public List<String> getAllDatabases()

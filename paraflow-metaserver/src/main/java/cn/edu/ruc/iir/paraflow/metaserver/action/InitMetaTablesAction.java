@@ -38,9 +38,10 @@ public class InitMetaTablesAction extends Action
         if (metaTableList.size() == 0) {
             String[] statements = new String[2];
             statements[0] = MetaConstants.initVerTableSql;
+            statements[1] = MetaConstants.initUserTableSql;
             int[] results = connection.executeUpdateInBatch(statements);
             for (int res : results) {
-                if (res != 1) {
+                if (res != 2) {
                     throw new MetaInitException();
                 }
             }

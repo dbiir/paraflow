@@ -13,8 +13,6 @@
  */
 package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
-import com.google.protobuf.ByteString;
-
 public class SQLTemplate
 {
     private SQLTemplate()
@@ -72,12 +70,9 @@ public class SQLTemplate
 
     public static String getTable(long dbId, String tblName)
     {
-        return String.format("SELECT tbltype,userid,createtime,lastaccesstime,locationurl,storageformatid,fibercolid,timecolid,fiberfuncid,tblid FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
+        return String.format("SELECT tbltype,userid,createtime,lastaccesstime,locationurl,storageformat,fibercolid,timecolid,fiberfunc,tblid FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
                 dbId,
                 tblName);
-//        return String.format("SELECT * FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
-//                dbId,
-//                tblName);
     }
 
     public static String findTblId(long dbId, String tblName)
@@ -103,11 +98,6 @@ public class SQLTemplate
                 tblId,
                 colId);
     }
-//    public String findTblName(int tblId)
-//    {
-//        String sql = String.format("SELECT tblname FROM meta_tblmodel WHERE tblid = %d;", tblId);
-//        return sql;
-//    }
 
     public static String findUserId(String userName)
     {
@@ -129,12 +119,12 @@ public class SQLTemplate
                                      long createTime,
                                      long lastAccessTime,
                                      String locationUrl,
-                                     long storageFormatId,
+                                     String storageFormatName,
                                      long fiberColId,
                                      long timeColId,
-                                     long funcId)
+                                     String partitionerName)
     {
-        return String.format("INSERT INTO meta_tblmodel (dbid, tblname, tbltype, userid, createtime, lastaccesstime, locationurl, storageformatid, fibercolid, timecolid, fiberfuncid) VALUES(%d,'%s',%d,%d,%d,%d,'%s',%d,%d,%d,%d);",
+        return String.format("INSERT INTO meta_tblmodel (dbid, tblname, tbltype, userid, createtime, lastaccesstime, locationurl, storageformat, fibercolid, timecolid, fiberfunc) VALUES(%d,'%s',%d,%d,%d,%d,'%s','%s',%d,%d,'%s');",
                 dbId,
                 tblName,
                 tblType,
@@ -142,10 +132,10 @@ public class SQLTemplate
                 createTime,
                 lastAccessTime,
                 locationUrl,
-                storageFormatId,
+                storageFormatName,
                 fiberColId,
                 timeColId,
-                funcId);
+                partitionerName);
     }
 
     public static String createColumn(int colIndex, long dbId, String colName, long tblId, int colType, String dataType)
@@ -241,19 +231,6 @@ public class SQLTemplate
                 grantTime);
     }
 
-    public static String createStorageFormat(String storageFormatName, String compression, String serialFormat)
-    {
-        return String.format("INSERT INTO meta_storageformatmodel (storageformatname,compression,serialformat) VALUES('%s','%s','%s');", 
-                storageFormatName,
-                compression,
-                serialFormat);
-    }
-
-    public static String createFunc(String funcName, ByteString funcContent)
-    {
-        return String.format("INSERT INTO meta_funcmodel (funcname,funccontent) VALUES('%s','%s');", funcName, funcContent);
-    }
-
     public static String createBlockIndex(long tblId, long value, long timeBegin, long timeEnd, String timeZone, String blockPath)
     {
         return String.format("INSERT INTO meta_blockindex (tblid,fibervalue,timebegin,timeend,timezone,blockpath) VALUES(%d,%d,%d,%d,'%s','%s');",
@@ -343,36 +320,6 @@ public class SQLTemplate
     public static String filterBlockIndexByFiber(long tblId, long value)
     {
         return String.format("SELECT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d;", tblId, value);
-    }
-
-    public static String findFuncId(String funcName)
-    {
-        return String.format("SELECT funcid FROM meta_funcmodel WHERE funcname = '%s';", funcName);
-    }
-
-    public static String findStorageFormatId(String storageFormatName)
-    {
-        return String.format("SELECT storageformatid FROM meta_storageformatmodel WHERE storageformatname = '%s';", storageFormatName);
-    }
-
-    public static String getStorageFormat(String storageFormatName)
-    {
-        return String.format("SELECT compression,serialformat FROM meta_storageformatmodel WHERE storageformatname = '%s';", storageFormatName);
-    }
-
-    public static String findFuncName(long funcId)
-    {
-        return String.format("SELECT funcname FROM meta_funcmodel WHERE funcid = '%d';", funcId);
-    }
-
-    public static String getFunc(String funcName)
-    {
-        return String.format("SELECT funccontent FROM meta_funcmodel WHERE funcname = '%s';", funcName);
-    }
-
-    public static String findStorageFormatName(long storageFormatId)
-    {
-        return String.format("SELECT storageformatname FROM meta_storageformatmodel WHERE storageformatid = '%d';", storageFormatId);
     }
 
     public static String createTblFunc(long tblId, long funcId)

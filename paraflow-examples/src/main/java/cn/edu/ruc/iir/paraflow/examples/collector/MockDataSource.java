@@ -27,7 +27,7 @@ public class MockDataSource
         int key = random.nextInt(1000);
         long timestamp = System.currentTimeMillis();
         StringBuilder sb = new StringBuilder();
-        // key<int>, v1<int>, v2<string>, v3<int>, v4<long>
+        // key<int>, v1<int>, v2<string>, time<long>
         sb.append(key).append(",")
                 .append(2 * key).append(",")
                 .append("alicebobdavidalicebobdavidalicebobdavidalicebobdavidalicebobdavidalicebobdavidalicebobdavidalicebobdavid")

@@ -121,7 +121,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
             input.setProperties("userName", tblParam.getUserName());
             input.setProperties("dbName", tblParam.getDbName());
             input.setProperties("sfName", tblParam.getStorageFormatName());
-            input.setProperties("funcName", tblParam.getFuncName());
+            input.setProperties("partitionerName", tblParam.getFuncName());
             txController.setAutoCommit(false);
             txController.addAction(new GetUserIdAction());
             txController.addAction(new GetDatabaseIdAction());

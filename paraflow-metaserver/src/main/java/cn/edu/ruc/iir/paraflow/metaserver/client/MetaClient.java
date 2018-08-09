@@ -4,6 +4,7 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaGrpc;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.ColType;
+import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
@@ -67,6 +68,11 @@ public class MetaClient
         return status;
     }
 
+    public StatusProto.ResponseStatus createDatabase(String dbName)
+    {
+        return createDatabase(dbName, MetaConstants.defaultUserName);
+    }
+
     public StatusProto.ResponseStatus createDatabase(String dbName, String userName)
     {
         String locationUrl = "";
@@ -96,11 +102,34 @@ public class MetaClient
     public StatusProto.ResponseStatus createTable(
             String dbName,
             String tblName,
+            String storageFormatName,
+            List<String> columnName,
+            List<String> dataType)
+    {
+        return createTable(dbName, tblName, storageFormatName, -1, "", -1, columnName, dataType);
+    }
+
+    public StatusProto.ResponseStatus createTable(
+            String dbName,
+            String tblName,
+            String storageFormatName,
+            int fiberColIndex,
+            String fiberPartitioner,
+            int timeColIndex,
+            List<String> columnName,
+            List<String> dataType)
+    {
+        return createTable(dbName, tblName, MetaConstants.defaultUserName, storageFormatName, fiberColIndex, fiberPartitioner, timeColIndex, columnName, dataType);
+    }
+
+    public StatusProto.ResponseStatus createTable(
+            String dbName,
+            String tblName,
             String userName,
             String storageFormatName,
             int fiberColIndex,
             String fiberPartitioner,
-            int timstampColIndex,
+            int timeColIndex,
             List<String> columnName,
             List<String> dataType)
     {
@@ -113,7 +142,7 @@ public class MetaClient
                 storageFormatName,
                 fiberColIndex,
                 fiberPartitioner,
-                timstampColIndex,
+                timeColIndex,
                 columnName,
                 dataType);
     }
