@@ -96,7 +96,7 @@ public class TestMetaClient
     @Test
     public void step11_ClientListTableTest()
     {
-        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder().addStr("noodles").build();
+        MetaProto.StringListType expect = MetaProto.StringListType.newBuilder().addStr("grip").build();
         MetaProto.StringListType stringList = client.listTables("test");
         assertEquals(expect, stringList);
     }
@@ -325,6 +325,15 @@ public class TestMetaClient
         MetaClient client = new MetaClient("127.0.0.1", 10012);
         StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
         StatusProto.ResponseStatus status = client.deleteDatabase("regular");
+        assertEquals(expect, status);
+    }
+
+    @Test
+    public void step35_ClientDeleteDatabase2Test()
+    {
+        MetaClient client = new MetaClient("127.0.0.1", 10012);
+        StatusProto.ResponseStatus expect = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.STATUS_OK).build();
+        StatusProto.ResponseStatus status = client.deleteDatabase("test");
         assertEquals(expect, status);
     }
 

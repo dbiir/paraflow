@@ -168,7 +168,6 @@ message TblParam {
     int64 tblId = 3;
     string dbName = 4;
     string tblName = 5;
-    int32 tblType = 6;
     string userName = 7;
     int64 createTime = 8;
     int64 lastAccessTime = 9;

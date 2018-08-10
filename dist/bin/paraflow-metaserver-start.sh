@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [ $# -lt 1 ];
-then
-  echo "USAGE: $0 [-daemon]"
-  exit 1
-fi
 base_dir=$(dirname $0)
 
 if [ "x$PARAFLOW_LOG4J_OPTS" = "x" ]; then

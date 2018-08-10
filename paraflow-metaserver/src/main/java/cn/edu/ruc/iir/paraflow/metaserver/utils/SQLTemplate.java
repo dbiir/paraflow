@@ -70,7 +70,7 @@ public class SQLTemplate
 
     public static String getTable(long dbId, String tblName)
     {
-        return String.format("SELECT tbltype,userid,createtime,lastaccesstime,locationurl,storageformat,fibercolid,timecolid,fiberfunc,tblid FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
+        return String.format("SELECT tblid,userid,createtime,lastaccesstime,locationurl,storageformat,fibercolid,timecolid,fiberfunc FROM meta_tblmodel WHERE dbid = %d AND tblname = '%s';",
                 dbId,
                 tblName);
     }
@@ -114,7 +114,6 @@ public class SQLTemplate
 
     public static String createTable(long dbId,
                                      String tblName,
-                                     int tblType,
                                      long userId,
                                      long createTime,
                                      long lastAccessTime,
@@ -124,10 +123,9 @@ public class SQLTemplate
                                      long timeColId,
                                      String partitionerName)
     {
-        return String.format("INSERT INTO meta_tblmodel (dbid, tblname, tbltype, userid, createtime, lastaccesstime, locationurl, storageformat, fibercolid, timecolid, fiberfunc) VALUES(%d,'%s',%d,%d,%d,%d,'%s','%s',%d,%d,'%s');",
+        return String.format("INSERT INTO meta_tblmodel (dbid, tblname, userid, createtime, lastaccesstime, locationurl, storageformat, fibercolid, timecolid, fiberfunc) VALUES(%d,'%s',%d,%d,%d,'%s','%s',%d,%d,'%s');",
                 dbId,
                 tblName,
-                tblType,
                 userId,
                 createTime,
                 lastAccessTime,

@@ -40,7 +40,6 @@ public class GetTblParamAction extends Action
             MetaProto.TblParam tblParamLast = MetaProto.TblParam.newBuilder()
                     .setDbName(tblParam.getDbName())
                     .setTblName(tblParam.getTblName())
-                    .setTblType(tblParam.getTblType())
                     .setUserName(userName)
                     .setCreateTime(tblParam.getCreateTime())
                     .setLastAccessTime(tblParam.getLastAccessTime())

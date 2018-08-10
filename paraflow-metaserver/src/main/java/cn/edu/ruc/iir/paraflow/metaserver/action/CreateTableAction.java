@@ -41,7 +41,6 @@ public class CreateTableAction extends Action
             String userStatement = SQLTemplate.createTable(
                     (long) dbIdOp.get(),
                     tblParam.getTblName(),
-                    tblParam.getTblType(),
                     (long) userIdOp.get(),
                     System.currentTimeMillis(),
                     System.currentTimeMillis(),
