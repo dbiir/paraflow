@@ -8,7 +8,6 @@ import org.apache.hadoop.conf.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * paraflow
@@ -19,8 +18,6 @@ public abstract class SegmentWriter
         implements Runnable
 {
     private final ParaflowSegment segment;
-    private final ReadWriteLock segmentLock;
-    private final SegmentCallback callback;
     private final int partitionFrom;
     private final int partitionTo;
     private final Random random = new Random(System.currentTimeMillis());
@@ -30,12 +27,9 @@ public abstract class SegmentWriter
     final LoaderConfig config = LoaderConfig.INSTANCE();
     final Configuration configuration = new Configuration();
 
-    public SegmentWriter(ParaflowSegment segment, ReadWriteLock segmentLock, SegmentCallback callback,
-                         int partitionFrom, int partitionTo)
+    SegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo)
     {
         this.segment = segment;
-        this.segmentLock = segmentLock;
-        this.callback = callback;
         this.partitionFrom = partitionFrom;
         this.partitionTo = partitionTo;
         this.metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
@@ -48,49 +42,52 @@ public abstract class SegmentWriter
     @Override
     public void run()
     {
-        // generate file path
-        String db = segment.getDb();
-        String table = segment.getTable();
-        String path = config.getMemoryWarehouse() + "/" + db + "/" + table + "/"
-                + config.getLoaderId() + System.nanoTime() + random.nextInt();
-        segment.setPath(path);
-        // get metadata
-        String key = db + "-" + table;
-        MetaProto.StringListType columnNames;
-        MetaProto.StringListType columnTypes;
-        if (tableColumnNamesCache.containsKey(key)) {
-            columnNames = tableColumnNamesCache.get(key);
-        }
-        else {
-            columnNames = metaClient.listColumns(db, table);
-            tableColumnNamesCache.put(key, columnNames);
-        }
-        if (tableColumnTypesCache.containsKey(key)) {
-            columnTypes = tableColumnTypesCache.get(key);
-        }
-        else {
-            columnTypes = metaClient.listColumnsDataType(db, table);
-            tableColumnTypesCache.put(key, columnTypes);
-        }
-        // write file
-        if (write(segment, columnNames, columnTypes)) {
-            // change storage level
-            segment.setStorageLevel(ParaflowSegment.StorageLevel.OFF_HEAP);
-            // update metadata
-            long[] fiberMinTimestamps = segment.getFiberMinTimestamps();
-            long[] fiberMaxTimestamps = segment.getFiberMaxTimestamps();
-            int partitionNum = partitionTo - partitionFrom + 1;
-            for (int i = 0; i <= partitionNum; i++) {
-                if (fiberMinTimestamps[i] == 0) {
-                    continue;
-                }
-                if (fiberMaxTimestamps[i] == 0) {
-                    continue;
-                }
-                metaClient.createBlockIndex(db, table, i + partitionFrom, fiberMinTimestamps[i], fiberMaxTimestamps[i], path);
+        try {
+            // generate file path
+            String db = segment.getDb();
+            String table = segment.getTable();
+            String path = config.getMemoryWarehouse() + "/" + db + "/" + table + "/"
+                    + config.getLoaderId() + System.nanoTime() + random.nextInt();
+            segment.setPath(path);
+            // get metadata
+            String key = db + "-" + table;
+            MetaProto.StringListType columnNames;
+            MetaProto.StringListType columnTypes;
+            if (tableColumnNamesCache.containsKey(key)) {
+                columnNames = tableColumnNamesCache.get(key);
             }
-            // callback
-            callback.callback(segmentLock);
+            else {
+                columnNames = metaClient.listColumns(db, table);
+                tableColumnNamesCache.put(key, columnNames);
+            }
+            if (tableColumnTypesCache.containsKey(key)) {
+                columnTypes = tableColumnTypesCache.get(key);
+            }
+            else {
+                columnTypes = metaClient.listColumnsDataType(db, table);
+                tableColumnTypesCache.put(key, columnTypes);
+            }
+            // write file
+            if (write(segment, columnNames, columnTypes)) {
+                // change storage level
+                segment.setStorageLevel(ParaflowSegment.StorageLevel.OFF_HEAP);
+                // update metadata
+                long[] fiberMinTimestamps = segment.getFiberMinTimestamps();
+                long[] fiberMaxTimestamps = segment.getFiberMaxTimestamps();
+                int partitionNum = partitionTo - partitionFrom + 1;
+                for (int i = 0; i < partitionNum; i++) {
+                    if (fiberMinTimestamps[i] == -1) {
+                        continue;
+                    }
+                    if (fiberMaxTimestamps[i] == -1) {
+                        continue;
+                    }
+                    metaClient.createBlockIndex(db, table, i + partitionFrom, fiberMinTimestamps[i], fiberMaxTimestamps[i], path);
+                }
+            }
+        }
+        finally {
+            segment.writeUnLock();
         }
     }
 

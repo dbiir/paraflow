@@ -7,5 +7,5 @@ package cn.edu.ruc.iir.paraflow.loader;
  */
 public interface DataTransformer
 {
-    public ParaflowRecord transform(byte[] value, int partition);
+    ParaflowRecord transform(byte[] value, int partition);
 }

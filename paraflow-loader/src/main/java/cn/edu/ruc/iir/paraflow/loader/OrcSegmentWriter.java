@@ -2,8 +2,6 @@ package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 
-import java.util.concurrent.locks.ReadWriteLock;
-
 /**
  * paraflow
  *
@@ -12,10 +10,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 public class OrcSegmentWriter
         extends SegmentWriter
 {
-    public OrcSegmentWriter(ParaflowSegment segment, ReadWriteLock segmentLock, SegmentCallback callback,
-                            int partitionFrom, int partitionTo)
+    public OrcSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo)
     {
-        super(segment, segmentLock, callback, partitionFrom, partitionTo);
+        super(segment, partitionFrom, partitionTo);
     }
 
     @Override

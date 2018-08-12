@@ -4,6 +4,7 @@ import cn.edu.ruc.iir.paraflow.collector.utils.CollectorConfig;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
+import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -74,6 +76,18 @@ public class DefaultCollector<T>
         CollectorRuntime.run(fiberFlow, collectorConfig.getProperties());
     }
 
+    public boolean existsTopic(String topic)
+    {
+        try {
+            Set<String> topics = kafkaAdminClient.listTopics().names().get();
+            return topics.contains(topic);
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     @Override
     public void createTopic(String topicName, int partitionsNum, short replicationFactor)
     {
@@ -97,15 +111,62 @@ public class DefaultCollector<T>
     }
 
     @Override
+    public boolean existsDatabase(String db)
+    {
+        MetaProto.StringListType dbs = metaClient.listDatabases();
+        boolean dbExisted = false;
+        for (int i = 0; i < dbs.getStrCount(); i++) {
+            if (dbs.getStr(i).equals(db)) {
+                dbExisted = true;
+                break;
+            }
+        }
+        return dbExisted;
+    }
+
+    @Override
+    public boolean existsTable(String db, String table)
+    {
+        MetaProto.StringListType tbls = metaClient.listTables(db);
+        boolean tblExisted = false;
+        for (int i = 0; i < tbls.getStrCount(); i++) {
+            if (tbls.getStr(i).equals(table)) {
+                tblExisted = true;
+                break;
+            }
+        }
+        return tblExisted;
+    }
+
+    @Override
     public StatusProto.ResponseStatus createUser(String userName, String password)
     {
         return metaClient.createUser(userName, password);
     }
 
     @Override
+    public StatusProto.ResponseStatus createDatabase(String databaseName)
+    {
+        return metaClient.createDatabase(databaseName);
+    }
+
+    @Override
     public StatusProto.ResponseStatus createDatabase(String databaseName, String userName, String locationUrl)
     {
         return metaClient.createDatabase(databaseName, userName, locationUrl);
+    }
+
+    @Override
+    public StatusProto.ResponseStatus createTable(String dbName,
+                                                  String tblName,
+                                                  String storageFormatName,
+                                                  int fiberColIndex,
+                                                  int timestampColIndex,
+                                                  String fiberPartitioner,
+                                                  List<String> columnName,
+                                                  List<String> dataType)
+    {
+        return metaClient.createTable(dbName, tblName, storageFormatName, fiberColIndex, fiberPartitioner, timestampColIndex, columnName, dataType);
     }
 
     @Override

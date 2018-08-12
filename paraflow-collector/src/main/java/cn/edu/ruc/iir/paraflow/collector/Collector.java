@@ -17,9 +17,24 @@ public interface Collector<T>
 
     void createTopic(String topicName, int partitionsNum, short replicationFactor);
 
+    boolean existsDatabase(String db);
+
+    boolean existsTable(String db, String table);
+
     StatusProto.ResponseStatus createUser(String userName, String password);
 
+    StatusProto.ResponseStatus createDatabase(String databaseName);
+
     StatusProto.ResponseStatus createDatabase(String databaseName, String userName, String locationUrl);
+
+    StatusProto.ResponseStatus createTable(String dbName,
+                                           String tblName,
+                                           String storageFormatName,
+                                           int fiberColIndex,
+                                           int timestampColIndex,
+                                           String fiberPartitioner,
+                                           List<String> columnName,
+                                           List<String> dataType);
 
     StatusProto.ResponseStatus createTable(String dbName,
                                                 String tblName,

@@ -1,117 +1,86 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 /**
  * paraflow
  *
  * @author guodong
  */
-public class SegmentContainer
+class SegmentContainer
 {
     private final AtomicBoolean initialized = new AtomicBoolean(false);
-    private int youngReadIndex = 0;
-    private int youngWriteIndex = 0;
-    private int adultReadIndex = 0;
-    private int adultWriteIndex = 0;
-    private ParaflowSegment[] youngZone;    // container for on-heap segments
-    private ParaflowSegment[] adultZone;    // container for off-heap segments
-    private ReadWriteLock[] adultLocks;     // readWriteLock for adult segments
-    private int youngCapacity;
-    private int adultCapacity;
+    private final List<ParaflowSegment> container;
+
+    private int containerSize = 0;
+    private BlockingQueue<ParaflowSegment> flushingQueue;
+    private int containerCapacity;
     private int partitionFrom;
     private int partitionTo;
 
     private SegmentContainer()
-    {}
+    {
+        this.container = new LinkedList<>();
+    }
 
     private static final class SegmentContainerHolder
     {
         private static final SegmentContainer instance = new SegmentContainer();
     }
 
-    public static SegmentContainer INSTANCE()
+    static SegmentContainer INSTANCE()
     {
         return SegmentContainerHolder.instance;
     }
 
-    public synchronized void init(int youngCapacity, int adultCapacity, int partitionFrom, int partitionTo)
+    synchronized void init(int containerCapacity, int partitionFrom, int partitionTo,
+                           BlockingQueue<ParaflowSegment> flushingQueue)
     {
         if (initialized.get()) {
             return;
         }
-        this.youngCapacity = youngCapacity;
-        this.adultCapacity = adultCapacity;
+        this.containerCapacity = containerCapacity;
         this.partitionFrom = partitionFrom;
         this.partitionTo = partitionTo;
-        this.youngZone = new ParaflowSegment[youngCapacity];
-        this.adultZone = new ParaflowSegment[adultCapacity];
-        this.adultLocks = new ReadWriteLock[adultCapacity];
-        for (int i = 0; i < adultCapacity; i++) {
-            adultLocks[i] = new ReentrantReadWriteLock();
-        }
+        this.flushingQueue = flushingQueue;
         initialized.set(true);
     }
 
-    public void addSegment(ParaflowSegment segment)
+    /**
+     * if (container.size >= capacity) {
+     *     loop over current container to find a segment that is OFF_HEAP
+     *     if find, send it to the FlushingBlockingQueue, and set it as current segment, return true;
+     *     if not find, which means all segments are busy, return false;
+     * }
+     * else {
+     *     container[writeIndex++] = segment;
+     *     start a writer thread for the segment;
+     *     size++;
+     *     return true;
+     * }
+     * */
+    boolean addSegment(ParaflowSegment segment)
     {
-        if (youngReadIndex == youngWriteIndex && youngReadIndex != 0) {
-            growUp(youngZone[youngReadIndex]);
-            youngReadIndex++;
-        }
-        youngZone[youngWriteIndex++] = segment;
-        if (youngWriteIndex >= youngCapacity) {
-            youngWriteIndex = 0;
-        }
-    }
-
-    private void growUp(ParaflowSegment segment)
-    {
-        // if no space left, flush out one segment to disk
-        if (adultReadIndex == adultWriteIndex && adultReadIndex != 0) {
-            try {
-                while (!adultLocks[adultReadIndex].readLock().tryLock()) {
-                    Thread.sleep(100);
+        if (containerSize >= containerCapacity) {
+            for (ParaflowSegment sg : container) {
+                if (sg.getStorageLevel() == ParaflowSegment.StorageLevel.OFF_HEAP) {
+                    if (flushingQueue.add(sg)) {
+                        container.remove(sg);
+                        containerSize--;
+                    }
                 }
-                new Thread(new SegmentFlusher(segment, adultLocks[adultReadIndex], lock -> {
-                    lock.readLock().unlock();
-                })).start();
-                adultReadIndex++;
-            }
-            catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
-        // write the segment
-        try {
-            // wait until the segment at readIndex is already flushed to disk
-            while (!adultLocks[adultWriteIndex].writeLock().tryLock()) {
-                Thread.sleep(1000);
-            }
-            new Thread(new ParquetSegmentWriter(segment, adultLocks[adultWriteIndex], lock -> {
-                adultZone[adultWriteIndex] = segment;
-                lock.writeLock().unlock();
-            }, partitionFrom, partitionTo)).start();
-            adultWriteIndex++;
-            if (adultWriteIndex >= adultCapacity) {
-                adultWriteIndex = 0;
-            }
+        else {
+            container.add(segment);
+            containerSize++;
+            // todo use our own executor service to submit writer tasks
+            new Thread(new ParquetSegmentWriter(segment, partitionFrom, partitionTo)).start();
+            return true;
         }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public String readOnHeapSegment(int index)
-    {
-        adultLocks[index].readLock().lock();
-        return adultZone[index].getPath();
-    }
-
-    public void doneRead(int index)
-    {
-        adultLocks[index].readLock().unlock();
+        return false;
     }
 }
