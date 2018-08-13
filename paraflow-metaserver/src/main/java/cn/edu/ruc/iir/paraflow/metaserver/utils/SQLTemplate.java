@@ -240,6 +240,12 @@ public class SQLTemplate
                 blockPath);
     }
 
+    public static String updateBlockPath(String originPath, String newPath)
+    {
+        return String.format("UPDATE meta_blockindex SET blockpath='%s' WHERE blockpath='%s'",
+                newPath, originPath);
+    }
+
     public static String findTblParamKey(long tblId)
     {
         return String.format("SELECT paramkey FROM meta_tblparammodel WHERE tblid = %d;", tblId);

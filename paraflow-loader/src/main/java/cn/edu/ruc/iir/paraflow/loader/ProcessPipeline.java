@@ -41,7 +41,7 @@ public class ProcessPipeline
                 runningProcessors.add(runningProcessor);
             }
         }
-        while (true) {
+        while (!futures.isEmpty()) {
             for (Future future : futures) {
                 if (future.isDone()) {
                     try {
@@ -55,6 +55,11 @@ public class ProcessPipeline
                 }
             }
         }
+    }
+
+    public ExecutorService getExecutorService()
+    {
+        return this.executorService;
     }
 
     public void stop()

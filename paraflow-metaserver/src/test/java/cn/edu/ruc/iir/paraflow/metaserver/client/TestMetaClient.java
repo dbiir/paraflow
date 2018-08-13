@@ -311,6 +311,8 @@ public class TestMetaClient
         }
     }
 
+    // todo add update block path tests
+
     @Test
     public void step33_ClientDeleteTableTest()
     {

@@ -2,6 +2,7 @@ package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.loader.utils.LoaderConfig;
+import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.PushPullBlockingQueue;
 import com.conversantmedia.util.concurrent.SpinPolicy;
@@ -37,6 +38,7 @@ public class DefaultLoader
     private final String table;
     private final int partitionFrom;
     private final int partitionTo;
+    private final MetaClient metaClient;
 
     public DefaultLoader(String db, String table, int partitionFrom, int partitionTo)
             throws ConfigFileNotFoundException
@@ -48,6 +50,7 @@ public class DefaultLoader
         this.table = table;
         this.partitionFrom = partitionFrom;
         this.partitionTo = partitionTo;
+        this.metaClient = new MetaClient(config.getMetaServerHost(), config.getMetaServerPort());
         init();
     }
 
@@ -105,13 +108,14 @@ public class DefaultLoader
         // init segment container
         BlockingQueue<ParaflowSegment> flushingQueue =
                 new PushPullBlockingQueue<>(100, SpinPolicy.SPINNING);
-        SegmentContainer.INSTANCE().init(config.getContainerCapacity(), partitionFrom, partitionTo, flushingQueue);
+        SegmentContainer.INSTANCE().init(config.getContainerCapacity(), partitionFrom, partitionTo, flushingQueue,
+                pipeline.getExecutorService(), metaClient);
         // add a data compactor
         DataCompactor dataCompactor = new DataCompactor("compactor", db, table, 1, config.getCompactorThreshold(),
                 partitionNum, sorterCompactorBlockingQueue);
         pipeline.addProcessor(dataCompactor);
         // add a data flusher
-        DataFlusher dataFlusher = new DataFlusher("flusher", db, table, 1, flushingQueue);
+        DataFlusher dataFlusher = new DataFlusher("flusher", db, table, 1, flushingQueue, metaClient);
         pipeline.addProcessor(dataFlusher);
         // start the pipeline
         pipeline.start();

@@ -649,6 +649,25 @@ public class MetaClient
         return status;
     }
 
+    public StatusProto.ResponseStatus updateBlockPath(String originPath, String newPath)
+    {
+        StatusProto.ResponseStatus responseStatus;
+        MetaProto.UpdateBlockPathParam updateBlockPathParam = MetaProto.UpdateBlockPathParam.newBuilder()
+                .setOriginPath(originPath)
+                .setNewPath(newPath)
+                .build();
+        try {
+            responseStatus = metaBlockingStub.updateBlockPath(updateBlockPathParam);
+        }
+        catch (StatusRuntimeException e) {
+            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            responseStatus = StatusProto.ResponseStatus.newBuilder().build();
+            return responseStatus;
+        }
+        logger.info("Update block path status is : " + responseStatus.getStatus());
+        return responseStatus;
+    }
+
     public MetaProto.StringListType filterBlockIndex(String dbName,
                                                      String tblName,
                                                      long timeBegin,

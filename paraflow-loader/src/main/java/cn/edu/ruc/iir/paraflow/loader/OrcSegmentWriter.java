@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 
 /**
@@ -10,9 +11,9 @@ import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 public class OrcSegmentWriter
         extends SegmentWriter
 {
-    public OrcSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo)
+    public OrcSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient)
     {
-        super(segment, partitionFrom, partitionTo);
+        super(segment, partitionFrom, partitionTo, metaClient);
     }
 
     @Override

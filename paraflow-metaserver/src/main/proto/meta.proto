@@ -30,6 +30,7 @@ service Meta {
     rpc createTblParam(TblParamParam) returns (ResponseStatus) {}
     rpc createTblPriv(TblPrivParam) returns (ResponseStatus) {}
     rpc createBlockIndex(BlockIndexParam) returns (ResponseStatus) {}
+    rpc updateBlockPath(UpdateBlockPathParam) returns (ResponseStatus) {}
     rpc createUser(UserParam) returns (ResponseStatus) {}
     rpc filterBlockIndex(FilterBlockIndexParam) returns (StringListType) {}
     rpc filterBlockIndexByFiber(FilterBlockIndexByFiberParam) returns (StringListType) {}
@@ -247,6 +248,11 @@ message BlockIndexParam {
     int64 timeEnd = 5;
     string timeZone = 6;
     string blockPath = 7;
+}
+
+message UpdateBlockPathParam {
+    string originPath = 1;
+    string newPath = 2;
 }
 
 message FilterBlockIndexParam {

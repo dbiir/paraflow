@@ -1,8 +1,11 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -17,6 +20,8 @@ class SegmentContainer
 
     private int containerSize = 0;
     private BlockingQueue<ParaflowSegment> flushingQueue;
+    private ExecutorService executorService;
+    private MetaClient metaClient;
     private int containerCapacity;
     private int partitionFrom;
     private int partitionTo;
@@ -37,7 +42,7 @@ class SegmentContainer
     }
 
     synchronized void init(int containerCapacity, int partitionFrom, int partitionTo,
-                           BlockingQueue<ParaflowSegment> flushingQueue)
+                           BlockingQueue<ParaflowSegment> flushingQueue, ExecutorService executorService, MetaClient metaClient)
     {
         if (initialized.get()) {
             return;
@@ -46,6 +51,8 @@ class SegmentContainer
         this.partitionFrom = partitionFrom;
         this.partitionTo = partitionTo;
         this.flushingQueue = flushingQueue;
+        this.executorService = executorService;
+        this.metaClient = metaClient;
         initialized.set(true);
     }
 
@@ -77,8 +84,8 @@ class SegmentContainer
         else {
             container.add(segment);
             containerSize++;
-            // todo use our own executor service to submit writer tasks
-            new Thread(new ParquetSegmentWriter(segment, partitionFrom, partitionTo)).start();
+            executorService.execute(
+                    new Thread(new ParquetSegmentWriter(segment, partitionFrom, partitionTo, metaClient)));
             return true;
         }
         return false;

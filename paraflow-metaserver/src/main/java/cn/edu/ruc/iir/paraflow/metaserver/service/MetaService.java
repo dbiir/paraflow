@@ -44,6 +44,7 @@ import cn.edu.ruc.iir.paraflow.metaserver.action.ListTablesAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.RenameColumnAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.RenameDatabaseAction;
 import cn.edu.ruc.iir.paraflow.metaserver.action.RenameTableAction;
+import cn.edu.ruc.iir.paraflow.metaserver.action.UpdateBlockPathAction;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ConnectionPool;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.TransactionController;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaGrpc;
@@ -735,6 +736,33 @@ public class MetaService extends MetaGrpc.MetaImplBase
             txController.addAction(new GetDatabaseIdAction());
             txController.addAction(new GetTableIdAction());
             txController.addAction(new CreateBlockIndexAction());
+            txController.commit(input);
+            responseStreamObserver.onNext(MetaConstants.OKStatus);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            responseStreamObserver.onNext(e.getResponseStatus());
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+
+    @Override
+    public void updateBlockPath(MetaProto.UpdateBlockPathParam updateBlockPathParam,
+                                StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(updateBlockPathParam);
+            txController.setAutoCommit(false);
+            txController.addAction(new UpdateBlockPathAction());
             txController.commit(input);
             responseStreamObserver.onNext(MetaConstants.OKStatus);
             responseStreamObserver.onCompleted();

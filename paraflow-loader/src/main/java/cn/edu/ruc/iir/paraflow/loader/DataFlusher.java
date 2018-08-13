@@ -1,6 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.loader.utils.LoaderConfig;
+import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
@@ -19,14 +20,16 @@ public class DataFlusher
         extends Processor
 {
     private final BlockingQueue<ParaflowSegment> flushingQueue;
+    private final MetaClient metaClient;
     private final LoaderConfig config = LoaderConfig.INSTANCE();
     private final Configuration configuration;
 
     public DataFlusher(String name, String db, String tbl, int parallelism,
-                       BlockingQueue<ParaflowSegment> flushingQueue)
+                       BlockingQueue<ParaflowSegment> flushingQueue, MetaClient metaClient)
     {
         super(name, db, tbl, parallelism);
         this.flushingQueue = flushingQueue;
+        this.metaClient = metaClient;
         this.configuration = new Configuration();
         configuration.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         configuration.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
@@ -47,7 +50,7 @@ public class DataFlusher
                 try {
                     fs = FileSystem.get(configuration);
                     fs.copyFromLocalFile(true, new Path(originPath), outputPath);
-                    // todo update metadata
+                    metaClient.updateBlockPath(originPath, newPath);
                 }
                 catch (IOException e) {
                     e.printStackTrace();

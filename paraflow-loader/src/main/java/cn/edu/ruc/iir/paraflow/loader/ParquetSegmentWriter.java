@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.column.ParquetProperties;
@@ -22,9 +23,9 @@ import java.io.IOException;
 public class ParquetSegmentWriter
         extends SegmentWriter
 {
-    ParquetSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo)
+    ParquetSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient)
     {
-        super(segment, partitionFrom, partitionTo);
+        super(segment, partitionFrom, partitionTo, metaClient);
     }
 
     @Override
