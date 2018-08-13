@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.apache.hadoop.fs.Path;
 import org.apache.parquet.column.ParquetProperties;
@@ -13,7 +14,6 @@ import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.MessageTypeParser;
 
 import java.io.IOException;
-import java.util.concurrent.locks.ReadWriteLock;
 
 /**
  * paraflow
@@ -23,10 +23,9 @@ import java.util.concurrent.locks.ReadWriteLock;
 public class ParquetSegmentWriter
         extends SegmentWriter
 {
-    public ParquetSegmentWriter(ParaflowSegment segment, ReadWriteLock segmentLock, SegmentCallback callback,
-                                int partitionFrom, int partitionTo)
+    ParquetSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient)
     {
-        super(segment, segmentLock, callback, partitionFrom, partitionTo);
+        super(segment, partitionFrom, partitionTo, metaClient);
     }
 
     @Override
@@ -64,6 +63,7 @@ public class ParquetSegmentWriter
             }
         }
         schemaBuilder.append("}");
+        System.out.println("Schema: " + schemaBuilder.toString());
         MessageType schema = MessageTypeParser.parseMessageType(schemaBuilder.toString());
         GroupFactory groupFactory = new SimpleGroupFactory(schema);
         GroupWriteSupport writeSupport = new GroupWriteSupport();
@@ -89,44 +89,39 @@ public class ParquetSegmentWriter
                 config.getParquetBlockSize(), config.getParquetPageSize(),
                 config.getParquetDictionaryPageSize(), config.isParquetDictionaryEnabled(), config.isParquetValidating(),
                 ParquetProperties.WriterVersion.PARQUET_2_0, configuration)) {
-            ParaflowRecord[][] content = segment.getRecords();
-            Group group = groupFactory.newGroup();
-            for (ParaflowRecord[] fiberContent : content) {
-                if (fiberContent == null) {
-                    continue;
-                }
-                for (ParaflowRecord record : fiberContent) {
-                    for (int k = 0; k < columnNum; k++) {
-                        switch (columnTypes.getStr(k)) {
-                            case "bigint":
-                                group.append(columnNames.getStr(k), (long) record.getValue(k));
-                                break;
-                            case "int":
-                                group.append(columnNames.getStr(k), (int) record.getValue(k));
-                                break;
-                            case "boolean":
-                                group.append(columnNames.getStr(k), (boolean) record.getValue(k));
-                                break;
-                            case "float32":
-                                group.append(columnNames.getStr(k), (float) record.getValue(k));
-                                break;
-                            case "float64":
-                                group.append(columnNames.getStr(k), (double) record.getValue(k));
-                                break;
-                            case "timestamp":
-                                group.append(columnNames.getStr(k), (long) record.getValue(k));
-                                break;
-                            case "real":
-                                group.append(columnNames.getStr(k), (long) record.getValue(k));
-                                break;
-                            default:
-                                group.append(columnNames.getStr(k), (String) record.getValue(k));
-                                break;
-                        }
+            ParaflowRecord[] content = segment.getRecords();
+            for (ParaflowRecord record : content) {
+                Group group = groupFactory.newGroup();
+                for (int k = 0; k < columnNum; k++) {
+                    switch (columnTypes.getStr(k)) {
+                        case "bigint":
+                            group.append(columnNames.getStr(k), (long) record.getValue(k));
+                            break;
+                        case "int":
+                            group.append(columnNames.getStr(k), (int) record.getValue(k));
+                            break;
+                        case "boolean":
+                            group.append(columnNames.getStr(k), (boolean) record.getValue(k));
+                            break;
+                        case "float32":
+                            group.append(columnNames.getStr(k), (float) record.getValue(k));
+                            break;
+                        case "float64":
+                            group.append(columnNames.getStr(k), (double) record.getValue(k));
+                            break;
+                        case "timestamp":
+                            group.append(columnNames.getStr(k), (long) record.getValue(k));
+                            break;
+                        case "real":
+                            group.append(columnNames.getStr(k), (long) record.getValue(k));
+                            break;
+                        default:
+                            group.append(columnNames.getStr(k), (String) record.getValue(k));
+                            break;
                     }
                 }
+                writer.write(group);
             }
-            writer.write(group);
             return true;
         }
         catch (IOException e) {

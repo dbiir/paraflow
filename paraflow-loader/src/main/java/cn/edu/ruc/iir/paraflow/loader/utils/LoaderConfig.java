@@ -34,7 +34,7 @@ public class LoaderConfig
 
     public boolean contains(String key)
     {
-        return paraflowConfig.getProperties().contains(key);
+        return paraflowConfig.getProperties().containsKey(key);
     }
 
     public String getLoaderId()
@@ -67,14 +67,9 @@ public class LoaderConfig
         return Integer.parseInt(paraflowConfig.getProperty("sortedBuffer.capacity"));
     }
 
-    public int getContainerYoungZoneCapacity()
+    public int getContainerCapacity()
     {
-        return Integer.parseInt(paraflowConfig.getProperty("youngZone.capacity"));
-    }
-
-    public int getContainerAdultZoneCapacity()
-    {
-        return Integer.parseInt(paraflowConfig.getProperty("adultZone.capacity"));
+        return Integer.parseInt(paraflowConfig.getProperty("container.capacity"));
     }
 
     public int getCompactorThreshold()

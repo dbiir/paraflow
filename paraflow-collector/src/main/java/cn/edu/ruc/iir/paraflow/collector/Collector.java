@@ -17,32 +17,28 @@ public interface Collector<T>
 
     void createTopic(String topicName, int partitionsNum, short replicationFactor);
 
+    boolean existsDatabase(String db);
+
+    boolean existsTable(String db, String table);
+
     StatusProto.ResponseStatus createUser(String userName, String password);
+
+    StatusProto.ResponseStatus createDatabase(String databaseName);
 
     StatusProto.ResponseStatus createDatabase(String databaseName, String userName, String locationUrl);
 
-    StatusProto.ResponseStatus createRegularTable(String dbName,
-                                                  String tblName,
-                                                  String userName,
-                                                  String locationUrl,
-                                                  String storageFormatName,
-                                                  List<String> columnName,
-                                                  List<String> dataType);
+    StatusProto.ResponseStatus createTable(String dbName,
+                                           String tblName,
+                                           String storageFormatName,
+                                           int fiberColIndex,
+                                           int timestampColIndex,
+                                           String fiberPartitioner,
+                                           List<String> columnName,
+                                           List<String> dataType);
 
-    StatusProto.ResponseStatus createFiberTable(String dbName,
+    StatusProto.ResponseStatus createTable(String dbName,
                                                 String tblName,
                                                 String userName,
-                                                String storageFormatName,
-                                                int fiberColIndex,
-                                                int timestampColIndex,
-                                                String fiberFuncName,
-                                                List<String> columnName,
-                                                List<String> dataType);
-
-    StatusProto.ResponseStatus createFiberTable(String dbName,
-                                                String tblName,
-                                                String userName,
-                                                String locationUrl,
                                                 String storageFormatName,
                                                 int fiberColIndex,
                                                 int timestampColIndex,

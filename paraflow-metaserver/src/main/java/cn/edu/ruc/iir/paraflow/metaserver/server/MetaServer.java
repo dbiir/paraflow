@@ -94,8 +94,6 @@ public class MetaServer
 
         try {
             pipeline.startUp();
-            logger.info("====== MetaServer started successfully ======");
-            System.out.println("====== MetaServer started successfully ======");
         }
         catch (ParaFlowException pe) {
             pe.handle();
@@ -142,6 +140,8 @@ public class MetaServer
     {
         if (server != null) {
             try {
+                logger.info("====== MetaServer started successfully ======");
+                System.out.println("====== MetaServer started successfully ======");
                 server.awaitTermination();
             }
             catch (InterruptedException e) {

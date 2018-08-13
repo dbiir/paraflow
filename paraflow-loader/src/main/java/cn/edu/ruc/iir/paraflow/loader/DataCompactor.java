@@ -21,8 +21,8 @@ public class DataCompactor
     private final SegmentContainer segmentContainer;
     private int recordNum = 0;
 
-    public DataCompactor(String name, String db, String table, int parallelism, int threshold, int partitionNum,
-                         BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue)
+    DataCompactor(String name, String db, String table, int parallelism, int threshold, int partitionNum,
+                  BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue)
     {
         super(name, db, table, parallelism);
         this.threshold = threshold;
@@ -35,31 +35,30 @@ public class DataCompactor
     @Override
     public void run()
     {
+        System.out.println(super.name + " started.");
         try {
             while (!isReadyToStop.get()) {
-                ParaflowSortedBuffer sortedBuffer = sorterCompactorBlockingQueue.poll(100, TimeUnit.MILLISECONDS);
+                System.out.println("Compactor gets sorted buffer.");
+                ParaflowSortedBuffer sortedBuffer
+                        = sorterCompactorBlockingQueue.poll(100, TimeUnit.MILLISECONDS);
                 if (sortedBuffer == null) {
                     continue;
                 }
-                ParaflowRecord[][] sortedRecords = sortedBuffer.getSortedRecords();
-                for (int i = 0; i < sortedRecords.length; i++) {
-                    if (sortedRecords[i] == null) {
-                        continue;
-                    }
-                    ArrayList<ParaflowRecord> records = tempBuffer[i];
-                    if (records == null) {
-                        records = new ArrayList<>();
-                        tempBuffer[i] = records;
-                    }
-                    records.addAll(Arrays.asList(sortedRecords[i]));
-                    recordNum += sortedRecords[i].length;
+                ParaflowRecord[] sortedRecords = sortedBuffer.getSortedRecords();
+                int partition = sortedBuffer.getPartition();
+                if (tempBuffer[partition] == null) {
+                    tempBuffer[partition] = new ArrayList<>();
                 }
+                tempBuffer[partition].addAll(Arrays.asList(sortedRecords));
+                recordNum += sortedRecords.length;
                 if (recordNum >= threshold) {
                     // compact
                     ParaflowSegment segment = compact();
                     segment.setDb(db);
                     segment.setTable(table);
-                    segmentContainer.addSegment(segment);
+                    while (!segmentContainer.addSegment(segment)) {
+                        Thread.yield();
+                    }
                 }
             }
         }
@@ -70,12 +69,29 @@ public class DataCompactor
 
     private ParaflowSegment compact()
     {
-        ParaflowRecord[][] compactedRecords = new ParaflowRecord[partitionNum][];
+        System.out.println("Compacting....");
+        ParaflowRecord[] compactedRecords = new ParaflowRecord[recordNum];
+        long[] fiberMinTimestamps = new long[partitionNum];
+        long[] fiberMaxTimestamps = new long[partitionNum];
+        int compactedIndex = 0;
         for (int i = 0; i < partitionNum; i++) {
-            tempBuffer[i].sort(Comparator.comparingLong(ParaflowRecord::getTimestamp));
-            tempBuffer[i].toArray(compactedRecords[i]);
+            if (tempBuffer[i] != null && !tempBuffer[i].isEmpty()) {
+                tempBuffer[i].sort(Comparator.comparingLong(ParaflowRecord::getTimestamp));
+                int tempSize = tempBuffer[i].size();
+                ParaflowRecord[] tempRecords = new ParaflowRecord[tempSize];
+                tempBuffer[i].toArray(tempRecords);
+                fiberMinTimestamps[i] = tempRecords[0].getTimestamp();
+                fiberMaxTimestamps[i] = tempRecords[tempRecords.length - 1].getTimestamp();
+                System.arraycopy(tempRecords, 0, compactedRecords, compactedIndex, tempSize);
+                compactedIndex += tempSize;
+                tempBuffer[i].clear();
+            }
+            else {
+                fiberMinTimestamps[i] = -1;
+                fiberMaxTimestamps[i] = -1;
+            }
         }
         recordNum = 0;
-        return new ParaflowSegment(compactedRecords);
+        return new ParaflowSegment(compactedRecords, fiberMinTimestamps, fiberMaxTimestamps);
     }
 }

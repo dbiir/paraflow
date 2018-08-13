@@ -13,8 +13,6 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
-import cn.edu.ruc.iir.paraflow.commons.utils.ConfigFactory;
-import cn.edu.ruc.iir.paraflow.connector.exception.ConfigurationException;
 import cn.edu.ruc.iir.paraflow.connector.impl.ParaflowPrestoConfig;
 import com.facebook.presto.spi.HostAddress;
 import com.facebook.presto.spi.PrestoException;
@@ -22,14 +20,22 @@ import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import io.airlift.log.Logger;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.*;
+import org.apache.hadoop.fs.BlockLocation;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocalFileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hdfs.DistributedFileSystem;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
-import static cn.edu.ruc.iir.paraflow.connector.exception.ParaflowErrorCode.PARAFLOW_CONFIG_ERROR;
 import static cn.edu.ruc.iir.paraflow.connector.exception.ParaflowErrorCode.PARAFLOW_HDFS_FILE_ERROR;
 
 /**
@@ -37,67 +43,46 @@ import static cn.edu.ruc.iir.paraflow.connector.exception.ParaflowErrorCode.PARA
  */
 public final class FSFactory
 {
-    private Configuration conf = new Configuration();
-    private FileSystem fileSystem;
-    private final ParaflowPrestoConfig config;
     private final Logger log = Logger.get(FSFactory.class.getName());
+    private final Configuration config = new Configuration();
+    private FileSystem fileSystem = null;
 
     @Inject
-    public FSFactory(ParaflowPrestoConfig config)
+    public FSFactory(ParaflowPrestoConfig prestoConfig)
     {
-        this.config = config;
-        Configuration hdfsConfig = new Configuration(false);
-        ConfigFactory configFactory = config.getFactory();
-        File hdfsConfigDir = new File(configFactory.getProperty("hdfs.config.dir"));
-        hdfsConfig.set("fs.hdfs.impl", DistributedFileSystem.class.getName());
-        hdfsConfig.set("fs.file.impl", LocalFileSystem.class.getName());
-        try
-        {
-            if (hdfsConfigDir.exists() && hdfsConfigDir.isDirectory())
-            {
-                File[] hdfsConfigFiles = hdfsConfigDir.listFiles((file, s) -> s.endsWith("core-site.xml") || s.endsWith("hdfs-site.xml"));
-                if (hdfsConfigFiles != null && hdfsConfigFiles.length == 2)
-                {
-                    hdfsConfig.addResource(hdfsConfigFiles[0].toURI().toURL());
-                    hdfsConfig.addResource(hdfsConfigFiles[1].toURI().toURL());
-                }
-            } else
-            {
-                log.error("can not read hdfs configuration file in paraflow connector. hdfs.config.dir=" + hdfsConfigDir);
-                throw new PrestoException(PARAFLOW_HDFS_FILE_ERROR, new ConfigurationException());
-            }
-            fileSystem = FileSystem.get(hdfsConfig);
-        } catch (IOException e)
-        {
-            log.error(e);
-            throw new PrestoException(PARAFLOW_CONFIG_ERROR, e);
+        config.set("fs.hdfs.impl", DistributedFileSystem.class.getName());
+        config.set("fs.file.impl", LocalFileSystem.class.getName());
+        try {
+            this.fileSystem = FileSystem.get(new URI(prestoConfig.getHDFSWarehouse()), config);
+        }
+        catch (IOException | URISyntaxException e) {
+            this.fileSystem = null;
         }
     }
 
     public Optional<FileSystem> getFileSystem()
     {
-        return Optional.of(this.fileSystem);
+        return fileSystem == null ? Optional.empty() : Optional.of(fileSystem);
     }
 
     public List<Path> listFiles(Path dirPath)
     {
         List<Path> files = new ArrayList<>();
-        FileStatus[] fileStatuses = null;
-        try
-        {
+        FileStatus[] fileStatuses;
+        if (this.fileSystem == null) {
+            return ImmutableList.of();
+        }
+        try {
             fileStatuses = this.fileSystem.listStatus(dirPath);
-            if (fileStatuses != null)
-            {
-                for (FileStatus f : fileStatuses)
-                {
-                    if (f.isFile())
-                    {
+            if (fileStatuses != null) {
+                for (FileStatus f : fileStatuses) {
+                    if (f.isFile()) {
                         files.add(f.getPath());
                     }
                 }
             }
-        } catch (IOException e)
-        {
+        }
+        catch (IOException e) {
             log.error(e);
             throw new PrestoException(PARAFLOW_HDFS_FILE_ERROR, e);
         }
@@ -136,5 +121,4 @@ public final class FSFactory
         }
         return builder.build();
     }
-
 }

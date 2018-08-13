@@ -1,7 +1,6 @@
 package cn.edu.ruc.iir.paraflow.connector.impl;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
-import cn.edu.ruc.iir.paraflow.commons.utils.ConfigFactory;
 import cn.edu.ruc.iir.paraflow.connector.StorageFormat;
 import cn.edu.ruc.iir.paraflow.connector.function.Function;
 import cn.edu.ruc.iir.paraflow.connector.function.Function0;
@@ -12,13 +11,33 @@ import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableLayoutHandle;
 import cn.edu.ruc.iir.paraflow.connector.type.UnknownType;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
-import com.facebook.presto.spi.*;
-import com.facebook.presto.spi.type.*;
+import com.facebook.presto.spi.ColumnMetadata;
+import com.facebook.presto.spi.ConnectorSession;
+import com.facebook.presto.spi.ConnectorTableMetadata;
+import com.facebook.presto.spi.SchemaTableName;
+import com.facebook.presto.spi.SchemaTablePrefix;
+import com.facebook.presto.spi.type.BigintType;
+import com.facebook.presto.spi.type.BooleanType;
+import com.facebook.presto.spi.type.CharType;
+import com.facebook.presto.spi.type.DateType;
+import com.facebook.presto.spi.type.DecimalType;
+import com.facebook.presto.spi.type.DoubleType;
+import com.facebook.presto.spi.type.IntegerType;
+import com.facebook.presto.spi.type.RealType;
+import com.facebook.presto.spi.type.SmallintType;
+import com.facebook.presto.spi.type.TimeType;
+import com.facebook.presto.spi.type.TimestampType;
+import com.facebook.presto.spi.type.TinyintType;
+import com.facebook.presto.spi.type.Type;
+import com.facebook.presto.spi.type.VarcharType;
 import com.google.inject.Inject;
 import io.airlift.log.Logger;
 import org.apache.hadoop.fs.Path;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,7 +47,6 @@ import static java.util.Objects.requireNonNull;
 public class ParaflowMetaDataReader
 {
     private static final Logger log = Logger.get(ParaflowMetaDataReader.class);
-    private static final Map<String, String> sqlTable = new HashMap<>();
     private final MetaClient metaClient;
     private final ParaflowPrestoConfig config;
 
@@ -37,16 +55,12 @@ public class ParaflowMetaDataReader
     public ParaflowMetaDataReader(ParaflowPrestoConfig config)
     {
         this.config = config;
-        ConfigFactory configFactory = config.getFactory();
-        String host = configFactory.getProperty("metadata.server.host");
-        int port = Integer.parseInt(configFactory.getProperty("metadata.server.port"));
-        this.metaClient = new MetaClient(host, port);
+        this.metaClient = new MetaClient(config.getMetaserverHost(), config.getMetaserverPort());
     }
 
     public List<String> getAllDatabases()
     {
         MetaProto.StringListType stringList = metaClient.listDatabases();
-        log.debug("Get all databases");
         List<String> resultL = new ArrayList<>();
         int count = stringList.getStrCount();
         for (int i = 0; i < count; i++) {
@@ -55,48 +69,24 @@ public class ParaflowMetaDataReader
         return resultL;
     }
 
-    private String getDatabaseId(String db)
-    {
-        log.debug("Get database " + db);
-        MetaProto.DbParam dbParam = metaClient.getDatabase(db);
-
-        if (dbParam.getIsEmpty()) {
-            log.debug("Find no database with name " + db);
-            return null;
-        }
-
-        return dbParam.getDbName();
-    }
-
     public List<SchemaTableName> listTables(SchemaTablePrefix prefix)
     {
-        log.info("List all tables with prefix " + prefix.toString());
         List<SchemaTableName> tables = new ArrayList<>();
         String dbPrefix = prefix.getSchemaName();
-        log.debug("listTables dbPrefix: " + dbPrefix);
         String tblPrefix = prefix.getTableName();
-        log.debug("listTables tblPrefix: " + tblPrefix);
 
         // if dbPrefix not mean to match all
         String tblName;
         String dbName;
-        if (dbPrefix != null) {
-            if (tblPrefix != null) {
-                tblName = tblPrefix;
-                dbName = dbPrefix;
+        if (dbPrefix != null && tblPrefix != null) {
+            MetaProto.StringListType stringListType = metaClient.listTables(dbPrefix);
+            if (stringListType.getStrCount() == 0) {
+                return tables;
             }
-            else {
-                MetaProto.StringListType stringListType = metaClient.listTables(dbPrefix);
-                log.info("record size: " + stringListType.getStrCount());
-                if (stringListType.getStrCount() == 0) {
-                    return tables;
-                }
-                for (int i = 0; i < stringListType.getStrCount(); i++) {
-                    tblName = stringListType.getStr(0);
-                    dbName = dbPrefix;
-                    log.debug("listTables tableName: " + formName(dbName, tblName));
-                    tables.add(new SchemaTableName(dbName, tblName));
-                }
+            for (int i = 0; i < stringListType.getStrCount(); i++) {
+                tblName = stringListType.getStr(0);
+                dbName = dbPrefix;
+                tables.add(new SchemaTableName(dbName, tblName));
             }
         }
         return tables;
@@ -104,7 +94,6 @@ public class ParaflowMetaDataReader
 
     public List<SchemaTableName> listTables(String dbPrefix)
     {
-        log.info("List all tables with prefix " + dbPrefix);
         List<SchemaTableName> tables = new ArrayList<>();
 
         // if dbPrefix not mean to match all
@@ -112,14 +101,12 @@ public class ParaflowMetaDataReader
         String dbName;
         if (dbPrefix != null) {
                 MetaProto.StringListType stringListType = metaClient.listTables(dbPrefix);
-                log.info("record size: " + stringListType.getStrCount());
                 if (stringListType.getStrCount() == 0) {
                     return tables;
                 }
                 for (int i = 0; i < stringListType.getStrCount(); i++) {
                     tblName = stringListType.getStr(0);
                     dbName = dbPrefix;
-                    log.info("listTables tableName: " + formName(dbName, tblName));
                     tables.add(new SchemaTableName(dbName, tblName));
                 }
         }
@@ -128,84 +115,28 @@ public class ParaflowMetaDataReader
 
     public List<String> getTableNames(String dbPrefix)
     {
-        log.info("List all tables with prefix " + dbPrefix);
         List<String> tables = new ArrayList<>();
 
         // if dbPrefix not mean to match all
         String tblName;
-        String dbName;
         if (dbPrefix != null) {
             MetaProto.StringListType stringListType = metaClient.listTables(dbPrefix);
-            log.info("record size: " + stringListType.getStrCount());
             if (stringListType.getStrCount() == 0) {
                 return tables;
             }
             for (int i = 0; i < stringListType.getStrCount(); i++) {
                 tblName = stringListType.getStr(i);
-                dbName = dbPrefix;
-                log.info("listTables tableName: " + formName(dbName, tblName));
                 tables.add(tblName);
             }
         }
         return tables;
     }
-    private String getTableId(String dbName, String tblName)
-    {
-        MetaProto.TblParam tblParam = metaClient.getTable(dbName, tblName);
-        if (tblParam.getIsEmpty()) {
-            return null;
-        }
-        return String.valueOf(tblParam.getTblId());
-    }
-
-//    private Optional<ParaflowTable> getTable(String databaseName, String tableName)
-//    {
-//        log.debug("Get table " + formName(databaseName, tableName));
-//        ParaflowTableHandle table;
-//        ParaflowTableLayoutHandle tableLayout;
-//        List<ParaflowColumnHandle> columns;
-//        List<ColumnMetadata> metadatas;
-//
-//        Optional<ParaflowTableHandle> tableOptional = getTableHandle(databaseName, tableName);
-//        if (!tableOptional.isPresent()) {
-//            log.warn("Table not exists");
-//            return Optional.empty();
-//        }
-//        table = tableOptional.get();
-//
-//        Optional<ParaflowTableLayoutHandle> tableLayoutOptional = getTableLayout(databaseName, tableName);
-//        if (!tableLayoutOptional.isPresent()) {
-//            log.warn("Table layout not exists");
-//            return Optional.empty();
-//        }
-//        tableLayout = tableLayoutOptional.get();
-//
-//        Optional<List<ParaflowColumnHandle>> columnsOptional = getTableColumnHandle(databaseName, tableName);
-//        if (!columnsOptional.isPresent()) {
-//            log.warn("Column handles not exists");
-//            return Optional.empty();
-//        }
-//        columns = columnsOptional.get();
-//
-//        Optional<List<ColumnMetadata>> metadatasOptional = getTableColMetadata(databaseName, tableName);
-//        if (!metadatasOptional.isPresent()) {
-//            log.warn("Column metadata not exists");
-//            return Optional.empty();
-//        }
-//        metadatas = metadatasOptional.get();
-//
-//        ParaflowTable ParaflowTable = new ParaflowTable(table, tableLayout, columns, metadatas);
-//        return Optional.of(ParaflowTable);
-//    }
 
     public Optional<ParaflowTableHandle> getTableHandle(String connectorId, String dbName, String tblName)
     {
-        log.debug("Get table handle " + formName(dbName, tblName));
         ParaflowTableHandle table;
         MetaProto.TblParam tblParam = metaClient.getTable(dbName, tblName);
-        //MetaProto.StringListType paths = metaClient.filterBlockIndex(dbName, tblName, -1, -1);
         if (tblParam.getIsEmpty()) {
-            log.error("Match more/less than one table");
             return Optional.empty();
         }
         String location = tblParam.getLocationUrl();
@@ -219,7 +150,6 @@ public class ParaflowMetaDataReader
 
     public Optional<ParaflowTableLayoutHandle> getTableLayout(String connectorId, String dbName, String tblName)
     {
-        log.debug("Get table layout " + formName(dbName, tblName));
         ParaflowTableLayoutHandle tableLayout;
         MetaProto.TblParam tblParam = metaClient.getTable(dbName, tblName);
         if (tblParam.getIsEmpty()) {
@@ -325,33 +255,6 @@ public class ParaflowMetaDataReader
         return Optional.of(colMetadatas);
     }
 
-//    private ColumnMetadata getColMetadata(String colName, String tblName, String dbName)
-//    {
-//        log.debug("Get metadata of col " + formName(dbName, tblName, colName));
-//        List<JDBCRecord> records;
-//        String sql = "SELECT type FROM cols WHERE name='"
-//                + colName
-//                + "' AND tbl_name='"
-//                + tblName
-//                + " AND db_name='"
-//                + dbName
-//                + "';";
-//        String[] colFields = {"type"};
-//        records = jdbcDriver.executreQuery(sql, colFields);
-//        if (records.size() != 1) {
-//            log.error("Match more/less than one table");
-//            throw new RecordMoreLessException();
-//        }
-//        JDBCRecord colRecord = records.get(0);
-//        String typeName = colRecord.getString(colFields[0]);
-//        Type type = getType(typeName);
-//        if (type == UnknownType.UNKNOWN) {
-//            log.error("Type unknown!");
-//            throw new TypeUnknownException();
-//        }
-//        return new ColumnMetadata(colName, type, "", false);
-//    }
-
     public void createDatabase(ConnectorSession session, ParaflowDatabase database)
     {
         createDatabase(database);
@@ -367,40 +270,24 @@ public class ParaflowMetaDataReader
 
     private void createDatabase(String dbName, String dbPath)
     {
-        StatusProto.ResponseStatus responseStatus = metaClient.createDatabase(dbName, dbPath, " "); //????????????????????????
+        StatusProto.ResponseStatus responseStatus
+                = metaClient.createDatabase(dbName, dbPath, " ");
         if (responseStatus.getStatus() == STATUS_OK) {
-            log.error("Create database" + dbName + " successed!");
+            log.debug("Create database " + dbName + " succeed!");
         }
         else {
-            log.error("Create database" + dbName + " failed!");
+            log.debug("Create database " + dbName + " failed!");
         }
+    }
+
+    public void dropDatabase(String dbName)
+    {
+        metaClient.deleteDatabase(dbName);
     }
 
     public void createTable(ConnectorSession session, ConnectorTableMetadata tableMetadata)
     {
-        log.debug("Create table " + tableMetadata.getTable().getTableName());
-        String tblName = tableMetadata.getTable().getTableName();
-        String dbName = tableMetadata.getTable().getSchemaName();
         List<ColumnMetadata> columns = tableMetadata.getColumns();
-        List<String> columnName = new LinkedList<>();
-        List<String> dataType = new LinkedList<>();
-        for (ColumnMetadata column : columns) {
-            columnName.add(column.getName());
-            dataType.add(column.getType().getDisplayName());
-        }
-        String userName = "";
-        String storageFormatName = "";
-        metaClient.createRegularTable(dbName, tblName, userName, storageFormatName, columnName, dataType);
-    }
-
-    public void createTableWithFiber(ConnectorSession session, ConnectorTableMetadata tableMetadata, String fiberKey, String function, String timeKey)
-    {
-        log.debug("Create table with fiber " + tableMetadata.getTable().getTableName());
-        // check fiberKey, function and timeKey
-        List<ColumnMetadata> columns = tableMetadata.getColumns();
-//        List<String> columnNames = columns.stream()
-//                .map(ColumnMetadata::getName)
-//                .collect(Collectors.toList());
         List<String> columnName = new LinkedList<>();
         List<String> dataType = new LinkedList<>();
         for (ColumnMetadata column : columns) {
@@ -410,391 +297,20 @@ public class ParaflowMetaDataReader
 
         String tblName = tableMetadata.getTable().getTableName();
         String dbName = tableMetadata.getTable().getSchemaName();
-        String storageFormatName = "";
-        String userName = "";
-        int fiberColIndex = Integer.parseInt(fiberKey);
-        int timstampColIndex = Integer.parseInt(timeKey);
         // createTable
-        metaClient.createFiberTable(dbName, tblName, userName,
-                storageFormatName, fiberColIndex, function,
-                timstampColIndex, columnName, dataType);
+        metaClient.createTable(dbName, tblName, session.getUser(),
+                "", -1, "",
+                -1, columnName, dataType);
     }
 
-//    private void createTable(List<ColumnMetadata> columns, String dbId, String name, String dbName, String location, String storage, String fiberKey, String function, String timeKey)
-//    {
-//        StringBuilder sql = new StringBuilder();
-//        sql.append("INSERT INTO tbls(db_id, name, db_name, location, storage, fib_k, fib_func, time_k) VALUES('")
-//                .append(dbId)
-//                .append("', '")
-//                .append(name)
-//                .append("', '")
-//                .append(dbName)
-//                .append("', '")
-//                .append(location)
-//                .append("', '")
-//                .append(storage)
-//                .append("', '")
-//                .append(fiberKey)
-//                .append("', '")
-//                .append(function)
-//                .append("', '")
-//                .append(timeKey)
-//                .append("');");
-//        if (jdbcDriver.executeUpdate(sql.toString()) != 0) {
-//            try {
-//                log.debug("Create hdfs dir for " + formName(dbName, name));
-//                fileSystem.mkdirs(formPath(dbName, name));
-//            }
-//            catch (IOException e) {
-//                log.debug("Error sql: " + sql.toString());
-//                log.error(e);
-//                // TODO exit ?
-//            }
-//        }
-//        else {
-//            log.error("Create table " + formName(dbName, name) + " failed!");
-//        }
-//
-//        String tableId = getTableId(dbName, name);
-//
-//        // add cols information
-//        for (ColumnMetadata col : columns) {
-//            String colType = "regular";
-//            if (Objects.equals(col.getName(), fiberKey)) {
-//                colType = "fiber";
-//            }
-//            if (Objects.equals(col.getName(), timeKey)) {
-//                colType = "time";
-//            }
-//            sql.delete(0, sql.length() - 1);
-//            sql.append("INSERT INTO cols(name, tbl_id, tbl_name, db_name, data_type, col_type) VALUES('")
-//                    .append(col.getName())
-//                    .append("', '")
-//                    .append(tableId)
-//                    .append("', '")
-//                    .append(name)
-//                    .append("', '")
-//                    .append(dbName)
-//                    .append("', '")
-//                    .append(col.getType())
-//                    .append("', '")
-//                    .append(colType)
-//                    .append("');");
-//            if (jdbcDriver.executeUpdate(sql.toString()) == 0) {
-//                log.debug("Error sql: " + sql.toString());
-//                log.error("Create cols for table " + formName(dbName, name) + " failed!");
-//                // TODO exit ?
-//            }
-//        }
-//    }
-//
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public void deleteTable(String database, String table)
-//    {
-//        StringBuilder sb1 = new StringBuilder();
-//        sb1.append("DELETE FROM tbls WHERE db_name='")
-//                .append(database)
-//                .append("' AND name='")
-//                .append(table)
-//                .append("';");
-//
-//        if (jdbcDriver.executeUpdate(sb1.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//        StringBuilder sb2 = new StringBuilder();
-//        sb2.append("DELETE FROM cols WHERE db_name='")
-//                .append(database)
-//                .append("' AND tbl_name='")
-//                .append(table)
-//                .append("';");
-//
-//        if (jdbcDriver.executeUpdate(sb2.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//    }
-//
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public void deleteDatabase(String database)
-//    {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("DELETE FROM dbs WHERE name='")
-//                .append(database)
-//                .append("';");
-//        if (jdbcDriver.executeUpdate(sb.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//        System.out.println(sb.toString());
-//
-//        StringBuilder sb2 = new StringBuilder();
-//        sb2.append("DELETE FROM tbls WHERE db_name='")
-//                .append(database)
-//                .append("';");
-//        if (jdbcDriver.executeUpdate(sb2.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//        System.out.println(sb2.toString());
-//
-//        StringBuilder sb3 = new StringBuilder();
-//        sb3.append("DELETE FROM cols WHERE db_name='")
-//                .append(database)
-//                .append("';");
-//        System.out.println(sb3.toString());
-//        if (jdbcDriver.executeUpdate(sb3.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//    }
-//
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public void renameTable(String database, String oldName, String newName)
-//    {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("UPDATE tbls SET name='")
-//                .append(newName)
-//                .append("' WHERE db_name='")
-//                .append(database)
-//                .append("' AND name='")
-//                .append(oldName)
-//                .append("';");
-//
-//        if (jdbcDriver.executeUpdate(sb.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//    }
-//
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public void renameDatabase(String oldName, String newName)
-//    {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("UPDATE dbs SET name='")
-//                .append(newName)
-//                .append("' WHERE name='")
-//                .append(oldName)
-//                .append("';");
-//
-//        if (jdbcDriver.executeUpdate(sb.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//    }
-//
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public void renameColumn(String database, String table, String oldName, String newName)
-//    {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("UPDATE cols SET name='")
-//                .append(newName)
-//                .append("' WHERE db_name='")
-//                .append(database)
-//                .append("' AND tbl_name='")
-//                .append(table)
-//                .append("' AND name='")
-//                .append(oldName)
-//                .append("';");
-//
-//        if (jdbcDriver.executeUpdate(sb.toString()) == 0) {
-//            System.out.println("Error sql: " + sb.toString());
-//        }
-//    }
-//
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public void createFiber(String database, String table, long value)
-//    {
-//        StringBuilder sb1 = new StringBuilder();
-//        StringBuilder sb2 = new StringBuilder();
-//        sb1.append("SELECT id FROM tbls WHERE db_name='")
-//                .append(database)
-//                .append("' AND name='")
-//                .append(table)
-//                .append("';");
-//        List<Long> resultL = new ArrayList<>();
-//        String[] fields = {"id"};
-//        List<JDBCRecord> records = jdbcDriver.executeQuery(sb1.toString(), fields);
-//        records.forEach(record -> resultL.add(record.getLong(fields[0])));
-//        Long tblId;
-//        tblId = resultL.get(0);
-//        sb2.append("INSERT INTO fibers(tbl_id,fiber_v) VALUES(")
-//                .append(tblId)
-//                .append(",")
-//                .append(value)
-//                .append(");");
-//        if (jdbcDriver.executeUpdate(sb2.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//    }
-//
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public void updateFiber(String database, String table, long oldV, long newV)
-//    {
-//        StringBuilder sb1 = new StringBuilder();
-//        StringBuilder sb2 = new StringBuilder();
-//        sb1.append("SELECT id FROM tbls WHERE db_name='")
-//                .append(database)
-//                .append("' AND name='")
-//                .append(table)
-//                .append("';");
-//        List<Long> resultL = new ArrayList<>();
-//        String[] fields = {"id"};
-//        List<JDBCRecord> records = jdbcDriver.executeQuery(sb1.toString(), fields);
-//        records.forEach(record -> resultL.add(record.getLong(fields[0])));
-//        Long tblId;
-//        tblId = resultL.get(0);
-//        sb2.append("UPDATE fibers SET fiber_v=")
-//                .append(newV)
-//                .append("WHERE tbl_id=")
-//                .append(tblId)
-//                .append(" AND fiber_v=")
-//                .append(oldV)
-//                .append(";");
-//
-//        if (jdbcDriver.executeUpdate(sb2.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//    }
-//
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public void deleteFiber(String database, String table, long value)
-//    {
-//        StringBuilder sb1 = new StringBuilder();
-//        StringBuilder sb2 = new StringBuilder();
-//        sb1.append("SELECT id FROM tbls WHERE db_name='")
-//                .append(database)
-//                .append("' AND name='")
-//                .append(table)
-//                .append("';");
-//        List<Long> resultL = new ArrayList<>();
-//        String[] fields = {"id"};
-//        List<JDBCRecord> records = jdbcDriver.executeQuery(sb1.toString(), fields);
-//        records.forEach(record -> resultL.add(record.getLong(fields[0])));
-//        Long tblId;
-//        tblId = resultL.get(0);
-//        sb2.append("DELETE FROM fibers WHERE tbl_id=")
-//                .append(tblId)
-//                .append(" AND fiber_v=")
-//                .append(value)
-//                .append(";");
-//
-//        if (jdbcDriver.executeUpdate(sb2.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//    }
-//
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public List<Long> getFibers(String database, String table)
-//    {
-//        StringBuilder sb1 = new StringBuilder();
-//        StringBuilder sb2 = new StringBuilder();
-//        sb1.append("SELECT id FROM tbls WHERE db_name='")
-//                .append(database)
-//                .append("' AND name='")
-//                .append(table)
-//                .append("';");
-//        List<Long> resultL1 = new ArrayList<>();
-//        String[] fields1 = {"id"};
-//        List<JDBCRecord> records1 = jdbcDriver.executeQuery(sb1.toString(), fields1);
-//        records1.forEach(record -> resultL1.add(record.getLong(fields1[0])));
-//        Long tblId;
-//        tblId = resultL1.get(0);
-//        sb2.append("SELECT fiber_v FROM fibers WHERE tbl_id=")
-//                .append(tblId)
-//                .append(";");
-//        List<Long> resultL = new ArrayList<>();
-//        String[] fields = {"fiber_v"};
-//        List<JDBCRecord> records = jdbcDriver.executeQuery(sb2.toString(), fields);
-//        records.forEach(record -> resultL.add(record.getLong(fields[0])));
-//        return resultL;
-//    }
-//
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public void addBlock(long fiberId, String beginT, String endT, String path)
-//    {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("INSERT INTO fiberfiles(fiber_id,time_b,time_e,path) VALUES(")
-//                .append(fiberId)
-//                .append(",'")
-//                .append(beginT)
-//                .append("','")
-//                .append(endT)
-//                .append("','")
-//                .append(path)
-//                .append("');");
-//
-//        if (jdbcDriver.executeUpdate(sb.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//    }
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public void deleteBlock(long fiberId, String path)
-//    {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("DELETE FROM fiberfiles WHERE fiber_id=")
-//                .append(fiberId)
-//                .append(" AND path='")
-//                .append(path)
-//                .append("';");
-//
-//        if (jdbcDriver.executeUpdate(sb.toString()) == 0) {
-//            log.debug("Error sql: \" + sql.toString()");
-//        }
-//    }
-//    /**
-//     * Currently unsupported in SQL client for safety.
-//     * Used for unit test only
-//     * */
-//    public List<String> getBlocks(long fiberId, String beginT, String endT)
-//    {
-//        StringBuilder sb = new StringBuilder();
-//        sb.append("SELECT path FROM fiberfiles WHERE fiber_id='")
-//                .append(fiberId)
-//                .append("' AND time_b='")
-//                .append(beginT)
-//                .append("' AND time_e='")
-//                .append(endT)
-//                .append("';");
-//        List<String> resultL = new ArrayList<>();
-//        String[] fields = {"path"};
-//        List<JDBCRecord> records = jdbcDriver.executeQuery(sb.toString(), fields);
-//        records.forEach(record -> resultL.add(record.getString(fields[0])));
-//        return resultL;
-//    }
-//
-//    /**
-//     * Filter blocks
-//     * */
-    public List<String> filterBlocks(String db, String table, Optional<Long> fiberId, Optional<Long> timeLow, Optional<Long> timeHigh)
+    public void dropTable(String schemaName, String tableName)
     {
-        MetaProto.StringListType stringListType = metaClient.filterBlockIndexByFiber(db, table, Integer.parseInt(String.valueOf(fiberId.get())), timeLow.get(), timeHigh.get());
+        metaClient.deleteTable(schemaName, tableName);
+    }
+
+    public List<String> filterBlocks(String db, String table, int fiberId, long timeLow, long timeHigh)
+    {
+        MetaProto.StringListType stringListType = metaClient.filterBlockIndexByFiber(db, table, fiberId, timeLow, timeHigh);
         List<String> resultL = new ArrayList<>();
         for (int i = 0; i < stringListType.getStrCount(); i++) {
             resultL.add(stringListType.getStr(i));
@@ -875,7 +391,7 @@ public class ParaflowMetaDataReader
         return null;
     }
 
-    public Path formPath(String dirOrFile)
+    private Path formPath(String dirOrFile)
     {
         String base = this.config.getHDFSWarehouse();
         String path = dirOrFile;
@@ -893,36 +409,4 @@ public class ParaflowMetaDataReader
     {
         return database + "." + table;
     }
-
-//    private Path formPath(String dirOrFile1, String dirOrFile2)
-//    {
-//        String base = config.getMetaserverStore();
-//        String path1 = dirOrFile1;
-//        String path2 = dirOrFile2;
-//        while (base.endsWith("/")) {
-//            base = base.substring(0, base.length() - 2);
-//        }
-//        if (!path1.startsWith("/")) {
-//            path1 = "/" + path1;
-//        }
-//        if (path1.endsWith("/")) {
-//            path1 = path1.substring(0, path1.length() - 2);
-//        }
-//        if (!path2.startsWith("/")) {
-//            path2 = "/" + path2;
-//        }
-//        return Path.mergePaths(Path.mergePaths(new Path(base), new Path(path1)), new Path(path2));
-//    }
-//
-//    private Path formPath(String dirOrFile)
-//    {
-//        String base = config.getMetaserverStore();
-//        while (base.endsWith("/")) {
-//            base = base.substring(0, base.length() - 2);
-//        }
-//        if (!dirOrFile.startsWith("/")) {
-//            dirOrFile = "/" + dirOrFile;
-//        }
-//        return Path.mergePaths(new Path(base), new Path(dirOrFile));
-//    }
 }

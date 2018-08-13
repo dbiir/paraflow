@@ -59,9 +59,9 @@ public final class Function0 implements Function
     }
 
     @Override
-    public long apply(String v)
+    public int apply(String v)
     {
-        long k = hasher.hashString(v.subSequence(0, v.length()), StandardCharsets.UTF_8).asLong();
+        int k = hasher.hashString(v.subSequence(0, v.length()), StandardCharsets.UTF_8).asInt();
         return ((k % fiberNum) + fiberNum) % fiberNum;
     }
 

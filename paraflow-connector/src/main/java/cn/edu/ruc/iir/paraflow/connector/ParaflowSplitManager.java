@@ -19,15 +19,29 @@ import cn.edu.ruc.iir.paraflow.connector.function.Function0;
 import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableHandle;
 import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableLayoutHandle;
 import cn.edu.ruc.iir.paraflow.connector.impl.ParaflowMetaDataReader;
-import com.facebook.presto.spi.*;
+import com.facebook.presto.spi.ColumnHandle;
+import com.facebook.presto.spi.ConnectorSession;
+import com.facebook.presto.spi.ConnectorSplit;
+import com.facebook.presto.spi.ConnectorSplitSource;
+import com.facebook.presto.spi.ConnectorTableLayoutHandle;
+import com.facebook.presto.spi.FixedSplitSource;
 import com.facebook.presto.spi.connector.ConnectorSplitManager;
 import com.facebook.presto.spi.connector.ConnectorTransactionHandle;
-import com.facebook.presto.spi.predicate.*;
+import com.facebook.presto.spi.predicate.Domain;
+import com.facebook.presto.spi.predicate.Marker;
+import com.facebook.presto.spi.predicate.Range;
+import com.facebook.presto.spi.predicate.SortedRangeSet;
+import com.facebook.presto.spi.predicate.TupleDomain;
+import com.facebook.presto.spi.predicate.ValueSet;
 import com.google.inject.Inject;
 import io.airlift.slice.Slice;
 import org.apache.hadoop.fs.Path;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static cn.edu.ruc.iir.paraflow.connector.Types.checkType;
@@ -81,7 +95,7 @@ implements ConnectorSplitManager
             }
             else {
                 String fiber = null;
-                long fiberId = -1L;
+                int fiberId = -1;
                 long timeLow = -1L;
                 long timeHigh = -1L;
                 if (domains.get().containsKey(fiberCol)) {
@@ -101,19 +115,7 @@ implements ConnectorSplitManager
                                 Slice fiberSlice = (Slice) fiberValueSet.getSingleValue();
                                 fiber = fiberSlice.toStringUtf8();
                             }
-                            // TODO get fiberNum
                             fiberId = function.apply(fiber); // mod fiberNum
-//                            switch (fiber.toLowerCase()) {
-//                                case "harry":
-//                                    fiberId = 0L;
-//                                    break;
-//                                case "hermione":
-//                                    fiberId = 1L;
-//                                    break;
-//                                case "ron":
-//                                    fiberId = 2L;
-//                                    break;
-//                            }
                         }
                     }
                 }
@@ -140,9 +142,9 @@ implements ConnectorSplitManager
                     files = metaDataQuer.filterBlocks(
                             dbName,
                             tblName,
-                            fiberId == -1L ? Optional.empty() : Optional.of(fiberId),
-                            timeLow == -1L ? Optional.empty() : Optional.of(timeLow),
-                            timeHigh == -1L ? Optional.empty() : Optional.of(timeHigh))
+                            fiberId,
+                            timeLow,
+                            timeHigh)
                             .stream().map(Path::new).collect(Collectors.toList());         // filter file paths with fiber domains and time domains using meta server
                 }
             }

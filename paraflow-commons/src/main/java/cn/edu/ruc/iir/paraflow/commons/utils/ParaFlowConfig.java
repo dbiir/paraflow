@@ -27,7 +27,8 @@ public class ParaFlowConfig
             if (!paraflowHome.endsWith("/") || paraflowHome.endsWith("\\")) {
                 paraflowHome += "/";
             }
-            properties.setProperty("paraflow.home", paraflowHome + "conf/");
+            paraflowHome += "config/";
+            properties.setProperty("paraflow.home", paraflowHome);
             try {
                 in = new FileInputStream(paraflowHome + configFile);
             }

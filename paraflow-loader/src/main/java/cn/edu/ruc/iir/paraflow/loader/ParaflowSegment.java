@@ -1,5 +1,8 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+
 /**
  * paraflow segment
  *
@@ -11,27 +14,55 @@ public class ParaflowSegment
         ON_HEAP, OFF_HEAP, ON_DISK
     }
 
-    private final ParaflowRecord[][] records;   // records of each fiber
+    private final ParaflowRecord[] records;   // records of each fiber
     private final long[] fiberMinTimestamps;    // minimal timestamps of each fiber
     private final long[] fiberMaxTimestamps;    // maximum timestamps of each fiber
+    private final ReadWriteLock lock;
     private String db;
     private String table;
     private String path = "";                   // path of the in-memory file or on-disk file; if ON_HEAP, path is empty
-    private StorageLevel storageLevel;
+    private volatile StorageLevel storageLevel;
 
-    public ParaflowSegment(ParaflowRecord[][] records)
+    public ParaflowSegment(ParaflowRecord[] records, long[] fiberMinTimestamps, long[] fiberMaxTimestamps)
     {
         this.records = records;
-        this.fiberMinTimestamps = new long[records.length];
-        this.fiberMaxTimestamps = new long[records.length];
-        for (int i = 0; i < records.length; i++) {
-            fiberMinTimestamps[i] = records[i][0].getTimestamp();
-            fiberMaxTimestamps[i] = records[i][records.length - 1].getTimestamp();
-        }
+        this.fiberMinTimestamps = fiberMinTimestamps;
+        this.fiberMaxTimestamps = fiberMaxTimestamps;
         this.storageLevel = StorageLevel.ON_HEAP;
+        this.lock = new ReentrantReadWriteLock();
     }
 
-    public ParaflowRecord[][] getRecords()
+    public boolean tryReadLock()
+    {
+        return this.lock.readLock().tryLock();
+    }
+
+    public void readLock()
+    {
+        this.lock.readLock().lock();
+    }
+
+    public void readUnLock()
+    {
+        this.lock.readLock().unlock();
+    }
+
+    public boolean tryWriteLock()
+    {
+        return this.lock.writeLock().tryLock();
+    }
+
+    public void writeLock()
+    {
+        this.lock.writeLock().lock();
+    }
+
+    public void writeUnLock()
+    {
+        this.lock.writeLock().unlock();
+    }
+
+    public ParaflowRecord[] getRecords()
     {
         return records;
     }

@@ -8,27 +8,16 @@ import java.util.Optional;
 
 public class ActionResponse
 {
-    private int responseInt;
     private ResultList responseResultList;
     private Object param = null;
     private Map<String, Object> properties = null;
 
-    public void setResponseInt(int r)
-    {
-        this.responseInt = r;
-    }
-
-    public void setResponseResultList(ResultList res)
+    void setResponseResultList(ResultList res)
     {
         this.responseResultList = res;
     }
 
-    public int getResponseInt()
-    {
-        return responseInt;
-    }
-
-    public ResultList getResponseResultList()
+    ResultList getResponseResultList()
     {
         return responseResultList;
     }

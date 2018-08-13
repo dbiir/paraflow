@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [ $# -lt 1 ];
-then
-  echo "USAGE: $0 [-daemon]"
-  exit 1
-fi
 base_dir=$(dirname $0)
 
 if [ "x$PARAFLOW_LOG4J_OPTS" = "x" ]; then
@@ -12,7 +7,7 @@ if [ "x$PARAFLOW_LOG4J_OPTS" = "x" ]; then
 fi
 
 if [ "x$PARAFLOW_HEAP_OPTS" = "x" ]; then
-  export PARAFLOW_HEAP_OPTS="-Xmx1G -Xms1G"
+  export PARAFLOW_HEAP_OPTS="-Xmx1G -Xms512M"
 fi
 
 EXTRA_ARGS=${EXTRA_ARGS-'-name paraflowLoader'}
