@@ -42,6 +42,10 @@
             <artifactId>kafka-clients</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.facebook.presto</groupId>
+            <artifactId>presto-spi</artifactId>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>

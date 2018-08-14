@@ -46,16 +46,14 @@ public class FilterBlockIndexByFiberAction extends Action
                 //query
                 sqlStatement = SQLTemplate.filterBlockIndexByFiber(tblId, fiberValue);
             }
-            else if (filterBlockIndexByFiberParam.getTimeBegin() == -1
-                    && filterBlockIndexByFiberParam.getTimeEnd() != -1) {
+            else if (filterBlockIndexByFiberParam.getTimeBegin() == -1) {
                 //query
                 sqlStatement = SQLTemplate.filterBlockIndexByFiberEnd(
                         tblId,
                         fiberValue,
                         filterBlockIndexByFiberParam.getTimeEnd());
             }
-            else if (filterBlockIndexByFiberParam.getTimeBegin() != -1
-                    && filterBlockIndexByFiberParam.getTimeEnd() == -1) {
+            else if (filterBlockIndexByFiberParam.getTimeEnd() == -1) {
                 //query
                 sqlStatement = SQLTemplate.filterBlockIndexByFiberBegin(
                         tblId,

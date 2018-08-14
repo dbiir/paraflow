@@ -62,6 +62,7 @@ public class FilterBlockIndexAction extends Action
                         filterBlockIndexParam.getTimeEnd());
             }
             ResultList resultList = connection.executeQuery(sqlStatement);
+            System.out.println(sqlStatement);
             MetaProto.StringListType stringList;
             if (!resultList.isEmpty()) {
                 int size = resultList.size();

@@ -33,7 +33,7 @@ public class ParaflowPrestoConfig
 
     @Config("metaserver.host")
     @ConfigDescription("metaserver host")
-    public void setMetaserverUri(String metaserverHost)
+    public void setMetaserverHost(String metaserverHost)
     {
         this.metaserverHost = requireNonNull(metaserverHost);
     }
@@ -42,7 +42,7 @@ public class ParaflowPrestoConfig
     @ConfigDescription("metaserver port")
     public void setMetaserverPort(int metaserverPort)
     {
-        this.metaserverPort = requireNonNull(metaserverPort);
+        this.metaserverPort = metaserverPort;
     }
 
     @Config("hdfs.warehouse")

@@ -1,4 +1,4 @@
-package cn.edu.ruc.iir.paraflow.collector;
+package cn.edu.ruc.iir.paraflow.commons;
 
 /**
  * paraflow

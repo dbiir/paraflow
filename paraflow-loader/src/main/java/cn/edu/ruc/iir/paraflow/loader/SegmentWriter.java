@@ -8,6 +8,7 @@ import org.apache.hadoop.conf.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.logging.LogManager;
 
 /**
  * paraflow
@@ -42,10 +43,11 @@ public abstract class SegmentWriter
     @Override
     public void run()
     {
+        LogManager.getLogManager().reset();
         // generate file path
         String db = segment.getDb();
         String table = segment.getTable();
-        String path = config.getMemoryWarehouse() + "/" + db + "/" + table + "/"
+        String path = config.getMemoryWarehouse() + db + "/" + table + "/"
                 + config.getLoaderId() + System.nanoTime() + random.nextInt();
         segment.setPath(path);
         // get metadata

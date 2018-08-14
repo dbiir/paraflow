@@ -318,12 +318,12 @@ public class SQLTemplate
 
     public static String filterBlockIndexByFiberEnd(long tblId, long value, long timeEnd)
     {
-        return String.format("SELECT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d AND timeBegin < %d;", tblId, value, timeEnd);
+        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d AND timeBegin < %d;", tblId, value, timeEnd);
     }
 
     public static String filterBlockIndexByFiber(long tblId, long value)
     {
-        return String.format("SELECT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d;", tblId, value);
+        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d;", tblId, value);
     }
 
     public static String createTblFunc(long tblId, long funcId)

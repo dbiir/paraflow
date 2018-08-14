@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.collector;
 
+import cn.edu.ruc.iir.paraflow.commons.ParaflowFiberPartitioner;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 
 import java.util.List;

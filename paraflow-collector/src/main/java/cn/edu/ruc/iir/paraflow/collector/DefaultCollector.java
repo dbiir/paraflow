@@ -1,6 +1,7 @@
 package cn.edu.ruc.iir.paraflow.collector;
 
 import cn.edu.ruc.iir.paraflow.collector.utils.CollectorConfig;
+import cn.edu.ruc.iir.paraflow.commons.ParaflowFiberPartitioner;
 import cn.edu.ruc.iir.paraflow.commons.exceptions.ConfigFileNotFoundException;
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
