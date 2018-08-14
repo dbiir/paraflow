@@ -14,8 +14,6 @@
 package cn.edu.ruc.iir.paraflow.connector.handle;
 
 import cn.edu.ruc.iir.paraflow.connector.StorageFormat;
-import cn.edu.ruc.iir.paraflow.connector.function.Function;
-import cn.edu.ruc.iir.paraflow.connector.function.Function0;
 import com.facebook.presto.spi.ColumnHandle;
 import com.facebook.presto.spi.ConnectorTableLayoutHandle;
 import com.facebook.presto.spi.SchemaTableName;
@@ -39,7 +37,7 @@ implements ConnectorTableLayoutHandle
     private final ParaflowTableHandle table;
     private final ParaflowColumnHandle fiberColumn;
     private final ParaflowColumnHandle timestampColumn;
-    private final Function fiberFunction;
+    private final String fiberPartitioner;
     private final StorageFormat storageFormat;
     private Optional<TupleDomain<ColumnHandle>> predicates;
 
@@ -48,7 +46,7 @@ implements ConnectorTableLayoutHandle
         this(table,
                 new ParaflowColumnHandle("null", IntegerType.INTEGER, "", ParaflowColumnHandle.ColumnType.REGULAR, ""),
                 new ParaflowColumnHandle("null", IntegerType.INTEGER, "", ParaflowColumnHandle.ColumnType.REGULAR, ""),
-                new Function0(80),
+                "",
                 StorageFormat.PARQUET,
                 Optional.empty());
     }
@@ -58,14 +56,14 @@ implements ConnectorTableLayoutHandle
             @JsonProperty("table") ParaflowTableHandle table,
             @JsonProperty("fiberColumn") ParaflowColumnHandle fiberColumn,
             @JsonProperty("timestampColumn") ParaflowColumnHandle timestampColumn,
-            @JsonProperty("fiberFunction") Function fiberFunction,
+            @JsonProperty("fiberPartitioner") String fiberPartitioner,
             @JsonProperty("storageFormat") StorageFormat storageFormat,
             @JsonProperty("predicates") Optional<TupleDomain<ColumnHandle>> predicates)
     {
         this.table = requireNonNull(table, "table is null");
         this.fiberColumn = requireNonNull(fiberColumn, "fiberColumn is null");
         this.timestampColumn = requireNonNull(timestampColumn, "timestampColumn is null");
-        this.fiberFunction = requireNonNull(fiberFunction, "fiberFunc is null");
+        this.fiberPartitioner = requireNonNull(fiberPartitioner, "fiberPartitioner is null");
         this.storageFormat = requireNonNull(storageFormat, "storageFormat is null");
         this.predicates = requireNonNull(predicates, "predicates is null");
     }
@@ -95,9 +93,9 @@ implements ConnectorTableLayoutHandle
     }
 
     @JsonProperty
-    public Function getFiberFunction()
+    public String getFiberPartitioner()
     {
-        return fiberFunction;
+        return fiberPartitioner;
     }
 
     @JsonProperty
@@ -120,7 +118,7 @@ implements ConnectorTableLayoutHandle
     @Override
     public int hashCode()
     {
-        return Objects.hash(table, fiberColumn, timestampColumn, fiberFunction, storageFormat);
+        return Objects.hash(table, fiberColumn, timestampColumn, fiberPartitioner, storageFormat);
     }
 
     @Override
@@ -137,7 +135,7 @@ implements ConnectorTableLayoutHandle
         return Objects.equals(table, other.table) &&
                 Objects.equals(fiberColumn, other.fiberColumn) &&
                 Objects.equals(timestampColumn, other.timestampColumn) &&
-                Objects.equals(fiberFunction, other.fiberFunction) &&
+                Objects.equals(fiberPartitioner, other.fiberPartitioner) &&
                 Objects.equals(storageFormat, other.storageFormat);
     }
 
@@ -148,7 +146,7 @@ implements ConnectorTableLayoutHandle
                 .add("table", table)
                 .add("fiber column", fiberColumn)
                 .add("timestamp column", timestampColumn)
-                .add("fiber function", fiberFunction)
+                .add("fiber partitioner", fiberPartitioner)
                 .add("storage format", storageFormat)
                 .toString();
     }

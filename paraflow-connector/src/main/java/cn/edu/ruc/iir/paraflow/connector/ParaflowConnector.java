@@ -44,7 +44,6 @@ implements Connector
     private final ParaflowMetadataFactory paraflowMetadataFactory;
     private final ParaflowSplitManager paraflowSplitManager;
     private final ParaflowPageSourceProvider paraflowPageSourceProvider;
-//    private final ConnectorNodePartitioningProvider nodePartitioningProvider;
 
     private final ConcurrentMap<ConnectorTransactionHandle, ParaflowMetadata> transactions = new ConcurrentHashMap<>();
 
@@ -59,7 +58,6 @@ implements Connector
         this.paraflowMetadataFactory = requireNonNull(paraflowMetadataFactory, "paraflowMetadataFactory is null");
         this.paraflowSplitManager = requireNonNull(paraflowSplitManager, "paraflowSplitManager is null");
         this.paraflowPageSourceProvider = requireNonNull(paraflowPageSourceProvider, "paraflowPageSourceProvider is null");
-//        this.nodePartitioningProvider = requireNonNull(nodePartitioningProvider, "nodePartitioningProvider is null");
     }
 
     @Override
@@ -102,15 +100,6 @@ implements Connector
     {
         checkArgument(transactions.remove(transaction) != null, "no such transaction: %s", transaction);
     }
-
-    /**
-     * @throws UnsupportedOperationException if this connector does not support partitioned table layouts
-     */
-//    @Override
-//    public ConnectorNodePartitioningProvider getNodePartitioningProvider()
-//    {
-//        return nodePartitioningProvider;
-//    }
 
     /**
      * Shutdown the connector by releasing any held resources such as

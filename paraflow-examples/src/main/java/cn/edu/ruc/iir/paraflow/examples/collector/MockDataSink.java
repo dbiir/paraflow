@@ -26,7 +26,7 @@ public class MockDataSink
     @Override
     public String getTbl()
     {
-        return "0810";
+        return "tbl0810";
     }
 
     @Override

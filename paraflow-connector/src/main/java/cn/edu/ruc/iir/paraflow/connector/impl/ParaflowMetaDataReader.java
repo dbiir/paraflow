@@ -2,8 +2,6 @@ package cn.edu.ruc.iir.paraflow.connector.impl;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import cn.edu.ruc.iir.paraflow.connector.StorageFormat;
-import cn.edu.ruc.iir.paraflow.connector.function.Function;
-import cn.edu.ruc.iir.paraflow.connector.function.Function0;
 import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowColumnHandle;
 import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowDatabase;
 import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableHandle;
@@ -165,12 +163,12 @@ public class ParaflowMetaDataReader
         int timeColId = tblParam.getTimeColId();
         String fiberColName = metaClient.getColumnName(tblParam.getDbId(), tblParam.getTblId(), fiberColId).getColumn();
         String timeColName = metaClient.getColumnName(tblParam.getDbId(), tblParam.getTblId(), timeColId).getColumn();
-        String fiberFunc = tblParam.getFuncName();
-        Function function = parseFunction(fiberFunc);
-        if (function == null) {
-            log.error("Function parse error");
-            return Optional.empty();
-        }
+        String partitionerName = tblParam.getFuncName();
+//        ParaflowFiberPartitioner partitioner = parsePartitioner(partitionerName);
+//        if (partitioner == null) {
+//            log.error("partitioner parse error");
+//            return Optional.empty();
+//        }
 
         if (fiberColName.equals("") || timeColName.equals("")) {
             tableLayout = new ParaflowTableLayoutHandle(tableHandle);
@@ -179,7 +177,7 @@ public class ParaflowMetaDataReader
             // construct ColumnHandle
             ParaflowColumnHandle fiberCol = getColumnHandle(connectorId, fiberColName, tblName, dbName);
             ParaflowColumnHandle timeCol = getColumnHandle(connectorId, timeColName, tblName, dbName);
-            tableLayout = new ParaflowTableLayoutHandle(tableHandle, fiberCol, timeCol, function, StorageFormat.PARQUET, Optional.empty());
+            tableLayout = new ParaflowTableLayoutHandle(tableHandle, fiberCol, timeCol, partitionerName, StorageFormat.PARQUET, Optional.empty());
         }
         return Optional.of(tableLayout);
     }
@@ -215,6 +213,7 @@ public class ParaflowMetaDataReader
 
     public void shutdown()
     {
+        metaClient.shutdownNow();
     }
 
     private ParaflowColumnHandle getColumnHandle(String connectorId, String colName, String tblName, String dbName)
@@ -310,7 +309,13 @@ public class ParaflowMetaDataReader
 
     public List<String> filterBlocks(String db, String table, int fiberId, long timeLow, long timeHigh)
     {
-        MetaProto.StringListType stringListType = metaClient.filterBlockIndexByFiber(db, table, fiberId, timeLow, timeHigh);
+        MetaProto.StringListType stringListType;
+        if (fiberId == -1) {
+            stringListType = metaClient.filterBlockIndex(db, table, timeLow, timeHigh);
+        }
+        else {
+            stringListType = metaClient.filterBlockIndexByFiber(db, table, fiberId, timeLow, timeHigh);
+        }
         List<String> resultL = new ArrayList<>();
         for (int i = 0; i < stringListType.getStrCount(); i++) {
             resultL.add(stringListType.getStr(i));
@@ -381,14 +386,6 @@ public class ParaflowMetaDataReader
             case "timestamp": return TimestampType.TIMESTAMP;
             default: return UnknownType.UNKNOWN;
         }
-    }
-
-    private Function parseFunction(String function)
-    {
-        switch (function) {
-            case "function0": return new Function0(80);
-        }
-        return null;
     }
 
     private Path formPath(String dirOrFile)

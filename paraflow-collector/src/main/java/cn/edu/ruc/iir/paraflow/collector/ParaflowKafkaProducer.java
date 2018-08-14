@@ -1,6 +1,7 @@
 package cn.edu.ruc.iir.paraflow.collector;
 
 import cn.edu.ruc.iir.paraflow.commons.Message;
+import cn.edu.ruc.iir.paraflow.commons.ParaflowFiberPartitioner;
 import cn.edu.ruc.iir.paraflow.commons.Stats;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;

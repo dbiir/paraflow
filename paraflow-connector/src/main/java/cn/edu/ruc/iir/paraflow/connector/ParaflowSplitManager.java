@@ -13,9 +13,8 @@
  */
 package cn.edu.ruc.iir.paraflow.connector;
 
+import cn.edu.ruc.iir.paraflow.commons.ParaflowFiberPartitioner;
 import cn.edu.ruc.iir.paraflow.connector.exception.TableNotFoundException;
-import cn.edu.ruc.iir.paraflow.connector.function.Function;
-import cn.edu.ruc.iir.paraflow.connector.function.Function0;
 import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableHandle;
 import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableLayoutHandle;
 import cn.edu.ruc.iir.paraflow.connector.impl.ParaflowMetaDataReader;
@@ -34,6 +33,7 @@ import com.facebook.presto.spi.predicate.SortedRangeSet;
 import com.facebook.presto.spi.predicate.TupleDomain;
 import com.facebook.presto.spi.predicate.ValueSet;
 import com.google.inject.Inject;
+import io.airlift.log.Logger;
 import io.airlift.slice.Slice;
 import org.apache.hadoop.fs.Path;
 
@@ -53,8 +53,9 @@ import static java.util.Objects.requireNonNull;
 public class ParaflowSplitManager
 implements ConnectorSplitManager
 {
+    private static final Logger logger = Logger.get(ParaflowSplitManager.class.getName());
     private final ParaflowConnectorId connectorId;
-    private final ParaflowMetaDataReader metaDataQuer;
+    private final ParaflowMetaDataReader metaDataQuery;
     private final FSFactory fsFactory;
 
     @Inject
@@ -64,26 +65,31 @@ implements ConnectorSplitManager
             FSFactory fsFactory)
     {
         this.connectorId = requireNonNull(connectorId, "connectorId is null");
-        this.metaDataQuer = requireNonNull(metaDataQuer, "metaServer is null");
+        this.metaDataQuery = requireNonNull(metaDataQuer, "metaServer is null");
         this.fsFactory = requireNonNull(fsFactory, "fsFactory is null");
     }
 
     @Override
-    public ConnectorSplitSource getSplits(ConnectorTransactionHandle handle, ConnectorSession session, ConnectorTableLayoutHandle layoutHandle)
+    public ConnectorSplitSource getSplits(ConnectorTransactionHandle handle, ConnectorSession session,
+                                          ConnectorTableLayoutHandle layoutHandle,
+                                          SplitSchedulingStrategy splitSchedulingStrategy)
     {
         ParaflowTableLayoutHandle layout = checkType(layoutHandle, ParaflowTableLayoutHandle.class, "layoutHandle");
-        Optional<ParaflowTableHandle> tableHandle = metaDataQuer.getTableHandle(connectorId.getConnectorId(), layout.getSchemaTableName().getSchemaName(), layout.getSchemaTableName().getTableName());
+        Optional<ParaflowTableHandle> tableHandle =
+                metaDataQuery.getTableHandle(connectorId.getConnectorId(),
+                        layout.getSchemaTableName().getSchemaName(),
+                        layout.getSchemaTableName().getTableName());
         if (!tableHandle.isPresent()) {
             throw new TableNotFoundException(layout.getSchemaTableName().toString());
         }
         String tablePath = tableHandle.get().getPath();
         String dbName = tableHandle.get().getSchemaName();
         String tblName = tableHandle.get().getTableName();
+        String partitionerName = layout.getFiberPartitioner();
         Optional<TupleDomain<ColumnHandle>> predicatesOptional = layout.getPredicates();
 
         List<ConnectorSplit> splits = new ArrayList<>();
         List<Path> files;
-        Function function = new Function0(80);
 
         if (predicatesOptional.isPresent()) {
             TupleDomain<ColumnHandle> predicates = predicatesOptional.get();
@@ -94,7 +100,7 @@ implements ConnectorSplitManager
                 files = fsFactory.listFiles(new Path(tablePath));
             }
             else {
-                String fiber = null;
+                int fiber = -1;
                 int fiberId = -1;
                 long timeLow = -1L;
                 long timeHigh = -1L;
@@ -106,16 +112,19 @@ implements ConnectorSplitManager
                         if (fiberValueSet.isSingleValue()) {
                             Object valueObj = fiberValueSet.getSingleValue();
                             if (valueObj instanceof Integer) {
-                                fiber = String.valueOf(valueObj);
+                                fiber = (int) valueObj;
                             }
                             if (valueObj instanceof Long) {
-                                fiber = String.valueOf(valueObj);
+                                fiber = ((Long) valueObj).intValue();
                             }
                             if (valueObj instanceof Slice) {
                                 Slice fiberSlice = (Slice) fiberValueSet.getSingleValue();
-                                fiber = fiberSlice.toStringUtf8();
+                                fiber = Integer.parseInt(fiberSlice.toStringUtf8());
                             }
-                            fiberId = function.apply(fiber); // mod fiberNum
+                            ParaflowFiberPartitioner partitioner = parsePartitioner(partitionerName);
+                            if (partitioner != null) {
+                                fiberId = partitioner.getFiberId(toBytes(fiber)); // mod fiberNum
+                            }
                         }
                     }
                 }
@@ -135,11 +144,11 @@ implements ConnectorSplitManager
                         }
                     }
                 }
-                if (fiber == null && timeLow == -1L && timeHigh == -1L) {
+                if (fiber == -1 && timeLow == -1L && timeHigh == -1L) {
                     files = fsFactory.listFiles(new Path(tablePath));
                 }
                 else {
-                    files = metaDataQuer.filterBlocks(
+                    files = metaDataQuery.filterBlocks(
                             dbName,
                             tblName,
                             fiberId,
@@ -157,8 +166,31 @@ implements ConnectorSplitManager
                         tableHandle.get().getSchemaTableName(),
                         file.toString(), 0, -1,
                         fsFactory.getBlockLocations(file, 0, Long.MAX_VALUE))));
+        splits.forEach(split -> logger.info(split.toString()));
         Collections.shuffle(splits);
 
         return new FixedSplitSource(splits);
+    }
+
+    private byte[] toBytes(int v)
+    {
+        byte[] result = new byte[4];
+        result[0] = (byte) (v >> 24);
+        result[1] = (byte) (v >> 16);
+        result[2] = (byte) (v >> 8);
+        result[3] = (byte) (v >> 0);
+        return result;
+    }
+
+    private ParaflowFiberPartitioner parsePartitioner(String partitionerName)
+    {
+        try {
+            Class clazz = ParaflowMetaDataReader.class.getClassLoader().loadClass(partitionerName);
+            return (ParaflowFiberPartitioner) clazz.newInstance();
+        }
+        catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
