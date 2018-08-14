@@ -11,5 +11,10 @@
 
     <artifactId>paraflow-benchmark</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>io.airlift.tpch</groupId>
+            <artifactId>tpch</artifactId>
+        </dependency>
+    </dependencies>
 </project>

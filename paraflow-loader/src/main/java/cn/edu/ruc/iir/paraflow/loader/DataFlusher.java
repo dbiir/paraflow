@@ -23,16 +23,15 @@ public class DataFlusher
     private final BlockingQueue<ParaflowSegment> flushingQueue;
     private final MetaClient metaClient;
     private final LoaderConfig config = LoaderConfig.INSTANCE();
-    private final Configuration configuration;
     private FileSystem fs = null;
 
-    public DataFlusher(String name, String db, String tbl, int parallelism,
-                       BlockingQueue<ParaflowSegment> flushingQueue, MetaClient metaClient)
+    DataFlusher(String name, String db, String tbl, int parallelism,
+                BlockingQueue<ParaflowSegment> flushingQueue, MetaClient metaClient)
     {
         super(name, db, tbl, parallelism);
         this.flushingQueue = flushingQueue;
         this.metaClient = metaClient;
-        this.configuration = new Configuration();
+        Configuration configuration = new Configuration();
         configuration.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         configuration.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
         try {
