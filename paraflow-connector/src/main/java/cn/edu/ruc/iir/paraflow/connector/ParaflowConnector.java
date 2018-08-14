@@ -104,7 +104,7 @@ implements Connector
     /**
      * Shutdown the connector by releasing any held resources such as
      * threads, sockets, etc. This method will only be called when no
-     * queries are using the connector. After this method is called,
+     * sql are using the connector. After this method is called,
      * no methods will be called on the connector or any objects that
      * have been returned from the connector.
      */
