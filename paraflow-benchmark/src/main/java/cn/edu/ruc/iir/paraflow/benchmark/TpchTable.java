@@ -117,4 +117,6 @@ public abstract class TpchTable<E extends Model>
         Preconditions.checkArgument(column != null, "Table %s does not have a column %s", tableName, columnName);
         return column;
     }
+
+    public abstract Iterable<E> createGenerator(double scaleFactor, int part, int partCount);
 }
