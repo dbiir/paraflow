@@ -20,9 +20,19 @@ public class TpchGenerationTest
     {
         Iterable<Customer> customerGenerator = TpchTable.CUSTOMER.createGenerator(1, 1, 1500);
         Iterator<Customer> customerIterator = customerGenerator.iterator();
+        long start = System.currentTimeMillis();
+        long counter = 0;
+        long msgLen = 0;
         while (customerIterator.hasNext()) {
-            System.out.println(customerIterator.next().toLine());
+            Customer customer = customerIterator.next();
+            msgLen += customer.toLine().length();
+            long customerId = customer.getCustomerKey();
+            System.out.println(customerId);
+            counter++;
         }
+        long end = System.currentTimeMillis();
+        long duration = end - start;
+        System.out.println("Generate " + counter + " messages in " + duration + "ms (" + (1.0 * msgLen / duration) + " KB/s)");
     }
 
     @Test
@@ -30,9 +40,18 @@ public class TpchGenerationTest
     {
         Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(1, 1, 1500);
         Iterator<LineOrder> lineOrderIterator = lineOrderIterable.iterator();
+        long start = System.currentTimeMillis();
+        long counter = 0;
+        long msgLen = 0;
         while (lineOrderIterator.hasNext()) {
-            System.out.println(lineOrderIterator.next().toLine());
+            LineOrder lineOrder = lineOrderIterator.next();
+            msgLen += lineOrder.toLine().length();
+            System.out.println(lineOrder.getCustomerKey());
+            counter++;
         }
+        long end = System.currentTimeMillis();
+        long duration = end - start;
+        System.out.println("Generate " + counter + " messages in " + duration + "ms (" + (1.0 * msgLen / duration) + " KB/s)");
     }
 
     @Test

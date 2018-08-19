@@ -11,9 +11,9 @@ import io.airlift.tpch.RandomText;
 import io.airlift.tpch.TextPool;
 
 import java.util.Iterator;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static io.airlift.tpch.GenerateUtils.calculateRowCount;
 import static io.airlift.tpch.GenerateUtils.calculateStartIndex;
 import static java.util.Locale.ENGLISH;
@@ -26,7 +26,7 @@ import static java.util.Locale.ENGLISH;
 public class CustomerGenerator
         implements Generator<Customer>
 {
-    public static final int SCALE_BASE = 150_000;
+    static final int SCALE_BASE = 150_000;
     private static final int ACCOUNT_BALANCE_MIN = -99999;
     private static final int ACCOUNT_BALANCE_MAX = 999999;
     private static final int ADDRESS_AVERAGE_LENGTH = 25;
@@ -54,8 +54,8 @@ public class CustomerGenerator
         this.part = part;
         this.partCount = partCount;
 
-        this.distributions = checkNotNull(distributions, "distributions is null");
-        this.textPool = checkNotNull(textPool, "textPool is null");
+        this.distributions = Objects.requireNonNull(distributions, "distributions is null");
+        this.textPool = Objects.requireNonNull(textPool, "textPool is null");
     }
 
     @Override

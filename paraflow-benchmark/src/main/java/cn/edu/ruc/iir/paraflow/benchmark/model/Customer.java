@@ -1,6 +1,7 @@
 package cn.edu.ruc.iir.paraflow.benchmark.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.Objects;
+
 import static io.airlift.tpch.GenerateUtils.formatMoney;
 import static java.util.Locale.ENGLISH;
 
@@ -27,13 +28,13 @@ public class Customer
     {
         this.rowNumber = rowNumber;
         this.customerKey = customerKey;
-        this.name = checkNotNull(name, "name is null");
-        this.address = checkNotNull(address, "address is null");
+        this.name = Objects.requireNonNull(name, "name is null");
+        this.address = Objects.requireNonNull(address, "address is null");
         this.nationKey = nationKey;
-        this.phone = checkNotNull(phone, "phone is null");
+        this.phone = Objects.requireNonNull(phone, "phone is null");
         this.accountBalance = accountBalance;
-        this.marketSegment = checkNotNull(marketSegment, "marketSegment is null");
-        this.comment = checkNotNull(comment, "comment is null");
+        this.marketSegment = Objects.requireNonNull(marketSegment, "marketSegment is null");
+        this.comment = Objects.requireNonNull(comment, "comment is null");
     }
 
     @Override
