@@ -15,7 +15,7 @@ if [ "x$PARAFLOW_HEAP_OPTS" = "x" ]; then
   export PARAFLOW_HEAP_OPTS="-Xmx1G -Xms1G"
 fi
 
-EXTRA_ARGS=${EXTRA_ARGS-'-name paraflowLoader'}
+EXTRA_ARGS=${EXTRA_ARGS-'-name ParaflowLoader'}
 
 COMMAND=$1
 case $COMMAND in

@@ -56,8 +56,8 @@ public final class MetaConstants
 
     // init sql templates
     public static String initVerTableSql =
-            String.format("INSERT INTO meta_vermodel (vername) VALUES('%s');", currentVersion.getVersionId());
+            String.format("INSERT INTO meta_vermodel(vername) VALUES('%s');", currentVersion.getVersionId());
     public static String initUserTableSql =
-            String.format("INSERT INTO meta_usermodel (username, password, createtime, lastvisittime) VALUES('%s', '%s', %d, %d)", defaultUserName, defaultUserPass, System.currentTimeMillis(), System.currentTimeMillis());
+            String.format("INSERT INTO meta_usermodel(username, password, createtime, lastvisittime) VALUES('%s', '%s', %d, %d)", defaultUserName, defaultUserPass, System.currentTimeMillis(), System.currentTimeMillis());
     public static String getInitVerTableSql = "SELECT vername FROM meta_vermodel;";
 }

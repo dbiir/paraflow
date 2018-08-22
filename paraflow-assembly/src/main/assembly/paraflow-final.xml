@@ -11,7 +11,7 @@
         <dependencySet>
             <useProjectArtifact>true</useProjectArtifact>
             <scope>runtime</scope>
-            <outputDirectory>/lib</outputDirectory>
+            <outputDirectory>/libs</outputDirectory>
         </dependencySet>
     </dependencySets>
     <fileSets>

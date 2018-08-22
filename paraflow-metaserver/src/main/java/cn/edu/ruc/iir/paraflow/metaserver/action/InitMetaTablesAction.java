@@ -41,7 +41,7 @@ public class InitMetaTablesAction extends Action
             statements[1] = MetaConstants.initUserTableSql;
             int[] results = connection.executeUpdateInBatch(statements);
             for (int res : results) {
-                if (res != 2) {
+                if (res != 1) {
                     throw new MetaInitException();
                 }
             }
