@@ -44,7 +44,7 @@
                         </goals>
                         <configuration>
                             <finalName>paraflow-collector-${project.version}</finalName>
-                            <outputDirectory>${project.parent.basedir}/dist/libs</outputDirectory>
+                            <outputDirectory>${project.parent.basedir}/paraflow-${project.version}/libs</outputDirectory>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>allinone</shadedClassifierName>
                             <filters>
@@ -72,7 +72,7 @@
                         </goals>
                         <configuration>
                             <finalName>paraflow-loader-${project.version}</finalName>
-                            <outputDirectory>${project.parent.basedir}/dist/libs</outputDirectory>
+                            <outputDirectory>${project.parent.basedir}/paraflow-${project.version}/libs</outputDirectory>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>allinone</shadedClassifierName>
                             <filters>

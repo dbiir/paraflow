@@ -43,12 +43,20 @@ public class BasicCollector
 
     public static void main(String[] args)
     {
+        if (args.length != 4) {
+            System.out.println("Usage: dbName tableName parallelism partitionNum");
+            System.exit(-1);
+        }
+        String dbName = args[0];
+        String tableName = args[1];
+        int parallelism = Integer.parseInt(args[2]);
+        int partitionNum = Integer.parseInt(args[3]);
         try {
             DefaultCollector<String> collector = new DefaultCollector<>();
-            if (!collector.existsDatabase("test")) {
-                collector.createDatabase("test");
+            if (!collector.existsDatabase(dbName)) {
+                collector.createDatabase(dbName);
             }
-            if (!collector.existsTable("test", "tpch")) {
+            if (!collector.existsTable(dbName, tableName)) {
                 String[] names = {LINEORDER_KEY.getColumnName(),
                         CUSTOMER_KEY.getColumnName(),
                         ORDER_STATUS.getColumnName(),
@@ -97,19 +105,21 @@ public class BasicCollector
                         "varchar(44)",
                         "bigint"
                 };
-                collector.createTable("test", "tbl0810", "parquet", 0, 22,
+                collector.createTable(dbName, tableName, "parquet", 0, 22,
                         "cn.edu.ruc.iir.paraflow.examples.collector.BasicParaflowFiberPartitioner",
                         Arrays.asList(names), Arrays.asList(types));
             }
-            if (!collector.existsTopic("test-tpch")) {
-                collector.createTopic("test-tpch", 10, (short) 1);
+            if (!collector.existsTopic(dbName + "-" + tableName)) {
+                collector.createTopic(dbName + "-" + tableName, partitionNum, (short) 1);
             }
 
-            DataSource dataSource = new TpchDataSource();
-            collector.collect(dataSource, 0, 22,
-                    new BasicParaflowFiberPartitioner(),
-                    new StringMessageSerializationSchema<>(),
-                    new MockDataSink());
+            for (int i = 0; i < parallelism; i++) {
+                DataSource dataSource = new TpchDataSource();
+                collector.collect(dataSource, 0, 22,
+                                  new BasicParaflowFiberPartitioner(),
+                                  new StringMessageSerializationSchema<>(),
+                                  new MockDataSink(dbName, tableName));
+            }
         }
         catch (ConfigFileNotFoundException e) {
             e.printStackTrace();

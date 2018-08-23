@@ -22,7 +22,7 @@ public class TpchGenerationTest
     @Test
     public void testCustomerGeneration()
     {
-        Iterable<Customer> customerGenerator = TpchTable.CUSTOMER.createGenerator(10000, 1, 1500);
+        Iterable<Customer> customerGenerator = TpchTable.CUSTOMER.createGenerator(10000, 1, 1500, 0, 0);
         Iterator<Customer> customerIterator = customerGenerator.iterator();
         long start = System.currentTimeMillis();
         long counter = 0;
@@ -40,7 +40,7 @@ public class TpchGenerationTest
     @Test
     public void testGenerateCustomerFile()
     {
-        Iterable<Customer> customerGenerator = TpchTable.CUSTOMER.createGenerator(10000, 1, 1500);
+        Iterable<Customer> customerGenerator = TpchTable.CUSTOMER.createGenerator(10000, 1, 1500, 0, 0);
         Iterator<Customer> customerIterator = customerGenerator.iterator();
         File file = new File("/Users/Jelly/Developer/paraflow/paraflow-benchmark/data/customer.tbl");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
@@ -58,7 +58,7 @@ public class TpchGenerationTest
     @Test
     public void testLineOrderGeneration()
     {
-        Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(10000, 1, 1500);
+        Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(10000, 1, 1500, 0, 10000000);
         Iterator<LineOrder> lineOrderIterator = lineOrderIterable.iterator();
         long start = System.currentTimeMillis();
         long counter = 0;
@@ -76,7 +76,7 @@ public class TpchGenerationTest
     @Test
     public void testGenerateNationFile()
     {
-        Iterable<Nation> nationIterable = TpchTable.NATION.createGenerator(1, 1, 1500);
+        Iterable<Nation> nationIterable = TpchTable.NATION.createGenerator(1, 1, 1500, 0, 0);
         Iterator<Nation> nationIterator = nationIterable.iterator();
         File file = new File("/Users/Jelly/Developer/paraflow/paraflow-benchmark/data/nation.tbl");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
@@ -93,7 +93,7 @@ public class TpchGenerationTest
     @Test
     public void testGenerateRegionFile()
     {
-        Iterable<Region> regionIterable = TpchTable.REGION.createGenerator(1, 1, 1500);
+        Iterable<Region> regionIterable = TpchTable.REGION.createGenerator(1, 1, 1500, 0, 0);
         Iterator<Region> regionIterator = regionIterable.iterator();
         File file = new File("/Users/Jelly/Developer/paraflow/paraflow-benchmark/data/region.tbl");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {

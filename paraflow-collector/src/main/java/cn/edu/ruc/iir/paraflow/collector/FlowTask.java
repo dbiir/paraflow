@@ -1,8 +1,9 @@
 package cn.edu.ruc.iir.paraflow.collector;
 
+import cn.edu.ruc.iir.paraflow.commons.Message;
+import cn.edu.ruc.iir.paraflow.commons.ParaflowFiberPartitioner;
 import com.google.common.util.concurrent.ListenableFuture;
-
-import java.util.Properties;
+import org.apache.kafka.clients.producer.ProducerRecord;
 
 import static com.google.common.util.concurrent.Futures.immediateFuture;
 
@@ -15,30 +16,37 @@ public class FlowTask<T>
 {
     private final DataFlow<T> dataFlow;
     private final ParaflowKafkaProducer kafkaProducer;
+    private final String topic;
     private long startTime;
 
-    public FlowTask(DataFlow<T> dataFlow, Properties conf)
+    FlowTask(DataFlow<T> dataFlow, ParaflowKafkaProducer kafkaProducer)
     {
         this.dataFlow = dataFlow;
-        String topic = dataFlow.getSink().getDb() + "-" + dataFlow.getSink().getTbl();
-        this.kafkaProducer = new ParaflowKafkaProducer(topic, dataFlow.getPartitioner(), conf);
+        this.topic = dataFlow.getSink().getDb() + "-" + dataFlow.getSink().getTbl();
+        this.kafkaProducer = kafkaProducer;
     }
 
-    public ListenableFuture<?> execute()
+    ListenableFuture<?> execute()
     {
         startTime = System.currentTimeMillis();
+        ParaflowFiberPartitioner partitioner = dataFlow.getPartitioner();
         while (!dataFlow.isFinished()) {
-            kafkaProducer.sendMsg(dataFlow.next());
+            Message message = dataFlow.next();
+            ProducerRecord<byte[], byte[]> record;
+            int partition = partitioner.getFiberId(message.getKey());
+            record = new ProducerRecord<>(topic, partition, message.getTimestamp(),
+                                          new byte[0], message.getValue());
+            kafkaProducer.sendMsg(record, message.getValue().length);
         }
         return immediateFuture(null);
     }
 
     public double flowSpeed()
     {
-        return kafkaProducer.getAckRecords() / (System.currentTimeMillis() - startTime);
+        return 1.0 * kafkaProducer.getAckRecords() / (System.currentTimeMillis() - startTime);
     }
 
-    public void close()
+    void close()
     {
         kafkaProducer.close();
     }

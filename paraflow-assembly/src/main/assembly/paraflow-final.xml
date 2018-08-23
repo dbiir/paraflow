@@ -16,25 +16,25 @@
     </dependencySets>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}/../dist/bin</directory>
+            <directory>${project.basedir}/../paraflow-${project.version}/bin</directory>
             <outputDirectory>/bin</outputDirectory>
             <fileMode>0755</fileMode>
             <directoryMode>0755</directoryMode>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../dist/config</directory>
+            <directory>${project.basedir}/../paraflow-${project.version}/config</directory>
             <outputDirectory>/conf</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../dist/libs</directory>
+            <directory>${project.basedir}/../paraflow-${project.version}/libs</directory>
             <outputDirectory>/lib</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../dist/plugin</directory>
+            <directory>${project.basedir}/../paraflow-${project.version}/plugin</directory>
             <outputDirectory>/plugin</outputDirectory>
         </fileSet>
         <fileSet>
-            <directory>${project.basedir}/../dist/logs</directory>
+            <directory>${project.basedir}/../paraflow-${project.version}/logs</directory>
             <outputDirectory>/logs</outputDirectory>
         </fileSet>
         <fileSet>

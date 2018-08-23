@@ -31,7 +31,7 @@ public abstract class TpchTable<E extends Model>
 {
     public static final TpchTable<Customer> CUSTOMER = new TpchTable<Customer>("customer", CustomerColumn.values())
     {
-        public Iterable<Customer> createGenerator(double scaleFactor, int part, int partCount)
+        public Iterable<Customer> createGenerator(double scaleFactor, int part, int partCount, long minCustomerKey, long numCustomerKey)
         {
             return new CustomerGenerator(scaleFactor, part, partCount);
         }
@@ -39,15 +39,15 @@ public abstract class TpchTable<E extends Model>
 
     public static final TpchTable<LineOrder> LINEORDER = new TpchTable<LineOrder>("lineorder", LineOrderColumn.values())
     {
-        public Iterable<LineOrder> createGenerator(double scaleFactor, int part, int partCount)
+        public Iterable<LineOrder> createGenerator(double scaleFactor, int part, int partCount, long minCustomerKey, long numCustomerKey)
         {
-            return new LineOrderGenerator(scaleFactor, part, partCount);
+            return new LineOrderGenerator(scaleFactor, part, partCount, minCustomerKey, numCustomerKey);
         }
     };
 
     public static final TpchTable<Nation> NATION = new TpchTable<Nation>("nation", NationColumn.values())
     {
-        public Iterable<Nation> createGenerator(double scaleFactor, int part, int partCount)
+        public Iterable<Nation> createGenerator(double scaleFactor, int part, int partCount, long minCustomerKey, long numCustomerKey)
         {
             if (part != 1) {
                 return ImmutableList.of();
@@ -58,7 +58,7 @@ public abstract class TpchTable<E extends Model>
 
     public static final TpchTable<Region> REGION = new TpchTable<Region>("region", RegionColumn.values())
     {
-        public Iterable<Region> createGenerator(double scaleFactor, int part, int partCount)
+        public Iterable<Region> createGenerator(double scaleFactor, int part, int partCount, long minCustomerKey, long numCustomerKey)
         {
             if (part != 1) {
                 return ImmutableList.of();
@@ -118,5 +118,5 @@ public abstract class TpchTable<E extends Model>
         return column;
     }
 
-    public abstract Iterable<E> createGenerator(double scaleFactor, int part, int partCount);
+    public abstract Iterable<E> createGenerator(double scaleFactor, int part, int partCount, long minCustomerKey, long numCustomerKey);
 }

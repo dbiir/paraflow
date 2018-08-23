@@ -22,7 +22,7 @@ public class TpchDataSource
     public TpchDataSource()
     {
         super("tpch");
-        Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(10000, 1, 1500);
+        Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(10000, 1, 1500, 0, 1_000_000);
         lineOrderIterator = lineOrderIterable.iterator();
     }
 

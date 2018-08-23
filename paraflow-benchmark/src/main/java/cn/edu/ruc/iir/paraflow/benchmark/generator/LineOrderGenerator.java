@@ -70,16 +70,21 @@ public class LineOrderGenerator
     private final Distributions distributions;
     private final TextPool textPool;
 
-    public LineOrderGenerator(double scaleFactor, int part, int partCount)
+    private final long minCustomerKey;
+    private final long numCustomerKey;
+
+    public LineOrderGenerator(double scaleFactor, int part, int partCount, long minCustomerKey, long numCustomerKey)
     {
-        this(scaleFactor, part, partCount, Distributions.getDefaultDistributions(), TextPool.getDefaultTestPool());
+        this(scaleFactor, part, partCount, Distributions.getDefaultDistributions(), TextPool.getDefaultTestPool(), minCustomerKey, numCustomerKey);
     }
 
-    private LineOrderGenerator(double scaleFactor, int part, int partCount, Distributions distributions, TextPool textPool)
+    private LineOrderGenerator(double scaleFactor, int part, int partCount, Distributions distributions, TextPool textPool,
+                               long minCustomerKey, long numCustomerKey)
     {
         checkArgument(scaleFactor > 0, "scaleFactor must be greater than 0");
         checkArgument(part >= 1, "part must be at least 1");
         checkArgument(part <= partCount, "part must be less than or equal to part count");
+        checkArgument(numCustomerKey > 0, "num of customers is larger than 0");
 
         this.scaleFactor = scaleFactor;
         this.part = part;
@@ -87,6 +92,9 @@ public class LineOrderGenerator
 
         this.distributions = Objects.requireNonNull(distributions, "distributions is null");
         this.textPool = Objects.requireNonNull(textPool, "textPool is null");
+
+        this.minCustomerKey = minCustomerKey;
+        this.numCustomerKey = numCustomerKey;
     }
 
     @Override
@@ -98,8 +106,8 @@ public class LineOrderGenerator
                 scaleFactor,
                 calculateStartIndex(SCALE_BASE, scaleFactor, part, partCount),
                 calculateRowCount(SCALE_BASE, scaleFactor, part, partCount),
-                calculateStartIndex(CustomerGenerator.SCALE_BASE, scaleFactor, part, partCount),
-                calculateRowCount(CustomerGenerator.SCALE_BASE, scaleFactor, part, partCount));
+                minCustomerKey,
+                numCustomerKey);
     }
 
     private static class LineOrderGeneratorIterator

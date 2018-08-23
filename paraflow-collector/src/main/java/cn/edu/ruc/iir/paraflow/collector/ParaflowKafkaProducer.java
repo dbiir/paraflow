@@ -1,7 +1,5 @@
 package cn.edu.ruc.iir.paraflow.collector;
 
-import cn.edu.ruc.iir.paraflow.commons.Message;
-import cn.edu.ruc.iir.paraflow.commons.ParaflowFiberPartitioner;
 import cn.edu.ruc.iir.paraflow.commons.Stats;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -18,20 +16,14 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author guodong
  */
-public class ParaflowKafkaProducer
+class ParaflowKafkaProducer
 {
-    private final String topic;
-    private final ParaflowFiberPartitioner partitioner;
     private final KafkaProducer<byte[], byte[]> kafkaProducer;
     private final AtomicLong ackRecords = new AtomicLong();
     private final Stats stats;
 
-    public ParaflowKafkaProducer(String topic, ParaflowFiberPartitioner partitioner,
-                                 Properties config)
+    ParaflowKafkaProducer(Properties config, long statsInterval)
     {
-        this.topic = topic;
-        this.partitioner = partitioner;
-
         // set the producer configuration properties for kafka record key and value serializers
         if (!config.containsKey(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)) {
             config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
@@ -43,24 +35,20 @@ public class ParaflowKafkaProducer
             throw new IllegalArgumentException(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG + " must be specified in the config");
         }
         kafkaProducer = new KafkaProducer<>(config);
-        this.stats = new Stats(3000);
+        this.stats = new Stats(statsInterval);
     }
 
-    public void sendMsg(Message message)
+    void sendMsg(ProducerRecord<byte[], byte[]> record, int length)
     {
-        ProducerRecord<byte[], byte[]> record;
-        int partition = partitioner.getFiberId(message.getKey());
-        record = new ProducerRecord<>(topic, partition, message.getTimestamp(),
-                new byte[0], message.getValue());
-        kafkaProducer.send(record, new ProducerCallback(message.getValue().length, stats));
+        kafkaProducer.send(record, new ProducerCallback(length, stats));
     }
 
-    public long getAckRecords()
+    long getAckRecords()
     {
         return ackRecords.get();
     }
 
-    public void close()
+    void close()
     {
         kafkaProducer.flush();
         kafkaProducer.close();
