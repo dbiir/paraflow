@@ -227,9 +227,28 @@ public class LineOrder
 
     public String toLine()
     {
-        return String.format("%d|%d|%s|%d|%d|%s|%s|%d|%s|%d|%d|%d|%d|%d|%s|%s|%d|%d|%d|%s|%s|%s|%d",
-                customerKey, lineOrderKey, orderStatus, totalPrice, orderDate, orderPriority, clerk, shipPriority,
-                orderComment, lineNumber, quantity, extendedPrice, discount, tax, returnFlag, lineStatus, shipDate,
-                commitDate, receiptDate, shipInstructions, shipMode, lineitemComment, creation);
+        return String.valueOf(customerKey) + "|" +
+               lineOrderKey + "|" +
+               orderStatus + "|" +
+               totalPrice + "|" +
+               orderDate + "|" +
+               orderPriority + "|" +
+               clerk + "|" +
+               shipPriority + "|" +
+               orderComment + "|" +
+               lineNumber + "|" +
+               quantity + "|" +
+               extendedPrice + "|" +
+               discount + "|" +
+               tax + "|" +
+               returnFlag + "|" +
+               lineStatus + "|" +
+               shipDate + "|" +
+               commitDate + "|" +
+               receiptDate + "|" +
+               shipInstructions + "|" +
+               shipMode + "|" +
+               lineitemComment + "|" +
+               creation;
     }
 }

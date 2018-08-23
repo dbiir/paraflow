@@ -79,6 +79,11 @@
         <dependencies>
             <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>
+                <artifactId>paraflow-benchmark</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-commons</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -444,11 +449,6 @@
                     <groupId>com.github.os72</groupId>
                     <artifactId>protoc-jar-maven-plugin</artifactId>
                     <version>3.3.0.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
-                    <version>2.4.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.eclipse.jetty</groupId>

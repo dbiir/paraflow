@@ -4,6 +4,7 @@ dist/libs
 dist/plugin
 dist/bin/launcher*
 dist/bin/procname
+dist/logs
 _site
 
 *.exp

@@ -1,9 +1,11 @@
 #!/bin/bash
 
 base_dir=$(dirname $0)
-
+if [ "x$PARAFLOW_HOME" = "x" ]; then
+  export PARAFLOW_HOME="$base_dir/../"
+fi
 if [ "x$PARAFLOW_LOG4J_OPTS" = "x" ]; then
-  export PARAFLOW_LOG4J_OPTS="-Dlog4j.configuration=file:$$base_dir/../config/log4j.properties"
+  export PARAFLOW_LOG4J_OPTS="-Dlog4j.configuration=file:$base_dir/../config/log4j.properties"
 fi
 
 if [ "x$PARAFLOW_HEAP_OPTS" = "x" ]; then
@@ -21,7 +23,5 @@ case $COMMAND in
   *)
     ;;
 esac
-
-MAIN_CLASS=$1
 
 exec $base_dir/paraflow-run-class.sh $EXTRA_ARGS cn.edu.ruc.iir.paraflow.metaserver.server.MetaServer

@@ -25,6 +25,7 @@ ParaFlow is an interactive analysis system for OLAP developed at [DBIIR Lab @ RU
 2. Start Kafka
 3. Start Posgresql
 4. Start Paraflow MetaServer
+`./bin/paraflow-metaserver-start.sh [-daemon]`
 5. Start Paraflow Loader
 6. Start Paraflow Collector
 7. Start Presto

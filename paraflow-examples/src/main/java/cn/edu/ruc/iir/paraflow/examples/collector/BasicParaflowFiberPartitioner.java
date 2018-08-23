@@ -2,7 +2,7 @@ package cn.edu.ruc.iir.paraflow.examples.collector;
 
 import cn.edu.ruc.iir.paraflow.commons.ParaflowFiberPartitioner;
 
-import java.util.Objects;
+import java.nio.ByteBuffer;
 
 /**
  * paraflow
@@ -15,6 +15,7 @@ public class BasicParaflowFiberPartitioner
     @Override
     public int getFiberId(byte[] key)
     {
-        return Objects.hashCode(key) % 10;
+        ByteBuffer buffer = ByteBuffer.wrap(key);
+        return buffer.getInt() % 10;
     }
 }

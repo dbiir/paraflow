@@ -2,8 +2,6 @@ package cn.edu.ruc.iir.paraflow.benchmark.model;
 
 import java.util.Objects;
 
-import static java.util.Locale.ENGLISH;
-
 /**
  * paraflow
  *
@@ -56,6 +54,9 @@ public class Nation
     @Override
     public String toLine()
     {
-        return String.format(ENGLISH, "%d|%s|%d|%s", nationKey, name, regionKey, comment);
+        return nationKey + "|" +
+               name + "|" +
+               regionKey + "|" +
+               comment;
     }
 }

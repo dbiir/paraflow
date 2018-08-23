@@ -3,7 +3,6 @@ package cn.edu.ruc.iir.paraflow.benchmark.model;
 import java.util.Objects;
 
 import static io.airlift.tpch.GenerateUtils.formatMoney;
-import static java.util.Locale.ENGLISH;
 
 /**
  * paraflow
@@ -91,15 +90,13 @@ public class Customer
     @Override
     public String toLine()
     {
-        return String.format(ENGLISH,
-                "%d|%s|%s|%d|%s|%s|%s|%s",
-                customerKey,
-                name,
-                address,
-                nationKey,
-                phone,
-                formatMoney(accountBalance),
-                marketSegment,
-                comment);
+        return customerKey + "|" +
+               name + "|" +
+               address + "|" +
+               nationKey + "|" +
+               phone + "|" +
+               formatMoney(accountBalance) + "|" +
+               marketSegment + "|" +
+               comment;
     }
 }

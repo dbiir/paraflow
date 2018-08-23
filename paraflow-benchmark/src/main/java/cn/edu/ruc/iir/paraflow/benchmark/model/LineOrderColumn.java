@@ -18,21 +18,21 @@ public enum LineOrderColumn
         implements Column<LineOrder>
 {
     @SuppressWarnings("SpellCheckingInspection")
+    CUSTOMER_KEY("lo_custkey", IDENTIFIER)
+            {
+                public long getIdentifier(LineOrder lineorder)
+                {
+                    return lineorder.getCustomerKey();
+                }
+            },
+
+    @SuppressWarnings("SpellCheckingInspection")
     LINEORDER_KEY("lo_lineorderkey", IDENTIFIER)
             {
                 @Override
                 public long getIdentifier(LineOrder lineorder)
                 {
                     return lineorder.getLineOrderKey();
-                }
-            },
-
-    @SuppressWarnings("SpellCheckingInspection")
-    CUSTOMER_KEY("lo_custkey", IDENTIFIER)
-            {
-                public long getIdentifier(LineOrder lineorder)
-                {
-                    return lineorder.getCustomerKey();
                 }
             },
 
@@ -256,6 +256,14 @@ public enum LineOrderColumn
                 public String getString(LineOrder lineorder)
                 {
                     return lineorder.getLineitemComment();
+                }
+            },
+
+    CREATION("lo_creation", INTEGER)
+            {
+                public String getString(LineOrder lineOrder)
+                {
+                    return String.valueOf(lineOrder.getCreation());
                 }
             };
 
