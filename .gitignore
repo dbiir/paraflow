@@ -6,6 +6,7 @@ paraflow-1.0-alpha1/bin/launcher*
 paraflow-1.0-alpha1/bin/procname
 paraflow-1.0-alpha1/logs
 _site
+paraflow-benchmark/data
 
 *.exp
 *~

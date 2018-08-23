@@ -1,0 +1,2 @@
+CREATE TABLE customer(c_custkey int primary key, c_name varchar(25), c_address varchar(40), c_nationkey int references nation(n_nationkey), c_phone varchar(15), c_acctbal double precision, c_mktsegment varchar(10), c_comment varchar(117));
+CREATE INDEX customer_name_index ON customer(c_name);

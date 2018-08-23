@@ -78,7 +78,7 @@ public class TpchGenerationTest
     {
         Iterable<Nation> nationIterable = TpchTable.NATION.createGenerator(1, 1, 1500, 0, 0);
         Iterator<Nation> nationIterator = nationIterable.iterator();
-        File file = new File("/Users/Jelly/Developer/paraflow/paraflow-benchmark/data/nation.tbl");
+        File file = new File("/Users/Jelly/Developer/paraflow/paraflow-benchmark/data/nation.sql");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             while (nationIterator.hasNext()) {
                 writer.write(nationIterator.next().toLine());

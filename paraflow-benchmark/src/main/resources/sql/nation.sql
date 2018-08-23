@@ -1,0 +1,1 @@
+CREATE TABLE nation(n_nationkey int primary key, n_name varchar(25), n_regionkey int references region(r_regionkey), n_comment varchar(152));
