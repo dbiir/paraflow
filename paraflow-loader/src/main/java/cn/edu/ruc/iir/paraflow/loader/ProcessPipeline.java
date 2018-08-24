@@ -1,5 +1,8 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -12,14 +15,15 @@ import java.util.concurrent.Future;
 
  * @author guodong
  */
-public class ProcessPipeline
+class ProcessPipeline
 {
+    private static final Logger logger = LoggerFactory.getLogger(ProcessPipeline.class);
     private final List<Processor> processors;
     private final List<RunningProcessor> runningProcessors;
     private final ExecutorService executorService;
     private final List<Future> futures = new ArrayList<>();
 
-    public ProcessPipeline()
+    ProcessPipeline()
     {
         this.processors = new ArrayList<>();
         this.runningProcessors = new ArrayList<>();
@@ -27,12 +31,12 @@ public class ProcessPipeline
                 Runtime.getRuntime().availableProcessors() * 2);
     }
 
-    public void addProcessor(Processor processor)
+    void addProcessor(Processor processor)
     {
         this.processors.add(processor);
     }
 
-    public void start()
+    void start()
     {
         for (Processor processor : processors) {
             for (int i = 0; i < processor.getParallelism(); i++) {
@@ -41,6 +45,7 @@ public class ProcessPipeline
                 runningProcessors.add(runningProcessor);
             }
         }
+        logger.info("Loading pipeline started.");
         while (!futures.isEmpty()) {
             for (Future future : futures) {
                 if (future.isDone()) {
@@ -57,12 +62,12 @@ public class ProcessPipeline
         }
     }
 
-    public ExecutorService getExecutorService()
+    ExecutorService getExecutorService()
     {
         return this.executorService;
     }
 
-    public void stop()
+    void stop()
     {
         executorService.shutdown();
         for (RunningProcessor runningProcessor : runningProcessors) {

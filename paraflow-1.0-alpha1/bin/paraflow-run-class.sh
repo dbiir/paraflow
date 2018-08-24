@@ -15,6 +15,10 @@ do
   CLASSPATH="$CLASSPATH":"$file"
 done
 
+if [ "x$PARAFLOW_HOME" = "x" ]; then
+  export PARAFLOW_HOME="$base_dir/../"
+fi
+
 # JMX settings
 if [ -z "PARAFLOW_JMX_OPTS" ]; then
   PARAFLOW_JMX_OPTS="-Dcom.sun.management.jxmremote -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false "

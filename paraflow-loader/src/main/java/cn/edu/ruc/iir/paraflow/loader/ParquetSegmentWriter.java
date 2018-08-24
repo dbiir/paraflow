@@ -12,6 +12,8 @@ import org.apache.parquet.hadoop.example.GroupWriteSupport;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.MessageTypeParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -23,6 +25,8 @@ import java.io.IOException;
 public class ParquetSegmentWriter
         extends SegmentWriter
 {
+    private static final Logger logger = LoggerFactory.getLogger(ParquetSegmentWriter.class);
+
     ParquetSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient)
     {
         super(segment, partitionFrom, partitionTo, metaClient);
@@ -64,7 +68,7 @@ public class ParquetSegmentWriter
             }
         }
         schemaBuilder.append("}");
-        System.out.println("Schema: " + schemaBuilder.toString());
+        logger.debug("Schema: " + schemaBuilder.toString());
         MessageType schema = MessageTypeParser.parseMessageType(schemaBuilder.toString());
         GroupFactory groupFactory = new SimpleGroupFactory(schema);
         GroupWriteSupport writeSupport = new GroupWriteSupport();

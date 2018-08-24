@@ -7,6 +7,8 @@ import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.PushPullBlockingQueue;
 import com.conversantmedia.util.concurrent.SpinPolicy;
 import org.apache.kafka.common.TopicPartition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,6 +34,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * */
 public class DefaultLoader
 {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultLoader.class);
     private final ProcessPipeline pipeline;
     private final LoaderConfig config;
     private final String db;
@@ -95,7 +98,7 @@ public class DefaultLoader
             e.printStackTrace();
         }
         if (transformer == null) {
-            System.out.println("No data transformer available");
+            logger.error("No data transformer available.");
             return;
         }
         // add data pullers and sorters
