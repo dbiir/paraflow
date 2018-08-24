@@ -100,28 +100,27 @@ public class ParquetSegmentWriter
                 for (int k = 0; k < columnNum; k++) {
                     switch (columnTypes.getStr(k)) {
                         case "bigint":
+                        case "long":
+                        case "timestamp":
                             group.append(columnNames.getStr(k), (long) record.getValue(k));
                             break;
                         case "int":
+                        case "integer":
                             group.append(columnNames.getStr(k), (int) record.getValue(k));
                             break;
                         case "boolean":
                             group.append(columnNames.getStr(k), (boolean) record.getValue(k));
                             break;
+                        case "float":
                         case "float32":
                             group.append(columnNames.getStr(k), (float) record.getValue(k));
                             break;
+                        case "double":
                         case "float64":
                             group.append(columnNames.getStr(k), (double) record.getValue(k));
                             break;
-                        case "timestamp":
-                            group.append(columnNames.getStr(k), (long) record.getValue(k));
-                            break;
-                        case "real":
-                            group.append(columnNames.getStr(k), (long) record.getValue(k));
-                            break;
                         default:
-                            group.append(columnNames.getStr(k), String.valueOf(record.getValue(k)));
+                            group.append(columnNames.getStr(k), record.getValue(k).toString());
                             break;
                     }
                 }

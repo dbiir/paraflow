@@ -21,7 +21,7 @@ public abstract class SegmentWriter
     private final ParaflowSegment segment;
     private final int partitionFrom;
     private final int partitionTo;
-    private final Random random = new Random(System.currentTimeMillis());
+    private final Random random = new Random(System.nanoTime());
     private final MetaClient metaClient;
     private final Map<String, MetaProto.StringListType> tableColumnNamesCache;
     private final Map<String, MetaProto.StringListType> tableColumnTypesCache;
