@@ -16,5 +16,40 @@
             <groupId>io.airlift.tpch</groupId>
             <artifactId>tpch</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${check.skip-checkstyle}</skip>
+                            <failOnViolation>${check.fail-checkstyle}</failOnViolation>
+                            <consoleOutput>true</consoleOutput>
+                            <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                            <configLocation>${project.parent.basedir}/src/checkstyles/checks.xml</configLocation>
+                            <sourceDirectories>
+                                <directory>${project.build.sourceDirectory}</directory>
+                            </sourceDirectories>
+                            <testSourceDirectories>
+                                <directory>${project.build.testSourceDirectory}</directory>
+                            </testSourceDirectories>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

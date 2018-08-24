@@ -1,7 +1,6 @@
 package cn.edu.ruc.iir.paraflow.benchmark.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Locale.ENGLISH;
+import java.util.Objects;
 
 /**
  * paraflow
@@ -21,9 +20,9 @@ public class Nation
     {
         this.rowNumber = rowNumber;
         this.nationKey = nationKey;
-        this.name = checkNotNull(name, "name is null");
+        this.name = Objects.requireNonNull(name, "name is null");
         this.regionKey = regionKey;
-        this.comment = checkNotNull(comment, "comment is null");
+        this.comment = Objects.requireNonNull(comment, "comment is null");
     }
 
     @Override
@@ -55,6 +54,9 @@ public class Nation
     @Override
     public String toLine()
     {
-        return String.format(ENGLISH, "%d|%s|%d|%s", nationKey, name, regionKey, comment);
+        return nationKey + "|" +
+               name + "|" +
+               regionKey + "|" +
+               comment;
     }
 }

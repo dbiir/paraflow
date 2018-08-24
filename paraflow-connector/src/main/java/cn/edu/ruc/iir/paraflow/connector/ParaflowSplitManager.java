@@ -14,6 +14,7 @@
 package cn.edu.ruc.iir.paraflow.connector;
 
 import cn.edu.ruc.iir.paraflow.commons.ParaflowFiberPartitioner;
+import cn.edu.ruc.iir.paraflow.commons.utils.BytesUtils;
 import cn.edu.ruc.iir.paraflow.connector.exception.TableNotFoundException;
 import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableHandle;
 import cn.edu.ruc.iir.paraflow.connector.handle.ParaflowTableLayoutHandle;
@@ -123,7 +124,7 @@ implements ConnectorSplitManager
                             }
                             ParaflowFiberPartitioner partitioner = parsePartitioner(partitionerName);
                             if (partitioner != null) {
-                                fiberId = partitioner.getFiberId(toBytes(fiber)); // mod fiberNum
+                                fiberId = partitioner.getFiberId(BytesUtils.toBytes(fiber)); // mod fiberNum
                             }
                         }
                     }
@@ -170,16 +171,6 @@ implements ConnectorSplitManager
         Collections.shuffle(splits);
 
         return new FixedSplitSource(splits);
-    }
-
-    private byte[] toBytes(int v)
-    {
-        byte[] result = new byte[4];
-        result[0] = (byte) (v >> 24);
-        result[1] = (byte) (v >> 16);
-        result[2] = (byte) (v >> 8);
-        result[3] = (byte) (v >> 0);
-        return result;
     }
 
     private ParaflowFiberPartitioner parsePartitioner(String partitionerName)

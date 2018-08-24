@@ -11,22 +11,26 @@ import java.util.concurrent.Executors;
  *
  * @author guodong
  */
-public class CollectorRuntime
+class CollectorRuntime
 {
-    private static ExecutorService executorService = Executors.newCachedThreadPool();
-    private static Map<String, FlowTask> flowTasks = new HashMap<>();
+    private static final ExecutorService executorService = Executors.newCachedThreadPool();
+    private static final Map<String, FlowTask> flowTasks = new HashMap<>();
+    private static final long statsInterval = 3000L;
+    private static ParaflowKafkaProducer kafkaProducer;
 
-    private CollectorRuntime()
-    {}
-
-    public static <T> void run(DataFlow<T> dataFlow, Properties conf)
+    CollectorRuntime(Properties conf)
     {
-        FlowTask<T> task = new FlowTask<>(dataFlow, conf);
+        kafkaProducer = new ParaflowKafkaProducer(conf, statsInterval);
+    }
+
+    <T> void run(DataFlow<T> dataFlow)
+    {
+        FlowTask<T> task = new FlowTask<>(dataFlow, kafkaProducer);
         flowTasks.put(dataFlow.getName(), task);
         executorService.submit((Runnable) task::execute);
     }
 
-    public static void destroy()
+    static void destroy()
     {
         for (FlowTask task : flowTasks.values()) {
             task.close();

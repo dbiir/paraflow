@@ -12,21 +12,26 @@ import java.util.Objects;
 public class MockDataSink
         extends DataSink
 {
-    public MockDataSink()
+    private final String dbName;
+    private final String tblName;
+
+    public MockDataSink(String dbName, String tblName)
     {
         super("mock-sink");
+        this.dbName = dbName;
+        this.tblName = tblName;
     }
 
     @Override
     public String getDb()
     {
-        return "test";
+        return dbName;
     }
 
     @Override
     public String getTbl()
     {
-        return "tbl0810";
+        return tblName;
     }
 
     @Override

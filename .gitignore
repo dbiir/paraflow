@@ -1,10 +1,12 @@
 .idea
 *.iml
-dist/libs
-dist/plugin
-dist/bin/launcher*
-dist/bin/procname
+paraflow-1.0-alpha1/libs
+paraflow-1.0-alpha1/plugin
+paraflow-1.0-alpha1/bin/launcher*
+paraflow-1.0-alpha1/bin/procname
+paraflow-1.0-alpha1/logs
 _site
+paraflow-benchmark/data
 
 *.exp
 *~

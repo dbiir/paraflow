@@ -1,7 +1,6 @@
 package cn.edu.ruc.iir.paraflow.benchmark.model;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static java.util.Locale.ENGLISH;
+import java.util.Objects;
 
 /**
  * paraflow
@@ -20,8 +19,8 @@ public class Region
     {
         this.rowNumber = rowNumber;
         this.regionKey = regionKey;
-        this.name = checkNotNull(name, "name is null");
-        this.comment = checkNotNull(comment, "comment is null");
+        this.name = Objects.requireNonNull(name, "name is null");
+        this.comment = Objects.requireNonNull(comment, "comment is null");
     }
 
     @Override
@@ -48,6 +47,8 @@ public class Region
     @Override
     public String toLine()
     {
-        return String.format(ENGLISH, "%d|%s|%s", regionKey, name, comment);
+        return regionKey + "|" +
+               name + "|" +
+               comment;
     }
 }

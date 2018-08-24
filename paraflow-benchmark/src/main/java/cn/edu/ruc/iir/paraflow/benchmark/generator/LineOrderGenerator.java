@@ -2,7 +2,6 @@ package cn.edu.ruc.iir.paraflow.benchmark.generator;
 
 import cn.edu.ruc.iir.paraflow.benchmark.model.LineOrder;
 import com.google.common.collect.AbstractIterator;
-import io.airlift.tpch.CustomerGenerator;
 import io.airlift.tpch.Distributions;
 import io.airlift.tpch.GenerateUtils;
 import io.airlift.tpch.PartGenerator;
@@ -14,9 +13,9 @@ import io.airlift.tpch.TextPool;
 
 import java.util.Iterator;
 import java.util.Locale;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 import static io.airlift.tpch.GenerateUtils.MIN_GENERATE_DATE;
 import static io.airlift.tpch.GenerateUtils.TOTAL_DATE_RANGE;
 import static io.airlift.tpch.GenerateUtils.calculateRowCount;
@@ -71,23 +70,31 @@ public class LineOrderGenerator
     private final Distributions distributions;
     private final TextPool textPool;
 
-    public LineOrderGenerator(double scaleFactor, int part, int partCount)
+    private final long minCustomerKey;
+    private final long numCustomerKey;
+
+    public LineOrderGenerator(double scaleFactor, int part, int partCount, long minCustomerKey, long numCustomerKey)
     {
-        this(scaleFactor, part, partCount, Distributions.getDefaultDistributions(), TextPool.getDefaultTestPool());
+        this(scaleFactor, part, partCount, Distributions.getDefaultDistributions(), TextPool.getDefaultTestPool(), minCustomerKey, numCustomerKey);
     }
 
-    private LineOrderGenerator(double scaleFactor, int part, int partCount, Distributions distributions, TextPool textPool)
+    private LineOrderGenerator(double scaleFactor, int part, int partCount, Distributions distributions, TextPool textPool,
+                               long minCustomerKey, long numCustomerKey)
     {
         checkArgument(scaleFactor > 0, "scaleFactor must be greater than 0");
         checkArgument(part >= 1, "part must be at least 1");
         checkArgument(part <= partCount, "part must be less than or equal to part count");
+        checkArgument(numCustomerKey > 0, "num of customers is larger than 0");
 
         this.scaleFactor = scaleFactor;
         this.part = part;
         this.partCount = partCount;
 
-        this.distributions = checkNotNull(distributions, "distributions is null");
-        this.textPool = checkNotNull(textPool, "textPool is null");
+        this.distributions = Objects.requireNonNull(distributions, "distributions is null");
+        this.textPool = Objects.requireNonNull(textPool, "textPool is null");
+
+        this.minCustomerKey = minCustomerKey;
+        this.numCustomerKey = numCustomerKey;
     }
 
     @Override
@@ -98,7 +105,9 @@ public class LineOrderGenerator
                 textPool,
                 scaleFactor,
                 calculateStartIndex(SCALE_BASE, scaleFactor, part, partCount),
-                calculateRowCount(SCALE_BASE, scaleFactor, part, partCount));
+                calculateRowCount(SCALE_BASE, scaleFactor, part, partCount),
+                minCustomerKey,
+                numCustomerKey);
     }
 
     private static class LineOrderGeneratorIterator
@@ -132,7 +141,6 @@ public class LineOrderGenerator
 
         private final RandomBoundedLong totalPriceRandom = new RandomBoundedLong(839213222, true, 100L, 10000000L, LINE_COUNT_MAX);
 
-        private final double scaleFactor;
         private final long startIndex;
         private final long rowCount;
 
@@ -145,15 +153,15 @@ public class LineOrderGenerator
         private int lineCount;
         private int lineNumber;
 
-        private LineOrderGeneratorIterator(Distributions distributions, TextPool textPool, double scaleFactor, long startIndex, long rowCount)
+        private LineOrderGeneratorIterator(Distributions distributions, TextPool textPool, double scaleFactor,
+                                           long startIndex, long rowCount, long minCustomerKey, long numCustomerKey)
         {
-            this.scaleFactor = scaleFactor;
             this.startIndex = startIndex;
             this.rowCount = rowCount;
 
-            maxCustomerKey = (long) (CustomerGenerator.SCALE_BASE * scaleFactor);
+            this.maxCustomerKey = minCustomerKey + numCustomerKey;
 
-            customerKeyRandom = new RandomBoundedLong(851767375, scaleFactor >= 30000, 1, maxCustomerKey);
+            customerKeyRandom = new RandomBoundedLong(851767375, scaleFactor >= 30000, minCustomerKey, maxCustomerKey);
             orderPriorityRandom = new RandomString(591449447, distributions.getOrderPriorities(), LINE_COUNT_MAX);
             clerkRandom = new RandomBoundedInt(1171034773, 1, Math.max((int) (scaleFactor * CLERK_SCALE_BASE), CLERK_SCALE_BASE), LINE_COUNT_MAX);
             orderCommentRandom = new RandomText(276090261, textPool, ORDER_COMMENT_AVERAGE_LENGTH, LINE_COUNT_MAX);

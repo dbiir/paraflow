@@ -7,7 +7,8 @@ import java.util.Iterator;
  *
  * @author guodong
  */
-public interface Generator<T> extends Iterable<T>
+public interface Generator<T>
+        extends Iterable<T>
 {
     @Override
     Iterator<T> iterator();

@@ -49,6 +49,7 @@ public class ParquetSegmentWriter
                     schemaBuilder.append("required FLOAT ").append(columnNames.getStr(i)).append("; ");
                     break;
                 case "float64":
+                case "double":
                     schemaBuilder.append("required DOUBLE ").append(columnNames.getStr(i)).append("; ");
                     break;
                 case "timestamp":

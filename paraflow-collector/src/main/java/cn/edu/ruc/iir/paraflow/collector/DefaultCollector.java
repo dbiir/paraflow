@@ -30,14 +30,13 @@ public class DefaultCollector<T>
     private final MetaClient metaClient;
     private final AdminClient kafkaAdminClient;
     private final CollectorEnvironment env = CollectorEnvironment.getEnvironment();
-    private final CollectorConfig collectorConfig;
+    private final CollectorRuntime collectorRuntime;
 
     public DefaultCollector()
             throws ConfigFileNotFoundException
     {
         CollectorConfig config = CollectorConfig.INSTANCE();
         config.init();
-        this.collectorConfig = config;
         // init meta client
         metaClient = new MetaClient(config.getMetaServerHost(),
                 config.getMetaServerPort());
@@ -47,6 +46,7 @@ public class DefaultCollector<T>
         properties.setProperty("client.id", "producerAdmin");
         properties.setProperty("metadata.max.age.ms", "3000");
         kafkaAdminClient = AdminClient.create(properties);
+        this.collectorRuntime = new CollectorRuntime(config.getProperties());
         init();
     }
 
@@ -74,7 +74,7 @@ public class DefaultCollector<T>
                 .sink(dataSink)
                 .partitionBy(partitioner)
                 .serializeBy(serializer);
-        CollectorRuntime.run(fiberFlow, collectorConfig.getProperties());
+        collectorRuntime.run(fiberFlow);
     }
 
     public boolean existsTopic(String topic)

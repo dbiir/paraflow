@@ -1,0 +1,1 @@
+CREATE TABLE region(r_regionkey int primary key, r_name varchar(25), r_comment varchar(152));

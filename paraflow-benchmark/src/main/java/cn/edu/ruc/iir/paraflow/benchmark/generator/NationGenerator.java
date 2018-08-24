@@ -8,8 +8,7 @@ import io.airlift.tpch.RandomText;
 import io.airlift.tpch.TextPool;
 
 import java.util.Iterator;
-
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.util.Objects;
 
 /**
  * paraflow
@@ -31,8 +30,8 @@ public class NationGenerator
 
     NationGenerator(Distributions distributions, TextPool textPool)
     {
-        this.distributions = checkNotNull(distributions, "distributions is null");
-        this.textPool = checkNotNull(textPool, "textPool is null");
+        this.distributions = Objects.requireNonNull(distributions, "distributions is null");
+        this.textPool = Objects.requireNonNull(textPool, "textPool is null");
     }
 
     @Override

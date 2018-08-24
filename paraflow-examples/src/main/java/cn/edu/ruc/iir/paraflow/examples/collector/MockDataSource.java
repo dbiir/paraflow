@@ -2,6 +2,7 @@ package cn.edu.ruc.iir.paraflow.examples.collector;
 
 import cn.edu.ruc.iir.paraflow.collector.DataSource;
 import cn.edu.ruc.iir.paraflow.commons.Message;
+import cn.edu.ruc.iir.paraflow.commons.utils.BytesUtils;
 
 import java.util.Objects;
 import java.util.Random;
@@ -34,17 +35,7 @@ public class MockDataSource
                 .append(key).append(",")
                 .append(timestamp);
         byte[] v = sb.toString().getBytes();
-        return new Message(toBytes(key), v, timestamp);
-    }
-
-    private byte[] toBytes(int v)
-    {
-        byte[] result = new byte[4];
-        result[0] = (byte) (v >> 24);
-        result[1] = (byte) (v >> 16);
-        result[2] = (byte) (v >> 8);
-        result[3] = (byte) (v >> 0);
-        return result;
+        return new Message(BytesUtils.toBytes(key), v, timestamp);
     }
 
     @Override

@@ -5,6 +5,8 @@ import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * paraflow
@@ -13,6 +15,8 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
  */
 public class InitMetaTablesAction extends Action
 {
+    private static final Logger logger = LogManager.getLogger(InitMetaTablesAction.class);
+
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {
@@ -41,7 +45,7 @@ public class InitMetaTablesAction extends Action
             statements[1] = MetaConstants.initUserTableSql;
             int[] results = connection.executeUpdateInBatch(statements);
             for (int res : results) {
-                if (res != 2) {
+                if (res != 1) {
                     throw new MetaInitException();
                 }
             }
