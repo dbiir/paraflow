@@ -1,0 +1,1 @@
+SELECT lo_custkey, lo_lineorderkey, c_name FROM paraflow.test.tpch, postgresql.public.customer WHERE paraflow.test.tpch.lo_custkey=postgresql.public.customer.c_custkey AND paraflow.test.tpch.lo_custkey=1;

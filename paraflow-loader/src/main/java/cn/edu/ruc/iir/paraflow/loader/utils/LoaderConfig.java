@@ -42,6 +42,14 @@ public class LoaderConfig
         return paraflowConfig.getProperty("loader.id");
     }
 
+    public int getLoaderParallelism()
+    {
+        if (paraflowConfig.getProperty("loader.parallelism") == null) {
+            return -1;
+        }
+        return Integer.parseInt(paraflowConfig.getProperty("loader.parallelism"));
+    }
+
     public long getLoaderLifetime()
     {
         return Long.parseLong(paraflowConfig.getProperty("loader.lifetime"));

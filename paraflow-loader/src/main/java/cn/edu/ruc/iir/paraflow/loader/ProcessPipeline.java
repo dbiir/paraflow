@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import cn.edu.ruc.iir.paraflow.loader.utils.LoaderConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,12 +24,18 @@ class ProcessPipeline
     private final ExecutorService executorService;
     private final List<Future> futures = new ArrayList<>();
 
-    ProcessPipeline()
+    ProcessPipeline(LoaderConfig config)
     {
         this.processors = new ArrayList<>();
         this.runningProcessors = new ArrayList<>();
-        this.executorService = Executors.newFixedThreadPool(
-                Runtime.getRuntime().availableProcessors() * 2);
+        int loaderParallelism;
+        if (config.getLoaderParallelism() < 0) {
+            loaderParallelism = Runtime.getRuntime().availableProcessors() * 2;
+        }
+        else {
+            loaderParallelism = config.getLoaderParallelism();
+        }
+        this.executorService = Executors.newFixedThreadPool(loaderParallelism);
     }
 
     void addProcessor(Processor processor)
