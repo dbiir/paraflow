@@ -16,6 +16,6 @@ public class BasicParaflowFiberPartitioner
     public int getFiberId(byte[] key)
     {
         ByteBuffer buffer = ByteBuffer.wrap(key);
-        return buffer.getInt() % 10;
+        return buffer.getInt() % 80;
     }
 }

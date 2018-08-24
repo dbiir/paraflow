@@ -6,6 +6,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Properties;
@@ -14,6 +16,7 @@ import java.util.concurrent.BlockingQueue;
 public class DataPuller
         extends Processor
 {
+    private static final Logger logger = LoggerFactory.getLogger(DataPuller.class);
     private final Consumer<byte[], byte[]> consumer;
     private final Stats stats;
     private final DataTransformer transformer;
@@ -44,7 +47,7 @@ public class DataPuller
     @Override
     public void run()
     {
-        System.out.println(super.name + " started.");
+        logger.info(super.name + " started.");
         while (!isReadyToStop.get()) {
             try {
                 ConsumerRecords<byte[], byte[]> records = consumer.poll(100);
@@ -74,10 +77,10 @@ public class DataPuller
                 }
             }
             catch (WakeupException e) {
-                System.out.println("Puller wakes up.");
+                logger.info(super.name + " wakes up.");
                 if (isReadyToStop.get()) {
                     consumer.close();
-                    System.out.println("Puller is stopped.");
+                    logger.info(super.name + " stopped.");
                     break;
                 }
             }

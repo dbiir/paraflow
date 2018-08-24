@@ -12,6 +12,8 @@ import org.apache.parquet.hadoop.example.GroupWriteSupport;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.MessageTypeParser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -23,6 +25,8 @@ import java.io.IOException;
 public class ParquetSegmentWriter
         extends SegmentWriter
 {
+    private static final Logger logger = LoggerFactory.getLogger(ParquetSegmentWriter.class);
+
     ParquetSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient)
     {
         super(segment, partitionFrom, partitionTo, metaClient);
@@ -37,26 +41,24 @@ public class ParquetSegmentWriter
         for (int i = 0; i < columnNum; i++) {
             switch (columnTypes.getStr(i)) {
                 case "bigint":
+                case "long":
+                case "timestamp":
                     schemaBuilder.append("required INT64 ").append(columnNames.getStr(i)).append("; ");
                     break;
                 case "int":
+                case "integer":
                     schemaBuilder.append("required INT32 ").append(columnNames.getStr(i)).append("; ");
                     break;
                 case "boolean":
                     schemaBuilder.append("required BOOLEAN ").append(columnNames.getStr(i)).append("; ");
                     break;
                 case "float32":
+                case "float":
                     schemaBuilder.append("required FLOAT ").append(columnNames.getStr(i)).append("; ");
                     break;
                 case "float64":
                 case "double":
                     schemaBuilder.append("required DOUBLE ").append(columnNames.getStr(i)).append("; ");
-                    break;
-                case "timestamp":
-                    schemaBuilder.append("required INT64 ").append(columnNames.getStr(i)).append("; ");
-                    break;
-                case "real" :
-                    schemaBuilder.append("required INT64 ").append(columnNames.getStr(i)).append("; ");
                     break;
                 default:
                     schemaBuilder.append("required BINARY ").append(columnNames.getStr(i)).append("; ");
@@ -64,7 +66,7 @@ public class ParquetSegmentWriter
             }
         }
         schemaBuilder.append("}");
-        System.out.println("Schema: " + schemaBuilder.toString());
+        logger.debug("Schema: " + schemaBuilder.toString());
         MessageType schema = MessageTypeParser.parseMessageType(schemaBuilder.toString());
         GroupFactory groupFactory = new SimpleGroupFactory(schema);
         GroupWriteSupport writeSupport = new GroupWriteSupport();
@@ -96,28 +98,27 @@ public class ParquetSegmentWriter
                 for (int k = 0; k < columnNum; k++) {
                     switch (columnTypes.getStr(k)) {
                         case "bigint":
+                        case "long":
+                        case "timestamp":
                             group.append(columnNames.getStr(k), (long) record.getValue(k));
                             break;
                         case "int":
+                        case "integer":
                             group.append(columnNames.getStr(k), (int) record.getValue(k));
                             break;
                         case "boolean":
                             group.append(columnNames.getStr(k), (boolean) record.getValue(k));
                             break;
+                        case "float":
                         case "float32":
                             group.append(columnNames.getStr(k), (float) record.getValue(k));
                             break;
+                        case "double":
                         case "float64":
                             group.append(columnNames.getStr(k), (double) record.getValue(k));
                             break;
-                        case "timestamp":
-                            group.append(columnNames.getStr(k), (long) record.getValue(k));
-                            break;
-                        case "real":
-                            group.append(columnNames.getStr(k), (long) record.getValue(k));
-                            break;
                         default:
-                            group.append(columnNames.getStr(k), (String) record.getValue(k));
+                            group.append(columnNames.getStr(k), record.getValue(k).toString());
                             break;
                     }
                 }

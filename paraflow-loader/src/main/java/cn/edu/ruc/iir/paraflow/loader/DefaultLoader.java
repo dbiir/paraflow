@@ -7,12 +7,16 @@ import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.PushPullBlockingQueue;
 import com.conversantmedia.util.concurrent.SpinPolicy;
 import org.apache.kafka.common.TopicPartition;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -32,6 +36,7 @@ import static com.google.common.base.Preconditions.checkArgument;
  * */
 public class DefaultLoader
 {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultLoader.class);
     private final ProcessPipeline pipeline;
     private final LoaderConfig config;
     private final String db;
@@ -43,9 +48,9 @@ public class DefaultLoader
     public DefaultLoader(String db, String table, int partitionFrom, int partitionTo)
             throws ConfigFileNotFoundException
     {
-        this.pipeline = new ProcessPipeline();
         this.config = LoaderConfig.INSTANCE();
         config.init();
+        this.pipeline = new ProcessPipeline(config);
         this.db = db;
         this.table = table;
         this.partitionFrom = partitionFrom;
@@ -95,7 +100,7 @@ public class DefaultLoader
             e.printStackTrace();
         }
         if (transformer == null) {
-            System.out.println("No data transformer available");
+            logger.error("No data transformer available.");
             return;
         }
         // add data pullers and sorters

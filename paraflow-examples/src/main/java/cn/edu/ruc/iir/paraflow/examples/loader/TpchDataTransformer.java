@@ -27,13 +27,12 @@ public class TpchDataTransformer
                                   Integer.parseInt(valueParts[4]),        // orderdate
                                   valueParts[5],                          // orderpriority
                                   valueParts[6],                          // clerk
-                                  Integer.parseInt(valueParts[6]),        // shippriority
-                                  valueParts[7],                          // ordercomment
-                                  Integer.parseInt(valueParts[8]),        // linenumber
-                                  Double.parseDouble(valueParts[9]),      // quantity
-                                  Double.parseDouble(valueParts[10]),     // extendedprice
-                                  Double.parseDouble(valueParts[11]),     // discount
-                                  Double.parseDouble(valueParts[12]),     // parts
+                                  Integer.parseInt(valueParts[7]),        // shippriority
+                                  valueParts[8],                          // ordercomment
+                                  Integer.parseInt(valueParts[9]),        // linenumber
+                                  Double.parseDouble(valueParts[10]),     // quantity
+                                  Double.parseDouble(valueParts[11]),     // extendedprice
+                                  Double.parseDouble(valueParts[12]),     // discount
                                   Double.parseDouble(valueParts[13]),     // tax
                                   valueParts[14],                         // returnflag
                                   valueParts[15],                         // linestatus

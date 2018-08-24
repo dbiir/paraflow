@@ -11,6 +11,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * paraflow
@@ -34,7 +37,8 @@ public class TpchGenerationTest
         }
         long end = System.currentTimeMillis();
         long duration = end - start;
-        System.out.println("Generate " + counter + " messages in " + duration + "ms (" + (1.0 * msgLen / duration) + " KB/s)");
+        System.out.println("Generate " + counter + " messages in " + duration +
+                           "ms (" + (1.0 * msgLen / duration) + " KB/s)");
     }
 
     @Test
@@ -58,19 +62,40 @@ public class TpchGenerationTest
     @Test
     public void testLineOrderGeneration()
     {
-        Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(10000, 1, 1500, 0, 10000000);
-        Iterator<LineOrder> lineOrderIterator = lineOrderIterable.iterator();
-        long start = System.currentTimeMillis();
-        long counter = 0;
-        long msgLen = 0;
-        while (lineOrderIterator.hasNext()) {
-            LineOrder lineOrder = lineOrderIterator.next();
-            msgLen += lineOrder.toLine().length();
-            counter++;
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        for (int i = 0; i < 4; i++) {
+            LineOrderGenerationThread generationThread = new LineOrderGenerationThread();
+            executorService.submit(generationThread);
         }
-        long end = System.currentTimeMillis();
-        long duration = end - start;
-        System.out.println("Generate " + counter + " messages in " + duration + "ms (" + (1.0 * msgLen / duration) + " KB/s)");
+        try {
+            executorService.awaitTermination(3600, TimeUnit.SECONDS);
+        }
+        catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class LineOrderGenerationThread
+            implements Runnable
+    {
+        @Override
+        public void run()
+        {
+            Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(1000, 1, 1500, 0, 10000000);
+            Iterator<LineOrder> lineOrderIterator = lineOrderIterable.iterator();
+            long start = System.currentTimeMillis();
+            long counter = 0;
+            long msgLen = 0;
+            while (lineOrderIterator.hasNext()) {
+                LineOrder lineOrder = lineOrderIterator.next();
+                msgLen += lineOrder.toLine().length();
+                counter++;
+            }
+            long end = System.currentTimeMillis();
+            long duration = end - start;
+            System.out.println("Generate " + counter + " messages in " + duration +
+                               "ms (" + (1.0 * msgLen / duration) + " KB/s)");
+        }
     }
 
     @Test

@@ -1,5 +1,8 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -14,6 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class DataCompactor
         extends Processor
 {
+    private static final Logger logger = LoggerFactory.getLogger(DataCompactor.class);
     private final int threshold;
     private final int partitionNum;
     private final BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue;
@@ -38,12 +42,12 @@ public class DataCompactor
         System.out.println(super.name + " started.");
         try {
             while (!isReadyToStop.get()) {
-                System.out.println("Compactor gets sorted buffer.");
                 ParaflowSortedBuffer sortedBuffer
                         = sorterCompactorBlockingQueue.poll(100, TimeUnit.MILLISECONDS);
                 if (sortedBuffer == null) {
                     continue;
                 }
+                logger.debug("compactor gets sorted buffer.");
                 ParaflowRecord[] sortedRecords = sortedBuffer.getSortedRecords();
                 int partition = sortedBuffer.getPartition();
                 if (tempBuffer[partition] == null) {
@@ -69,7 +73,7 @@ public class DataCompactor
 
     private ParaflowSegment compact()
     {
-        System.out.println("Compacting....");
+        logger.debug("compacting....");
         ParaflowRecord[] compactedRecords = new ParaflowRecord[recordNum];
         long[] fiberMinTimestamps = new long[partitionNum];
         long[] fiberMaxTimestamps = new long[partitionNum];
