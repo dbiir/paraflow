@@ -41,26 +41,24 @@ public class ParquetSegmentWriter
         for (int i = 0; i < columnNum; i++) {
             switch (columnTypes.getStr(i)) {
                 case "bigint":
+                case "long":
+                case "timestamp":
                     schemaBuilder.append("required INT64 ").append(columnNames.getStr(i)).append("; ");
                     break;
                 case "int":
+                case "integer":
                     schemaBuilder.append("required INT32 ").append(columnNames.getStr(i)).append("; ");
                     break;
                 case "boolean":
                     schemaBuilder.append("required BOOLEAN ").append(columnNames.getStr(i)).append("; ");
                     break;
                 case "float32":
+                case "float":
                     schemaBuilder.append("required FLOAT ").append(columnNames.getStr(i)).append("; ");
                     break;
                 case "float64":
                 case "double":
                     schemaBuilder.append("required DOUBLE ").append(columnNames.getStr(i)).append("; ");
-                    break;
-                case "timestamp":
-                    schemaBuilder.append("required INT64 ").append(columnNames.getStr(i)).append("; ");
-                    break;
-                case "real" :
-                    schemaBuilder.append("required INT64 ").append(columnNames.getStr(i)).append("; ");
                     break;
                 default:
                     schemaBuilder.append("required BINARY ").append(columnNames.getStr(i)).append("; ");
