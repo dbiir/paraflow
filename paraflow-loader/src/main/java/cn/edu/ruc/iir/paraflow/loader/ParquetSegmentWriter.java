@@ -121,7 +121,7 @@ public class ParquetSegmentWriter
                             group.append(columnNames.getStr(k), (long) record.getValue(k));
                             break;
                         default:
-                            group.append(columnNames.getStr(k), (String) record.getValue(k));
+                            group.append(columnNames.getStr(k), String.valueOf(record.getValue(k)));
                             break;
                     }
                 }
