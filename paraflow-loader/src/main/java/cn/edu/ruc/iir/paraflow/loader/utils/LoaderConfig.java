@@ -52,11 +52,6 @@ public class LoaderConfig
         return Integer.parseInt(paraflowConfig.getProperty("puller.parallelism"));
     }
 
-    public int getPullerSorterCapacity()
-    {
-        return Integer.parseInt(paraflowConfig.getProperty("pullerSorter.capacity"));
-    }
-
     public int getSorterCompactorCapacity()
     {
         return Integer.parseInt(paraflowConfig.getProperty("sorterCompactor.capacity"));
