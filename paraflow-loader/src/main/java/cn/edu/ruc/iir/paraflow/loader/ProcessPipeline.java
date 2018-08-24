@@ -53,17 +53,18 @@ class ProcessPipeline
             }
         }
         logger.info("Loading pipeline started.");
-        while (!futures.isEmpty()) {
+        int finishedProcessors = 0;
+        while (finishedProcessors < futures.size()) {
             for (Future future : futures) {
-                if (future.isDone()) {
+                if (future.isDone() || future.isCancelled()) {
                     try {
                         future.get();
                     }
                     catch (InterruptedException | ExecutionException e) {
                         // todo deal with execution exceptions
                         e.printStackTrace();
-                        futures.remove(future);
                     }
+                    finishedProcessors++;
                 }
             }
         }
@@ -77,6 +78,7 @@ class ProcessPipeline
     void stop()
     {
         executorService.shutdown();
+        SegmentContainer.INSTANCE().flushAll();
         for (RunningProcessor runningProcessor : runningProcessors) {
             runningProcessor.stop();
         }
