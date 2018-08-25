@@ -90,4 +90,16 @@ class SegmentContainer
         }
         return false;
     }
+
+    /**
+     * Call this when the process stops, and flushes all off-heap segments to disks
+     * */
+    void flushAll()
+    {
+        for (ParaflowSegment sg : container) {
+            if (sg.getStorageLevel() == ParaflowSegment.StorageLevel.OFF_HEAP) {
+                flushingQueue.add(sg);
+            }
+        }
+    }
 }

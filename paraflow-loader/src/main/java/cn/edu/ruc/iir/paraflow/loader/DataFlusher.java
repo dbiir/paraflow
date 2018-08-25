@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.BlockingQueue;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 /**
  * paraflow
  *
@@ -48,30 +46,50 @@ public class DataFlusher
         try {
             while (!isReadyToStop.get()) {
                 ParaflowSegment segment = flushingQueue.take();
-                checkArgument(segment.getStorageLevel().equals(ParaflowSegment.StorageLevel.OFF_HEAP));
-                String originPath = segment.getPath();
-                String fileName = originPath.substring(originPath.lastIndexOf("/") + 1);
-                String newPath = config.getHDFSWarehouse() + segment.getDb() + "/" + segment.getTable() + "/" + fileName;
-                Path outputPath = new Path(newPath);
-                try {
-                    fs.copyFromLocalFile(true, new Path(originPath), outputPath);
-                    metaClient.updateBlockPath(originPath, newPath);
-                }
-                catch (IOException e) {
-                    e.printStackTrace();
-                    if (fs != null) {
-                        try {
-                            fs.deleteOnExit(outputPath);
-                        }
-                        catch (IOException e1) {
-                            e1.printStackTrace();
-                        }
-                    }
-                }
+                flushSegment(segment);
             }
         }
         catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void flushSegment(ParaflowSegment segment)
+    {
+        if (segment.getStorageLevel() != ParaflowSegment.StorageLevel.OFF_HEAP) {
+            return;
+        }
+        String originPath = segment.getPath();
+        String fileName = originPath.substring(originPath.lastIndexOf("/") + 1);
+        String newPath = config.getHDFSWarehouse() + segment.getDb() + "/" + segment.getTable() + "/" + fileName;
+        Path outputPath = new Path(newPath);
+        try {
+            fs.copyFromLocalFile(true, new Path(originPath), outputPath);
+            metaClient.updateBlockPath(originPath, newPath);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            if (fs != null) {
+                try {
+                    fs.deleteOnExit(outputPath);
+                }
+                catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void stop()
+    {
+        isReadyToStop.set(true);
+        while (true) {
+            ParaflowSegment segment = flushingQueue.poll();
+            if (segment == null) {
+                break;
+            }
+            flushSegment(segment);
         }
     }
 }

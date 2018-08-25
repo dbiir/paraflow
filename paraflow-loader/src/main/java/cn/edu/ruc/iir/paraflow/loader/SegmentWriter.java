@@ -4,6 +4,8 @@ import cn.edu.ruc.iir.paraflow.loader.utils.LoaderConfig;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.apache.hadoop.conf.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,7 @@ import java.util.logging.LogManager;
 public abstract class SegmentWriter
         implements Runnable
 {
+    private static final Logger logger = LoggerFactory.getLogger(SegmentWriter.class);
     private final ParaflowSegment segment;
     private final int partitionFrom;
     private final int partitionTo;
@@ -75,6 +78,10 @@ public abstract class SegmentWriter
             // update metadata
             long[] fiberMinTimestamps = segment.getFiberMinTimestamps();
             long[] fiberMaxTimestamps = segment.getFiberMaxTimestamps();
+            long currentTime = System.currentTimeMillis();
+            long fiberMinSum = 0L;
+            long fiberMaxSum = 0L;
+            int latencyPartitions = 0;
             int partitionNum = partitionTo - partitionFrom + 1;
             for (int i = 0; i < partitionNum; i++) {
                 if (fiberMinTimestamps[i] == -1) {
@@ -83,8 +90,13 @@ public abstract class SegmentWriter
                 if (fiberMaxTimestamps[i] == -1) {
                     continue;
                 }
+                fiberMinSum += fiberMinTimestamps[i];
+                fiberMaxSum += fiberMaxTimestamps[i];
+                latencyPartitions++;
                 metaClient.createBlockIndex(db, table, i + partitionFrom, fiberMinTimestamps[i], fiberMaxTimestamps[i], path);
             }
+            long latency = currentTime - (2 * (fiberMaxSum + fiberMinSum) / latencyPartitions);
+            logger.info("latency: " + latency);
         }
     }
 

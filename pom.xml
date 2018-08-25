@@ -136,6 +136,11 @@
                 </exclusions>
             </dependency>
             <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-jdbc</artifactId>
+                <version>0.192</version>
+            </dependency>
+            <dependency>
                 <groupId>com.facebook.presto.hadoop</groupId>
                 <artifactId>hadoop-apache2</artifactId>
                 <version>0.9</version>
