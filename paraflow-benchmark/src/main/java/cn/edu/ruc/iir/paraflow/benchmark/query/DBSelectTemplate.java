@@ -8,6 +8,11 @@ package cn.edu.ruc.iir.paraflow.benchmark.query;
 public class DBSelectTemplate
         extends QueryTemplate
 {
+    DBSelectTemplate(String table)
+    {
+        super(table);
+    }
+
     @Override
     String makeQuery()
     {
@@ -17,6 +22,6 @@ public class DBSelectTemplate
     @Override
     QueryGenerator.QueryType getType()
     {
-        return null;
+        return QueryGenerator.QueryType.SELECT;
     }
 }
