@@ -11,11 +11,16 @@ public class DBDeleteTemplate
     private static final int BASE = 10_000_000;
     private int counter = 0;
 
+    DBDeleteTemplate(String table)
+    {
+        super(table);
+    }
+
     @Override
     String makeQuery()
     {
         counter++;
-        return "DELETE FROM customer WHERE c_custkey=" + (BASE + counter);
+        return "DELETE FROM " + table + " WHERE c_custkey=" + (BASE + counter) + ";";
     }
 
     @Override

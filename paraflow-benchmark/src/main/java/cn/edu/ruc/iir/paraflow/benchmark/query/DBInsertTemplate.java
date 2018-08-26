@@ -22,11 +22,16 @@ public class DBInsertTemplate
     private String[] segments = {"BUILDING", "AUTOMOBILE", "MACHINERY", "HOUSEHOLD", "FURNITURE"};
     private RandomText commentRandom = new RandomText(1334521707, TextPool.getDefaultTestPool(), 73);
 
+    DBInsertTemplate(String table)
+    {
+        super(table);
+    }
+
     @Override
     String makeQuery()
     {
         counter++;
-        return "INSERT INTO customer VALUES(" +
+        String q = "INSERT INTO " + table + " VALUES(" +
                (BASE + counter) +                                            // c_custkey
                ", 'Customer#0" + BASE + "'" +                                // c_name
                ", '" + addressRandom.nextValue() + "'" +                     // c_address
@@ -36,6 +41,11 @@ public class DBInsertTemplate
                ", '" + segments[counter % 5] + "'" +                         // c_mktsegment
                ", '" + commentRandom.nextValue() + "'" +                     // c_comment
                ");";
+        addressRandom.rowFinished();
+        phoneNumber.rowFinished();
+        acctbalRandom.rowFinished();
+        commentRandom.rowFinished();
+        return q;
     }
 
     @Override

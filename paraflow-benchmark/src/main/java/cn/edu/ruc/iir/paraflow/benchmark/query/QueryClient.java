@@ -2,7 +2,7 @@ package cn.edu.ruc.iir.paraflow.benchmark.query;
 
 /**
  * paraflow benchmark query client
- * args: db-server presto-server type[ap|tp|htap]
+ * args: server type(ap|tp|htap) table [joinTable]
  *
  * @author guodong
  */
@@ -16,9 +16,9 @@ public class QueryClient
     {
         private final PrestoQuestioner questioner;
 
-        PrestoQueryRunner(String serverUrl)
+        PrestoQueryRunner(String serverUrl, String table, String joinTable)
         {
-            this.questioner = new PrestoQuestioner(serverUrl);
+            this.questioner = new PrestoQuestioner(serverUrl, table, joinTable);
         }
 
         @Override
@@ -33,9 +33,9 @@ public class QueryClient
     {
         private final DBQuestioner questioner;
 
-        DBQueryRunner(String serverUrl)
+        DBQueryRunner(String serverUrl, String table)
         {
-            this.questioner = new DBQuestioner(serverUrl);
+            this.questioner = new DBQuestioner(serverUrl, table);
         }
 
         @Override
@@ -47,19 +47,25 @@ public class QueryClient
 
     public static void main(String[] args)
     {
-        String dbUrl = args[0];
-        String prestoUrl = args[1];
-        String mode = args[2];
-        PrestoQueryRunner prestoQueryRunner = new PrestoQueryRunner(prestoUrl);
-        DBQueryRunner dbQueryRunner = new DBQueryRunner(dbUrl);
+        String serverUrl = args[0];
+        String mode = args[1];
+        String table = args[2];
+        String joinTable = "";
+        if (args.length == 4) {
+            joinTable = args[3];
+        }
         switch (mode.toUpperCase()) {
             case "AP":
-                new Thread(prestoQueryRunner).start();
+                PrestoQueryRunner apQueryRunner = new PrestoQueryRunner(serverUrl, table, joinTable);
+                new Thread(apQueryRunner).start();
                 break;
             case "TP":
-                new Thread(dbQueryRunner).start();
+                DBQueryRunner tpQueryRunner = new DBQueryRunner(serverUrl, table);
+                new Thread(tpQueryRunner).start();
                 break;
             case "HTAP":
+                PrestoQueryRunner prestoQueryRunner = new PrestoQueryRunner(serverUrl, table, joinTable);
+                DBQueryRunner dbQueryRunner = new DBQueryRunner(serverUrl, table);
                 new Thread(prestoQueryRunner).start();
                 new Thread(dbQueryRunner).start();
                 break;

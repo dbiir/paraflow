@@ -21,17 +21,20 @@ public class PrestoQuestioner
     private final String[] queryCache;
     private final int[] latencyCache;
 
-    public PrestoQuestioner(String serverUrl)
+    public PrestoQuestioner(String serverUrl, String table, String joinTable)
     {
         this.serverUrl = serverUrl;
         this.queryDistribution = new QueryDistribution();
         queryDistribution.setDistribution("t1", 1);
         queryDistribution.setDistribution("t2", 1);
         queryDistribution.setDistribution("t3", 1);
+        queryDistribution.setDistribution("max-custkey", 1000000);
+        queryDistribution.setDistribution("min-time", 200000000L);
+        queryDistribution.setDistribution("max-time", 200008000L);
         queryDistribution.setSizeLimit(1000);
         this.queryCache = new String[(int) queryDistribution.sizeLimit()];
         this.latencyCache = new int[(int) queryDistribution.sizeLimit()];
-        this.queryGenerator = new PrestoQueryGenerator(queryDistribution);
+        this.queryGenerator = new PrestoQueryGenerator(queryDistribution, table, joinTable);
     }
 
     public void question()

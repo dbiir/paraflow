@@ -18,8 +18,9 @@ public class PrestoSelectTemplate1
     private final Random random;
     private int selectIndex = 0;
 
-    public PrestoSelectTemplate1(QueryDistribution distribution)
+    public PrestoSelectTemplate1(QueryDistribution distribution, String table)
     {
+        super(table);
         this.maxTime = distribution.getValue("max-time");
         this.minTime = distribution.getValue("min-time");
         this.selectionSlice = (maxTime - minTime) / 100;
@@ -31,8 +32,11 @@ public class PrestoSelectTemplate1
     {
         long timePoint = random.nextInt((int) (maxTime - minTime));
         long timeScale = selection[selectIndex++ % selection.length] * selectionSlice;
-        return "SELECT SUM(lo_quantity) AS sum_qty , AVG(lo_extendedprice) AS avg_price, avg(lo_discount) AS avg_disc, count(*) AS rs_num, min(lo_lineorderkey) AS min_lineorderkey, max(lo_lineorderkey) AS max_lineorderkey FROM lineorder WHERE lo_creation>"
-               + (timePoint + minTime) + " and lo_creation<" + (timePoint + minTime + timeScale);
+        return "SELECT SUM(lo_quantity) AS sum_qty , AVG(lo_extendedprice) AS avg_price, avg(lo_discount) AS avg_disc, count(*) AS rs_num, min(lo_lineorderkey) AS min_lineorderkey, max(lo_lineorderkey) AS max_lineorderkey FROM "
+               + table
+               + " WHERE lo_creation>" + (timePoint + minTime)
+               + " AND lo_creation<" + (timePoint + minTime + timeScale)
+               + ";";
     }
 
     @Override

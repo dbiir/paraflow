@@ -21,28 +21,45 @@ public class DBUpdateTemplate
     private RandomText commentRandom = new RandomText(1249521607, TextPool.getDefaultTestPool(), 73);
     private int counter = 0;
 
+    DBUpdateTemplate(String table)
+    {
+        super(table);
+    }
+
     private String template1()
     {
-        return "UPDATE customer SET c_address='" + addressRandom.nextValue()
+        String q = "UPDATE " + table + " SET c_address='" + addressRandom.nextValue()
                + "' WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
+        addressRandom.rowFinished();
+        custkeyRandom.rowFinished();
+        return q;
     }
 
     private String template2()
     {
-        return "UPDATE customer SET c_phone='" + phoneNumber.nextValue(counter % 25)
+        String q = "UPDATE " + table + " SET c_phone='" + phoneNumber.nextValue(counter % 25)
                + "' WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
+        phoneNumber.rowFinished();
+        custkeyRandom.rowFinished();
+        return q;
     }
 
     private String template3()
     {
-        return "UPDATE customer SET c_acctbal=" + acctbalRandom.nextValue()
+        String q = "UPDATE " + table + " SET c_acctbal=" + acctbalRandom.nextValue()
                + " WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
+        acctbalRandom.rowFinished();
+        custkeyRandom.rowFinished();
+        return q;
     }
 
     private String template4()
     {
-        return "UPDATE customer SET c_comment='" + commentRandom.nextValue()
+        String q = "UPDATE " + table + " SET c_comment='" + commentRandom.nextValue()
                + "' WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
+        commentRandom.rowFinished();
+        custkeyRandom.rowFinished();
+        return q;
     }
 
     @Override

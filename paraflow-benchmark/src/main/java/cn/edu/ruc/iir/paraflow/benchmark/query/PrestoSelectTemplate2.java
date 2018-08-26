@@ -20,8 +20,9 @@ public class PrestoSelectTemplate2
     private final Random custkeyRandom;
     private int selectIndex = 0;
 
-    public PrestoSelectTemplate2(QueryDistribution distribution)
+    public PrestoSelectTemplate2(QueryDistribution distribution, String table)
     {
+        super(table);
         this.maxTime = distribution.getValue("max-time");
         this.minTime = distribution.getValue("min-time");
         this.maxCustkey = distribution.getValue("max-custkey");
@@ -36,8 +37,11 @@ public class PrestoSelectTemplate2
         long timePoint = timePointRandom.nextInt((int) (maxTime - minTime));
         long timeScale = selection[selectIndex++ % selection.length] * selectionSlice;
         long custkey = custkeyRandom.nextInt((int) maxCustkey);
-        return "SELECT SUM(lo_quantity) AS sum_qty , AVG(lo_extendedprice) AS avg_price, avg(lo_discount) AS avg_disc, count(*) AS rs_num, min(lo_lineorderkey) AS min_lineorderkey, max(lo_orderkey) AS max_lineorderkey FROM lineorder WHERE lo_creation>"
-               + (timePoint + minTime) + "and lo_creation<" + (timePoint + minTime + timeScale) + "and lo_custkey=" + custkey;
+        return "SELECT SUM(lo_quantity) AS sum_qty , AVG(lo_extendedprice) AS avg_price, avg(lo_discount) AS avg_disc, count(*) AS rs_num, min(lo_lineorderkey) AS min_lineorderkey, max(lo_orderkey) AS max_lineorderkey FROM "
+               + table
+               + " WHERE lo_creation>" + (timePoint + minTime)
+               + " AND lo_creation<" + (timePoint + minTime + timeScale) + " AND lo_custkey=" + custkey
+               + ";";
     }
 
     @Override

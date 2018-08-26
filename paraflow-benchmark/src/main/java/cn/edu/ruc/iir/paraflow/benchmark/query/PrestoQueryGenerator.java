@@ -20,12 +20,12 @@ public class PrestoQueryGenerator
     private final long t3Floor;
     private long counter = 0;
 
-    public PrestoQueryGenerator(QueryDistribution distribution)
+    public PrestoQueryGenerator(QueryDistribution distribution, String table, String joinTable)
     {
         super(distribution);
-        this.template1 = new PrestoSelectTemplate1(distribution);
-        this.template2 = new PrestoSelectTemplate2(distribution);
-        this.template3 = new PrestoSelectTemplate3();
+        this.template1 = new PrestoSelectTemplate1(distribution, table);
+        this.template2 = new PrestoSelectTemplate2(distribution, table);
+        this.template3 = new PrestoSelectTemplate3(distribution, table, joinTable);
         this.random = new Random();
         t1Floor = 0;
         t2Floor = distribution.getValue("t1") + t1Floor;
@@ -43,6 +43,7 @@ public class PrestoQueryGenerator
     public String next()
     {
         int randomV = random.nextInt((int) range);
+        counter++;
         if (randomV >= t3Floor) {
             return template3.makeQuery();
         }
@@ -52,7 +53,6 @@ public class PrestoQueryGenerator
         if (randomV >= t1Floor) {
             return template1.makeQuery();
         }
-        counter++;
         return null;
     }
 }

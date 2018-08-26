@@ -25,13 +25,13 @@ public class DBQueryGenerator
     private final long updateFloor;
     private final long deleteFloor;
 
-    public DBQueryGenerator(QueryDistribution distribution)
+    public DBQueryGenerator(QueryDistribution distribution, String table)
     {
         super(distribution);
-        this.selectTemplate = new DBSelectTemplate();
-        this.insertTemplate = new DBInsertTemplate();
-        this.updateTemplate = new DBUpdateTemplate();
-        this.deleteTemplate = new DBDeleteTemplate();
+        this.selectTemplate = new DBSelectTemplate(table);
+        this.insertTemplate = new DBInsertTemplate(table);
+        this.updateTemplate = new DBUpdateTemplate(table);
+        this.deleteTemplate = new DBDeleteTemplate(table);
         selectFloor = 0;
         insertFloor = distribution.getValue("select") + selectFloor;
         updateFloor = distribution.getValue("insert") + insertFloor;

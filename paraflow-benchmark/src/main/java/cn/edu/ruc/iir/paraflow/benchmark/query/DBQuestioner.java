@@ -21,7 +21,7 @@ public class DBQuestioner
     private final QueryDistribution queryDistribution;
     private final List<Integer> latencyCache;
 
-    public DBQuestioner(String serverUrl)
+    public DBQuestioner(String serverUrl, String table)
     {
         this.serverUrl = serverUrl;
         this.queryDistribution = new QueryDistribution();
@@ -31,7 +31,7 @@ public class DBQuestioner
         queryDistribution.setDistribution("delete", 0);
         queryDistribution.setTimeLimit(60 * 1000);
         this.latencyCache = new ArrayList<>();
-        this.queryGenerator = new DBQueryGenerator(queryDistribution);
+        this.queryGenerator = new DBQueryGenerator(queryDistribution, table);
     }
 
     public void question()
