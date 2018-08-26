@@ -19,11 +19,11 @@ public class DBQueryGenerator
     private final DBUpdateTemplate updateTemplate;
     private final DBDeleteTemplate deleteTemplate;
     private final Random random;
-    private final int range;
-    private final int selectFloor;
-    private final int insertFloor;
-    private final int updateFloor;
-    private final int deleteFloor;
+    private final long range;
+    private final long selectFloor;
+    private final long insertFloor;
+    private final long updateFloor;
+    private final long deleteFloor;
 
     public DBQueryGenerator(QueryDistribution distribution)
     {
@@ -33,10 +33,10 @@ public class DBQueryGenerator
         this.updateTemplate = new DBUpdateTemplate();
         this.deleteTemplate = new DBDeleteTemplate();
         selectFloor = 0;
-        insertFloor = distribution.selectValue() + selectFloor;
-        updateFloor = distribution.insertValue() + insertFloor;
-        deleteFloor = distribution.updateValue() + updateFloor;
-        range = distribution.deleteValue() + deleteFloor;
+        insertFloor = distribution.getValue("select") + selectFloor;
+        updateFloor = distribution.getValue("insert") + insertFloor;
+        deleteFloor = distribution.getValue("update") + updateFloor;
+        range = distribution.getValue("delete") + deleteFloor;
         this.random = new Random();
         this.startTime = System.currentTimeMillis();
     }
@@ -53,7 +53,7 @@ public class DBQueryGenerator
     @Override
     public String next()
     {
-        int randomV = random.nextInt(range);
+        long randomV = random.nextInt((int) range);
         if (randomV >= deleteFloor) {
             return deleteTemplate.makeQuery();
         }

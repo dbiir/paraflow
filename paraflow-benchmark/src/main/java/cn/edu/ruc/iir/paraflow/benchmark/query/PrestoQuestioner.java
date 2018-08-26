@@ -18,12 +18,19 @@ public class PrestoQuestioner
     private final String serverUrl;
     private final PrestoQueryGenerator queryGenerator;
     private final QueryDistribution queryDistribution;
+    private final String[] queryCache;
+    private final int[] latencyCache;
 
     public PrestoQuestioner(String serverUrl)
     {
         this.serverUrl = serverUrl;
-        this.queryDistribution = new QueryDistribution(10, 0, 0, 0);
+        this.queryDistribution = new QueryDistribution();
+        queryDistribution.setDistribution("t1", 1);
+        queryDistribution.setDistribution("t2", 1);
+        queryDistribution.setDistribution("t3", 1);
         queryDistribution.setSizeLimit(1000);
+        this.queryCache = new String[(int) queryDistribution.sizeLimit()];
+        this.latencyCache = new int[(int) queryDistribution.sizeLimit()];
         this.queryGenerator = new PrestoQueryGenerator(queryDistribution);
     }
 
@@ -37,9 +44,9 @@ public class PrestoQuestioner
             Class.forName(DRIVER_CLASS);
             conn = DriverManager.getConnection(serverUrl, properties);
             long startTime = System.currentTimeMillis();
-            long queryStart = 0;
-            long queryEnd = 0;
-            long rsCount = 0;
+            long queryStart;
+            long queryEnd;
+            int queryId = 0;
             while (queryGenerator.hasNext()) {
                 queryStart = System.currentTimeMillis();
                 String query = queryGenerator.next();
@@ -47,17 +54,17 @@ public class PrestoQuestioner
                 ResultSet rs = stmt.executeQuery(query);
                 if (rs.next()) {
                     queryEnd = System.currentTimeMillis();
-                    rsCount = rs.getLong("rs_num");
+                    queryCache[queryId] = query;
+                    latencyCache[queryId] = (int) (queryEnd - queryStart);
+                    queryId++;
                 }
                 rs.close();
                 stmt.close();
-                // todo stats collection
-                Thread.sleep(10);
             }
             long endTime = System.currentTimeMillis();
             System.out.println("Avg execution latency: " + 1.0d * queryDistribution.sizeLimit() / (endTime - startTime) * 1000);
         }
-        catch (ClassNotFoundException | SQLException | InterruptedException e) {
+        catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
         finally {
@@ -69,6 +76,14 @@ public class PrestoQuestioner
                     e.printStackTrace();
                 }
             }
+            printStats();
+        }
+    }
+
+    private void printStats()
+    {
+        for (int i = 0; i < queryDistribution.sizeLimit(); i++) {
+            System.out.println(queryCache[i] + ": " + latencyCache[i] + "ms");
         }
     }
 }

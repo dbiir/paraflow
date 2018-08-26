@@ -17,6 +17,6 @@ public class DBSelectTemplate
     @Override
     QueryGenerator.QueryType getType()
     {
-        return null;
+        return QueryGenerator.QueryType.SELECT;
     }
 }
