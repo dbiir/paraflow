@@ -18,13 +18,13 @@ import java.util.concurrent.BlockingQueue;
 public class DataFlusher
         extends Processor
 {
-    private final BlockingQueue<ParaflowSegment> flushingQueue;
+    private final BlockingQueue<String> flushingQueue;
     private final MetaClient metaClient;
     private final LoaderConfig config = LoaderConfig.INSTANCE();
     private FileSystem fs = null;
 
     DataFlusher(String name, String db, String tbl, int parallelism,
-                BlockingQueue<ParaflowSegment> flushingQueue, MetaClient metaClient)
+                BlockingQueue<String> flushingQueue, MetaClient metaClient)
     {
         super(name, db, tbl, parallelism);
         this.flushingQueue = flushingQueue;
@@ -45,8 +45,8 @@ public class DataFlusher
     {
         try {
             while (!isReadyToStop.get()) {
-                ParaflowSegment segment = flushingQueue.take();
-                flushSegment(segment);
+                String segmentPath = flushingQueue.take();
+                flushSegment(segmentPath);
             }
         }
         catch (InterruptedException e) {
@@ -54,18 +54,17 @@ public class DataFlusher
         }
     }
 
-    private void flushSegment(ParaflowSegment segment)
+    private void flushSegment(String segmentPath)
     {
-        if (segment.getStorageLevel() != ParaflowSegment.StorageLevel.OFF_HEAP) {
-            return;
-        }
-        String originPath = segment.getPath();
-        String fileName = originPath.substring(originPath.lastIndexOf("/") + 1);
-        String newPath = config.getHDFSWarehouse() + segment.getDb() + "/" + segment.getTable() + "/" + fileName;
+        int fileNamePoint = segmentPath.lastIndexOf("/");
+        int tblPoint = segmentPath.lastIndexOf("/", fileNamePoint - 1);
+        int dbPoint = segmentPath.lastIndexOf("/", tblPoint - 1);
+        String suffix = segmentPath.substring(dbPoint + 1);
+        String newPath = config.getHDFSWarehouse() + suffix;
         Path outputPath = new Path(newPath);
         try {
-            fs.copyFromLocalFile(true, new Path(originPath), outputPath);
-            metaClient.updateBlockPath(originPath, newPath);
+            fs.copyFromLocalFile(true, new Path(segmentPath), outputPath);
+            metaClient.updateBlockPath(segmentPath, newPath);
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -85,11 +84,11 @@ public class DataFlusher
     {
         isReadyToStop.set(true);
         while (true) {
-            ParaflowSegment segment = flushingQueue.poll();
-            if (segment == null) {
+            String segmentPath = flushingQueue.poll();
+            if (segmentPath == null) {
                 break;
             }
-            flushSegment(segment);
+            flushSegment(segmentPath);
         }
     }
 }

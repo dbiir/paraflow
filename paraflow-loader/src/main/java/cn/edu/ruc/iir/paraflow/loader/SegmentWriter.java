@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.LogManager;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * paraflow
@@ -28,10 +28,11 @@ public abstract class SegmentWriter
     private final MetaClient metaClient;
     private final Map<String, MetaProto.StringListType> tableColumnNamesCache;
     private final Map<String, MetaProto.StringListType> tableColumnTypesCache;
+    private final AtomicInteger counter;
     final LoaderConfig config = LoaderConfig.INSTANCE();
     final Configuration configuration = new Configuration();
 
-    SegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient)
+    SegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient, AtomicInteger counter)
     {
         this.segment = segment;
         this.partitionFrom = partitionFrom;
@@ -39,6 +40,7 @@ public abstract class SegmentWriter
         this.metaClient = metaClient;
         this.tableColumnNamesCache = new HashMap<>();
         this.tableColumnTypesCache = new HashMap<>();
+        this.counter = counter;
         configuration.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         configuration.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
     }
@@ -46,7 +48,8 @@ public abstract class SegmentWriter
     @Override
     public void run()
     {
-        LogManager.getLogManager().reset();
+        counter.decrementAndGet();
+        SegmentContainer.INSTANCE().growUp(segment.getPath());
         // generate file path
         String db = segment.getDb();
         String table = segment.getTable();

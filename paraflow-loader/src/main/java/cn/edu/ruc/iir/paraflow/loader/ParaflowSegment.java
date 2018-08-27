@@ -1,8 +1,5 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 /**
  * paraflow segment
  *
@@ -14,10 +11,9 @@ public class ParaflowSegment
         ON_HEAP, OFF_HEAP, ON_DISK
     }
 
-    private final ParaflowRecord[] records;   // records of each fiber
-    private final long[] fiberMinTimestamps;    // minimal timestamps of each fiber
-    private final long[] fiberMaxTimestamps;    // maximum timestamps of each fiber
-    private final ReadWriteLock lock;
+    private ParaflowRecord[] records;   // records of each fiber
+    private long[] fiberMinTimestamps;    // minimal timestamps of each fiber
+    private long[] fiberMaxTimestamps;    // maximum timestamps of each fiber
     private String db;
     private String table;
     private String path = "";                   // path of the in-memory file or on-disk file; if ON_HEAP, path is empty
@@ -29,37 +25,6 @@ public class ParaflowSegment
         this.fiberMinTimestamps = fiberMinTimestamps;
         this.fiberMaxTimestamps = fiberMaxTimestamps;
         this.storageLevel = StorageLevel.ON_HEAP;
-        this.lock = new ReentrantReadWriteLock();
-    }
-
-    public boolean tryReadLock()
-    {
-        return this.lock.readLock().tryLock();
-    }
-
-    public void readLock()
-    {
-        this.lock.readLock().lock();
-    }
-
-    public void readUnLock()
-    {
-        this.lock.readLock().unlock();
-    }
-
-    public boolean tryWriteLock()
-    {
-        return this.lock.writeLock().tryLock();
-    }
-
-    public void writeLock()
-    {
-        this.lock.writeLock().lock();
-    }
-
-    public void writeUnLock()
-    {
-        this.lock.writeLock().unlock();
     }
 
     public ParaflowRecord[] getRecords()
