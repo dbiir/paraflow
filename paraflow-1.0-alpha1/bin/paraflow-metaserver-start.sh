@@ -1,9 +1,9 @@
 #!/bin/bash
 
-base_dir=$(dirname $0)/..
+base_dir=$(dirname $0)
 
 if [ "x$PARAFLOW_HOME" = "x" ]; then
-  export PARAFLOW_HOME="$base_dir/"
+  export PARAFLOW_HOME="$base_dir/../"
 fi
 if [ "x$PARAFLOW_LOG4J_OPTS" = "x" ]; then
   export PARAFLOW_LOG4J_OPTS="-Dlog4j.configuration=file:$base_dir/../config/log4j.properties"

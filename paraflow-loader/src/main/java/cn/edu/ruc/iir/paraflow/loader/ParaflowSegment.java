@@ -27,6 +27,13 @@ public class ParaflowSegment
         this.storageLevel = StorageLevel.ON_HEAP;
     }
 
+    public void clear()
+    {
+        this.records = null;
+        this.fiberMaxTimestamps = null;
+        this.fiberMinTimestamps = null;
+    }
+
     public ParaflowRecord[] getRecords()
     {
         return records;

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * paraflow
@@ -26,21 +26,22 @@ public abstract class SegmentWriter
     private final int partitionTo;
     private final Random random = new Random(System.nanoTime());
     private final MetaClient metaClient;
+    private final BlockingQueue<String> flushingQueue;
     private final Map<String, MetaProto.StringListType> tableColumnNamesCache;
     private final Map<String, MetaProto.StringListType> tableColumnTypesCache;
-    private final AtomicInteger counter;
     final LoaderConfig config = LoaderConfig.INSTANCE();
     final Configuration configuration = new Configuration();
 
-    SegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient, AtomicInteger counter)
+    SegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient,
+                  BlockingQueue<String> flushingQueue)
     {
         this.segment = segment;
         this.partitionFrom = partitionFrom;
         this.partitionTo = partitionTo;
         this.metaClient = metaClient;
+        this.flushingQueue = flushingQueue;
         this.tableColumnNamesCache = new HashMap<>();
         this.tableColumnTypesCache = new HashMap<>();
-        this.counter = counter;
         configuration.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         configuration.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
     }
@@ -48,8 +49,6 @@ public abstract class SegmentWriter
     @Override
     public void run()
     {
-        counter.decrementAndGet();
-        SegmentContainer.INSTANCE().growUp(segment.getPath());
         // generate file path
         String db = segment.getDb();
         String table = segment.getTable();
@@ -76,6 +75,8 @@ public abstract class SegmentWriter
         }
         // write file
         if (write(segment, columnNames, columnTypes)) {
+            // signal done segment
+            SegmentContainer.INSTANCE().doneSegment();
             // change storage level
             segment.setStorageLevel(ParaflowSegment.StorageLevel.OFF_HEAP);
             // update metadata
@@ -100,6 +101,16 @@ public abstract class SegmentWriter
             }
             long latency = currentTime - (2 * (fiberMaxSum + fiberMinSum) / latencyPartitions);
             logger.info("latency: " + latency);
+            System.out.println("latency: " + latency);
+            // clear segment content
+            segment.clear();
+            // flush segment
+            try {
+                flushingQueue.put(segment.getPath());
+            }
+            catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
