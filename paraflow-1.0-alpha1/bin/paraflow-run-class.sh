@@ -8,6 +8,7 @@ fi
 
 # get base dir
 base_dir=$(dirname $0)/..
+echo $base_dir
 
 # add local jars into classpath
 for file in "$base_dir"/libs/*.jar;
@@ -16,7 +17,7 @@ do
 done
 
 if [ "x$PARAFLOW_HOME" = "x" ]; then
-  export PARAFLOW_HOME="$base_dir/../"
+  export PARAFLOW_HOME="$base_dir/"
 fi
 
 # JMX settings

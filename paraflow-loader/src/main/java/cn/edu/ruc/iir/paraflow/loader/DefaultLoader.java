@@ -109,10 +109,10 @@ public class DefaultLoader
             pipeline.addProcessor(dataPuller);
         }
         // init segment container
-        BlockingQueue<ParaflowSegment> flushingQueue =
+        BlockingQueue<String> flushingQueue =
                 new PushPullBlockingQueue<>(100, SpinPolicy.SPINNING);
-        SegmentContainer.INSTANCE().init(config.getContainerCapacity(), partitionFrom, partitionTo, flushingQueue,
-                pipeline.getExecutorService(), metaClient);
+        SegmentContainer.INSTANCE().init(config.getYoungCapacity(), config.getAdultCapacity(), partitionFrom, partitionTo,
+                                         flushingQueue, pipeline.getExecutorService(), metaClient);
         // add a data compactor
         DataCompactor dataCompactor = new DataCompactor("compactor", db, table, 1, config.getCompactorThreshold(),
                 partitionNum, sorterCompactorBlockingQueue);

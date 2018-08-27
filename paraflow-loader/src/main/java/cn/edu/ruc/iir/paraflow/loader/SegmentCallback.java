@@ -1,7 +1,5 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
-import java.util.concurrent.locks.ReadWriteLock;
-
 /**
  * paraflow
  *
@@ -9,5 +7,5 @@ import java.util.concurrent.locks.ReadWriteLock;
  */
 public interface SegmentCallback
 {
-    void callback(ReadWriteLock lock);
+    void callback();
 }

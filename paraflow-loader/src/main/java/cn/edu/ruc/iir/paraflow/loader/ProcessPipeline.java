@@ -78,7 +78,7 @@ class ProcessPipeline
     void stop()
     {
         executorService.shutdown();
-        SegmentContainer.INSTANCE().flushAll();
+        SegmentContainer.INSTANCE().stop();
         for (RunningProcessor runningProcessor : runningProcessors) {
             runningProcessor.stop();
         }
