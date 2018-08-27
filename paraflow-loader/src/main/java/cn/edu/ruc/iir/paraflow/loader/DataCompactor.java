@@ -40,6 +40,7 @@ public class DataCompactor
     public void run()
     {
         System.out.println(super.name + " started.");
+        logger.info(super.name + " started.");
         try {
             while (!isReadyToStop.get()) {
                 ParaflowSortedBuffer sortedBuffer
@@ -47,6 +48,7 @@ public class DataCompactor
                 if (sortedBuffer == null) {
                     continue;
                 }
+                System.out.println("compactor gets sorted buffer.");
                 logger.debug("compactor gets sorted buffer.");
                 ParaflowRecord[] sortedRecords = sortedBuffer.getSortedRecords();
                 int partition = sortedBuffer.getPartition();
@@ -73,6 +75,7 @@ public class DataCompactor
 
     private ParaflowSegment compact()
     {
+        System.out.println("compacting....");
         logger.debug("compacting....");
         ParaflowRecord[] compactedRecords = new ParaflowRecord[recordNum];
         long[] fiberMinTimestamps = new long[partitionNum];

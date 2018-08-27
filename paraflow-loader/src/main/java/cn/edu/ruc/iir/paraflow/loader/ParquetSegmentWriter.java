@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * paraflow
@@ -28,9 +28,9 @@ public class ParquetSegmentWriter
 {
     private static final Logger logger = LoggerFactory.getLogger(ParquetSegmentWriter.class);
 
-    ParquetSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient, AtomicInteger counter)
+    ParquetSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient, BlockingQueue<String> flushingQueue)
     {
-        super(segment, partitionFrom, partitionTo, metaClient, counter);
+        super(segment, partitionFrom, partitionTo, metaClient, flushingQueue);
     }
 
     @Override

@@ -5,19 +5,19 @@ then
   echo "USAGE: $0 [-daemon] db table partitionFrom partitionTo"
   exit 1
 fi
-base_dir=$(dirname $0)/..
+base_dir=$(dirname $0)
 
 MAIN_CLASS="cn.edu.ruc.iir.paraflow.examples.loader.BasicLoader"
 
 if [ "xPARAFLOW_HOME" = "x" ]; then
-  export PARAFLOW_HOME="$base_dir/"
+  export PARAFLOW_HOME="$base_dir/../"
 fi
 if [ "x$PARAFLOW_LOG4J_OPTS" = "x" ]; then
   export PARAFLOW_LOG4J_OPTS="-Dlog4j.configuration=file:$base_dir/../config/log4j.properties"
 fi
 
 if [ "x$PARAFLOW_HEAP_OPTS" = "x" ]; then
-  export PARAFLOW_HEAP_OPTS="-Xmx1G -Xms1G"
+  export PARAFLOW_HEAP_OPTS="-Xmx2G -Xms1G"
 fi
 
 EXTRA_ARGS=${EXTRA_ARGS-'-name ParaflowLoader'}

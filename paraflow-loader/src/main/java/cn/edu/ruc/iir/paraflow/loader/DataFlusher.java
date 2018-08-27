@@ -43,6 +43,7 @@ public class DataFlusher
     @Override
     public void run()
     {
+        System.out.println(super.name + " started.");
         try {
             while (!isReadyToStop.get()) {
                 String segmentPath = flushingQueue.take();

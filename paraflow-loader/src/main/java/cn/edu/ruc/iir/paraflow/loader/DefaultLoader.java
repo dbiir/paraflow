@@ -110,8 +110,8 @@ public class DefaultLoader
         }
         // init segment container
         BlockingQueue<String> flushingQueue =
-                new PushPullBlockingQueue<>(100, SpinPolicy.SPINNING);
-        SegmentContainer.INSTANCE().init(config.getYoungCapacity(), config.getAdultCapacity(), partitionFrom, partitionTo,
+                new PushPullBlockingQueue<>(config.getFlushingCapacity(), SpinPolicy.SPINNING);
+        SegmentContainer.INSTANCE().init(config.getContainerCapacity(), partitionFrom, partitionTo,
                                          flushingQueue, pipeline.getExecutorService(), metaClient);
         // add a data compactor
         DataCompactor dataCompactor = new DataCompactor("compactor", db, table, 1, config.getCompactorThreshold(),

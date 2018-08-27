@@ -47,6 +47,7 @@ public class DataPuller
     @Override
     public void run()
     {
+        System.out.println(super.name + " started.");
         logger.info(super.name + " started.");
         while (!isReadyToStop.get()) {
             try {
@@ -77,9 +78,11 @@ public class DataPuller
                 }
             }
             catch (WakeupException e) {
+                System.out.println(super.name + " wakes up.");
                 logger.info(super.name + " wakes up.");
                 if (isReadyToStop.get()) {
                     consumer.close();
+                    System.out.println(super.name + " stopped.");
                     logger.info(super.name + " stopped.");
                     break;
                 }

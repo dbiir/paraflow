@@ -70,14 +70,14 @@ public class LoaderConfig
         return Integer.parseInt(paraflowConfig.getProperty("sortedBuffer.capacity"));
     }
 
-    public int getYoungCapacity()
+    public int getContainerCapacity()
     {
-        return Integer.parseInt(paraflowConfig.getProperty("young.capacity"));
+        return Integer.parseInt(paraflowConfig.getProperty("container.capacity"));
     }
 
-    public int getAdultCapacity()
+    public int getFlushingCapacity()
     {
-        return Integer.parseInt(paraflowConfig.getProperty("adult.capacity"));
+        return Integer.parseInt(paraflowConfig.getProperty("flushing.capacity"));
     }
 
     public int getCompactorThreshold()
