@@ -99,9 +99,9 @@ public abstract class SegmentWriter
                 latencyPartitions++;
                 metaClient.createBlockIndex(db, table, i + partitionFrom, fiberMinTimestamps[i], fiberMaxTimestamps[i], path);
             }
-            long latency = currentTime - (2 * (fiberMaxSum + fiberMinSum) / latencyPartitions);
-            logger.info("latency: " + latency);
-            System.out.println("latency: " + latency);
+            long latency = currentTime - ((fiberMaxSum + fiberMinSum) / (2 * latencyPartitions));
+            logger.info("latency: " + latency + " ms.");
+            System.out.println("latency: " + latency + " ms.");
             // clear segment content
             segment.clear();
             // flush segment

@@ -10,7 +10,7 @@ fi
 base_dir=$(dirname $0)
 
 # add local jars into classpath
-for file in "$base_dir"/libs/*.jar;
+for file in "$base_dir"/../libs/*.jar;
 do
   CLASSPATH="$CLASSPATH":"$file"
 done
@@ -31,12 +31,12 @@ fi
 
 # Log directory
 if [ "x$LOG_DIR" = "x" ]; then
-  LOG_DIR="$base_dir/logs"
+  LOG_DIR="$base_dir/../logs"
 fi
 
 # Log4j settings
 if [ -z "PARAFLOW_LOG4J_OPTS" ]; then
-  LOG4J_PATH="$base_dir/config/log4j.properties"
+  LOG4J_PATH="$base_dir/../config/log4j.properties"
   PARAFLOW_LOG4J_OPTS="-Dlog4j.configuration=file:{$LOG4J_PATH}"
 fi
 
