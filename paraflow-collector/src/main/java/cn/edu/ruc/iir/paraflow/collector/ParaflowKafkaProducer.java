@@ -16,13 +16,13 @@ import java.util.concurrent.atomic.AtomicLong;
  *
  * @author guodong
  */
-class ParaflowKafkaProducer
+public class ParaflowKafkaProducer
 {
     private final KafkaProducer<byte[], byte[]> kafkaProducer;
     private final AtomicLong ackRecords = new AtomicLong();
     private final Stats stats;
 
-    ParaflowKafkaProducer(Properties config, long statsInterval)
+    public ParaflowKafkaProducer(Properties config, long statsInterval)
     {
         // set the producer configuration properties for kafka record key and value serializers
         if (!config.containsKey(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)) {
@@ -38,17 +38,17 @@ class ParaflowKafkaProducer
         this.stats = new Stats(statsInterval);
     }
 
-    void sendMsg(ProducerRecord<byte[], byte[]> record, int length)
+    public void sendMsg(ProducerRecord<byte[], byte[]> record, int length)
     {
         kafkaProducer.send(record, new ProducerCallback(length, stats));
     }
 
-    long getAckRecords()
+    public long getAckRecords()
     {
         return ackRecords.get();
     }
 
-    void close()
+    public void close()
     {
         kafkaProducer.flush();
         kafkaProducer.close();

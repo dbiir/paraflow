@@ -15,13 +15,14 @@ import com.esotericsoftware.kryo.io.Input;
 public class TpchDataTransformer
         implements DataTransformer
 {
-    private static final Kryo kryo = new Kryo();
+    private final Kryo kryo;
 
     public TpchDataTransformer()
     {
+        this.kryo = new Kryo();
         kryo.register(LineOrder.class);
-        kryo.register(Object[].class);
         kryo.register(byte[].class);
+        kryo.register(Object[].class);
     }
 
     @Override
@@ -31,6 +32,8 @@ public class TpchDataTransformer
         LineOrder lineOrder = kryo.readObject(input, LineOrder.class);
         input.close();
         lineOrder.setFiberId(partition);
+        lineOrder.setKey(lineOrder.getCustomerKey());
+        lineOrder.setTimestamp(lineOrder.getCreation());
         return lineOrder;
     }
 }
