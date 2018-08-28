@@ -1,7 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader.utils;
 
+import cn.edu.ruc.iir.paraflow.commons.ParaflowRecord;
 import cn.edu.ruc.iir.paraflow.commons.Stats;
-import cn.edu.ruc.iir.paraflow.loader.ParaflowRecord;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.PushPullBlockingQueue;
 import com.conversantmedia.util.concurrent.SpinPolicy;
@@ -56,6 +56,16 @@ public class ConcurrentQueueTest
         }
     }
 
+    private class MockParaflowRecord
+            extends ParaflowRecord
+    {
+        @Override
+        public Object getValue(int idx)
+        {
+            return null;
+        }
+    }
+
     private class Sender
             implements Runnable
     {
@@ -69,7 +79,11 @@ public class ConcurrentQueueTest
         private void sendMsg()
         {
             try {
-                concurrentQueue.put(new ParaflowRecord(1, System.currentTimeMillis(), 1, (Object) new byte[200]));
+                MockParaflowRecord record = new MockParaflowRecord();
+                record.setFiberId(0);
+                record.setKey(1);
+                record.setTimestamp(System.currentTimeMillis());
+                concurrentQueue.put(record);
             }
             catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

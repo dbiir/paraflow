@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import cn.edu.ruc.iir.paraflow.commons.ParaflowRecord;
 import cn.edu.ruc.iir.paraflow.commons.Stats;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

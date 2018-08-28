@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import cn.edu.ruc.iir.paraflow.commons.ParaflowRecord;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import org.apache.hadoop.fs.Path;
@@ -10,6 +11,7 @@ import org.apache.parquet.example.data.simple.SimpleGroupFactory;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.example.GroupWriteSupport;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
+import org.apache.parquet.io.api.Binary;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.MessageTypeParser;
 import org.slf4j.Logger;
@@ -28,7 +30,7 @@ public class ParquetSegmentWriter
 {
     private static final Logger logger = LoggerFactory.getLogger(ParquetSegmentWriter.class);
 
-    ParquetSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient, BlockingQueue<String> flushingQueue)
+    public ParquetSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient, BlockingQueue<String> flushingQueue)
     {
         super(segment, partitionFrom, partitionTo, metaClient, flushingQueue);
     }
@@ -37,6 +39,7 @@ public class ParquetSegmentWriter
     public boolean write(ParaflowSegment segment, MetaProto.StringListType columnNames, MetaProto.StringListType columnTypes)
     {
         // construct schema
+        long prepareStart = System.currentTimeMillis();
         int columnNum = columnTypes.getStrCount();
         StringBuilder schemaBuilder = new StringBuilder("message " + segment.getTable() + " {");
         for (int i = 0; i < columnNum; i++) {
@@ -88,13 +91,16 @@ public class ParquetSegmentWriter
                 compressionCodecName = CompressionCodecName.UNCOMPRESSED;
                 break;
         }
+        long prepareEnd = System.currentTimeMillis();
+        System.out.println("Prepare cost: " + (prepareEnd - prepareStart));
         try (ParquetWriter<Group> writer = new ParquetWriter<>(
                 new Path(segment.getPath()), writeSupport, compressionCodecName,
                 config.getParquetBlockSize(), config.getParquetPageSize(),
                 config.getParquetDictionaryPageSize(), config.isParquetDictionaryEnabled(), config.isParquetValidating(),
                 ParquetProperties.WriterVersion.PARQUET_2_0, configuration)) {
             ParaflowRecord[] content = segment.getRecords();
-            for (ParaflowRecord record : content) {
+            for (int i = 0; i < content.length; i++) {
+                ParaflowRecord record = content[i];
                 Group group = groupFactory.newGroup();
                 for (int k = 0; k < columnNum; k++) {
                     switch (columnTypes.getStr(k)) {
@@ -119,11 +125,13 @@ public class ParquetSegmentWriter
                             group.append(columnNames.getStr(k), (double) record.getValue(k));
                             break;
                         default:
-                            group.append(columnNames.getStr(k), record.getValue(k).toString());
+                            group.append(columnNames.getStr(k), Binary.fromConstantByteArray((byte[]) record.getValue(k)));
                             break;
                     }
                 }
+
                 writer.write(group);
+                content[i] = null;
             }
             return true;
         }

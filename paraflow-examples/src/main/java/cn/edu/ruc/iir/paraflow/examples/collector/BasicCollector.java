@@ -81,7 +81,7 @@ public class BasicCollector
                         LINEITEM_COMMENT.getColumnName(),
                         CREATION.getColumnName()
                 };
-                String[] types = {"integer",
+                String[] types = {"bigint",
                         "bigint",
                         "varchar(1)",
                         "double",
@@ -115,7 +115,7 @@ public class BasicCollector
 
             for (int i = 0; i < parallelism; i++) {
                 DataSource dataSource = new TpchDataSource();
-                collector.collect(dataSource, 0, 22,
+                collector.collect(dataSource, 1, 22,
                                   new BasicParaflowFiberPartitioner(),
                                   new StringMessageSerializationSchema<>(),
                                   new MockDataSink(dbName, tableName));

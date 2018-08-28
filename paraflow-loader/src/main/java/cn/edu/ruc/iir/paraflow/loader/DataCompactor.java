@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import cn.edu.ruc.iir.paraflow.commons.ParaflowRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
