@@ -91,7 +91,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <finalName>paraflow-metaserver-${project.version}</finalName>
                             <outputDirectory>${project.parent.basedir}/paraflow-${project.version}/libs</outputDirectory>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>allinone</shadedClassifierName>

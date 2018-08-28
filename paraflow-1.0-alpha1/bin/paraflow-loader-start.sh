@@ -17,7 +17,7 @@ if [ "x$PARAFLOW_LOG4J_OPTS" = "x" ]; then
 fi
 
 if [ "x$PARAFLOW_HEAP_OPTS" = "x" ]; then
-  export PARAFLOW_HEAP_OPTS="-Xmx2G -Xms1G"
+  export PARAFLOW_HEAP_OPTS="-Xmx16G -Xms8G"
 fi
 
 EXTRA_ARGS=${EXTRA_ARGS-'-name ParaflowLoader'}
