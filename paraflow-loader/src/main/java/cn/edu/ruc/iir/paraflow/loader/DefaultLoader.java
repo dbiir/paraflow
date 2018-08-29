@@ -80,7 +80,7 @@ public class DefaultLoader
         for (int i = partitionFrom; i <= partitionTo; i++) {
             int idx = i % pullerParallelism;
             if (!partitionMapping.containsKey(idx)) {
-                partitionMapping.put(idx, new ArrayList<>());
+                partitionMapping.put(idx, new ArrayList<>((partitionNum / pullerParallelism) + 2));
             }
             partitionMapping.get(idx).add(new TopicPartition(topic, i));
         }
@@ -89,22 +89,11 @@ public class DefaultLoader
                 new DisruptorBlockingQueue<>(config.getSorterCompactorCapacity(), SpinPolicy.SPINNING);
         // get transformer
         String transformerClass = config.getTransformerClass();
-        DataTransformer transformer = null;
-        try {
-            Class clazz = DefaultLoader.class.getClassLoader().loadClass(transformerClass);
-            transformer = (DataTransformer) clazz.newInstance();
-        }
-        catch (ClassNotFoundException | IllegalAccessException | InstantiationException e) {
-            e.printStackTrace();
-        }
-        if (transformer == null) {
-            logger.error("No data transformer available.");
-            return;
-        }
+
         // add data pullers and sorters
         for (int pullerId : partitionMapping.keySet()) {
             DataPuller dataPuller = new DataPuller("puller-" + pullerId, db, table, 1,
-                    partitionMapping.get(pullerId), config.getProperties(), transformer,
+                    partitionMapping.get(pullerId), config.getProperties(), transformerClass,
                     sorterCompactorBlockingQueue, config.getSortedBufferCapacity());
             pipeline.addProcessor(dataPuller);
         }

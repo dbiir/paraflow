@@ -30,9 +30,9 @@ public class TpchDataSource
         Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(10000, 1, 1500, 0, 1_000_000);
         this.lineOrderIterator = lineOrderIterable.iterator();
         this.kryo = new Kryo();
-        kryo.register(LineOrder.class);
-        kryo.register(byte[].class);
-        kryo.register(Object[].class);
+        kryo.register(LineOrder.class, 10);
+        kryo.register(byte[].class, 11);
+        kryo.register(Object[].class, 12);
         this.output = new ByteBufferOutput(300, 2000);
     }
 

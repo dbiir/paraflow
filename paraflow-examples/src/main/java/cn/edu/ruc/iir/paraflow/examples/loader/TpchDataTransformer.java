@@ -6,6 +6,11 @@ import cn.edu.ruc.iir.paraflow.loader.DataTransformer;
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.ByteBufferInput;
 import com.esotericsoftware.kryo.io.Input;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 /**
  * paraflow
@@ -15,25 +20,36 @@ import com.esotericsoftware.kryo.io.Input;
 public class TpchDataTransformer
         implements DataTransformer
 {
+    private static final Logger logger = LoggerFactory.getLogger(TpchDataTransformer.class);
     private final Kryo kryo;
 
     public TpchDataTransformer()
     {
         this.kryo = new Kryo();
-        kryo.register(LineOrder.class);
-        kryo.register(byte[].class);
-        kryo.register(Object[].class);
+        kryo.register(LineOrder.class, 10);
+        kryo.register(byte[].class, 11);
+        kryo.register(Object[].class, 12);
     }
 
     @Override
     public ParaflowRecord transform(byte[] value, int partition)
     {
         Input input = new ByteBufferInput(value);
-        LineOrder lineOrder = kryo.readObject(input, LineOrder.class);
-        input.close();
-        lineOrder.setFiberId(partition);
-        lineOrder.setKey(lineOrder.getCustomerKey());
-        lineOrder.setTimestamp(lineOrder.getCreation());
-        return lineOrder;
+        try {
+            LineOrder lineOrder = kryo.readObject(input, LineOrder.class);
+            input.close();
+            lineOrder.setFiberId(partition);
+            lineOrder.setKey(lineOrder.getCustomerKey());
+            lineOrder.setTimestamp(lineOrder.getCreation());
+            return lineOrder;
+        }
+        catch (Exception e) {
+            StringWriter stringWriter = new StringWriter();
+            PrintWriter printWriter = new PrintWriter(stringWriter);
+            e.printStackTrace(printWriter);
+            logger.error(stringWriter.toString());
+            e.printStackTrace();
+            return null;
+        }
     }
 }
