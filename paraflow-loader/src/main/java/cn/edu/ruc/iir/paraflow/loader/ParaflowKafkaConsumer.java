@@ -14,11 +14,11 @@ import java.util.Properties;
  *
  * @author guodong
  */
-class ParaflowKafkaConsumer
+public class ParaflowKafkaConsumer
 {
     private final Consumer<byte[], byte[]> consumer;
 
-    ParaflowKafkaConsumer(List<TopicPartition> topicPartitions, Properties config)
+    public ParaflowKafkaConsumer(List<TopicPartition> topicPartitions, Properties config)
     {
         // set the consumer configuration properties for kafka record key and value serializers
         if (!config.containsKey(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG)) {
@@ -34,7 +34,7 @@ class ParaflowKafkaConsumer
         this.consumer.assign(topicPartitions);
     }
 
-    Consumer<byte[], byte[]> getConsumer()
+    public Consumer<byte[], byte[]> getConsumer()
     {
         return this.consumer;
     }

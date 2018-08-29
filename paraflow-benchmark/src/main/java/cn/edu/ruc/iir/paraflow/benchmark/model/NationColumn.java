@@ -14,38 +14,11 @@ public enum NationColumn
         implements Column<Nation>
 {
     @SuppressWarnings("SpellCheckingInspection")
-    NATION_KEY("n_nationkey", IDENTIFIER)
-    {
-        public long getIdentifier(Nation nation)
-        {
-            return nation.getNationKey();
-        }
-    },
-
-    NAME("n_name", varchar(25))
-    {
-        public String getString(Nation nation)
-        {
-            return nation.getName();
-        }
-    },
-
+    NATION_KEY("n_nationkey", IDENTIFIER),
+    NAME("n_name", varchar(25)),
     @SuppressWarnings("SpellCheckingInspection")
-    REGION_KEY("n_regionkey", IDENTIFIER)
-    {
-        public long getIdentifier(Nation nation)
-        {
-            return nation.getRegionKey();
-        }
-    },
-
-    COMMENT("n_comment", varchar(152))
-    {
-        public String getString(Nation nation)
-        {
-            return nation.getComment();
-        }
-    };
+    REGION_KEY("n_regionkey", IDENTIFIER),
+    COMMENT("n_comment", varchar(152));
 
     private final String columnName;
     private final TpchColumnType type;
@@ -66,35 +39,5 @@ public enum NationColumn
     public TpchColumnType getType()
     {
         return type;
-    }
-
-    @Override
-    public double getDouble(Nation nation)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public long getIdentifier(Nation nation)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getInteger(Nation nation)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getString(Nation nation)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getDate(Nation entity)
-    {
-        throw new UnsupportedOperationException();
     }
 }

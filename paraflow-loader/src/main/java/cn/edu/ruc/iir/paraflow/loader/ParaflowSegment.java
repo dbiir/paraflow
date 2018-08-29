@@ -1,5 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import cn.edu.ruc.iir.paraflow.commons.ParaflowRecord;
+
 /**
  * paraflow segment
  *
@@ -11,7 +13,7 @@ public class ParaflowSegment
         ON_HEAP, OFF_HEAP, ON_DISK
     }
 
-    private ParaflowRecord[] records;   // records of each fiber
+    private ParaflowRecord[][] records;   // records of each fiber
     private long[] fiberMinTimestamps;    // minimal timestamps of each fiber
     private long[] fiberMaxTimestamps;    // maximum timestamps of each fiber
     private String db;
@@ -19,7 +21,7 @@ public class ParaflowSegment
     private String path = "";                   // path of the in-memory file or on-disk file; if ON_HEAP, path is empty
     private volatile StorageLevel storageLevel;
 
-    public ParaflowSegment(ParaflowRecord[] records, long[] fiberMinTimestamps, long[] fiberMaxTimestamps)
+    public ParaflowSegment(ParaflowRecord[][] records, long[] fiberMinTimestamps, long[] fiberMaxTimestamps)
     {
         this.records = records;
         this.fiberMinTimestamps = fiberMinTimestamps;
@@ -34,7 +36,7 @@ public class ParaflowSegment
         this.fiberMinTimestamps = null;
     }
 
-    public ParaflowRecord[] getRecords()
+    public ParaflowRecord[][] getRecords()
     {
         return records;
     }

@@ -17,6 +17,14 @@
             <artifactId>tpch</artifactId>
         </dependency>
         <dependency>
+            <groupId>cn.edu.ruc.iir</groupId>
+            <artifactId>paraflow-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.esotericsoftware</groupId>
+            <artifactId>kryo</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.facebook.presto</groupId>
             <artifactId>presto-jdbc</artifactId>
         </dependency>
@@ -68,7 +76,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>${project.artifactId}-${project.version}</finalName>
+                            <finalName>paraflow-benchmark-${project.version}</finalName>
                             <outputDirectory>${project.parent.basedir}/paraflow-${project.version}/libs</outputDirectory>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>allinone</shadedClassifierName>

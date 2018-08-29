@@ -5,8 +5,6 @@ import cn.edu.ruc.iir.paraflow.commons.exceptions.ParaFlowException;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.Connection;
 import cn.edu.ruc.iir.paraflow.metaserver.connection.ResultList;
 import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 /**
  * paraflow
@@ -15,8 +13,6 @@ import org.apache.logging.log4j.Logger;
  */
 public class InitMetaTablesAction extends Action
 {
-    private static final Logger logger = LogManager.getLogger(InitMetaTablesAction.class);
-
     @Override
     public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
     {

@@ -1,223 +1,296 @@
 package cn.edu.ruc.iir.paraflow.benchmark.model;
 
+import cn.edu.ruc.iir.paraflow.commons.ParaflowRecord;
+
 /**
  * paraflow
  *
  * @author guodong
  */
 public class LineOrder
+        extends ParaflowRecord
         implements Model
 {
-    private final long rowNumber;
-    private final long lineOrderKey;
-    private final long customerKey;
-    private final char orderStatus;
-    private final long totalPrice;
-    private final int orderDate;
-    private final String orderPriority;
-    private final String clerk;
-    private final int shipPriority;
-    private final String orderComment;
-    private final int lineNumber;
-    private final long quantity;
-    private final long extendedPrice;
-    private final long discount;
-    private final long tax;
-    private final String returnFlag;
-    private final char lineStatus;
-    private final int shipDate;
-    private final int commitDate;
-    private final int receiptDate;
-    private final String shipInstructions;
-    private final String shipMode;
-    private final String lineitemComment;
-    private final long creation;
+    private long rowNumber;
+    private Object[] values;
+
+    public LineOrder()
+    {
+        this.values = new Object[23];
+    }
+
+    @Override
+    public Object getValue(int idx)
+    {
+        return values[idx];
+    }
 
     public LineOrder(
             long rowNumber,
             long lineOrderKey,
             long customerKey,
-            char orderStatus,
-            String clerk,
-            String orderComment,
-            String lineitemComment,
-            long quantity,
-            long discount,
-            long tax,
+            byte[] orderStatus,
+            double totalPrice,
+            int orderDate,
+            byte[] orderPriority,
+            byte[] clerk,
+            int shipPriority,
+            byte[] orderComment,
+            int lineNumber,
+            double quantity,
+            double extendedPrice,
+            double discount,
+            double tax,
+            byte[] returnFlag,
+            byte[] lineStatus,
             int shipDate,
             int commitDate,
             int receiptDate,
-            String returnFlag,
-            String shipInstructions,
-            String shipMode,
-            long totalPrice,
-            int orderDate,
-            String orderPriority,
-            int shipPriority,
-            int lineNumber,
-            long extendedPrice,
-            char lineStatus,
+            byte[] shipInstructions,
+            byte[] shipMode,
+            byte[] lineitemComment,
             long creation)
     {
         this.rowNumber = rowNumber;
-        this.lineOrderKey = lineOrderKey;
-        this.customerKey = customerKey;
-        this.orderStatus = orderStatus;
-        this.totalPrice = totalPrice;
-        this.orderDate = orderDate;
-        this.orderPriority = orderPriority;
-        this.clerk = clerk;
-        this.shipPriority = shipPriority;
-        this.orderComment = orderComment;
-        this.lineNumber = lineNumber;
-        this.quantity = quantity;
-        this.extendedPrice = extendedPrice;
-        this.discount = discount;
-        this.tax = tax;
-        this.returnFlag = returnFlag;
-        this.lineStatus = lineStatus;
-        this.shipDate = shipDate;
-        this.commitDate = commitDate;
-        this.receiptDate = receiptDate;
-        this.shipInstructions = shipInstructions;
-        this.shipMode = shipMode;
-        this.lineitemComment = lineitemComment;
-        this.creation = creation;
+        this.values = new Object[]{lineOrderKey, customerKey, orderStatus, totalPrice, orderDate, orderPriority,
+                clerk, shipPriority, orderComment, lineNumber, quantity / 100.0d, extendedPrice / 100.0d, discount / 100.0d,
+                tax / 100.0d, returnFlag, lineStatus, shipDate, commitDate, receiptDate, shipInstructions, shipMode,
+                lineitemComment, creation};
     }
 
-    public long getLineOrderKey()
+    public void setLineOrderKey(long lineOrderKey)
     {
-        return lineOrderKey;
+        this.values[0] = lineOrderKey;
+    }
+
+    public void setCustomerKey(long customerKey)
+    {
+        this.values[1] = customerKey;
     }
 
     public long getCustomerKey()
     {
-        return customerKey;
+        return (long) values[1];
+    }
+
+    public void setOrderStatus(char orderStatus)
+    {
+        this.values[2] = orderStatus;
     }
 
     public char getOrderStatus()
     {
-        return orderStatus;
+        return (char) values[2];
+    }
+
+    public void setTotalPrice(double totalPrice)
+    {
+        this.values[3] = totalPrice;
     }
 
     public double getTotalPrice()
     {
-        return totalPrice / 100.0;
+        return (double) values[3];
     }
 
     public long getTotalPriceInCents()
     {
-        return totalPrice;
+        return (long) values[3];
+    }
+
+    public void setOrderDate(int orderDate)
+    {
+        this.values[4] = orderDate;
     }
 
     public int getOrderDate()
     {
-        return orderDate;
+        return (int) values[4];
+    }
+
+    public void setOrderPriority(String orderPriority)
+    {
+        this.values[5] = orderPriority;
     }
 
     public String getOrderPriority()
     {
-        return orderPriority;
+        return (String) values[5];
+    }
+
+    public void setClerk(String clerk)
+    {
+        this.values[6] = clerk;
     }
 
     public String getClerk()
     {
-        return clerk;
+        return (String) values[6];
+    }
+
+    public void setShipPriority(int shipPriority)
+    {
+        this.values[7] = shipPriority;
     }
 
     public int getShipPriority()
     {
-        return shipPriority;
+        return (int) values[7];
+    }
+
+    public void setOrderComment(String orderComment)
+    {
+        this.values[8] = orderComment;
     }
 
     public String getOrderComment()
     {
-        return orderComment;
+        return (String) values[8];
+    }
+
+    public void setLineNumber(int lineNumber)
+    {
+        this.values[9] = lineNumber;
     }
 
     public int getLineNumber()
     {
-        return lineNumber;
+        return (int) values[9];
     }
 
-    public long getQuantity()
+    public void setQuantity(double quantity)
     {
-        return quantity;
+        this.values[10] = quantity;
+    }
+
+    public double getQuantity()
+    {
+        return (double) values[10];
+    }
+
+    public void setExtendedPrice(double extendedPrice)
+    {
+        this.values[11] = extendedPrice;
     }
 
     public double getExtendedPrice()
     {
-        return extendedPrice / 100.0;
+        return (double) values[11];
     }
 
-    public long getExtendedPriceInCents()
+    public void setDiscount(double discount)
     {
-        return extendedPrice;
+        this.values[12] = discount;
     }
 
     public double getDiscount()
     {
-        return discount / 100.0;
+        return (double) values[12];
     }
 
-    public long getDiscountPercent()
+    public void setTax(double tax)
     {
-        return discount;
+        this.values[13] = tax;
     }
 
     public double getTax()
     {
-        return tax / 100.0;
+        return (double) values[13];
     }
 
-    public long getTaxPercent()
+    public void setReturnFlag(String returnFlag)
     {
-        return tax;
+        this.values[14] = returnFlag;
     }
 
     public String getReturnFlag()
     {
-        return returnFlag;
+        return (String) values[14];
+    }
+
+    public void setLineStatus(char lineStatus)
+    {
+        this.values[15] = lineStatus;
     }
 
     public char getLineStatus()
     {
-        return lineStatus;
+        return (char) values[15];
+    }
+
+    public void setShipDate(int shipDate)
+    {
+        this.values[16] = shipDate;
     }
 
     public int getShipDate()
     {
-        return shipDate;
+        return (int) values[16];
+    }
+
+    public void setCommitDate(int commitDate)
+    {
+        this.values[17] = commitDate;
     }
 
     public int getCommitDate()
     {
-        return commitDate;
+        return (int) values[17];
+    }
+
+    public void setReceiptDate(int receiptDate)
+    {
+        this.values[18] = receiptDate;
     }
 
     public int getReceiptDate()
     {
-        return receiptDate;
+        return (int) values[18];
+    }
+
+    public void setShipInstructions(String shipInstructions)
+    {
+        this.values[19] = shipInstructions;
     }
 
     public String getShipInstructions()
     {
-        return shipInstructions;
+        return (String) values[19];
+    }
+
+    public void setShipMode(String shipMode)
+    {
+        this.values[20] = shipMode;
     }
 
     public String getShipMode()
     {
-        return shipMode;
+        return (String) values[20];
+    }
+
+    public void setLineitemComment(String lineitemComment)
+    {
+        this.values[21] = lineitemComment;
     }
 
     public String getLineitemComment()
     {
-        return lineitemComment;
+        return (String) values[21];
+    }
+
+    public void setCreation(long creation)
+    {
+        this.values[22] = creation;
     }
 
     public long getCreation()
     {
-        return creation;
+        return (long) values[22];
+    }
+
+    public void setRowNumber(long rowNumber)
+    {
+        this.rowNumber = rowNumber;
     }
 
     public long getRowNumber()
@@ -227,28 +300,6 @@ public class LineOrder
 
     public String toLine()
     {
-        return String.valueOf(customerKey) + "|" +
-               lineOrderKey + "|" +
-               orderStatus + "|" +
-               totalPrice + "|" +
-               orderDate + "|" +
-               orderPriority + "|" +
-               clerk + "|" +
-               shipPriority + "|" +
-               orderComment + "|" +
-               lineNumber + "|" +
-               quantity + "|" +
-               extendedPrice + "|" +
-               discount + "|" +
-               tax + "|" +
-               returnFlag + "|" +
-               lineStatus + "|" +
-               shipDate + "|" +
-               commitDate + "|" +
-               receiptDate + "|" +
-               shipInstructions + "|" +
-               shipMode + "|" +
-               lineitemComment + "|" +
-               creation;
+        return "";
     }
 }

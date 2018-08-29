@@ -1,5 +1,8 @@
 package cn.edu.ruc.iir.paraflow.commons;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * paraflow
  *
@@ -7,6 +10,7 @@ package cn.edu.ruc.iir.paraflow.commons;
  */
 public class Stats
 {
+    private static final Logger logger = LoggerFactory.getLogger(Stats.class);
     private final long interval;
 
     private long windowCount;
@@ -34,7 +38,7 @@ public class Stats
     {
         double recPerSec = 1000.0 * windowCount / (double) elapsed;
         double mbPerSec = 1000.0 * windowBytes / (double) elapsed / (1024.0 * 1024.0);
-        System.out.printf("%d records processed, %.1f records/sec (%.2f MB/sec)\n", windowCount, recPerSec, mbPerSec);
+        logger.info(windowCount + " records processed, " + recPerSec + " records/sec (" + mbPerSec + "MB/sec)");
     }
 
     private void newWindow()

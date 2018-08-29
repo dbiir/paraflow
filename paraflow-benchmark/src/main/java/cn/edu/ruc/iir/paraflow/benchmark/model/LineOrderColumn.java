@@ -2,7 +2,6 @@ package cn.edu.ruc.iir.paraflow.benchmark.model;
 
 import io.airlift.tpch.TpchColumnType;
 
-import static io.airlift.tpch.GenerateUtils.formatDate;
 import static io.airlift.tpch.TpchColumnTypes.DATE;
 import static io.airlift.tpch.TpchColumnTypes.DOUBLE;
 import static io.airlift.tpch.TpchColumnTypes.IDENTIFIER;
@@ -18,254 +17,46 @@ public enum LineOrderColumn
         implements Column<LineOrder>
 {
     @SuppressWarnings("SpellCheckingInspection")
-    CUSTOMER_KEY("lo_custkey", IDENTIFIER)
-            {
-                public long getIdentifier(LineOrder lineorder)
-                {
-                    return lineorder.getCustomerKey();
-                }
-            },
-
+    CUSTOMER_KEY("lo_custkey", IDENTIFIER),
     @SuppressWarnings("SpellCheckingInspection")
-    LINEORDER_KEY("lo_lineorderkey", IDENTIFIER)
-            {
-                @Override
-                public long getIdentifier(LineOrder lineorder)
-                {
-                    return lineorder.getLineOrderKey();
-                }
-            },
-
+    LINEORDER_KEY("lo_lineorderkey", IDENTIFIER),
     @SuppressWarnings("SpellCheckingInspection")
-    ORDER_STATUS("lo_orderstatus", varchar(1))
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return String.valueOf(lineorder.getOrderStatus());
-                }
-            },
-
+    ORDER_STATUS("lo_orderstatus", varchar(1)),
     @SuppressWarnings("SpellCheckingInspection")
-    TOTAL_PRICE("lo_totalprice", DOUBLE)
-            {
-                public double getDouble(LineOrder lineorder)
-                {
-                    return lineorder.getTotalPrice();
-                }
-
-                public long getIdentifier(LineOrder lineorder)
-                {
-                    return lineorder.getTotalPriceInCents();
-                }
-            },
-
+    TOTAL_PRICE("lo_totalprice", DOUBLE),
     @SuppressWarnings("SpellCheckingInspection")
-    ORDER_DATE("lo_orderdate", DATE)
-            {
-                @Override
-                public String getString(LineOrder lineorder)
-                {
-                    return formatDate(getDate(lineorder));
-                }
-
-                public int getDate(LineOrder lineorder)
-                {
-                    return lineorder.getOrderDate();
-                }
-            },
-
+    ORDER_DATE("lo_orderdate", DATE),
     @SuppressWarnings("SpellCheckingInspection")
-    ORDER_PRIORITY("lo_orderpriority", varchar(15))
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return lineorder.getOrderPriority();
-                }
-            },
-
-    CLERK("lo_clerk", varchar(15))
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return lineorder.getClerk();
-                }
-            },
-
+    ORDER_PRIORITY("lo_orderpriority", varchar(15)),
+    CLERK("lo_clerk", varchar(15)),
     @SuppressWarnings("SpellCheckingInspection")
-    SHIP_PRIORITY("lo_shippriority", INTEGER)
-            {
-                public int getInteger(LineOrder lineorder)
-                {
-                    return lineorder.getShipPriority();
-                }
-            },
-
+    SHIP_PRIORITY("lo_shippriority", INTEGER),
     @SuppressWarnings("SpellCheckingInspection")
-    ORDER_COMMENT("lo_ordercomment", varchar(79))
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return lineorder.getOrderComment();
-                }
-            },
-
+    ORDER_COMMENT("lo_ordercomment", varchar(79)),
     @SuppressWarnings("SpellCheckingInspection")
-    LINE_NUMBER("lo_linenumber", INTEGER)
-            {
-                public int getInteger(LineOrder lineorder)
-                {
-                    return lineorder.getLineNumber();
-                }
-            },
-
+    LINE_NUMBER("lo_linenumber", INTEGER),
     @SuppressWarnings("SpellCheckingInspection")
-    QUANTITY("lo_quantity", DOUBLE)
-            {
-                public double getDouble(LineOrder lineorder)
-                {
-                    return lineorder.getQuantity();
-                }
-
-                public long getIdentifier(LineOrder lineorder)
-                {
-                    return lineorder.getQuantity() * 100;
-                }
-            },
-
+    QUANTITY("lo_quantity", DOUBLE),
     @SuppressWarnings("SpellCheckingInspection")
-    EXTENDED_PRICE("lo_extendedprice", DOUBLE)
-            {
-                public double getDouble(LineOrder lineorder)
-                {
-                    return lineorder.getExtendedPrice();
-                }
-
-                public long getIdentifier(LineOrder lineorder)
-                {
-                    return lineorder.getExtendedPriceInCents();
-                }
-            },
-
-    DISCOUNT("lo_discount", DOUBLE)
-            {
-                public double getDouble(LineOrder lineorder)
-                {
-                    return lineorder.getDiscount();
-                }
-
-                public long getIdentifier(LineOrder lineorder)
-                {
-                    return lineorder.getDiscountPercent();
-                }
-            },
-
-    TAX("lo_tax", DOUBLE)
-            {
-                public double getDouble(LineOrder lineorder)
-                {
-                    return lineorder.getTax();
-                }
-
-                public long getIdentifier(LineOrder lineorder)
-                {
-                    return lineorder.getTaxPercent();
-                }
-            },
-
+    EXTENDED_PRICE("lo_extendedprice", DOUBLE),
+    DISCOUNT("lo_discount", DOUBLE),
+    TAX("lo_tax", DOUBLE),
     @SuppressWarnings("SpellCheckingInspection")
-    RETURN_FLAG("lo_returnflag", varchar(1))
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return lineorder.getReturnFlag();
-                }
-            },
-
-    STATUS("lo_linestatus", varchar(1))
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return String.valueOf(lineorder.getLineStatus());
-                }
-            },
-
+    RETURN_FLAG("lo_returnflag", varchar(1)),
+    STATUS("lo_linestatus", varchar(1)),
     @SuppressWarnings("SpellCheckingInspection")
-    SHIP_DATE("lo_shipdate", DATE)
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return formatDate(getDate(lineorder));
-                }
-
-                public int getDate(LineOrder lineorder)
-                {
-                    return lineorder.getShipDate();
-                }
-            },
-
+    SHIP_DATE("lo_shipdate", DATE),
     @SuppressWarnings("SpellCheckingInspection")
-    COMMIT_DATE("lo_commitdate", DATE)
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return formatDate(getDate(lineorder));
-                }
-
-                public int getDate(LineOrder lineorder)
-                {
-                    return lineorder.getCommitDate();
-                }
-            },
-
+    COMMIT_DATE("lo_commitdate", DATE),
     @SuppressWarnings("SpellCheckingInspection")
-    RECEIPT_DATE("lo_receiptdate", DATE)
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return formatDate(getDate(lineorder));
-                }
-
-                @Override
-                public int getDate(LineOrder lineorder)
-                {
-                    return lineorder.getReceiptDate();
-                }
-            },
-
+    RECEIPT_DATE("lo_receiptdate", DATE),
     @SuppressWarnings("SpellCheckingInspection")
-    SHIP_INSTRUCTIONS("lo_shipinstruct", varchar(25))
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return lineorder.getShipInstructions();
-                }
-            },
-
+    SHIP_INSTRUCTIONS("lo_shipinstruct", varchar(25)),
     @SuppressWarnings("SpellCheckingInspection")
-    SHIP_MODE("lo_shipmode", varchar(10))
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return lineorder.getShipMode();
-                }
-            },
-
+    SHIP_MODE("lo_shipmode", varchar(10)),
     @SuppressWarnings("SpellCheckingInspection")
-    LINEITEM_COMMENT("lo_lineitemcomment", varchar(44))
-            {
-                public String getString(LineOrder lineorder)
-                {
-                    return lineorder.getLineitemComment();
-                }
-            },
-
-    CREATION("lo_creation", INTEGER)
-            {
-                public String getString(LineOrder lineOrder)
-                {
-                    return String.valueOf(lineOrder.getCreation());
-                }
-            };
+    LINEITEM_COMMENT("lo_lineitemcomment", varchar(44)),
+    CREATION("lo_creation", INTEGER);
 
     private final String columnName;
     private final TpchColumnType type;
@@ -286,35 +77,5 @@ public enum LineOrderColumn
     public TpchColumnType getType()
     {
         return type;
-    }
-
-    @Override
-    public double getDouble(LineOrder lineorder)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public long getIdentifier(LineOrder lineorder)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getInteger(LineOrder lineorder)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getString(LineOrder lineorder)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getDate(LineOrder entity)
-    {
-        throw new UnsupportedOperationException();
     }
 }

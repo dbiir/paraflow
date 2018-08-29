@@ -11,6 +11,7 @@ import io.airlift.tpch.RandomString;
 import io.airlift.tpch.RandomText;
 import io.airlift.tpch.TextPool;
 
+import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Objects;
@@ -298,26 +299,26 @@ public class LineOrderGenerator
                     index,
                     orderKey,
                     customerKey,
-                    orderStatus,
-                    String.format(Locale.ENGLISH, "Clerk#%09d", clerk),
-                    orderComment,
-                    lineitemComment,
-                    quantity,
-                    discount,
-                    tax,
+                    String.valueOf(orderStatus).getBytes(Charset.forName("UTF-8")),
+                    totalPriceRandom.nextValue() / 100.0d,
+                    orderDate,
+                    orderPriorityRandom.nextValue().getBytes(Charset.forName("UTF-8")),
+                    String.format(Locale.ENGLISH, "Clerk#%09d", clerk).getBytes(Charset.forName("UTF-8")),
+                    0,
+                    orderComment.getBytes(Charset.forName("UTF-8")),
+                    lineNumber + 1,
+                    quantity / 100.0d,
+                    extendedPrice / 100.0d,
+                    discount / 100.0d,
+                    tax / 100.0d,
+                    returnedFlag.getBytes(Charset.forName("UTF-8")),
+                    String.valueOf(lineStatus).getBytes(Charset.forName("UTF-8")),
                     shipDate,
                     commitDate,
                     receiptDate,
-                    returnedFlag,
-                    shipInstructions,
-                    shipMode,
-                    totalPriceRandom.nextValue(),
-                    orderDate,
-                    orderPriorityRandom.nextValue(),
-                    0,
-                    lineNumber + 1,
-                    extendedPrice,
-                    lineStatus,
+                    shipInstructions.getBytes(Charset.forName("UTF-8")),
+                    shipMode.getBytes(Charset.forName("UTF-8")),
+                    lineitemComment.getBytes(Charset.forName("UTF-8")),
                     System.currentTimeMillis());
         }
 

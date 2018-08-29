@@ -8,16 +8,16 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConstants;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.StatusRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class MetaClient
 {
-    private static final Logger logger = Logger.getLogger(MetaClient.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(MetaClient.class);
 
     private final ManagedChannel channel;
     private final MetaGrpc.MetaBlockingStub metaBlockingStub;
@@ -60,11 +60,11 @@ public class MetaClient
             status = metaBlockingStub.createUser(user);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             status = StatusProto.ResponseStatus.newBuilder().build();
             return status;
         }
-        logger.info("Create user status is : " + status.getStatus());
+        logger.debug("Create user status is : " + status.getStatus());
         return status;
     }
 
@@ -91,11 +91,11 @@ public class MetaClient
             status = metaBlockingStub.createDatabase(database);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             status = StatusProto.ResponseStatus.newBuilder().build();
             return status;
         }
-        logger.info("Create database status is : " + status.getStatus());
+        logger.debug("Create database status is : " + status.getStatus());
         return status;
     }
 
@@ -186,7 +186,7 @@ public class MetaClient
                     .addAllColumn(columns)
                     .build();
             if (fiberColIndex >= columnNameSize) {
-                System.err.println("FiberColIndex out of boundary!");
+                logger.error("FiberColIndex out of boundary!");
                 status = StatusProto.ResponseStatus.newBuilder()
                         .setStatus(StatusProto.ResponseStatus.State.CREATE_TABLE_ERROR)
                         .build();
@@ -207,7 +207,7 @@ public class MetaClient
                     status = metaBlockingStub.createTable(table);
                 }
                 catch (StatusRuntimeException e) {
-                    logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+                    logger.warn("RPC failed: " + e.getStatus());
                     status = StatusProto.ResponseStatus.newBuilder()
                             .setStatus(StatusProto.ResponseStatus.State.CREAT_COLUMN_ERROR)
                             .build();
@@ -220,7 +220,7 @@ public class MetaClient
                     .setStatus(StatusProto.ResponseStatus.State.CREAT_COLUMN_ERROR)
                     .build();
         }
-        logger.info("Create table status is : " + status.getStatus());
+        logger.debug("Create table status is : " + status.getStatus());
         return status;
     }
 
@@ -232,11 +232,11 @@ public class MetaClient
             stringList = metaBlockingStub.listDatabases(none);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             stringList = MetaProto.StringListType.newBuilder().build();
             return stringList;
         }
-        logger.info("Databases list : " + stringList);
+        logger.debug("Databases list : " + stringList);
         return stringList;
     }
 
@@ -250,11 +250,11 @@ public class MetaClient
             stringList = metaBlockingStub.listTables(databaseName);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             stringList = MetaProto.StringListType.newBuilder().build();
             return stringList;
         }
-        logger.info("Tables list : " + stringList);
+        logger.debug("Tables list : " + stringList);
         return stringList;
     }
 
@@ -275,11 +275,11 @@ public class MetaClient
             stringList = metaBlockingStub.listColumns(dbTblParam);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             stringList = MetaProto.StringListType.newBuilder().build();
             return stringList;
         }
-        logger.info("Columns list : " + stringList);
+        logger.debug("Columns list : " + stringList);
         return stringList;
     }
 
@@ -300,11 +300,11 @@ public class MetaClient
             stringList = metaBlockingStub.listColumnsId(dbTblParam);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             stringList = MetaProto.StringListType.newBuilder().build();
             return stringList;
         }
-        logger.info("ColumnsId list : " + stringList);
+        logger.debug("ColumnsId list : " + stringList);
         return stringList;
     }
 
@@ -325,11 +325,11 @@ public class MetaClient
             stringList = metaBlockingStub.listColumnsDataType(dbTblParam);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             stringList = MetaProto.StringListType.newBuilder().build();
             return stringList;
         }
-        logger.info("ColumnsDataType list : " + stringList);
+        logger.debug("ColumnsDataType list : " + stringList);
         return stringList;
     }
 
@@ -343,11 +343,11 @@ public class MetaClient
             database = metaBlockingStub.getDatabase(databaseName);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             database = MetaProto.DbParam.newBuilder().setIsEmpty(false).build();
             return database;
         }
-        logger.info("Database is : " + database);
+        logger.debug("Database is : " + database);
         return  database;
     }
 
@@ -369,11 +369,11 @@ public class MetaClient
             table = metaBlockingStub.getTable(databaseTable);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             table = MetaProto.TblParam.newBuilder().build();
             return table;
         }
-        logger.info("Table is : " + table);
+        logger.debug("Table is : " + table);
         return table;
     }
 
@@ -398,11 +398,11 @@ public class MetaClient
             column = metaBlockingStub.getColumn(databaseTableColumn);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             column = MetaProto.ColParam.newBuilder().build();
             return column;
         }
-        logger.info("Column is : " + column);
+        logger.debug("Column is : " + column);
         return column;
     }
 
@@ -418,11 +418,11 @@ public class MetaClient
             column = metaBlockingStub.getColumnName(databaseTableColumn);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             column = MetaProto.ColNameParam.newBuilder().build();
             return column;
         }
-        logger.info("Column is : " + column);
+        logger.debug("Column is : " + column);
         return column;
     }
 
@@ -448,11 +448,11 @@ public class MetaClient
             status = metaBlockingStub.renameColumn(renameColumn);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             status = StatusProto.ResponseStatus.newBuilder().build();
             return status;
         }
-        logger.info("Rename column status is : " + status.getStatus());
+        logger.debug("Rename column status is : " + status.getStatus());
         return status;
     }
 
@@ -471,11 +471,11 @@ public class MetaClient
             status = metaBlockingStub.renameTable(renameTable);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             status = StatusProto.ResponseStatus.newBuilder().build();
             return status;
         }
-        logger.info("Rename table status is : " + status.getStatus());
+        logger.debug("Rename table status is : " + status.getStatus());
         return status;
     }
 
@@ -490,11 +490,11 @@ public class MetaClient
             status = metaBlockingStub.renameDatabase(renameDatabase);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             status = StatusProto.ResponseStatus.newBuilder().build();
             return status;
         }
-        logger.info("Rename database status is : " + status.getStatus());
+        logger.debug("Rename database status is : " + status.getStatus());
         return status;
     }
 
@@ -515,11 +515,11 @@ public class MetaClient
             status = metaBlockingStub.deleteTable(databaseTable);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             status = StatusProto.ResponseStatus.newBuilder().build();
             return status;
         }
-        logger.info("Delete table status is : " + status.getStatus());
+        logger.debug("Delete table status is : " + status.getStatus());
         return status;
     }
 
@@ -533,11 +533,11 @@ public class MetaClient
             status = metaBlockingStub.deleteDatabase(databaseName);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             status = StatusProto.ResponseStatus.newBuilder().setStatus(StatusProto.ResponseStatus.State.DELETE_DATABASE_ERROR).build();
             return status;
         }
-        logger.info("Delete database status is : " + status.getStatus());
+        logger.debug("Delete database status is : " + status.getStatus());
         return status;
     }
 
@@ -555,11 +555,11 @@ public class MetaClient
             status = metaBlockingStub.createDbParam(dbParam);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             status = StatusProto.ResponseStatus.newBuilder().build();
             return status;
         }
-        logger.info("Create database param status is : " + status.getStatus());
+        logger.debug("Create database param status is : " + status.getStatus());
         return status;
     }
 
@@ -579,11 +579,11 @@ public class MetaClient
             status = metaBlockingStub.createTblParam(tblParam);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             status = StatusProto.ResponseStatus.newBuilder().build();
             return status;
         }
-        logger.info("Create table param status is : " + status.getStatus());
+        logger.debug("Create table param status is : " + status.getStatus());
         return status;
     }
 
@@ -603,11 +603,11 @@ public class MetaClient
             status = metaBlockingStub.createTblPriv(tblPriv);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             status = StatusProto.ResponseStatus.newBuilder().build();
             return status;
         }
-        logger.info("Create tblpriv status is : " + status.getStatus());
+        logger.debug("Create tblpriv status is : " + status.getStatus());
         return status;
     }
 
@@ -641,11 +641,11 @@ public class MetaClient
                 status = metaBlockingStub.createBlockIndex(blockIndex);
             }
             catch (StatusRuntimeException e) {
-                logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+                logger.warn("RPC failed: " + e.getStatus());
                 status = StatusProto.ResponseStatus.newBuilder().build();
                 return status;
             }
-        logger.info("Create block index status is : " + status.getStatus());
+        logger.debug("Create block index status is : " + status.getStatus());
         return status;
     }
 
@@ -660,11 +660,11 @@ public class MetaClient
             responseStatus = metaBlockingStub.updateBlockPath(updateBlockPathParam);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             responseStatus = StatusProto.ResponseStatus.newBuilder().build();
             return responseStatus;
         }
-        logger.info("Update block path status is : " + responseStatus.getStatus());
+        logger.debug("Update block path status is : " + responseStatus.getStatus());
         return responseStatus;
     }
 
@@ -690,11 +690,11 @@ public class MetaClient
             stringList = metaBlockingStub.filterBlockIndex(filterBlockIndex);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             stringList = MetaProto.StringListType.newBuilder().build();
             return stringList;
         }
-        logger.info("Filter block paths by time is : " + stringList);
+        logger.debug("Filter block paths by time is : " + stringList);
         return stringList;
     }
 
@@ -726,11 +726,11 @@ public class MetaClient
             stringList = metaBlockingStub.filterBlockIndexByFiber(filterBlockIndexByFiber);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
             stringList = MetaProto.StringListType.newBuilder().build();
             return stringList;
         }
-        logger.info("Filter block paths is : " + stringList);
+        logger.debug("Filter block paths is : " + stringList);
         return stringList;
     }
 
@@ -742,7 +742,8 @@ public class MetaClient
             metaBlockingStub.stopServer(noneType);
         }
         catch (StatusRuntimeException e) {
-            logger.log(Level.WARNING, "RPC failed: {0}", e.getStatus());
+            logger.warn("RPC failed: " + e.getStatus());
         }
+        logger.info("Meta server stopped.");
     }
 }

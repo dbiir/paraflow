@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
+import cn.edu.ruc.iir.paraflow.commons.ParaflowRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,18 +20,20 @@ public class DataCompactor
 {
     private static final Logger logger = LoggerFactory.getLogger(DataCompactor.class);
     private final int threshold;
+    private final int partitionFrom;
     private final int partitionNum;
     private final BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue;
     private final ArrayList<ParaflowRecord>[] tempBuffer;
     private final SegmentContainer segmentContainer;
     private int recordNum = 0;
 
-    DataCompactor(String name, String db, String table, int parallelism, int threshold, int partitionNum,
+    DataCompactor(String name, String db, String table, int parallelism, int threshold, int partitionFrom, int partitionNum,
                   BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue)
     {
         super(name, db, table, parallelism);
-        this.threshold = threshold;
+        this.partitionFrom = partitionFrom;
         this.partitionNum = partitionNum;
+        this.threshold = threshold;
         this.sorterCompactorBlockingQueue = sorterCompactorBlockingQueue;
         this.tempBuffer = new ArrayList[partitionNum];
         this.segmentContainer = SegmentContainer.INSTANCE();
@@ -39,7 +42,6 @@ public class DataCompactor
     @Override
     public void run()
     {
-        System.out.println(super.name + " started.");
         logger.info(super.name + " started.");
         try {
             while (!isReadyToStop.get()) {
@@ -48,10 +50,9 @@ public class DataCompactor
                 if (sortedBuffer == null) {
                     continue;
                 }
-                System.out.println("compactor gets sorted buffer.");
                 logger.debug("compactor gets sorted buffer.");
                 ParaflowRecord[] sortedRecords = sortedBuffer.getSortedRecords();
-                int partition = sortedBuffer.getPartition();
+                int partition = sortedBuffer.getPartition() - partitionFrom;
                 if (tempBuffer[partition] == null) {
                     tempBuffer[partition] = new ArrayList<>();
                 }
@@ -75,12 +76,10 @@ public class DataCompactor
 
     private ParaflowSegment compact()
     {
-        System.out.println("compacting....");
         logger.debug("compacting....");
-        ParaflowRecord[] compactedRecords = new ParaflowRecord[recordNum];
+        ParaflowRecord[][] compactedRecords = new ParaflowRecord[partitionNum][];
         long[] fiberMinTimestamps = new long[partitionNum];
         long[] fiberMaxTimestamps = new long[partitionNum];
-        int compactedIndex = 0;
         for (int i = 0; i < partitionNum; i++) {
             if (tempBuffer[i] != null && !tempBuffer[i].isEmpty()) {
                 tempBuffer[i].sort(Comparator.comparingLong(ParaflowRecord::getTimestamp));
@@ -89,8 +88,7 @@ public class DataCompactor
                 tempBuffer[i].toArray(tempRecords);
                 fiberMinTimestamps[i] = tempRecords[0].getTimestamp();
                 fiberMaxTimestamps[i] = tempRecords[tempRecords.length - 1].getTimestamp();
-                System.arraycopy(tempRecords, 0, compactedRecords, compactedIndex, tempSize);
-                compactedIndex += tempSize;
+                compactedRecords[i] = tempRecords;
                 tempBuffer[i].clear();
             }
             else {
