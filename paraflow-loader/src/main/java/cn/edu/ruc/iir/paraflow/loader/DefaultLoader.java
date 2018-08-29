@@ -104,7 +104,7 @@ public class DefaultLoader
                                          flushingQueue, pipeline.getExecutorService(), metaClient);
         // add a data compactor
         DataCompactor dataCompactor = new DataCompactor("compactor", db, table, 1, config.getCompactorThreshold(),
-                partitionNum, sorterCompactorBlockingQueue);
+                partitionFrom, partitionNum, sorterCompactorBlockingQueue);
         pipeline.addProcessor(dataCompactor);
         // add a data flusher
         DataFlusher dataFlusher = new DataFlusher("flusher", db, table, 1, flushingQueue, metaClient);

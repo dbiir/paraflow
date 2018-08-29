@@ -20,18 +20,20 @@ public class DataCompactor
 {
     private static final Logger logger = LoggerFactory.getLogger(DataCompactor.class);
     private final int threshold;
+    private final int partitionFrom;
     private final int partitionNum;
     private final BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue;
     private final ArrayList<ParaflowRecord>[] tempBuffer;
     private final SegmentContainer segmentContainer;
     private int recordNum = 0;
 
-    DataCompactor(String name, String db, String table, int parallelism, int threshold, int partitionNum,
+    DataCompactor(String name, String db, String table, int parallelism, int threshold, int partitionFrom, int partitionNum,
                   BlockingQueue<ParaflowSortedBuffer> sorterCompactorBlockingQueue)
     {
         super(name, db, table, parallelism);
-        this.threshold = threshold;
+        this.partitionFrom = partitionFrom;
         this.partitionNum = partitionNum;
+        this.threshold = threshold;
         this.sorterCompactorBlockingQueue = sorterCompactorBlockingQueue;
         this.tempBuffer = new ArrayList[partitionNum];
         this.segmentContainer = SegmentContainer.INSTANCE();
@@ -52,7 +54,7 @@ public class DataCompactor
                 System.out.println("compactor gets sorted buffer.");
                 logger.debug("compactor gets sorted buffer.");
                 ParaflowRecord[] sortedRecords = sortedBuffer.getSortedRecords();
-                int partition = sortedBuffer.getPartition();
+                int partition = sortedBuffer.getPartition() - partitionFrom;
                 if (tempBuffer[partition] == null) {
                     tempBuffer[partition] = new ArrayList<>();
                 }
