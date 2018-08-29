@@ -77,14 +77,10 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- paraflow modules -->
             <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>
                 <artifactId>paraflow-benchmark</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>cn.edu.ruc.iir</groupId>
-                <artifactId>paraflow-commons</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -94,7 +90,7 @@
             </dependency>
             <dependency>
                 <groupId>cn.edu.ruc.iir</groupId>
-                <artifactId>paraflow-metaserver</artifactId>
+                <artifactId>paraflow-commons</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -103,9 +99,39 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>cn.edu.ruc.iir</groupId>
+                <artifactId>paraflow-metaserver</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- com -->
+            <dependency>
+                <groupId>com.conversantmedia</groupId>
+                <artifactId>disruptor</artifactId>
+                <version>1.2.12</version>
+                <classifier>jdk8</classifier>
+            </dependency>
+            <dependency>
                 <groupId>com.esotericsoftware</groupId>
                 <artifactId>kryo</artifactId>
                 <version>5.0.0-RC1</version>
+            </dependency>
+            <!-- facebook presto -->
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-hive</artifactId>
+                <version>${presto.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.google.protobuf</groupId>
+                        <artifactId>protobuf-java</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>com.facebook.presto</groupId>
+                <artifactId>presto-jdbc</artifactId>
+                <version>0.192</version>
             </dependency>
             <dependency>
                 <groupId>com.facebook.presto</groupId>
@@ -130,22 +156,6 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-hive</artifactId>
-                <version>${presto.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.protobuf</groupId>
-                        <artifactId>protobuf-java</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-            <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-jdbc</artifactId>
-                <version>0.192</version>
-            </dependency>
-            <dependency>
                 <groupId>com.facebook.presto.hadoop</groupId>
                 <artifactId>hadoop-apache2</artifactId>
                 <version>0.9</version>
@@ -156,15 +166,9 @@
                 <version>${guice.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.conversantmedia</groupId>
-                <artifactId>disruptor</artifactId>
-                <version>1.2.12</version>
-                <classifier>jdk8</classifier>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey</artifactId>
-                <version>0.8-ea</version>
+                <groupId>com.puppycrawl.tools</groupId>
+                <artifactId>checkstyle</artifactId>
+                <version>7.3</version>
             </dependency>
             <dependency>
                 <groupId>com.zaxxer</groupId>
@@ -172,6 +176,7 @@
                 <version>2.6.2</version>
             </dependency>
 
+            <!-- io -->
             <dependency>
                 <groupId>io.airlift</groupId>
                 <artifactId>bootstrap</artifactId>
@@ -198,14 +203,14 @@
                 <version>${dep.airlift.slice.version}</version>
             </dependency>
             <dependency>
-                <groupId>io.airlift.tpch</groupId>
-                <artifactId>tpch</artifactId>
-                <version>0.9</version>
-            </dependency>
-            <dependency>
                 <groupId>io.airlift</groupId>
                 <artifactId>units</artifactId>
                 <version>${dep.airlift.units.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.airlift.tpch</groupId>
+                <artifactId>tpch</artifactId>
+                <version>0.9</version>
             </dependency>
             <dependency>
                 <groupId>io.grpc</groupId>
@@ -222,72 +227,25 @@
                 <artifactId>grpc-stub</artifactId>
                 <version>1.4.0</version>
             </dependency>
+
+            <!-- j -->
             <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>javax.servlet-api</artifactId>
-                <version>3.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet.jsp</groupId>
-                <artifactId>jsp-api</artifactId>
-                <version>2.2</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.servlet</groupId>
-                <artifactId>jstl</artifactId>
-                <version>1.2</version>
-            </dependency>
-            <dependency>
-                <groupId>javax.ws.rs</groupId>
-                <artifactId>javax.ws.rs-api</artifactId>
-                <version>2.1</version>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.12</version>
+                <scope>test</scope>
             </dependency>
 
+            <!-- org -->
             <dependency>
-                <groupId>org.codehaus.jackson</groupId>
-                <artifactId>jackson-mapper-asl</artifactId>
-                <version>${dep.jackson.version}</version>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-auth</artifactId>
+                <version>${hadoop.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-jsp</artifactId>
-                <version>9.2.19.v20160908</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-server</artifactId>
-                <version>${dep.jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-webapp</artifactId>
-                <version>${dep.jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-proxy</artifactId>
-                <version>${dep.jetty.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.javalite</groupId>
-                <artifactId>activejdbc</artifactId>
-                <version>1.4.13</version>
-            </dependency>
-            <!-- logging -->
-            <dependency>
-                <groupId>commons-logging</groupId>
-                <artifactId>commons-logging</artifactId>
-                <version>1.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.kafka</groupId>
-                <artifactId>kafka-clients</artifactId>
-                <version>1.1.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.postgresql</groupId>
-                <artifactId>postgresql</artifactId>
-                <version>9.4.1212.jre7</version>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-client</artifactId>
+                <version>${hadoop.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.hadoop</groupId>
@@ -320,9 +278,24 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.apache.hadoop</groupId>
-                <artifactId>hadoop-client</artifactId>
-                <version>${hadoop.version}</version>
+                <groupId>org.apache.kafka</groupId>
+                <artifactId>kafka-clients</artifactId>
+                <version>1.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${dep.log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${dep.log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <version>${dep.log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.orc</groupId>
@@ -340,16 +313,6 @@
                 </exclusions>
             </dependency>
             <dependency>
-                <groupId>org.apache.hadoop</groupId>
-                <artifactId>hadoop-auth</artifactId>
-                <version>2.6.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.parquet</groupId>
-                <artifactId>parquet-hadoop</artifactId>
-                <version>1.8.1</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.parquet</groupId>
                 <artifactId>parquet-column</artifactId>
                 <version>1.8.1</version>
@@ -365,24 +328,9 @@
                 <version>2.3.1</version>
             </dependency>
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>1.7.25</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${dep.log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-api</artifactId>
-                <version>${dep.log4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j-impl</artifactId>
-                <version>${dep.log4j.version}</version>
+                <groupId>org.apache.parquet</groupId>
+                <artifactId>parquet-hadoop</artifactId>
+                <version>1.8.1</version>
             </dependency>
             <dependency>
                 <groupId>org.ow2.asm</groupId>
@@ -390,69 +338,19 @@
                 <version>5.2</version>
             </dependency>
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>4.12</version>
-                <scope>test</scope>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>9.4.1212.jre7</version>
             </dependency>
             <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-orc</artifactId>
-                <version>${presto.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.protobuf</groupId>
-                        <artifactId>protobuf-java</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-hive-cdh4</artifactId>
-                <version>${presto.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.protobuf</groupId>
-                        <artifactId>protobuf-java</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-example-http</artifactId>
-                <version>${presto.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.protobuf</groupId>
-                        <artifactId>protobuf-java</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>com.facebook.presto</groupId>
-                <artifactId>presto-hive</artifactId>
-                <version>${presto.version}</version>
-                <type>test-jar</type>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.google.protobuf</groupId>
-                        <artifactId>protobuf-java</artifactId>
-                    </exclusion>
-                </exclusions>
-
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.25</version>
             </dependency>
             <dependency>
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <version>6.8.21</version>
-            </dependency>
-            <dependency>
-                <groupId>com.puppycrawl.tools</groupId>
-                <artifactId>checkstyle</artifactId>
-                <version>7.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

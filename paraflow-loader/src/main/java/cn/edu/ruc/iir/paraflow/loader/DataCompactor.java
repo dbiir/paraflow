@@ -42,7 +42,6 @@ public class DataCompactor
     @Override
     public void run()
     {
-        System.out.println(super.name + " started.");
         logger.info(super.name + " started.");
         try {
             while (!isReadyToStop.get()) {
@@ -51,7 +50,6 @@ public class DataCompactor
                 if (sortedBuffer == null) {
                     continue;
                 }
-                System.out.println("compactor gets sorted buffer.");
                 logger.debug("compactor gets sorted buffer.");
                 ParaflowRecord[] sortedRecords = sortedBuffer.getSortedRecords();
                 int partition = sortedBuffer.getPartition() - partitionFrom;
@@ -78,12 +76,10 @@ public class DataCompactor
 
     private ParaflowSegment compact()
     {
-        System.out.println("compacting....");
         logger.debug("compacting....");
-        ParaflowRecord[] compactedRecords = new ParaflowRecord[recordNum];
+        ParaflowRecord[][] compactedRecords = new ParaflowRecord[partitionNum][];
         long[] fiberMinTimestamps = new long[partitionNum];
         long[] fiberMaxTimestamps = new long[partitionNum];
-        int compactedIndex = 0;
         for (int i = 0; i < partitionNum; i++) {
             if (tempBuffer[i] != null && !tempBuffer[i].isEmpty()) {
                 tempBuffer[i].sort(Comparator.comparingLong(ParaflowRecord::getTimestamp));
@@ -92,8 +88,7 @@ public class DataCompactor
                 tempBuffer[i].toArray(tempRecords);
                 fiberMinTimestamps[i] = tempRecords[0].getTimestamp();
                 fiberMaxTimestamps[i] = tempRecords[tempRecords.length - 1].getTimestamp();
-                System.arraycopy(tempRecords, 0, compactedRecords, compactedIndex, tempSize);
-                compactedIndex += tempSize;
+                compactedRecords[i] = tempRecords;
                 tempBuffer[i].clear();
             }
             else {

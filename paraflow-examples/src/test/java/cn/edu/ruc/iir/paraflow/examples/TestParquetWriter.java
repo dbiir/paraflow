@@ -82,6 +82,7 @@ public class TestParquetWriter
         Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(1000, 1, 1500, 0, 10000000);
         Iterator<LineOrder> lineOrderIterator = lineOrderIterable.iterator();
         TpchDataTransformer transformer = new TpchDataTransformer();
+        ParaflowRecord[][] content = new ParaflowRecord[1][];
         ParaflowRecord[] records = new ParaflowRecord[capacity];
         int counter = 0;
         long textSize = 0;
@@ -94,8 +95,9 @@ public class TestParquetWriter
             records[counter++] = record;
             output.reset();
         }
+        content[0] = records;
         output.close();
-        ParaflowSegment segment = new ParaflowSegment(records, new long[0], new long[0]);
+        ParaflowSegment segment = new ParaflowSegment(content, new long[0], new long[0]);
         segment.setPath("file:///Users/Jelly/Desktop/1");
         long metaStart = System.currentTimeMillis();
         MetaProto.StringListType columnNames = metaClient.listColumns("test", "tbl082702");

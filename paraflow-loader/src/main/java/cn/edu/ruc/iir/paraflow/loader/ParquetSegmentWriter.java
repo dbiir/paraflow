@@ -98,40 +98,47 @@ public class ParquetSegmentWriter
                 config.getParquetBlockSize(), config.getParquetPageSize(),
                 config.getParquetDictionaryPageSize(), config.isParquetDictionaryEnabled(), config.isParquetValidating(),
                 ParquetProperties.WriterVersion.PARQUET_2_0, configuration)) {
-            ParaflowRecord[] content = segment.getRecords();
-            for (int i = 0; i < content.length; i++) {
-                ParaflowRecord record = content[i];
-                Group group = groupFactory.newGroup();
-                for (int k = 0; k < columnNum; k++) {
-                    switch (columnTypes.getStr(k)) {
-                        case "bigint":
-                        case "long":
-                        case "timestamp":
-                            group.append(columnNames.getStr(k), (long) record.getValue(k));
-                            break;
-                        case "int":
-                        case "integer":
-                            group.append(columnNames.getStr(k), (int) record.getValue(k));
-                            break;
-                        case "boolean":
-                            group.append(columnNames.getStr(k), (boolean) record.getValue(k));
-                            break;
-                        case "float":
-                        case "float32":
-                            group.append(columnNames.getStr(k), (float) record.getValue(k));
-                            break;
-                        case "double":
-                        case "float64":
-                            group.append(columnNames.getStr(k), (double) record.getValue(k));
-                            break;
-                        default:
-                            group.append(columnNames.getStr(k), Binary.fromConstantByteArray((byte[]) record.getValue(k)));
-                            break;
-                    }
+            ParaflowRecord[][] content = segment.getRecords();
+            for (ParaflowRecord[] partitionContent : content) {
+                // skip null partition
+                if (partitionContent == null) {
+                    continue;
                 }
-
-                writer.write(group);
-                content[i] = null;
+                for (ParaflowRecord record : partitionContent) {
+                    Group group = groupFactory.newGroup();
+                    for (int k = 0; k < columnNum; k++) {
+                        switch (columnTypes.getStr(k)) {
+                            case "bigint":
+                            case "long":
+                            case "timestamp":
+                                group.append(columnNames.getStr(k), (long) record.getValue(k));
+                                break;
+                            case "int":
+                            case "integer":
+                                group.append(columnNames.getStr(k), (int) record.getValue(k));
+                                break;
+                            case "boolean":
+                                group.append(columnNames.getStr(k), (boolean) record.getValue(k));
+                                break;
+                            case "float":
+                            case "float32":
+                                group.append(columnNames.getStr(k), (float) record.getValue(k));
+                                break;
+                            case "double":
+                            case "float64":
+                                group.append(columnNames.getStr(k), (double) record.getValue(k));
+                                break;
+                            default:
+                                group.append(columnNames.getStr(k),
+                                             Binary.fromConstantByteArray((byte[]) record.getValue(k)));
+                                break;
+                        }
+                    }
+                    writer.write(group);
+                }
+                for (int i = 0; i < partitionContent.length; i++) {
+                    partitionContent[i] = null;
+                }
             }
             return true;
         }
