@@ -58,7 +58,6 @@ public class TpchGenerationTest
         }
     }
 
-    // sf: 10000, num of msg: 39_996_464, size: 7.856GB
     @Test
     public void testLineOrderGeneration()
     {
@@ -81,7 +80,7 @@ public class TpchGenerationTest
         @Override
         public void run()
         {
-            Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(1000, 1, 1500, 0, 10000000);
+            Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(1, 1, 1500, 0, 10000000);
             Iterator<LineOrder> lineOrderIterator = lineOrderIterable.iterator();
             long start = System.currentTimeMillis();
             long counter = 0;
@@ -103,7 +102,7 @@ public class TpchGenerationTest
     {
         Iterable<Nation> nationIterable = TpchTable.NATION.createGenerator(1, 1, 1500, 0, 0);
         Iterator<Nation> nationIterator = nationIterable.iterator();
-        File file = new File("/Users/Jelly/Developer/paraflow/paraflow-benchmark/data/nation.sql");
+        File file = new File("/Users/Jelly/Developer/paraflow/paraflow-benchmark/data/nation.tbl");
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             while (nationIterator.hasNext()) {
                 writer.write(nationIterator.next().toLine());

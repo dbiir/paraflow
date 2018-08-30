@@ -30,7 +30,8 @@ import static io.airlift.tpch.GenerateUtils.calculateStartIndex;
 public class LineOrderGenerator
         implements Generator<LineOrder>
 {
-    private static final int SCALE_BASE = 1_500_000;
+    static final long TIME_SEED = System.nanoTime();
+    private static final int SCALE_BASE = 6_000_000;
 
     // portion with have no orders
     private static final int CUSTOMER_MORTALITY = 3;
@@ -130,17 +131,17 @@ public class LineOrderGenerator
 
         private final RandomBoundedLong linePartKeyRandom;
 
-        private final RandomBoundedInt supplierNumberRandom = new RandomBoundedInt(2095021727, 0, 3, LINE_COUNT_MAX);
+        private final RandomBoundedInt supplierNumberRandom = new RandomBoundedInt(TIME_SEED - 101, 0, 3, LINE_COUNT_MAX);
 
         private final RandomBoundedInt shipDateRandom = createShipDateRandom();
-        private final RandomBoundedInt commitDateRandom = new RandomBoundedInt(904914315, COMMIT_DATE_MIN, COMMIT_DATE_MAX, LINE_COUNT_MAX);
-        private final RandomBoundedInt receiptDateRandom = new RandomBoundedInt(373135028, RECEIPT_DATE_MIN, RECEIPT_DATE_MAX, LINE_COUNT_MAX);
+        private final RandomBoundedInt commitDateRandom = new RandomBoundedInt(TIME_SEED - 202, COMMIT_DATE_MIN, COMMIT_DATE_MAX, LINE_COUNT_MAX);
+        private final RandomBoundedInt receiptDateRandom = new RandomBoundedInt(TIME_SEED - 303, RECEIPT_DATE_MIN, RECEIPT_DATE_MAX, LINE_COUNT_MAX);
 
         private final RandomString returnedFlagRandom;
         private final RandomString shipInstructionsRandom;
         private final RandomString shipModeRandom;
 
-        private final RandomBoundedLong totalPriceRandom = new RandomBoundedLong(839213222, true, 100L, 10000000L, LINE_COUNT_MAX);
+        private final RandomBoundedLong totalPriceRandom = new RandomBoundedLong(TIME_SEED - 404, true, 100L, 10000000L, LINE_COUNT_MAX);
 
         private final long startIndex;
         private final long rowCount;
@@ -162,14 +163,14 @@ public class LineOrderGenerator
 
             this.maxCustomerKey = minCustomerKey + numCustomerKey;
 
-            customerKeyRandom = new RandomBoundedLong(851767375, scaleFactor >= 30000, minCustomerKey, maxCustomerKey);
-            orderPriorityRandom = new RandomString(591449447, distributions.getOrderPriorities(), LINE_COUNT_MAX);
-            clerkRandom = new RandomBoundedInt(1171034773, 1, Math.max((int) (scaleFactor * CLERK_SCALE_BASE), CLERK_SCALE_BASE), LINE_COUNT_MAX);
-            orderCommentRandom = new RandomText(276090261, textPool, ORDER_COMMENT_AVERAGE_LENGTH, LINE_COUNT_MAX);
-            lineitemCommentRandom = new RandomText(1095462486, textPool, LINEITEM_COMMENT_AVERAGE_LENGTH, LINE_COUNT_MAX);
-            returnedFlagRandom = new RandomString(717419739, distributions.getReturnFlags(), LINE_COUNT_MAX);
-            shipInstructionsRandom = new RandomString(1371272478, distributions.getShipInstructions(), LINE_COUNT_MAX);
-            shipModeRandom = new RandomString(675466456, distributions.getShipModes(), LINE_COUNT_MAX);
+            customerKeyRandom = new RandomBoundedLong(TIME_SEED - 505, scaleFactor >= 30000, minCustomerKey, maxCustomerKey);
+            orderPriorityRandom = new RandomString(TIME_SEED - 606, distributions.getOrderPriorities(), LINE_COUNT_MAX);
+            clerkRandom = new RandomBoundedInt(TIME_SEED - 701, 1, Math.max((int) (scaleFactor * CLERK_SCALE_BASE), CLERK_SCALE_BASE), LINE_COUNT_MAX);
+            orderCommentRandom = new RandomText(TIME_SEED - 717, textPool, ORDER_COMMENT_AVERAGE_LENGTH, LINE_COUNT_MAX);
+            lineitemCommentRandom = new RandomText(TIME_SEED - 808, textPool, LINEITEM_COMMENT_AVERAGE_LENGTH, LINE_COUNT_MAX);
+            returnedFlagRandom = new RandomString(TIME_SEED - 909, distributions.getReturnFlags(), LINE_COUNT_MAX);
+            shipInstructionsRandom = new RandomString(TIME_SEED - 999, distributions.getShipInstructions(), LINE_COUNT_MAX);
+            shipModeRandom = new RandomString(TIME_SEED - 1001, distributions.getShipModes(), LINE_COUNT_MAX);
 
             orderDateRandom.advanceRows(startIndex);
             lineCountRandom.advanceRows(startIndex);
@@ -337,37 +338,37 @@ public class LineOrderGenerator
 
     private static RandomBoundedInt createQuantityRandom()
     {
-        return new RandomBoundedInt(209208115, QUANTITY_MIN, QUANTITY_MAX, LINE_COUNT_MAX);
+        return new RandomBoundedInt(TIME_SEED - 1101, QUANTITY_MIN, QUANTITY_MAX, LINE_COUNT_MAX);
     }
 
     private static RandomBoundedInt createDiscountRandom()
     {
-        return new RandomBoundedInt(554590007, DISCOUNT_MIN, DISCOUNT_MAX, LINE_COUNT_MAX);
+        return new RandomBoundedInt(TIME_SEED - 1202, DISCOUNT_MIN, DISCOUNT_MAX, LINE_COUNT_MAX);
     }
 
     private static RandomBoundedInt createTaxRandom()
     {
-        return new RandomBoundedInt(721958466, TAX_MIN, TAX_MAX, LINE_COUNT_MAX);
+        return new RandomBoundedInt(TIME_SEED - 1303, TAX_MIN, TAX_MAX, LINE_COUNT_MAX);
     }
 
     private static RandomBoundedLong createPartKeyRandom(double scaleFactor)
     {
-        return new RandomBoundedLong(1808217256, scaleFactor >= 30000, PART_KEY_MIN, (long) (PartGenerator.SCALE_BASE * scaleFactor), LINE_COUNT_MAX);
+        return new RandomBoundedLong(TIME_SEED - 1404, scaleFactor >= 30000, PART_KEY_MIN, (long) (PartGenerator.SCALE_BASE * scaleFactor), LINE_COUNT_MAX);
     }
 
     private static RandomBoundedInt createShipDateRandom()
     {
-        return new RandomBoundedInt(1769349045, SHIP_DATE_MIN, SHIP_DATE_MAX, LINE_COUNT_MAX);
+        return new RandomBoundedInt(TIME_SEED - 1505, SHIP_DATE_MIN, SHIP_DATE_MAX, LINE_COUNT_MAX);
     }
 
     private static RandomBoundedInt createLineCountRandom()
     {
-        return new RandomBoundedInt(1434868289, LINE_COUNT_MIN, LINE_COUNT_MAX);
+        return new RandomBoundedInt(TIME_SEED - 1606, LINE_COUNT_MIN, LINE_COUNT_MAX);
     }
 
     private static RandomBoundedInt createOrderDateRandom()
     {
-        return new RandomBoundedInt(1066728069, ORDER_DATE_MIN, ORDER_DATE_MAX);
+        return new RandomBoundedInt(TIME_SEED - 1707, ORDER_DATE_MIN, ORDER_DATE_MAX);
     }
 
     private static long calculatePartPrice(long p)

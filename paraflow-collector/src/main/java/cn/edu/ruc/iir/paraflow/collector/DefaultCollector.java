@@ -72,8 +72,7 @@ public class DefaultCollector<T>
                 .keyBy(keyIdx)
                 .timeBy(timeIdx)
                 .sink(dataSink)
-                .partitionBy(partitioner)
-                .serializeBy(serializer);
+                .partitionBy(partitioner);
         collectorRuntime.run(fiberFlow);
     }
 

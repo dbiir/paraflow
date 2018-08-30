@@ -17,7 +17,7 @@ create_dirs()
 # modify the configuration file
 modify_config()
 {
-  if [ -w $KAFKA_CONFIG_FILE ]; then
+  if [ -w $PARAFLOW_CONFIG_FILE ]; then
     sed -i '2s/.*/loader.id='$PARAFLOW_NODE_ID'/' $PARAFLOW_CONFIG_FILE
   else
     echo "no write permission on loader.conf file"

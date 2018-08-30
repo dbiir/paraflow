@@ -178,7 +178,7 @@ public class TestParquetWriter
             if (!collector.existsTopic(dbName + "-" + tableName)) {
                 collector.createTopic(dbName + "-" + tableName, partitionNum, (short) 1);
             }
-            TpchDataSource dataSource = new TpchDataSource();
+            TpchDataSource dataSource = new TpchDataSource(1, 1, 1, 0, 1_000_000);
             Message message = dataSource.read();
             byte[] serialized = message.getValue();
 
