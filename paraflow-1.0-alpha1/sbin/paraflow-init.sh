@@ -10,7 +10,7 @@ PARAFLOW_CONFIG_FILE="$PARAFLOW_HOME/config/loader.conf"
 # create a symbolic file and data directories
 create_dirs()
 {
-  mkdir /dev/shm/paraflow
+  mkdir /dev/shm/paraflow && chown -R iir:iir /dev/shm/paraflow
   cd $PARAFLOW_DIR/.. && ln -s $PARAFLOW_DIR paraflow && chown -h iir:iir paraflow
 }
 

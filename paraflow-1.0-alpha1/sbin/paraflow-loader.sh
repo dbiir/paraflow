@@ -10,7 +10,7 @@ PARAFLOW_HOME="/home/iir/opt/paraflow"
 PARAFLOW_HEAP_OPTS="-Xmx16G -Xms8G"
 PARAFLOW_DIR="/home/iir/opt/paraflow-1.0-alpha1"
 DB="test"
-TABLE="tpch"
+TABLE="line"
 PARTITION_FROM=0
 PARTITION_TO=319
 
@@ -56,10 +56,10 @@ startup()
     fi
     if [ $i -lt 10 ]; then
       echo "starting paraflow loader on dbiir0"$i
-      ssh $PREFIX"0"$i "export PARAFLOW_HEAP_OPTS=$PARAFLOW_HEAP_OPTS && $PARAFLOW_HOME/bin/paraflow-loader-start.sh $DB $TABLE $part_from $part_to"
+      ssh $PREFIX"0"$i "export PARAFLOW_HEAP_OPTS='$PARAFLOW_HEAP_OPTS' && $PARAFLOW_HOME/bin/paraflow-loader-start.sh -daemon $DB $TABLE $part_from $part_to"
     else
       echo "starting paraflow loader on dbiir"$i
-      ssh $PREFIX$i "export PARAFLOW_HEAP_OPTS=$PARAFLOW_HEAP_OPTS && $PARAFLOW_HOME/bin/paraflow-loader-start.sh $DB $TABLE $part_from $part_to"
+      ssh $PREFIX$i "export PARAFLOW_HEAP_OPTS='$PARAFLOW_HEAP_OPTS' && $PARAFLOW_HOME/bin/paraflow-loader-start.sh -daemon $DB $TABLE $part_from $part_to"
     fi
   done
 }
@@ -108,7 +108,7 @@ destroy()
       ssh $PREFIX"0"$i "rm -rf $PARAFLOW_HOME/ && rm -rf $PARAFLOW_HOME && rm -rf $PARAFLOW_DIR"
     else
       echo "destroy paraflow loader on dbiir"$i
-      ssh $PREFIX$i "rm -rf $PARAFLOW_HOME/ && rm -rf $PARAFLOW_HOME && rm -rf $PARAFLOW_DIR"
+      ssh $PREFIX$i "rm -rf $PARAFLOW_HOME/ && rm -rf $PARAFLOW_HOME && rm -rf $PARAFLOW_DIR && rm -rf /dev/shm/paraflow"
     fi
   done
 }

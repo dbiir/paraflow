@@ -4,13 +4,13 @@
 echo $1" paraflow collectors."
 
 PREFIX="dbiir"
-START=1
+START=2
 END=9
 PARAFLOW_HOME="/home/iir/opt/paraflow"
-PARAFLOW_HEAP_OPTS="-Xmx2G -Xms2G"
+PARAFLOW_HEAP_OPTS="-Xmx8G -Xms6G"
 PARAFLOW_DIR="/home/iir/opt/paraflow-1.0-alpha1"
 DB="test"
-TABLE="tpch"
+TABLE="line"
 PARALLELISM="8"
 PARTITION_NUM="320"
 SF="300"
@@ -26,11 +26,11 @@ deploy()
     if [ $i -lt 10 ]; then
       echo "deploy paraflow collector on dbiir0$i"
       scp -r $PARAFLOW_DIR $PREFIX"0"$i:$PARAFLOW_DIR
-      ssh $PREFIX"0"$i "$PARAFLOW_DIR/sbin/paraflow-init.sh"
+      ssh $PREFIX"0"$i "cd $PARAFLOW_DIR/.. && ln -s $PARAFLOW_DIR paraflow"
     else
       echo "deploy paraflow collector on dbiir$i"
       scp -r $PARAFLOW_DIR $PREFIX$i:$PARAFLOW_DIR
-      ssh $PREFIX$i "$PARAFLOW_DIR/sbin/paraflow-init.sh"
+      ssh $PREFIX$i "ln -s $PARAFLOW_DIR paraflow"
     fi
   done
 }
@@ -43,10 +43,10 @@ startup()
   do
     if [ $i -lt 10 ]; then
       echo "starting paraflow collector on dbiir0"$i
-      ssh $PREFIX"0"$i "export PARAFLOW_HEAP_OPTS=$PARAFLOW_HEAP_OPTS && $PARAFLOW_HOME/bin/paraflow-collector-start.sh $DB $TABLE $PARALLELISM $PARTITION_NUM $SF $partIndex $PART_COUNT $MIN_CUSTKEY $MAX_CUSTKEY"
+      ssh $PREFIX"0"$i "export PARAFLOW_HEAP_OPTS='$PARAFLOW_HEAP_OPTS' && $PARAFLOW_HOME/bin/paraflow-collector-start.sh -daemon $DB $TABLE $PARALLELISM $PARTITION_NUM $SF $part_index $PART_COUNT $MIN_CUSTKEY $MAX_CUSTKEY"
     else
       echo "starting paraflow collector on dbiir"$i
-      ssh $PREFIX$i "export PARAFLOW_HEAP_OPTS=$PARAFLOW_HEAP_OPTS && $PARAFLOW_HOME/bin/paraflow-collector-start.sh $DB $TABLE $PARALLELISM $PARTITION_NUM $SF $partIndex $PART_COUNT $MIN_CUSTKEY $MAX_CUSTKEY"
+      ssh $PREFIX$i "export PARAFLOW_HEAP_OPTS='$PARAFLOW_HEAP_OPTS' && $PARAFLOW_HOME/bin/paraflow-collector-start.sh -daemon $DB $TABLE $PARALLELISM $PARTITION_NUM $SF $part_index $PART_COUNT $MIN_CUSTKEY $MAX_CUSTKEY"
     fi
     ((part_index++))
   done

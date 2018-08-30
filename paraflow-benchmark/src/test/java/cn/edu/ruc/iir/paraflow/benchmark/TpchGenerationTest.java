@@ -59,11 +59,31 @@ public class TpchGenerationTest
     }
 
     @Test
+    public void testLineOrder()
+    {
+        int part = 1;
+        Iterable<LineOrder> lineOrderIterable =
+                TpchTable.LINEORDER.createGenerator(1, part, 8, 0, 10000000);
+        Iterator<LineOrder> lineOrderIterator = lineOrderIterable.iterator();
+        int counter = 1;
+        LineOrder lineOrder = lineOrderIterator.next();
+        System.out.println(lineOrder.getLineOrderKey());
+        long maxLineOrderKey = 0;
+        while (lineOrderIterator.hasNext()) {
+            counter++;
+            LineOrder lineOrder1 = lineOrderIterator.next();
+            maxLineOrderKey = lineOrder1.getLineOrderKey();
+        }
+        System.out.println(maxLineOrderKey);
+        System.out.println(counter);
+    }
+
+    @Test
     public void testLineOrderGeneration()
     {
         ExecutorService executorService = Executors.newCachedThreadPool();
-        for (int i = 0; i < 4; i++) {
-            LineOrderGenerationThread generationThread = new LineOrderGenerationThread();
+        for (int i = 1; i <= 1; i++) {
+            LineOrderGenerationThread generationThread = new LineOrderGenerationThread(i);
             executorService.submit(generationThread);
         }
         try {
@@ -77,10 +97,17 @@ public class TpchGenerationTest
     private class LineOrderGenerationThread
             implements Runnable
     {
+        private final int part;
+
+        public LineOrderGenerationThread(int part)
+        {
+            this.part = part;
+        }
+
         @Override
         public void run()
         {
-            Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(1, 1, 1500, 0, 10000000);
+            Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(1, part, 8, 0, 10000000);
             Iterator<LineOrder> lineOrderIterator = lineOrderIterable.iterator();
             long start = System.currentTimeMillis();
             long counter = 0;
