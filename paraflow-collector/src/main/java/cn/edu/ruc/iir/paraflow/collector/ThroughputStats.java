@@ -1,5 +1,6 @@
-package cn.edu.ruc.iir.paraflow.commons;
+package cn.edu.ruc.iir.paraflow.collector;
 
+import cn.edu.ruc.iir.paraflow.commons.Metric;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,19 +9,21 @@ import org.slf4j.LoggerFactory;
  *
  * @author guodong
  */
-public class Stats
+public class ThroughputStats
 {
-    private static final Logger logger = LoggerFactory.getLogger(Stats.class);
+    private static final Logger logger = LoggerFactory.getLogger(ThroughputStats.class);
     private final long interval;
+    private final Metric metric;
 
     private long windowCount;
     private long windowBytes;
     private long windowStart;
 
-    public Stats(long interval)
+    public ThroughputStats(long interval, String gateWayUrl, String id)
     {
         this.interval = interval;
         windowStart = System.currentTimeMillis();
+        this.metric = new Metric(gateWayUrl, id, "collector_throughput", "Collector Throughput (MB/s)", "paraflow_collector");
     }
 
     public void record(int bytes, int count)
@@ -39,6 +42,7 @@ public class Stats
         double recPerSec = 1000.0 * windowCount / (double) elapsed;
         double mbPerSec = 1000.0 * windowBytes / (double) elapsed / (1024.0 * 1024.0);
         logger.info(windowCount + " records processed, " + recPerSec + " records/sec (" + mbPerSec + "MB/sec)");
+        metric.addValue(mbPerSec);
     }
 
     private void newWindow()

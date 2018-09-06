@@ -39,7 +39,6 @@ public class ParquetSegmentWriter
     public boolean write(ParaflowSegment segment, MetaProto.StringListType columnNames, MetaProto.StringListType columnTypes)
     {
         // construct schema
-        long prepareStart = System.currentTimeMillis();
         int columnNum = columnTypes.getStrCount();
         StringBuilder schemaBuilder = new StringBuilder("message " + segment.getTable() + " {");
         for (int i = 0; i < columnNum; i++) {
@@ -91,8 +90,6 @@ public class ParquetSegmentWriter
                 compressionCodecName = CompressionCodecName.UNCOMPRESSED;
                 break;
         }
-        long prepareEnd = System.currentTimeMillis();
-        System.out.println("Prepare cost: " + (prepareEnd - prepareStart));
         try (ParquetWriter<Group> writer = new ParquetWriter<>(
                 new Path(segment.getPath()), writeSupport, compressionCodecName,
                 config.getParquetBlockSize(), config.getParquetPageSize(),

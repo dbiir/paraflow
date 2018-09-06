@@ -165,6 +165,32 @@ demo = {
         // lbd.startAnimationForLineChart(dailySalesChart);
     },
 
+    initOverviewDashBoardCharts: function() {
+        const diskUsageData = {
+            series: [
+                [100],
+                [5000],
+                [1000]
+            ]
+        };
+
+        const usagePreferences = {
+            stackBars: true,
+            horizontalBars: true,
+            axisX: {
+                showGrid: false
+            }
+        };
+
+        Chartist.Bar('#diskUsage', diskUsageData, usagePreferences).on('draw', function(data) {
+            if(data.type === 'bar') {
+                data.element.attr({
+                    style: 'stroke-width: 60px'
+                });
+            }
+        });
+    },
+
     initDashboardPageCharts: function() {
 
         var dataPreferences = {

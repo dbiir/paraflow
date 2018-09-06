@@ -1,7 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader.utils;
 
 import cn.edu.ruc.iir.paraflow.commons.ParaflowRecord;
-import cn.edu.ruc.iir.paraflow.commons.Stats;
 import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.PushPullBlockingQueue;
 import com.conversantmedia.util.concurrent.SpinPolicy;
@@ -103,12 +102,10 @@ public class ConcurrentQueueTest
             implements Runnable
     {
         private final BlockingQueue<ParaflowRecord> concurrentQueue;
-        private final Stats stats;
 
         Receiver(BlockingQueue<ParaflowRecord> concurrentQueue)
         {
             this.concurrentQueue = concurrentQueue;
-            this.stats = new Stats(1000);
         }
 
         @Override
@@ -118,7 +115,6 @@ public class ConcurrentQueueTest
                 ParaflowRecord record;
                 try {
                     record = concurrentQueue.take();
-                    stats.record(200, (int) record.getKey());
                 }
                 catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
