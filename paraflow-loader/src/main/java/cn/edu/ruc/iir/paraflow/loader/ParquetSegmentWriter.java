@@ -30,9 +30,9 @@ public class ParquetSegmentWriter
 {
     private static final Logger logger = LoggerFactory.getLogger(ParquetSegmentWriter.class);
 
-    public ParquetSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient, BlockingQueue<String> flushingQueue)
+    public ParquetSegmentWriter(ParaflowSegment segment, MetaClient metaClient, BlockingQueue<ParaflowSegment> flushingQueue)
     {
-        super(segment, partitionFrom, partitionTo, metaClient, flushingQueue);
+        super(segment, metaClient, flushingQueue);
     }
 
     @Override

@@ -78,7 +78,7 @@ public class TestParquetWriter
             e.printStackTrace();
         }
         final MetaClient metaClient = new MetaClient("127.0.0.1", 10012);
-        final int capacity = 8000;
+        final int capacity = 8;
         Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(1000, 1, 1500, 0, 10000000);
         Iterator<LineOrder> lineOrderIterator = lineOrderIterable.iterator();
         TpchDataTransformer transformer = new TpchDataTransformer();
@@ -86,7 +86,7 @@ public class TestParquetWriter
         ParaflowRecord[] records = new ParaflowRecord[capacity];
         int counter = 0;
         long textSize = 0;
-        Output output = new ByteBufferOutput(200, 2000);
+        Output output = new ByteBufferOutput(300, 2000);
         while (lineOrderIterator.hasNext() && counter < capacity) {
             LineOrder lineOrder = lineOrderIterator.next();
             kryo.writeObject(output, lineOrder);
@@ -97,11 +97,11 @@ public class TestParquetWriter
         }
         content[0] = records;
         output.close();
-        ParaflowSegment segment = new ParaflowSegment(content, new long[0], new long[0]);
+        ParaflowSegment segment = new ParaflowSegment(content, new long[0], new long[0], 0.0d);
         segment.setPath("file:///Users/Jelly/Desktop/1");
         MetaProto.StringListType columnNames = metaClient.listColumns("test", "debug01");
         MetaProto.StringListType columnTypes = metaClient.listColumnsDataType("test", "debug01");
-        final ParquetSegmentWriter segmentWriter = new ParquetSegmentWriter(segment, 0, 79, metaClient, null);
+        final ParquetSegmentWriter segmentWriter = new ParquetSegmentWriter(segment, metaClient, null);
         long start = System.currentTimeMillis();
         if (segmentWriter.write(segment, columnNames, columnTypes)) {
             System.out.println("Binary size: " + (1.0 * textSize / 1024.0 / 1024.0) + " MB.");
