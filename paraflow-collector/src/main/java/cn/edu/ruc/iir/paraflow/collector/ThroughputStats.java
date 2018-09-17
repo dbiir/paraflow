@@ -13,15 +13,17 @@ public class ThroughputStats
 {
     private static final Logger logger = LoggerFactory.getLogger(ThroughputStats.class);
     private final long interval;
+    private final boolean metricEnabled;
     private final Metric metric;
 
     private long windowCount;
     private long windowBytes;
     private long windowStart;
 
-    public ThroughputStats(long interval, String gateWayUrl, String id)
+    public ThroughputStats(long interval, boolean metricEnabled, String gateWayUrl, String id)
     {
         this.interval = interval;
+        this.metricEnabled = metricEnabled;
         windowStart = System.currentTimeMillis();
         this.metric = new Metric(gateWayUrl, id, "collector_throughput", "Collector Throughput (MB/s)", "paraflow_collector");
     }
@@ -42,7 +44,9 @@ public class ThroughputStats
         double recPerSec = 1000.0 * windowCount / (double) elapsed;
         double mbPerSec = 1000.0 * windowBytes / (double) elapsed / (1024.0 * 1024.0);
         logger.info(windowCount + " records processed, " + recPerSec + " records/sec (" + mbPerSec + "MB/sec)");
-        metric.addValue(mbPerSec);
+        if (metricEnabled) {
+            metric.addValue(mbPerSec);
+        }
     }
 
     private void newWindow()

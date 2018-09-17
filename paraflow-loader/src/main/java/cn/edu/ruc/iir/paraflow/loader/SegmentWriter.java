@@ -31,6 +31,7 @@ public abstract class SegmentWriter
     private final Map<String, MetaProto.StringListType> tableColumnNamesCache;
     private final Map<String, MetaProto.StringListType> tableColumnTypesCache;
     private final Metric metric;
+    private final boolean metricEnabled;
     final LoaderConfig config = LoaderConfig.INSTANCE();
     final Configuration configuration = new Configuration();
 
@@ -45,6 +46,7 @@ public abstract class SegmentWriter
         this.tableColumnNamesCache = new HashMap<>();
         this.tableColumnTypesCache = new HashMap<>();
         this.metric = new Metric(config.getGateWayUrl(), config.getLoaderId(), "loader_latency", "Loader latency (ms)", "paraflow_loader");
+        this.metricEnabled = config.isMetricEnabled();
         configuration.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         configuration.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
     }
@@ -103,8 +105,10 @@ public abstract class SegmentWriter
                 metaClient.createBlockIndex(db, table, i + partitionFrom, fiberMinTimestamps[i], fiberMaxTimestamps[i], path);
             }
             long latency = currentTime - ((fiberMaxSum + fiberMinSum) / (2 * latencyPartitions));
-            metric.addValue(latency);
             logger.info("latency: " + latency + " ms.");
+            if (metricEnabled) {
+                metric.addValue(latency);
+            }
             System.out.println("latency: " + latency + " ms.");
             // clear segment content
             segment.clear();

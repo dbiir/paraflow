@@ -165,6 +165,11 @@ public class LoaderConfig
         return paraflowConfig.getProperty("parquet.validating").equalsIgnoreCase("true");
     }
 
+    public boolean isMetricEnabled()
+    {
+        return paraflowConfig.getProperty("metric.enabled").equalsIgnoreCase("true");
+    }
+
     public String getGateWayUrl()
     {
         return paraflowConfig.getProperty("gateway.url");

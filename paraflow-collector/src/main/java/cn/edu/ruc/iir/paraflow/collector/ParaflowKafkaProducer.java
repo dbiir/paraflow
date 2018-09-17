@@ -1,5 +1,6 @@
 package cn.edu.ruc.iir.paraflow.collector;
 
+import cn.edu.ruc.iir.paraflow.collector.utils.CollectorConfig;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -21,8 +22,9 @@ public class ParaflowKafkaProducer
     private final AtomicLong ackRecords = new AtomicLong();
     private final ThroughputStats throughputStats;
 
-    public ParaflowKafkaProducer(Properties config, long statsInterval)
+    public ParaflowKafkaProducer(CollectorConfig conf, long statsInterval)
     {
+        Properties config = conf.getProperties();
         // set the producer configuration properties for kafka record key and value serializers
         if (!config.containsKey(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)) {
             config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
@@ -34,7 +36,8 @@ public class ParaflowKafkaProducer
             throw new IllegalArgumentException(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG + " must be specified in the config");
         }
         kafkaProducer = new KafkaProducer<>(config);
-        this.throughputStats = new ThroughputStats(statsInterval, config.getProperty("gateway.url"), config.getProperty("collector.id"));
+        this.throughputStats = new ThroughputStats(statsInterval, conf.isMetricEnabled(), conf.getPushGateWayUrl(),
+                                                   conf.getCollectorId());
     }
 
     public void sendMsg(ProducerRecord<byte[], byte[]> record, int length)

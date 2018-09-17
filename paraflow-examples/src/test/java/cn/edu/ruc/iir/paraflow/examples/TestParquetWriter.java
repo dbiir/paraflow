@@ -67,8 +67,8 @@ public class TestParquetWriter
     {
         final Kryo kryo = new Kryo();
         kryo.register(LineOrder.class);
-        kryo.register(Object[].class);
         kryo.register(byte[].class);
+        kryo.register(Object[].class);
 
         final LoaderConfig config = LoaderConfig.INSTANCE();
         try {
@@ -78,7 +78,7 @@ public class TestParquetWriter
             e.printStackTrace();
         }
         final MetaClient metaClient = new MetaClient("127.0.0.1", 10012);
-        final int capacity = 800;
+        final int capacity = 8000;
         Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(1000, 1, 1500, 0, 10000000);
         Iterator<LineOrder> lineOrderIterator = lineOrderIterable.iterator();
         TpchDataTransformer transformer = new TpchDataTransformer();
@@ -99,13 +99,9 @@ public class TestParquetWriter
         output.close();
         ParaflowSegment segment = new ParaflowSegment(content, new long[0], new long[0]);
         segment.setPath("file:///Users/Jelly/Desktop/1");
-        long metaStart = System.currentTimeMillis();
-        MetaProto.StringListType columnNames = metaClient.listColumns("test", "tbl082702");
-        MetaProto.StringListType columnTypes = metaClient.listColumnsDataType("test", "tbl082702");
-        long metaEnd = System.currentTimeMillis();
-        System.out.println("Meta cost: " + (metaEnd - metaStart));
+        MetaProto.StringListType columnNames = metaClient.listColumns("test", "debug01");
+        MetaProto.StringListType columnTypes = metaClient.listColumnsDataType("test", "debug01");
         final ParquetSegmentWriter segmentWriter = new ParquetSegmentWriter(segment, 0, 79, metaClient, null);
-        System.out.println("Begin writing...");
         long start = System.currentTimeMillis();
         if (segmentWriter.write(segment, columnNames, columnTypes)) {
             System.out.println("Binary size: " + (1.0 * textSize / 1024.0 / 1024.0) + " MB.");
@@ -191,7 +187,7 @@ public class TestParquetWriter
             catch (ConfigFileNotFoundException e) {
                 e.printStackTrace();
             }
-            ParaflowKafkaProducer producer = new ParaflowKafkaProducer(collectorConfig.getProperties(), 1000);
+            ParaflowKafkaProducer producer = new ParaflowKafkaProducer(collectorConfig, 1000);
             ProducerRecord<byte[], byte[]> record =
                     new ProducerRecord<>(dbName + "-" + tableName, 0, message.getTimestamp(),
                                          new byte[0], serialized);

@@ -46,7 +46,7 @@ public class DefaultCollector<T>
         properties.setProperty("client.id", "producerAdmin");
         properties.setProperty("metadata.max.age.ms", "3000");
         kafkaAdminClient = AdminClient.create(properties);
-        this.collectorRuntime = new CollectorRuntime(config.getProperties());
+        this.collectorRuntime = new CollectorRuntime(config);
         init();
     }
 

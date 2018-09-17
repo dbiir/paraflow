@@ -39,7 +39,8 @@ public class TpchDataTransformer
             LineOrder lineOrder = kryo.readObject(input, LineOrder.class);
             input.close();
             lineOrder.setFiberId(partition);
-            lineOrder.setKey(lineOrder.getCustomerKey());
+            long custKey = lineOrder.getCustomerKey();
+            lineOrder.setKey(custKey);
             lineOrder.setTimestamp(lineOrder.getCreation());
             return lineOrder;
         }

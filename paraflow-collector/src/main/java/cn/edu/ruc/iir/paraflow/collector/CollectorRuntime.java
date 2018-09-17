@@ -1,8 +1,9 @@
 package cn.edu.ruc.iir.paraflow.collector;
 
+import cn.edu.ruc.iir.paraflow.collector.utils.CollectorConfig;
+
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -18,7 +19,7 @@ class CollectorRuntime
     private static final long statsInterval = 3000L;
     private static ParaflowKafkaProducer kafkaProducer;
 
-    CollectorRuntime(Properties conf)
+    CollectorRuntime(CollectorConfig conf)
     {
         kafkaProducer = new ParaflowKafkaProducer(conf, statsInterval);
     }
