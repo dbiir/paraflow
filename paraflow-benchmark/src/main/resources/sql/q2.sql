@@ -1,0 +1,1 @@
+SELECT SUM(lo_totalprice), AVG(lo_tax), MIN(lo_orderdate), MAX(lo_creation) FROM paraflow.test.tpch WHERE lo_custkey < 10000;

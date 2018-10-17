@@ -17,13 +17,13 @@ import java.util.Optional;
 public class GetUserIdAction extends Action
 {
     @Override
-    public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
+    public ActionResponse act(ActionResponse input, Connection connection)
+            throws ParaFlowException
     {
         Optional<Object> paramOp = input.getParam();
         Optional<Object> userNameOp = input.getProperties("userName");
         if (paramOp.isPresent() && userNameOp.isPresent()) {
             String userName = userNameOp.get().toString();
-            System.out.println("username : " + userName);
             String sqlStatement = SQLTemplate.findUserId(userName);
             ResultList resultList = connection.executeQuery(sqlStatement);
             if (!resultList.isEmpty()) {

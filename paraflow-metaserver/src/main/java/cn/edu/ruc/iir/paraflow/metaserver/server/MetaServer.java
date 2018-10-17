@@ -13,21 +13,19 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.MetaConfig;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.netty.NettyServerBuilder;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class MetaServer
 {
-    private static final Logger logger = LogManager.getLogger(MetaServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(MetaServer.class);
 
-    private final String metaConfigPath;
     private Server server = null;
 
-    private MetaServer(String metaConfigPath)
+    private MetaServer()
     {
-        this.metaConfigPath = metaConfigPath;
     }
 
     /**
@@ -46,8 +44,7 @@ public class MetaServer
         pipeline.addStartupHook(
                 () -> {
                     MetaConfig metaConfig = MetaConfig.INSTANCE();
-                    metaConfig.init(metaConfigPath);
-                    metaConfig.validate();
+                    metaConfig.init();
                 }
         );
 
@@ -97,8 +94,6 @@ public class MetaServer
 
         try {
             pipeline.startUp();
-            logger.info("====== MetaServer started successfully ======");
-            System.out.println("====== MetaServer started successfully ======");
         }
         catch (ParaFlowException pe) {
             pe.handle();
@@ -145,6 +140,8 @@ public class MetaServer
     {
         if (server != null) {
             try {
+                logger.info("====== MetaServer started successfully ======");
+                System.out.println("====== MetaServer started successfully ======");
                 server.awaitTermination();
             }
             catch (InterruptedException e) {
@@ -155,11 +152,7 @@ public class MetaServer
 
     public static void main(String[] args)
     {
-        if (args.length == 0) {
-            System.out.println("Default args: /home/tao/software/station/DBIIR/paraflow/dist/conf/metaserver.conf");
-            args = new String[]{"/home/tao/software/station/DBIIR/paraflow/dist/conf/metaserver.conf"};
-        }
-        MetaServer server = new MetaServer(args[0]);
+        MetaServer server = new MetaServer();
         server.start();
     }
 }

@@ -22,10 +22,12 @@ import cn.edu.ruc.iir.paraflow.metaserver.utils.SQLTemplate;
 
 import java.util.Optional;
 
-public class CreateBlockIndexAction extends Action
+public class CreateBlockIndexAction
+        extends Action
 {
     @Override
-    public ActionResponse act(ActionResponse input, Connection connection) throws ParaFlowException
+    public ActionResponse act(ActionResponse input, Connection connection)
+            throws ParaFlowException
     {
         Optional<Object> paramOp = input.getParam();
         Optional<Object> tblIdOp = input.getProperties("tblId");

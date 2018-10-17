@@ -1,9 +1,8 @@
 package cn.edu.ruc.iir.paraflow.commons.exceptions;
 
 import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,7 +10,7 @@ import java.io.StringWriter;
 public abstract class ParaFlowException extends Exception
 {
     private static final long serialVersionUID = -6514778398567346776L;
-    private static final Logger logger = LogManager.getLogger(ParaFlowException.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParaFlowException.class);
 
     /**
      * get exception name. default to class name
@@ -37,16 +36,16 @@ public abstract class ParaFlowException extends Exception
                 System.out.println(toString());
                 return;
             case INFO:
-                logger.log(Level.INFO, toString());
+                logger.info(toString());
                 return;
             case WARN:
-                logger.log(Level.WARN, toString());
+                logger.warn(toString());
                 return;
             case ERROR:
-                logger.log(Level.ERROR, getStackTraceMessage());
+                logger.error(getStackTraceMessage());
                 return;
             case FATAL:
-                logger.log(Level.FATAL, getStackTraceMessage());
+                logger.error(getStackTraceMessage());
                 Runtime.getRuntime().exit(getResponseStatus().getStatusValue());
         }
     }

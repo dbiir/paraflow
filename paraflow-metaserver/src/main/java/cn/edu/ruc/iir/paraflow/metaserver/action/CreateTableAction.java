@@ -23,13 +23,13 @@ public class CreateTableAction extends Action
         Optional<Object> paramOp = input.getParam();
         Optional<Object> userIdOp = input.getProperties("userId");
         Optional<Object> dbIdOp = input.getProperties("dbId");
-        Optional<Object> sfIdOp = input.getProperties("sfId");
-        Optional<Object> funcIdOp = input.getProperties("funcId");
+        Optional<Object> sfNameOp = input.getProperties("sfName");
+        Optional<Object> partitionerNameOp = input.getProperties("partitionerName");
         if (paramOp.isPresent()
                 && userIdOp.isPresent()
                 && dbIdOp.isPresent()
-                && sfIdOp.isPresent()
-                && funcIdOp.isPresent()) {
+                && sfNameOp.isPresent()
+                && partitionerNameOp.isPresent()) {
             MetaProto.TblParam tblParam = (MetaProto.TblParam) paramOp.get();
             input.setProperties("tblName", tblParam.getTblName());
             String locationUrl = tblParam.getLocationUrl();
@@ -41,15 +41,14 @@ public class CreateTableAction extends Action
             String userStatement = SQLTemplate.createTable(
                     (long) dbIdOp.get(),
                     tblParam.getTblName(),
-                    tblParam.getTblType(),
                     (long) userIdOp.get(),
                     System.currentTimeMillis(),
                     System.currentTimeMillis(),
                     locationUrl,
-                    (long) sfIdOp.get(),
+                    sfNameOp.get().toString(),
                     tblParam.getFiberColId(),
                     tblParam.getTimeColId(),
-                    (long) funcIdOp.get());
+                    partitionerNameOp.get().toString());
             int status = connection.executeUpdate(userStatement);
             if (status == 0) {
                 throw new TableCreationException(tblParam.getTblName());
