@@ -29,7 +29,7 @@ modify_config()
 {
   if [ -w $KAFKA_CONFIG_FILE ]; then
     sed -i '21s/.*/broker.id='$KAFKA_NODE_ID'/' $KAFKA_CONFIG_FILE
-    sed -i '31s/.*/listeners=PLAINTEXT:\/\/:'$((9092 + $KAFKA_NODE_ID))'/' $KAFKA_CONFIG_FILE
+    sed -i '31s/.*/listeners=PLAINTEXT:\/\/:'$((9192 + $KAFKA_NODE_ID))'/' $KAFKA_CONFIG_FILE
   else
     echo "no write permission on server.properties file"
     exit 0

@@ -32,4 +32,4 @@ case ${COMMAND} in
     ;;
 esac
 
-exec ${base_dir}/paraflow-run-class.sh ${MAIN_CLASS} "$@"
+exec ${base_dir}/paraflow-run-class.sh ${EXTRA_ARGS} ${MAIN_CLASS} "$@"

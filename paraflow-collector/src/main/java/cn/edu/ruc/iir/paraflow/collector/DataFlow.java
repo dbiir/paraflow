@@ -49,9 +49,5 @@ public abstract class DataFlow<T>
 
     public abstract FiberFlow<T> partitionBy(ParaflowFiberPartitioner partitioner);
 
-    public abstract FiberFlow<T> serializeBy(MessageSerializationSchema<T> serializationSchema);
-
-    public abstract MessageSerializationSchema<T> getSerializer();
-
     public abstract ParaflowFiberPartitioner getPartitioner();
 }

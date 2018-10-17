@@ -1,6 +1,6 @@
 package cn.edu.ruc.iir.paraflow.collector;
 
-import cn.edu.ruc.iir.paraflow.commons.Stats;
+import cn.edu.ruc.iir.paraflow.collector.utils.CollectorConfig;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -20,10 +20,11 @@ public class ParaflowKafkaProducer
 {
     private final KafkaProducer<byte[], byte[]> kafkaProducer;
     private final AtomicLong ackRecords = new AtomicLong();
-    private final Stats stats;
+    private final ThroughputStats throughputStats;
 
-    public ParaflowKafkaProducer(Properties config, long statsInterval)
+    public ParaflowKafkaProducer(CollectorConfig conf, long statsInterval)
     {
+        Properties config = conf.getProperties();
         // set the producer configuration properties for kafka record key and value serializers
         if (!config.containsKey(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG)) {
             config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
@@ -35,12 +36,13 @@ public class ParaflowKafkaProducer
             throw new IllegalArgumentException(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG + " must be specified in the config");
         }
         kafkaProducer = new KafkaProducer<>(config);
-        this.stats = new Stats(statsInterval);
+        this.throughputStats = new ThroughputStats(statsInterval, conf.isMetricEnabled(), conf.getPushGateWayUrl(),
+                                                   conf.getCollectorId());
     }
 
     public void sendMsg(ProducerRecord<byte[], byte[]> record, int length)
     {
-        kafkaProducer.send(record, new ProducerCallback(length, stats));
+        kafkaProducer.send(record, new ProducerCallback(length, throughputStats));
     }
 
     public long getAckRecords()
@@ -58,12 +60,12 @@ public class ParaflowKafkaProducer
             implements Callback
     {
         private final int bytes;
-        private final Stats stats;
+        private final ThroughputStats throughputStats;
 
-        ProducerCallback(int bytes, Stats stats)
+        ProducerCallback(int bytes, ThroughputStats throughputStats)
         {
             this.bytes = bytes;
-            this.stats = stats;
+            this.throughputStats = throughputStats;
         }
 
         /**
@@ -97,7 +99,7 @@ public class ParaflowKafkaProducer
         public void onCompletion(RecordMetadata metadata, Exception exception)
         {
             if (exception == null) {
-                this.stats.record(bytes, 1);
+                this.throughputStats.record(bytes, 1);
             }
         }
     }

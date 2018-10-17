@@ -1,7 +1,6 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.commons.ParaflowRecord;
-import cn.edu.ruc.iir.paraflow.commons.Stats;
 import org.apache.kafka.clients.consumer.Consumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -23,7 +22,6 @@ public class DataPuller
 {
     private static final Logger logger = LoggerFactory.getLogger(DataPuller.class);
     private final Consumer<byte[], byte[]> consumer;
-    private final Stats stats;
     private final BlockingQueue<ParaflowSortedBuffer> blockingQueue;
     private final int sortedBufferCapacity;
     private final ParaflowRecord[][] fiberBuffers;
@@ -41,7 +39,6 @@ public class DataPuller
         super(threadName, db, table, parallelism);
         ParaflowKafkaConsumer kafkaConsumer = new ParaflowKafkaConsumer(topicPartitions, conf);
         this.consumer = kafkaConsumer.getConsumer();
-        this.stats = new Stats(3000);
         this.blockingQueue = blockingQueue;
         this.sortedBufferCapacity = sortedBufferCapacity;
         int partitionNum = topicPartitions.size();
@@ -92,7 +89,6 @@ public class DataPuller
                                 Thread.currentThread().interrupt();
                             }
                         }
-                        stats.record(record.value().length, 1);
                         if (fiberBuffers[partitionIndex] == null) {
                             fiberBuffers[partitionIndex] = new ParaflowRecord[sortedBufferCapacity];
                         }

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-if [ $# -lt 4 ];
+if [ $# -lt 9 ];
 then
-  echo "USAGE: $0 [-daemon] db_name table_name parallelism partition_num"
+  echo "USAGE: $0 [-daemon] db_name table_name parallelism partition_num sf part part_count min_custkey max_custkey"
   exit 1
 fi
 base_dir=$(dirname $0)

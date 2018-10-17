@@ -80,12 +80,16 @@ public class DataCompactor
         ParaflowRecord[][] compactedRecords = new ParaflowRecord[partitionNum][];
         long[] fiberMinTimestamps = new long[partitionNum];
         long[] fiberMaxTimestamps = new long[partitionNum];
+        double sumAvgTimestamps = 0.0d;
+        double partitionCounter = 0.0d;
         for (int i = 0; i < partitionNum; i++) {
             if (tempBuffer[i] != null && !tempBuffer[i].isEmpty()) {
                 tempBuffer[i].sort(Comparator.comparingLong(ParaflowRecord::getTimestamp));
                 int tempSize = tempBuffer[i].size();
                 ParaflowRecord[] tempRecords = new ParaflowRecord[tempSize];
                 tempBuffer[i].toArray(tempRecords);
+                sumAvgTimestamps += tempBuffer[i].stream().mapToLong(ParaflowRecord::getTimestamp).average().orElse(0.0d);
+                partitionCounter++;
                 fiberMinTimestamps[i] = tempRecords[0].getTimestamp();
                 fiberMaxTimestamps[i] = tempRecords[tempRecords.length - 1].getTimestamp();
                 compactedRecords[i] = tempRecords;
@@ -96,7 +100,8 @@ public class DataCompactor
                 fiberMaxTimestamps[i] = -1;
             }
         }
+        double avgTimestamp = sumAvgTimestamps / partitionCounter;
         recordNum = 0;
-        return new ParaflowSegment(compactedRecords, fiberMinTimestamps, fiberMaxTimestamps);
+        return new ParaflowSegment(compactedRecords, fiberMinTimestamps, fiberMaxTimestamps, avgTimestamp);
     }
 }

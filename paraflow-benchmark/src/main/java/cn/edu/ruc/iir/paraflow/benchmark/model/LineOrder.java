@@ -63,6 +63,11 @@ public class LineOrder
         this.values[0] = lineOrderKey;
     }
 
+    public long getLineOrderKey()
+    {
+        return (long) this.values[0];
+    }
+
     public void setCustomerKey(long customerKey)
     {
         this.values[1] = customerKey;

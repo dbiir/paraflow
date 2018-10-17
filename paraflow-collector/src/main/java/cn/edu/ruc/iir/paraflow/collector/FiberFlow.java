@@ -13,7 +13,6 @@ public class FiberFlow<T>
 {
     private DataSink dataSink;
     private ParaflowFiberPartitioner partitioner;
-    private MessageSerializationSchema<T> serializationSchema;
     private int keyIdx;
     private int timeIdx;
 
@@ -65,19 +64,6 @@ public class FiberFlow<T>
     {
         this.partitioner = partitioner;
         return this;
-    }
-
-    @Override
-    public FiberFlow<T> serializeBy(MessageSerializationSchema<T> serializationSchema)
-    {
-        this.serializationSchema = serializationSchema;
-        return this;
-    }
-
-    @Override
-    public MessageSerializationSchema<T> getSerializer()
-    {
-        return this.serializationSchema;
     }
 
     @Override

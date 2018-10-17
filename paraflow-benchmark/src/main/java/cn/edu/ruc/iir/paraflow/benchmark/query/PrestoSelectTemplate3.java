@@ -27,11 +27,10 @@ public class PrestoSelectTemplate3
     String makeQuery()
     {
         int custkey = random.nextInt((int) maxCustkey);
-        return "SELECT c_name, c_address, c_phone, SUM(lo_quantity) AS sum_qty , AVG(lo_extendedprice) AS avg_price, avg(lo_discount) AS avg_disc, count(*) AS rs_num, min(lo_lineorderkey) AS min_lineorderkey, max(lo_orderkey) AS max_lineorderkey FROM "
+        return "SELECT c_name, c_address, c_phone, SUM(lo_quantity) AS sum_qty , AVG(lo_extendedprice) AS avg_price, avg(lo_discount) AS avg_disc, count(*) AS rs_num, min(lo_lineorderkey) AS min_lineorderkey, max(lo_lineorderkey) AS max_lineorderkey FROM "
                + table + ", " + joinTable
                + " WHERE " + table + ".lo_custkey=" + joinTable + ".c_custkey AND lo_custkey="
-               + custkey
-               + ";";
+               + custkey + " GROUP BY c_name, c_address, c_phone";
     }
 
     @Override

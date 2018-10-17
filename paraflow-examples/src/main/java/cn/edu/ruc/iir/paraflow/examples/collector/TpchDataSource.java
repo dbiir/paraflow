@@ -24,10 +24,10 @@ public class TpchDataSource
     private final Kryo kryo;
     private final Output output;
 
-    public TpchDataSource()
+    public TpchDataSource(int sf, int part, int partCount, long minCustomerKey, long maxCustomerKey)
     {
         super("tpch");
-        Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(10000, 1, 1500, 0, 1_000_000);
+        Iterable<LineOrder> lineOrderIterable = TpchTable.LINEORDER.createGenerator(sf, part, partCount, minCustomerKey, maxCustomerKey);
         this.lineOrderIterator = lineOrderIterable.iterator();
         this.kryo = new Kryo();
         kryo.register(LineOrder.class, 10);

@@ -12,10 +12,17 @@ import java.nio.ByteBuffer;
 public class BasicParaflowFiberPartitioner
         implements ParaflowFiberPartitioner
 {
+    private final int partitionNum;
+
+    public BasicParaflowFiberPartitioner(int partitionNum)
+    {
+        this.partitionNum = partitionNum;
+    }
+
     @Override
     public int getFiberId(byte[] key)
     {
         ByteBuffer buffer = ByteBuffer.wrap(key);
-        return buffer.getInt() % 80;
+        return buffer.getInt() % partitionNum;
     }
 }
