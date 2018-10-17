@@ -24,12 +24,12 @@ public class PrestoQuestioner
     {
         this.serverUrl = serverUrl;
         this.queryDistribution = new QueryDistribution();
-        queryDistribution.setDistribution("t1", 1);
-        queryDistribution.setDistribution("t2", 1);
+        queryDistribution.setDistribution("t1", 0);
+        queryDistribution.setDistribution("t2", 0);
         queryDistribution.setDistribution("t3", 1);
         queryDistribution.setDistribution("max-custkey", 10000000);
-        queryDistribution.setDistribution("min-time", 1535603938961L);
-        queryDistribution.setDistribution("max-time", 1535604395349L);
+        queryDistribution.setDistribution("min-time", 1535603938961L); //1536924926627L
+        queryDistribution.setDistribution("max-time", 1535604395349L); //1536926113777L
         queryDistribution.setSizeLimit(50);
         this.queryCache = new String[(int) queryDistribution.sizeLimit()];
         this.latencyCache = new int[(int) queryDistribution.sizeLimit()];

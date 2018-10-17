@@ -14,14 +14,14 @@ public class QuestionerTest
     @Test
     public void testDBQuestioner()
     {
-        DBQuestioner questioner = new DBQuestioner("jdbc:postgresql://dbiir00:5432/tpch", "customer");
+        DBQuestioner questioner = new DBQuestioner("jdbc:postgresql://dbiir00:5432/tpch", "customer", "u");
         questioner.question();
     }
 
     @Test
     public void testPrestoQuestioner()
     {
-        PrestoQuestioner questioner = new PrestoQuestioner("jdbc:presto://dbiir10:8080", "paraflow.test.test0830", "postgresql.public.customer");
+        PrestoQuestioner questioner = new PrestoQuestioner("jdbc:presto://dbiir10:8080", "paraflow.test.tpch", "postgresql.public.customer");
         questioner.question();
     }
 }

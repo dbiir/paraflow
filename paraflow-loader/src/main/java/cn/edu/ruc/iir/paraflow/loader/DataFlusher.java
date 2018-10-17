@@ -90,10 +90,10 @@ public class DataFlusher
                 }
                 metaClient.createBlockIndex(db, table, i + partitionFrom, fiberMinTimestamps[i], fiberMaxTimestamps[i], newPath);
             }
-            double writeLatency = writeTime - segment.getAvgTimestamp();
-            double flushLatency = System.currentTimeMillis() - segment.getAvgTimestamp();
+            double writeLatency = Math.abs(writeTime - segment.getAvgTimestamp());
+            double flushLatency = Math.abs(System.currentTimeMillis() - segment.getAvgTimestamp());
             logger.info("write latency: " + writeLatency + " ms.");
-            logger.info("flush latency: " + flushLatency + " ms.");
+//            logger.info("flush latency: " + flushLatency + " ms.");
             if (metricEnabled) {
                 metric.addValue(writeLatency);
             }
