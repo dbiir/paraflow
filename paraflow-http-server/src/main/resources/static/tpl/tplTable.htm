@@ -1,0 +1,422 @@
+﻿<style>
+    a { color: green}
+    .divPanHeader{border-top: 1px solid #ddd;}
+</style>
+<div class="divPan">
+    <div class="divPanHeader clearfix">
+        <div class="divPanTitle pull-left">
+            <a href="javascript:void(0)"><i class="fa fa-user"></i> 病人信息</a>
+        </div>
+    </div>
+    <div class="divPanBody">
+        <div class="divForms">
+            <div class="row">
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="name" value="<%=tplData.User.name%>" />
+                    <div class="divInputLabel">姓名</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="sex" value="<%=tplData.User.sex%>" />
+                    <div class="divInputLabel">性别</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="birthday" value="<%=tplData.User.birthday%>" />
+                    <div class="divInputLabel">出生日期</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="phone" value="<%=tplData.User.phone%>" />
+                    <div class="divInputLabel">联系方式</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="idcard" value="<%=tplData.User.idcard%>" />
+                    <div class="divInputLabel">证件号</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="addr" value="<%=tplData.User.addr%>" />
+                    <div class="divInputLabel">家庭住址</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="medical_insurance_number" value="<%=tplData.User.medical_insurance_number%>" />
+                    <div class="divInputLabel">医保号</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <select id="medical_insurance_type">
+                        <option value="城镇职工基本医疗保险">城镇职工基本医疗保险</option>
+                        <option value="新型农村合作医疗">新型农村合作医疗</option>
+                        <option value="城镇居民基本医疗保险">城镇居民基本医疗保险</option>
+                    </select>
+                    <div class="divInputLabel">医保类型</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="presenter" value="<%=tplData.User.presenter%>" />
+                    <div class="divInputLabel">陈述者</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="chief_complaint" value="<%=tplData.User.chief_complaint%>" />
+                    <div class="divInputLabel">主诉</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="allergy_history" value="<%=tplData.User.allergy_history%>" />
+                    <div class="divInputLabel">是否有过敏史</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="blood_transfusion_history" value="<%=tplData.User.blood_transfusion_history%>" />
+                    <div class="divInputLabel">是否有输血史</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="current_medical_history" value="<%=tplData.User.current_medical_history%>" />
+                    <div class="divInputLabel">现病史</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="past_history" value="<%=tplData.User.past_history%>" />
+                    <div class="divInputLabel">既往史</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="personal_history" value="<%=tplData.User.personal_history%>" />
+                    <div class="divInputLabel">个人史</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="marriage_history" value="<%=tplData.User.personal_history%>" />
+                    <div class="divInputLabel">婚育史</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="family_history" value="<%=tplData.User.personal_history%>" />
+                    <div class="divInputLabel">家族史</div>
+                </div>
+                <div class="col-lg-12 divInput">
+                    <textarea class="form-control" rows="2" id="memo"><%=tplData.User.memo%></textarea>
+                    <div class="divInputLabel">其他备注</div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+
+    <div class="divPanHeader clearfix">
+        <div class="divPanTitle pull-left">
+            <a href="javascript:void(0)"><i class="fa fa-hospital-o"></i> 医院信息</a>
+        </div>
+    </div>
+    <div class="divPanBody">
+        <div class="divForms">
+            <div class="row">
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="code" value="<%=tplData.Hospital.code%>" />
+                    <div class="divInputLabel">医院代号</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="caption" value="<%=tplData.Hospital.caption%>" />
+                    <div class="divInputLabel">医院名称</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="hospital_addr" value="<%=tplData.Hospital.hospital_addr%>" />
+                    <div class="divInputLabel">地址</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="hospital_number" value="<%=tplData.Hospital.hospital_number%>" />
+                    <div class="divInputLabel">住院号</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="registration_number" value="<%=tplData.Hospital.registration_number%>" />
+                    <div class="divInputLabel">登记号</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="department" value="<%=tplData.Hospital.department%>" />
+                    <div class="divInputLabel">科室</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="admission_time" value="<%=tplData.Hospital.admission_time%>" />
+                    <div class="divInputLabel">入院时间</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="discharge_time" value="<%=tplData.Hospital.discharge_time%>" />
+                    <div class="divInputLabel">出院时间</div>
+                </div>
+                <div class="col-lg-4 divInput">
+                    <input class="form-control" id="hospitalization_cycle" value="<%=tplData.Hospital.hospitalization_cycle%>" />
+                    <div class="divInputLabel">住院周期</div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+
+    <div class="divPanHeader clearfix">
+        <div class="divPanTitle pull-left">
+            <a href="javascript:void(0)"><i class="fa fa-sign-in"></i> 入院诊断</a>
+        </div>
+    </div>
+    <div class="divPanBody">
+        <div class="divForms">
+            <div class="row">
+                <div class="col-lg-9 divInput">
+                    <input class="form-control" id="ADname" placeholder="请填充相关内容" />
+                    <div class="divInputLabel">主要内容</div>
+                </div>
+                <div class="col-lg-3 divInput">
+                    <button class="btn btn-xs btn-warning" onclick="Case_List.addContent(0)">
+                        <i class="fa fa-plus"></i> 添加
+                    </button>
+                    <button class="btn btn-xs btn-info" onclick="Case_List.clearContent(0)">
+                        <i class="fa fa-remove"></i> 置空
+                    </button>
+                </div>
+                <div class="col-lg-12 divInput">
+                    <textarea class="form-control" rows="2" id="AD"><%
+                        for( var i=0;i< tplData.AD.length; i++){
+                        var aItem= tplData.AD[i];
+                        %><%=i+1%>.<%=aItem.name%><%if(i< tplData.AD.length-1 ){ %>; <%}else { %><% }} %>
+                    </textarea>
+                    <div class="divInputLabel">汇总说明</div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+    <div class="divPanHeader clearfix">
+        <div class="divPanTitle pull-left">
+            <a href="javascript:void(0)"><i class="fa fa-sign-out"></i> 出院诊断</a>
+        </div>
+    </div>
+    <div class="divPanBody">
+        <div class="divForms">
+            <div class="row">
+                <div class="col-lg-9 divInput">
+                    <input class="form-control"id="DDname" placeholder="请填充相关内容" />
+                    <div class="divInputLabel">主要内容</div>
+                </div>
+                <div class="col-lg-3 divInput">
+                    <button class="btn btn-xs btn-warning" onclick="Case_List.addContent(1)">
+                        <i class="fa fa-plus"></i> 添加
+                    </button>
+                    <button class="btn btn-xs btn-info" onclick="Case_List.clearContent(1)">
+                        <i class="fa fa-remove"></i> 置空
+                    </button>
+                </div>
+                <div class="col-lg-12 divInput">
+                    <textarea class="form-control" rows="2" id="DD"><%
+                        for( var i=0;i< tplData.DD.length; i++){
+                        var aItem= tplData.DD[i];
+                        %><%=i+1%>.<%=aItem.name%><%if(i< tplData.DD.length-1 ){ %>; <%}else { %><% }} %>
+                    </textarea>
+                    <div class="divInputLabel">汇总说明</div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+    <div class="divPanHeader clearfix">
+        <div class="divPanTitle pull-left">
+            <a href="javascript:void(0)"><i class="fa fa-pencil-square-o"></i> 入院情况</a>
+    </div>
+    </div>
+    <div class="divPanBody">
+        <div class="divForms">
+            <div class="row">
+                <div class="col-lg-9 divInput">
+                    <input class="form-control" id="ASname" placeholder="请填充相关内容" />
+                    <div class="divInputLabel">主要内容</div>
+                </div>
+                <div class="col-lg-3 divInput">
+                    <button class="btn btn-xs btn-warning" onclick="Case_List.addContent(2)">
+                        <i class="fa fa-plus"></i> 添加
+                    </button>
+                    <button class="btn btn-xs btn-info" onclick="Case_List.clearContent(2)">
+                        <i class="fa fa-remove"></i> 置空
+                    </button>
+                </div>
+                <div class="col-lg-12 divInput">
+                    <textarea class="form-control" rows="2" id="AS"><%
+                        for( var i=0;i< tplData.AS.length; i++){
+                        var aItem= tplData.AS[i];
+                        %><%=i+1%>.<%=aItem.name%><%if(i< tplData.AS.length-1 ){ %>; <%}else { %><% }} %>
+                    </textarea>
+                    <div class="divInputLabel">汇总说明</div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+    <div class="divPanHeader clearfix">
+        <div class="divPanTitle pull-left">
+            <a href="javascript:void(0)"><i class="fa fa-bed"></i> 住院经过</a>
+        </div>
+    </div>
+    <div class="divPanBody">
+        <div class="divForms">
+            <div class="row">
+                <div class="col-lg-9 divInput">
+                    <input class="form-control" id="Hname" placeholder="请填充相关内容" />
+                    <div class="divInputLabel">主要内容</div>
+                </div>
+                <div class="col-lg-3 divInput">
+                    <button class="btn btn-xs btn-warning" onclick="Case_List.addContent(3)">
+                        <i class="fa fa-plus"></i> 添加
+                    </button>
+                    <button class="btn btn-xs btn-info" onclick="Case_List.clearContent(3)">
+                        <i class="fa fa-remove"></i> 置空
+                    </button>
+                </div>
+                <div class="col-lg-12 divInput">
+                    <textarea class="form-control" rows="2" id="H"><%
+                        for( var i=0;i< tplData.H.length; i++){
+                        var aItem= tplData.H[i];
+                        %><%=i+1%>.<%=aItem.name%><%if(i< tplData.H.length-1 ){ %>; <%}else { %><% }} %>
+                    </textarea>
+                    <div class="divInputLabel">汇总说明</div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+    <div class="divPanHeader clearfix">
+        <div class="divPanTitle pull-left">
+            <a href="javascript:void(0)"><i class="fa fa-pencil-square-o"></i> 出院情况</a>
+        </div>
+    </div>
+    <div class="divPanBody">
+        <div class="divForms">
+            <div class="row">
+                <div class="col-lg-9 divInput">
+                    <input class="form-control" id="DSname" placeholder="请填充相关内容" />
+                    <div class="divInputLabel">主要内容</div>
+                </div>
+                <div class="col-lg-3 divInput">
+                    <button class="btn btn-xs btn-warning" onclick="Case_List.addContent(4)">
+                        <i class="fa fa-plus"></i> 添加
+                    </button>
+                    <button class="btn btn-xs btn-info" onclick="Case_List.clearContent(4)">
+                        <i class="fa fa-remove"></i> 置空
+                    </button>
+                </div>
+                <div class="col-lg-12 divInput">
+                    <textarea class="form-control" rows="2" id="DS"><%
+                        for( var i=0;i< tplData.DS.length; i++){
+                        var aItem= tplData.DS[i];
+                        %><%=i+1%>.<%=aItem.name%><%if(i< tplData.DS.length-1 ){ %>; <%}else { %><% }} %>
+                    </textarea>
+                    <div class="divInputLabel">汇总说明</div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+    <div class="divPanHeader clearfix">
+        <div class="divPanTitle pull-left">
+            <a href="javascript:void(0)"><i class="fa fa-h-square"></i> 出院医嘱</a>
+        </div>
+    </div>
+    <div class="divPanBody">
+        <div class="divForms">
+            <div class="row">
+                <div class="col-lg-9 divInput">
+                    <input class="form-control" id="DIname" placeholder="请填充相关内容" />
+                    <div class="divInputLabel">主要内容</div>
+                </div>
+                <div class="col-lg-3 divInput">
+                    <button class="btn btn-xs btn-warning" onclick="Case_List.addContent(5)">
+                        <i class="fa fa-plus"></i> 添加
+                    </button>
+                    <button class="btn btn-xs btn-info" onclick="Case_List.clearContent(5)">
+                        <i class="fa fa-remove"></i> 置空
+                    </button>
+                </div>
+                <div class="col-lg-12 divInput">
+                    <textarea class="form-control" rows="2" id="DI"><%
+                        for( var i=0;i< tplData.DI.length; i++){
+                        var aItem= tplData.DI[i];
+                        %><%=i+1%>.<%=aItem.name%><%if(i< tplData.DI.length-1 ){ %>; <%}else { %><% }} %>
+                    </textarea>
+                    <div class="divInputLabel">汇总说明</div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+    <div class="divPanHeader clearfix">
+        <div class="divPanTitle pull-left">
+            <a href="javascript:void(0)"><i class="fa fa-stethoscope"></i> 检查结果单 - 影像学</a>
+        </div>
+    </div>
+    <div class="divPanBody">
+        <div class="divForms">
+            <div class="row">
+                <div class="col-lg-9 divInput">
+                    <input class="form-control" id="IEname" placeholder="请填充相关内容" />
+                    <div class="divInputLabel">主要内容</div>
+                </div>
+                <div class="col-lg-3 divInput">
+                    <button class="btn btn-xs btn-warning" onclick="Case_List.addContent(6)">
+                        <i class="fa fa-plus"></i> 添加
+                    </button>
+                    <button class="btn btn-xs btn-info" onclick="Case_List.clearContent(6)">
+                        <i class="fa fa-remove"></i> 置空
+                    </button>
+                </div>
+                <div class="col-lg-12 divInput">
+                    <textarea class="form-control" rows="2" id="IE" placeholder="CT/X/MRI/HRCT/钡餐造影/…"><%
+                        for( var i=0;i< tplData.IE.length; i++){
+                        var aItem= tplData.IE[i];
+                        %><%=i+1%>.<%=aItem.name%><%if(i< tplData.IE.length-1 ){ %>; <%}else { %><% }} %>
+                    </textarea>
+                    <div class="divInputLabel">汇总说明</div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+    <div class="divPanHeader clearfix">
+        <div class="divPanTitle pull-left">
+            <a href="javascript:void(0)"><i class="fa fa-stethoscope"></i> 检查结果单 - 实验室</a>
+        </div>
+    </div>
+    <div class="divPanBody">
+        <div class="divForms">
+            <div class="row">
+                <div class="col-lg-9 divInput">
+                    <input class="form-control" id="LEname" placeholder="请填充相关内容" />
+                    <div class="divInputLabel">主要内容</div>
+                </div>
+                <div class="col-lg-3 divInput">
+                    <button class="btn btn-xs btn-warning" onclick="Case_List.addContent(7)">
+                        <i class="fa fa-plus"></i> 添加
+                    </button>
+                    <button class="btn btn-xs btn-info" onclick="Case_List.clearContent(7)">
+                        <i class="fa fa-remove"></i> 置空
+                    </button>
+                </div>
+                <div class="col-lg-12 divInput">
+                    <textarea class="form-control" rows="2" id="LE" placeholder="血常规/尿常规/OT/…"><%
+                        for( var i=0;i< tplData.LE.length; i++){
+                        var aItem= tplData.LE[i];
+                        %><%=i+1%>.<%=aItem.name%><%if(i< tplData.LE.length-1 ){ %>; <%}else { %><% }} %>
+                    </textarea>
+                    <div class="divInputLabel">汇总说明</div>
+                </div>
+            </div>
+            <div class="row">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="divPanFooter">
+        <div class="divPost clearfix">
+            <button class="btn btn-sm btn-success pull-right" onclick="Case_List.doPost()">
+                <i class="fa fa-save"></i> 保存
+            </button>
+            <button class="btn btn-sm btn-primary pull-right" onclick="">
+                <i class="fa fa-reply"></i> 重置
+            </button>
+        </div>
+    </div>
+</div>

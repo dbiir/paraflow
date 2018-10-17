@@ -1,14 +1,17 @@
 package cn.edu.ruc.iir.paraflow.http.server;
 
 import cn.edu.ruc.iir.paraflow.http.server.model.ClusterInfo;
+import cn.edu.ruc.iir.paraflow.http.server.model.Json;
 import cn.edu.ruc.iir.paraflow.http.server.model.Pipeline;
+import cn.edu.ruc.iir.paraflow.http.server.utils.JsonDBUtil;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -50,6 +53,7 @@ public class PipelineController
     }
 
     // list all tables in the test database
+    @RequestMapping(value = "/acGetTables")
     private void listTables()
     {
         MetaProto.StringListType databases = metaClient.listDatabases();
@@ -66,20 +70,51 @@ public class PipelineController
     }
 
     // execute query
-    private void executeQuery(String sql)
+    @RequestMapping(value = "/acQuery")
+    private String executeQuery(@RequestParam("sql") String sql)
     {
+        String res = "";
+        Json j = new Json();
         try {
             Connection conn = DriverManager.getConnection(url, properties);
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
 
             // deal with result set
-
+            JSONArray aDBJson = null;
+            aDBJson = JsonDBUtil.rSToJson(rs);
+            String result = JSON.toJSONString(aDBJson);
+            j.setDatas(result);
+            j.setState(1);
             stmt.close();
             rs.close();
         }
         catch (SQLException e) {
             e.printStackTrace();
         }
+        res = JSON.toJSONString(j);
+        return res;
+    }
+
+    @RequestMapping(value = "/")
+    public String getAction() {
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            conn = DriverManager.getConnection(url, properties);
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("select * from meta_tblmodel"); // meta_dbmodel
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        String res = null;
+        try {
+            res = JsonDBUtil.rSetToJson(rs);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        System.out.println("Result is: " + res);
+        return res;
     }
 }
