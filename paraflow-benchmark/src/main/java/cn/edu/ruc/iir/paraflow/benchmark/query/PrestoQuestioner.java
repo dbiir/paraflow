@@ -14,7 +14,6 @@ import java.util.Properties;
  */
 public class PrestoQuestioner
 {
-    private static final String DRIVER_CLASS = "com.facebook.presto.jdbc.Driver";
     private final String serverUrl;
     private final PrestoQueryGenerator queryGenerator;
     private final QueryDistribution queryDistribution;
@@ -25,13 +24,13 @@ public class PrestoQuestioner
     {
         this.serverUrl = serverUrl;
         this.queryDistribution = new QueryDistribution();
-        queryDistribution.setDistribution("t1", 1);
-        queryDistribution.setDistribution("t2", 1);
+        queryDistribution.setDistribution("t1", 0);
+        queryDistribution.setDistribution("t2", 0);
         queryDistribution.setDistribution("t3", 1);
-        queryDistribution.setDistribution("max-custkey", 1000000);
-        queryDistribution.setDistribution("min-time", 200000000L);
-        queryDistribution.setDistribution("max-time", 200008000L);
-        queryDistribution.setSizeLimit(1000);
+        queryDistribution.setDistribution("max-custkey", 10000000);
+        queryDistribution.setDistribution("min-time", 1535603938961L); //1536924926627L
+        queryDistribution.setDistribution("max-time", 1535604395349L); //1536926113777L
+        queryDistribution.setSizeLimit(50);
         this.queryCache = new String[(int) queryDistribution.sizeLimit()];
         this.latencyCache = new int[(int) queryDistribution.sizeLimit()];
         this.queryGenerator = new PrestoQueryGenerator(queryDistribution, table, joinTable);
@@ -42,9 +41,7 @@ public class PrestoQuestioner
         Connection conn = null;
         Properties properties = new Properties();
         properties.setProperty("user", "paraflow");
-        properties.setProperty("password", "paraflow");
         try {
-            Class.forName(DRIVER_CLASS);
             conn = DriverManager.getConnection(serverUrl, properties);
             long startTime = System.currentTimeMillis();
             long queryStart;
@@ -67,7 +64,7 @@ public class PrestoQuestioner
             long endTime = System.currentTimeMillis();
             System.out.println("Avg execution latency: " + 1.0d * queryDistribution.sizeLimit() / (endTime - startTime) * 1000);
         }
-        catch (ClassNotFoundException | SQLException e) {
+        catch (SQLException e) {
             e.printStackTrace();
         }
         finally {

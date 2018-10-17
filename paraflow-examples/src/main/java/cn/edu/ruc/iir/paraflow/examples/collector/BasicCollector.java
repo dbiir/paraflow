@@ -43,14 +43,19 @@ public class BasicCollector
 
     public static void main(String[] args)
     {
-        if (args.length != 4) {
-            System.out.println("Usage: dbName tableName parallelism partitionNum");
+        if (args.length != 9) {
+            System.out.println("Usage: dbName tableName parallelism partitionNum sf part partCount minCustKey maxCustKey, part starts from 1");
             System.exit(-1);
         }
         String dbName = args[0];
         String tableName = args[1];
         int parallelism = Integer.parseInt(args[2]);
         int partitionNum = Integer.parseInt(args[3]);
+        int sf = Integer.parseInt(args[4]);
+        int part = Integer.parseInt(args[5]);
+        int partCount = Integer.parseInt(args[6]);
+        long minCustKey = Long.parseLong(args[7]);
+        long maxCustKey = Long.parseLong(args[8]);
         try {
             DefaultCollector<String> collector = new DefaultCollector<>();
             if (!collector.existsDatabase(dbName)) {
@@ -114,9 +119,9 @@ public class BasicCollector
             }
 
             for (int i = 0; i < parallelism; i++) {
-                DataSource dataSource = new TpchDataSource();
+                DataSource dataSource = new TpchDataSource(sf, part, partCount, minCustKey, maxCustKey);
                 collector.collect(dataSource, 1, 22,
-                                  new BasicParaflowFiberPartitioner(),
+                                  new BasicParaflowFiberPartitioner(partitionNum),
                                   new StringMessageSerializationSchema<>(),
                                   new MockDataSink(dbName, tableName));
             }

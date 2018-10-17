@@ -32,7 +32,7 @@ startup()
   for ((i=$START; i<=$END; i++))
   do
     echo "starting kafka on dbiir0"$i
-    ssh $PREFIX"0"$i "export KAFKA_HEAP_OPTS=$KAFKA_HEAP_OPTS && $KAFKA_HOME/bin/kafka-server-start.sh -daemon /home/iir/opt/kafka/config/server.properties"
+    ssh $PREFIX"0"$i "export KAFKA_HEAP_OPTS='$KAFKA_HEAP_OPTS' && $KAFKA_HOME/bin/kafka-server-start.sh -daemon /home/iir/opt/kafka/config/server.properties"
   done
 }
 

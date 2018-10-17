@@ -21,14 +21,29 @@ public class DBQuestioner
     private final QueryDistribution queryDistribution;
     private final List<Integer> latencyCache;
 
-    public DBQuestioner(String serverUrl, String table)
+    public DBQuestioner(String serverUrl, String table, String mode)
     {
         this.serverUrl = serverUrl;
         this.queryDistribution = new QueryDistribution();
-        queryDistribution.setDistribution("select", 0);
-        queryDistribution.setDistribution("insert", 1);
-        queryDistribution.setDistribution("update", 9);
-        queryDistribution.setDistribution("delete", 0);
+        if (mode.equalsIgnoreCase("u")) {
+            queryDistribution.setDistribution("select", 0);
+            queryDistribution.setDistribution("insert", 0);
+            queryDistribution.setDistribution("update", 100);
+            queryDistribution.setDistribution("delete", 0);
+        }
+        if (mode.equalsIgnoreCase("ui")) {
+            queryDistribution.setDistribution("select", 0);
+            queryDistribution.setDistribution("insert", 5);
+            queryDistribution.setDistribution("update", 95);
+            queryDistribution.setDistribution("delete", 0);
+        }
+        if (mode.equalsIgnoreCase("uid")) {
+            queryDistribution.setDistribution("select", 0);
+            queryDistribution.setDistribution("insert", 5);
+            queryDistribution.setDistribution("update", 90);
+            queryDistribution.setDistribution("delete", 5);
+        }
+
         queryDistribution.setTimeLimit(60 * 1000);
         this.latencyCache = new ArrayList<>();
         this.queryGenerator = new DBQueryGenerator(queryDistribution, table);

@@ -38,6 +38,11 @@ public class CollectorConfig
         return paraflowConfig.getProperties();
     }
 
+    public String getCollectorId()
+    {
+        return paraflowConfig.getProperty("collector.id");
+    }
+
     public int getMetaServerPort()
     {
         return Integer.parseInt(paraflowConfig.getProperty("meta.server.port"));
@@ -51,6 +56,16 @@ public class CollectorConfig
     public String getKafkaBootstrapServers()
     {
         return paraflowConfig.getProperty("bootstrap.servers");
+    }
+
+    public boolean isMetricEnabled()
+    {
+        return paraflowConfig.getProperty("metric.enabled").equalsIgnoreCase("true");
+    }
+
+    public String getPushGateWayUrl()
+    {
+        return paraflowConfig.getProperty("gateway.url");
     }
 
     public int getMetaClientShutdownTimeout()

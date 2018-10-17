@@ -30,7 +30,7 @@ import static io.airlift.tpch.GenerateUtils.calculateStartIndex;
 public class LineOrderGenerator
         implements Generator<LineOrder>
 {
-    private static final int SCALE_BASE = 1_500_000;
+    private static final int SCALE_BASE = 6_000_000; // around 24M records for 1 sf
 
     // portion with have no orders
     private static final int CUSTOMER_MORTALITY = 3;

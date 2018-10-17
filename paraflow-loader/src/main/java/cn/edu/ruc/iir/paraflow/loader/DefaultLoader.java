@@ -7,8 +7,6 @@ import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.conversantmedia.util.concurrent.PushPullBlockingQueue;
 import com.conversantmedia.util.concurrent.SpinPolicy;
 import org.apache.kafka.common.TopicPartition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,7 +32,6 @@ import static com.google.common.base.Preconditions.checkArgument;
  * */
 public class DefaultLoader
 {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultLoader.class);
     private final ProcessPipeline pipeline;
     private final LoaderConfig config;
     private final String db;
@@ -98,7 +95,7 @@ public class DefaultLoader
             pipeline.addProcessor(dataPuller);
         }
         // init segment container
-        BlockingQueue<String> flushingQueue =
+        BlockingQueue<ParaflowSegment> flushingQueue =
                 new PushPullBlockingQueue<>(config.getFlushingCapacity(), SpinPolicy.SPINNING);
         SegmentContainer.INSTANCE().init(config.getContainerCapacity(), partitionFrom, partitionTo,
                                          flushingQueue, pipeline.getExecutorService(), metaClient);
@@ -107,7 +104,7 @@ public class DefaultLoader
                 partitionFrom, partitionNum, sorterCompactorBlockingQueue);
         pipeline.addProcessor(dataCompactor);
         // add a data flusher
-        DataFlusher dataFlusher = new DataFlusher("flusher", db, table, 1, flushingQueue, metaClient);
+        DataFlusher dataFlusher = new DataFlusher("flusher", db, table, 1, partitionFrom, flushingQueue, metaClient);
         pipeline.addProcessor(dataFlusher);
         // start the pipeline
         pipeline.start();
