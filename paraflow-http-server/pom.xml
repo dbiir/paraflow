@@ -33,6 +33,15 @@
 
     <dependencies>
         <dependency>
+            <groupId>cn.edu.ruc.iir</groupId>
+            <artifactId>paraflow-metaserver</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.facebook.presto</groupId>
+            <artifactId>presto-jdbc</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>

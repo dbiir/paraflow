@@ -30,16 +30,15 @@ public class ParquetSegmentWriter
 {
     private static final Logger logger = LoggerFactory.getLogger(ParquetSegmentWriter.class);
 
-    public ParquetSegmentWriter(ParaflowSegment segment, int partitionFrom, int partitionTo, MetaClient metaClient, BlockingQueue<String> flushingQueue)
+    public ParquetSegmentWriter(ParaflowSegment segment, MetaClient metaClient, BlockingQueue<ParaflowSegment> flushingQueue)
     {
-        super(segment, partitionFrom, partitionTo, metaClient, flushingQueue);
+        super(segment, metaClient, flushingQueue);
     }
 
     @Override
     public boolean write(ParaflowSegment segment, MetaProto.StringListType columnNames, MetaProto.StringListType columnTypes)
     {
         // construct schema
-        long prepareStart = System.currentTimeMillis();
         int columnNum = columnTypes.getStrCount();
         StringBuilder schemaBuilder = new StringBuilder("message " + segment.getTable() + " {");
         for (int i = 0; i < columnNum; i++) {
@@ -91,8 +90,6 @@ public class ParquetSegmentWriter
                 compressionCodecName = CompressionCodecName.UNCOMPRESSED;
                 break;
         }
-        long prepareEnd = System.currentTimeMillis();
-        System.out.println("Prepare cost: " + (prepareEnd - prepareStart));
         try (ParquetWriter<Group> writer = new ParquetWriter<>(
                 new Path(segment.getPath()), writeSupport, compressionCodecName,
                 config.getParquetBlockSize(), config.getParquetPageSize(),

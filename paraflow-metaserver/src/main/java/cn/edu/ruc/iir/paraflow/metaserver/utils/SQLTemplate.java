@@ -288,32 +288,32 @@ public class SQLTemplate
 
     public static String filterBlockIndexBeginEnd(long tblId, long timeBegin, long timeEnd)
     {
-        return String.format("SELECT blockPath FROM meta_blockindex WHERE tblid = %d AND (timeBegin < %d OR timeEnd > %d);", tblId, timeEnd, timeBegin);
+        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d AND (timeBegin < %d OR timeEnd > %d);", tblId, timeEnd, timeBegin);
     }
 
     public static String filterBlockIndexBegin(long tblId, long timeBegin)
     {
-        return String.format("SELECT blockPath FROM meta_blockindex WHERE tblid = %d AND timeEnd > %d;", tblId, timeBegin);
+        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d AND timeEnd > %d;", tblId, timeBegin);
     }
 
     public static String filterBlockIndexEnd(long tblId, long timeEnd)
     {
-        return String.format("SELECT blockPath FROM meta_blockindex WHERE tblid = %d AND timeBegin < %d;", tblId, timeEnd);
+        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d AND timeBegin < %d;", tblId, timeEnd);
     }
 
     public static String filterBlockIndex(long tblId)
     {
-        return String.format("SELECT blockPath FROM meta_blockindex WHERE tblid = %d;", tblId);
+        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d;", tblId);
     }
 
     public static String filterBlockIndexByFiberBeginEnd(long tblId, long value, long timeBegin, long timeEnd)
     {
-        return String.format("SELECT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d AND (timeBegin < %d OR timeEnd > %d);", tblId, value, timeEnd, timeBegin);
+        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d AND (timeBegin < %d OR timeEnd > %d);", tblId, value, timeEnd, timeBegin);
     }
 
     public static String filterBlockIndexByFiberBegin(long tblId, long value, long timeBegin)
     {
-        return String.format("SELECT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d AND timeEnd > %d;", tblId, value, timeBegin);
+        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d AND timeEnd > %d;", tblId, value, timeBegin);
     }
 
     public static String filterBlockIndexByFiberEnd(long tblId, long value, long timeEnd)

@@ -14,26 +14,35 @@ public class ParaflowSegment
     }
 
     private ParaflowRecord[][] records;   // records of each fiber
-    private long[] fiberMinTimestamps;    // minimal timestamps of each fiber
-    private long[] fiberMaxTimestamps;    // maximum timestamps of each fiber
+    private long[] fiberMinTimestamps;    // minimal timestamp of each fiber
+    private long[] fiberMaxTimestamps;    // maximum timestamp of each fiber
+    private double avgTimestamp;          // average timestamp of all fibers
     private String db;
     private String table;
-    private String path = "";                   // path of the in-memory file or on-disk file; if ON_HEAP, path is empty
+    private String path = "";             // path of the in-memory file or on-disk file; if ON_HEAP, path is empty
+    private long writeTime;
+    private long flushTime;
     private volatile StorageLevel storageLevel;
 
-    public ParaflowSegment(ParaflowRecord[][] records, long[] fiberMinTimestamps, long[] fiberMaxTimestamps)
+    public ParaflowSegment(ParaflowRecord[][] records, long[] fiberMinTimestamps, long[] fiberMaxTimestamps,
+                           double avgTimestamp)
     {
         this.records = records;
         this.fiberMinTimestamps = fiberMinTimestamps;
         this.fiberMaxTimestamps = fiberMaxTimestamps;
+        this.avgTimestamp = avgTimestamp;
         this.storageLevel = StorageLevel.ON_HEAP;
     }
 
-    public void clear()
+    public void clearRecords()
     {
         this.records = null;
-        this.fiberMaxTimestamps = null;
+    }
+
+    public void clearTimestamps()
+    {
         this.fiberMinTimestamps = null;
+        this.fiberMaxTimestamps = null;
     }
 
     public ParaflowRecord[][] getRecords()
@@ -89,5 +98,30 @@ public class ParaflowSegment
     public long[] getFiberMinTimestamps()
     {
         return fiberMinTimestamps;
+    }
+
+    public double getAvgTimestamp()
+    {
+        return avgTimestamp;
+    }
+
+    public void setWriteTime(long writeTime)
+    {
+        this.writeTime = writeTime;
+    }
+
+    public void setFlushTime(long flushTime)
+    {
+        this.flushTime = flushTime;
+    }
+
+    public long getWriteTime()
+    {
+        return writeTime;
+    }
+
+    public long getFlushTime()
+    {
+        return flushTime;
     }
 }

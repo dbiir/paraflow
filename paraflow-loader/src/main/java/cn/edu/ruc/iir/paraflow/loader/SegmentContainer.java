@@ -1,6 +1,8 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;
@@ -14,6 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 class SegmentContainer
 {
+    private final Logger logger = LoggerFactory.getLogger(SegmentContainer.class);
     private final AtomicBoolean initialized = new AtomicBoolean(false);
     private final AtomicInteger containerSize = new AtomicInteger(0);
 
@@ -22,7 +25,7 @@ class SegmentContainer
     private int capacity;
     private int partitionFrom;
     private int partitionTo;
-    private BlockingQueue<String> flushingQueue;
+    private BlockingQueue<ParaflowSegment> flushingQueue;
 
     private SegmentContainer()
     {
@@ -39,7 +42,7 @@ class SegmentContainer
     }
 
     synchronized void init(int capacity, int partitionFrom, int partitionTo,
-                           BlockingQueue<String> flushingQueue, ExecutorService executorService, MetaClient metaClient)
+                           BlockingQueue<ParaflowSegment> flushingQueue, ExecutorService executorService, MetaClient metaClient)
     {
         if (initialized.get()) {
             return;
@@ -72,14 +75,15 @@ class SegmentContainer
             return false;
         }
         else {
-            containerSize.incrementAndGet();
+            int currentSize = containerSize.incrementAndGet();
+            logger.debug("current container size: " + currentSize);
             executorService.execute(
-                    new Thread(new ParquetSegmentWriter(segment, partitionFrom, partitionTo, metaClient, flushingQueue)));
+                    new Thread(new ParquetSegmentWriter(segment, metaClient, flushingQueue)));
             return true;
         }
     }
 
-    synchronized void doneSegment()
+    void doneSegment()
     {
         containerSize.decrementAndGet();
     }

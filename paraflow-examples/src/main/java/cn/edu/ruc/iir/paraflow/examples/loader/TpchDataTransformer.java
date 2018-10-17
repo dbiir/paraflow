@@ -37,10 +37,11 @@ public class TpchDataTransformer
         Input input = new ByteBufferInput(value);
         try {
             LineOrder lineOrder = kryo.readObject(input, LineOrder.class);
-            input.close();
             lineOrder.setFiberId(partition);
-            lineOrder.setKey(lineOrder.getCustomerKey());
+            long custKey = lineOrder.getCustomerKey();
+            lineOrder.setKey(custKey);
             lineOrder.setTimestamp(lineOrder.getCreation());
+            input.close();
             return lineOrder;
         }
         catch (Exception e) {

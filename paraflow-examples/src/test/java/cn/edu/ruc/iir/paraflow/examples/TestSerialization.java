@@ -16,7 +16,7 @@ public class TestSerialization
     @Test
     public void testSerDe()
     {
-        TpchDataSource dataSource = new TpchDataSource();
+        TpchDataSource dataSource = new TpchDataSource(1, 1, 1, 0, 1_000_000);
         TpchDataTransformer transformer = new TpchDataTransformer();
 
         Message message = dataSource.read();

@@ -68,6 +68,7 @@
         <guice.version>4.0</guice.version>
         <presto.version>0.192</presto.version>
         <airlift.version>0.161</airlift.version>
+        <prometheus.version>0.5.0</prometheus.version>
         <dep.airlift.slice.version>0.32</dep.airlift.slice.version>
         <dep.airlift.units.version>1.0</dep.airlift.units.version>
         <dep.jetty.version>9.0.5.v20130815</dep.jetty.version>
@@ -131,7 +132,7 @@
             <dependency>
                 <groupId>com.facebook.presto</groupId>
                 <artifactId>presto-jdbc</artifactId>
-                <version>0.192</version>
+                <version>${presto.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.facebook.presto</groupId>
@@ -226,6 +227,16 @@
                 <groupId>io.grpc</groupId>
                 <artifactId>grpc-stub</artifactId>
                 <version>1.4.0</version>
+            </dependency>
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient</artifactId>
+                <version>${prometheus.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.prometheus</groupId>
+                <artifactId>simpleclient_pushgateway</artifactId>
+                <version>${prometheus.version}</version>
             </dependency>
 
             <!-- j -->

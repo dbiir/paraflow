@@ -14,7 +14,7 @@ public class TestTpchDataSource
     @Test
     public void testTpchDataGeneration()
     {
-        TpchDataSource dataSource = new TpchDataSource();
+        TpchDataSource dataSource = new TpchDataSource(1, 1, 1, 0, 1_000_000);
         int counter = 0;
         while (true) {
             Message message = dataSource.read();

@@ -10,14 +10,14 @@ PARAFLOW_CONFIG_FILE="$PARAFLOW_HOME/config/loader.conf"
 # create a symbolic file and data directories
 create_dirs()
 {
-  mkdir /dev/shm/paraflow
+  mkdir /dev/shm/paraflow && chown -R iir:iir /dev/shm/paraflow
   cd $PARAFLOW_DIR/.. && ln -s $PARAFLOW_DIR paraflow && chown -h iir:iir paraflow
 }
 
 # modify the configuration file
 modify_config()
 {
-  if [ -w $KAFKA_CONFIG_FILE ]; then
+  if [ -w $PARAFLOW_CONFIG_FILE ]; then
     sed -i '2s/.*/loader.id='$PARAFLOW_NODE_ID'/' $PARAFLOW_CONFIG_FILE
   else
     echo "no write permission on loader.conf file"
