@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8">
@@ -16,8 +16,9 @@
     <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
     <!-- Generated: 2018-04-16 09:29:05 +0200 -->
     <title>tabler.github.io - a responsive, flat and full featured admin template</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">-->
+    <link href="assets/sdk/icons/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="./assets/sdk/googleapis.css">
     <script src="./assets/js/require.min.js"></script>
     <script>
       requirejs.config({
@@ -35,6 +36,36 @@
     <script src="./assets/plugins/maps-google/plugin.js"></script>
     <!-- Input Mask Plugin -->
     <script src="./assets/plugins/input-mask/plugin.js"></script>
+    <script src="assets/sdk/jQuery-2.1.3.min.js"></script>
+    <script src="assets/sdk/json.js"></script>
+    <script src="assets/sdk/hhac.js"></script>
+    <script src="assets/sdk/baiduTpls.js"></script>
+    <script src="assets/sdk/hhls.js"></script>
+    <script src="assets/sdk/Init.js"></script>
+    <script>
+        function getTables() {
+            var aData = {
+            }
+            var aUrl = Init.Url.acGetTables;
+            Ac.acGetData(aUrl, aData, "GET", function (aRes) {
+                var result = "";
+                if (aRes.state == 1) {
+
+                } else {
+
+                }
+                $("#").text(result);
+            })
+        }
+        var Tpls = {
+            tplTable: { P: "tpl/tplTable.htm", C: "" }
+        };
+        $(document).ready(function () {
+            hhls.GetTpls(Tpls, function () {
+                getTables();
+            });
+        });
+    </script>
   </head>
   <body class="">
     <div class="page">
