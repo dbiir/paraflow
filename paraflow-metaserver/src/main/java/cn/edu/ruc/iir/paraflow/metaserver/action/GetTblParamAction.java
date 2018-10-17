@@ -28,7 +28,7 @@ public class GetTblParamAction extends Action
         Optional<Object> paramOp = input.getParam();
         Optional<Object> userNameOp = input.getProperties("userName");
         Optional<Object> sfNameOp = input.getProperties("sfName");
-        Optional<Object> funcNameOp = input.getProperties("funcName");
+        Optional<Object> funcNameOp = input.getProperties("fiberFuncName");
         if (paramOp.isPresent()
                 && userNameOp.isPresent()
                 && sfNameOp.isPresent()
@@ -40,7 +40,6 @@ public class GetTblParamAction extends Action
             MetaProto.TblParam tblParamLast = MetaProto.TblParam.newBuilder()
                     .setDbName(tblParam.getDbName())
                     .setTblName(tblParam.getTblName())
-                    .setTblType(tblParam.getTblType())
                     .setUserName(userName)
                     .setCreateTime(tblParam.getCreateTime())
                     .setLastAccessTime(tblParam.getLastAccessTime())

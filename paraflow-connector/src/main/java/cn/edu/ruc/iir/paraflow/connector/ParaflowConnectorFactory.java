@@ -19,7 +19,7 @@ public class ParaflowConnectorFactory
         implements ConnectorFactory
 {
     private static final Logger logger = Logger.get(ParaflowConnectorFactory.class);
-    private final String name = "paraflow-presto";
+    private final String name = "paraflow";
 
     ParaflowConnectorFactory()
     {

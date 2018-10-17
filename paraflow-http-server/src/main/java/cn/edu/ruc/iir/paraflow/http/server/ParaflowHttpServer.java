@@ -2,26 +2,26 @@ package cn.edu.ruc.iir.paraflow.http.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.context.annotation.ComponentScan;
 
 /**
  * paraflow
  *
  * @author guodong
  */
-@RestController
 @SpringBootApplication
+@ComponentScan
 public class ParaflowHttpServer
 {
-    @RequestMapping("/index")
-    public String index()
+    private void init()
     {
-        return "Hello world!";
+        System.out.println("Paraflow http server is starting...");
     }
 
     public static void main(String[] args)
     {
+        ParaflowHttpServer httpServer = new ParaflowHttpServer();
+        httpServer.init();
         SpringApplication.run(ParaflowHttpServer.class, args);
     }
 }

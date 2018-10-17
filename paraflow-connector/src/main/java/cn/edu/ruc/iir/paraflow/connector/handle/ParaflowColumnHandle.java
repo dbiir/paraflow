@@ -35,7 +35,6 @@ implements ColumnHandle
         FIBER,
         TIMESTAMP,
         NOTVALID
-
     }
 
     private final String name;

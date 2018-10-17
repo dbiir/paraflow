@@ -29,11 +29,8 @@ service Meta {
     rpc createDbParam(DbParamParam) returns (ResponseStatus) {}
     rpc createTblParam(TblParamParam) returns (ResponseStatus) {}
     rpc createTblPriv(TblPrivParam) returns (ResponseStatus) {}
-    rpc createStorageFormat(StorageFormatParam) returns (ResponseStatus) {}
-    rpc getStorageFormat(GetStorageFormatParam) returns (StorageFormatParam) {}
-    rpc createFunc(FuncParam) returns (ResponseStatus) {}
-    rpc getFunc(GetFuncParam) returns (FuncParam) {}
     rpc createBlockIndex(BlockIndexParam) returns (ResponseStatus) {}
+    rpc updateBlockPath(UpdateBlockPathParam) returns (ResponseStatus) {}
     rpc createUser(UserParam) returns (ResponseStatus) {}
     rpc filterBlockIndex(FilterBlockIndexParam) returns (StringListType) {}
     rpc filterBlockIndexByFiber(FilterBlockIndexByFiberParam) returns (StringListType) {}
@@ -172,7 +169,6 @@ message TblParam {
     int64 tblId = 3;
     string dbName = 4;
     string tblName = 5;
-    int32 tblType = 6;
     string userName = 7;
     int64 createTime = 8;
     int64 lastAccessTime = 9;
@@ -254,6 +250,11 @@ message BlockIndexParam {
     string blockPath = 7;
 }
 
+message UpdateBlockPathParam {
+    string originPath = 1;
+    string newPath = 2;
+}
+
 message FilterBlockIndexParam {
     DbNameParam database = 1;
     TblNameParam table = 2;
@@ -288,25 +289,4 @@ message TblPrivParam {
     string userName = 3;
     int32 privType = 4;
     int64 grantTime = 5;
-}
-
-message StorageFormatParam {
-    bool isEmpty = 1;
-    string storageFormatName = 2;
-    string compression = 3;
-    string serialFormat = 4;
-}
-
-message FuncParam {
-    bool isEmpty = 1;
-    string funcName = 2;
-    bytes funcContent = 3;
-}
-
-message GetFuncParam {
-    string funcName = 1;
-}
-
-message GetStorageFormatParam {
-    string storageFormatName = 1;
 }

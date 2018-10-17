@@ -25,14 +25,12 @@ public class CreateMetaTablesAction extends Action
             statements[0] = MetaConstants.createVerModelSql;
             statements[1] = MetaConstants.createUserModelSql;
             statements[2] = MetaConstants.createDbModelSql;
-            statements[3] = MetaConstants.createStorageFormatModelSql;
-            statements[4] = MetaConstants.createFuncModelSql;
-            statements[5] = MetaConstants.createTblModelSql;
-            statements[6] = MetaConstants.createColModelSql;
-            statements[7] = MetaConstants.createDbParamModelSql;
-            statements[8] = MetaConstants.createTblParamModelSql;
-            statements[9] = MetaConstants.createTblPrivModelSql;
-            statements[10] = MetaConstants.createBlockIndexSql;
+            statements[3] = MetaConstants.createTblModelSql;
+            statements[4] = MetaConstants.createColModelSql;
+            statements[5] = MetaConstants.createDbParamModelSql;
+            statements[6] = MetaConstants.createTblParamModelSql;
+            statements[7] = MetaConstants.createTblPrivModelSql;
+            statements[8] = MetaConstants.createBlockIndexSql;
 
             int[] results = connection.executeUpdateInBatch(statements);
             for (int res : results) {
