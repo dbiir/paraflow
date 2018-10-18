@@ -20,7 +20,7 @@ public class TestMetaClient
     @Before
     public void init()
     {
-        client = new MetaClient("127.0.0.1", 10012);
+        client = new MetaClient("10.77.110.27", 10012);
     }
 
     @Test

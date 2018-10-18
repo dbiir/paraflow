@@ -14,8 +14,8 @@ var Init = {
     },
     // 请求的url
     Url: {
-        acGetTables: "http://10.77.40.27:2018/acGetTables",
-        acQuery: "http://10.77.40.27:2018/acQuery",
+        acGetTables: "http://localhost:2018/acGetTables",
+        acQuery: "http://localhost:2018/acQuery",
     },
     //web弹出框样式
     Utility: {

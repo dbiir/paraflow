@@ -51,7 +51,7 @@
             Ac.acGetData(aUrl, aData, "GET", function (aRes) {
                 if (aRes.state == 1) {
                     var aHtml = bt(Tpls.tplTable.C, { tplData: aRes.datas });
-                    hhls.fillElement(".card", aHtml);
+                    hhls.fillElement(".tables", aHtml);
                     $(".web-toast_content").text("Loading success.");
                 } else {
                     // error
@@ -1136,7 +1136,7 @@
                 <!--</div>-->
               <!--</div>-->
             <!--</div>-->
-            <div class="col-lg-12">
+            <div class="col-lg-12 tables">
               <!--<form class="card">-->
                 <!--<div class="card-body">-->
                   <!--<h3 class="card-title">Edit Profile</h3>-->
@@ -1212,7 +1212,7 @@
                   <!--<button type="submit" class="btn btn-primary">Update Profile</button>-->
                 <!--</div>-->
               <!--</form>-->
-              <div class="card">
+              <!--<div class="card">-->
                 <!--<div class="card-header">
                   <h3 class="card-title">test.tpch</h3>
                 </div>
@@ -1274,7 +1274,7 @@
                     </table>
                   </div>
                 </div>-->
-              </div>
+              <!--</div>-->
             </div>
           </div>
         </div>

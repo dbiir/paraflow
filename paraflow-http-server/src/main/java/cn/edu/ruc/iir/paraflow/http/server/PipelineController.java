@@ -1,12 +1,21 @@
 package cn.edu.ruc.iir.paraflow.http.server;
 
-import cn.edu.ruc.iir.paraflow.http.server.model.*;
+import cn.edu.ruc.iir.paraflow.http.server.model.ClusterInfo;
+import cn.edu.ruc.iir.paraflow.http.server.model.Column;
+import cn.edu.ruc.iir.paraflow.http.server.model.DynamicJson;
+import cn.edu.ruc.iir.paraflow.http.server.model.Json;
+import cn.edu.ruc.iir.paraflow.http.server.model.Pipeline;
+import cn.edu.ruc.iir.paraflow.http.server.model.Table;
 import cn.edu.ruc.iir.paraflow.http.server.utils.JsonDBUtil;
 import cn.edu.ruc.iir.paraflow.metaserver.client.MetaClient;
 import cn.edu.ruc.iir.paraflow.metaserver.proto.MetaProto;
 import com.alibaba.fastjson.JSON;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -26,8 +35,8 @@ import java.util.Properties;
 @EnableAutoConfiguration
 public class PipelineController
 {
-    private final MetaClient metaClient = new MetaClient("dbiir00", 10012);
     private final Properties properties = new Properties();
+    final MetaClient metaClient = new MetaClient("10.77.110.27", 10012);
     private final String url = "jdbc:presto://dbiir10:8080/paraflow/test";
 
     public PipelineController()
@@ -60,22 +69,24 @@ public class PipelineController
         for (int i = 0; i < databases.getStrCount(); i++) {
             String database = databases.getStr(i);
             MetaProto.StringListType tables = metaClient.listTables(database);
-            Table tab = new Table();
-            List<Column> columnList = new ArrayList<>();
             for (int j = 0; j < tables.getStrCount(); j++) {
+                Table tab = new Table();
+                List<Column> columnList = new ArrayList<>();
                 String table = tables.getStr(j);
                 tab.setName(table);
                 MetaProto.StringListType columnIds = metaClient.listColumnsId(database, table);
                 MetaProto.StringListType columnNames = metaClient.listColumns(database, table);
                 MetaProto.StringListType columnTypes = metaClient.listColumnsDataType(database, table);
-                Column column = new Column();
-                column.setName(String.valueOf(columnNames));
-                column.setType(String.valueOf(columnTypes));
-                column.setId(Integer.valueOf(String.valueOf(columnIds)));
-                columnList.add(column);
+                for (int k = 0; k < columnIds.getStrCount(); k++) {
+                    Column column = new Column();
+                    column.setName(columnNames.getStr(k));
+                    column.setType(columnTypes.getStr(k));
+                    column.setId(Integer.valueOf(columnIds.getStr(k)));
+                    columnList.add(column);
+                }
+                tab.setColumns(columnList);
+                tableList.add(tab);
             }
-            tab.setColumns(columnList);
-            tableList.add(tab);
         }
         json.setDatas(tableList);
         json.setState(1);
@@ -109,7 +120,8 @@ public class PipelineController
     }
 
     @RequestMapping(value = "/ac")
-    public String getAction() {
+    public String getAction()
+    {
         String res = "";
         Json j = new Json();
         Connection conn = null;
@@ -119,7 +131,8 @@ public class PipelineController
             conn = DriverManager.getConnection(url, properties);
             stmt = conn.createStatement();
             rs = stmt.executeQuery("show schemas"); // meta_dbmodel
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
         }
         String result = null;
@@ -127,13 +140,12 @@ public class PipelineController
             result = JsonDBUtil.rSetToJson(rs);
             j.setDatas(result);
             j.setState(1);
-        } catch (SQLException e) {
+        }
+        catch (SQLException e) {
             e.printStackTrace();
         }
         System.out.println("Result is: " + res);
         res = JSON.toJSONString(j);
         return res;
     }
-
-
 }
