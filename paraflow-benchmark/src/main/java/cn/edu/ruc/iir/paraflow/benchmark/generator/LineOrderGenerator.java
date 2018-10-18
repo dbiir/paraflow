@@ -142,6 +142,8 @@ public class LineOrderGenerator
 
         private final RandomBoundedLong totalPriceRandom = new RandomBoundedLong(839213222, true, 100L, 10000000L, LINE_COUNT_MAX);
 
+        private final TimeGenerationPool timeGenerationPool = TimeGenerationPool.INSTANCE();
+
         private final long startIndex;
         private final long rowCount;
 
@@ -159,6 +161,9 @@ public class LineOrderGenerator
         {
             this.startIndex = startIndex;
             this.rowCount = rowCount;
+
+            // todo init
+            timeGenerationPool.init(System.currentTimeMillis() - (7 * 24 * 60 * 60 * 1000), 1, 80000);
 
             this.maxCustomerKey = minCustomerKey + numCustomerKey;
 
@@ -319,7 +324,7 @@ public class LineOrderGenerator
                     shipInstructions.getBytes(Charset.forName("UTF-8")),
                     shipMode.getBytes(Charset.forName("UTF-8")),
                     lineitemComment.getBytes(Charset.forName("UTF-8")),
-                    System.currentTimeMillis());
+                    timeGenerationPool.nextTime());
         }
 
         private long generateCustomerKey()
