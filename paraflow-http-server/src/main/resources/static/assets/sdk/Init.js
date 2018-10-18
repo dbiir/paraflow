@@ -14,7 +14,7 @@ var Init = {
     },
     // 请求的url
     Url: {
-        acGetTables: "http://case.merchain.cn:2019/acGetTables",
+        acGetTables: "http://10.77.40.27:2018/acGetTables",
         acQuery: "http://10.77.40.27:2018/acQuery",
     },
     //web弹出框样式

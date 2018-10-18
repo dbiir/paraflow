@@ -97,7 +97,7 @@ var Ac = {
                     hhls.callBack(aCallBack, aCallbackData);
                 },
                 error: function (a, b, c) {
-                    var aResult = { State: 0, Datas: { Ea: a, Eb: b, Ec: c } };
+                    var aResult = { state: 0, datas: { Ea: a, Eb: b, Ec: c } };
                     hhls.callBack(aCallBack, aResult);
                 }
             });
@@ -134,7 +134,7 @@ var Ac = {
                     hhls.callBack(aCallback, aResult);
                 },
                 error: function (a, b, c) {
-                    var aResult = { State: 0, Datas: { Ea: a, Eb: b, Ec: c } };
+                    var aResult = { state: 0, datas: { Ea: a, Eb: b, Ec: c } };
                     hhls.callBack(aCallback, aResult);
                 }
             });
