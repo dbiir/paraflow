@@ -63,7 +63,7 @@ public class TpchGenerationTest
     {
         int part = 1;
         Iterable<LineOrder> lineOrderIterable =
-                TpchTable.LINEORDER.createGenerator(1, part, 8, 0, 10000000);
+                TpchTable.LINEORDER.createGenerator(4, part, 1, 0, 10000000);
         Iterator<LineOrder> lineOrderIterator = lineOrderIterable.iterator();
         int counter = 1;
         LineOrder lineOrder = lineOrderIterator.next();
@@ -82,7 +82,7 @@ public class TpchGenerationTest
     public void testLineOrderGeneration()
     {
         ExecutorService executorService = Executors.newCachedThreadPool();
-        for (int i = 1; i <= 1; i++) {
+        for (int i = 1; i <= 4; i++) {
             LineOrderGenerationThread generationThread = new LineOrderGenerationThread(i);
             executorService.submit(generationThread);
         }
@@ -112,11 +112,20 @@ public class TpchGenerationTest
             long start = System.currentTimeMillis();
             long counter = 0;
             long msgLen = 0;
+            long currentTimestamp = 0;
+            long creationCounter = 0;
             while (lineOrderIterator.hasNext()) {
                 LineOrder lineOrder = lineOrderIterator.next();
-                msgLen += lineOrder.toLine().length();
+//                msgLen += lineOrder.toLine().length();
+                long creation = lineOrder.getCreation();
+                if (creation != currentTimestamp) {
+                    System.out.println(creation);
+                    creationCounter++;
+                    currentTimestamp = creation;
+                }
                 counter++;
             }
+            System.out.println("Creation counter: " + creationCounter);
             long end = System.currentTimeMillis();
             long duration = end - start;
             System.out.println("Generate " + counter + " messages in " + duration +

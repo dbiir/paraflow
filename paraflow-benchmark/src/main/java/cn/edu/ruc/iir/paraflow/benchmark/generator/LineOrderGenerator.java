@@ -30,10 +30,10 @@ import static io.airlift.tpch.GenerateUtils.calculateStartIndex;
 public class LineOrderGenerator
         implements Generator<LineOrder>
 {
-    private static final int SCALE_BASE = 6_000_000; // around 24M records for 1 sf
+    private static final int SCALE_BASE = 6_000_000; // sf 8064 around 12TB
 
     // portion with have no orders
-    private static final int CUSTOMER_MORTALITY = 3;
+    private static final int CUSTOMER_MORTALITY = 10000;
 
     private static final int QUANTITY_MIN = 1;
     private static final int QUANTITY_MAX = 50;
@@ -242,14 +242,14 @@ public class LineOrderGenerator
                 orderPriorityRandom.rowFinished();
                 lineCountRandom.rowFinished();
 
-                index++;
-
                 // generate information for next order
                 customerKey = generateCustomerKey();
                 lineCount = lineCountRandom.nextValue() - 1;
                 orderDate = orderDateRandom.nextValue();
                 lineNumber = 0;
             }
+
+            index++;
 
             return lineorder;
         }
