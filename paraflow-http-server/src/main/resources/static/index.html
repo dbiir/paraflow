@@ -15,7 +15,7 @@
     <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
     <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
     <!-- Generated: 2018-04-16 09:29:05 +0200 -->
-    <title>Homepage - tabler.github.io - a responsive, flat and full featured admin template</title>
+    <title>Paraflow Dashboard</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
     <script src="./assets/js/require.min.js"></script>
@@ -43,7 +43,7 @@
           <div class="container">
             <div class="d-flex">
               <a class="header-brand" href="./index.html">
-                <img src="./demo/brand/tabler.svg" class="header-brand-img" alt="tabler logo">
+                  <span>PARAFLOW</span>
               </a>
               <div class="d-flex order-lg-2 ml-auto">
                 <div class="nav-item d-none d-md-flex">
@@ -52,10 +52,10 @@
                 <div class="nav-item d-none d-md-flex">
                   <a href="https://github.com/tabler/tabler" class="btn btn-sm btn-outline-primary" target="_blank">Source code</a>
                 </div>
-                <div class="nav-item d-none d-md-flex">
-                  <span class="fa fa-circle text-info fa-circle-thin" id="status-indicator"></span>
-                  <span style="color: #888888; font-size: small;" id="uptime">0h</span>
-                </div>
+                <!--<div class="nav-item d-none d-md-flex">-->
+                  <!--<span class="fa fa-circle text-info fa-circle-thin" id="status-indicator"></span>-->
+                  <!--<span style="color: #888888; font-size: small;" id="uptime">0h</span>-->
+                <!--</div>-->
               </div>
             </div>
           </div>
@@ -79,7 +79,7 @@
                     <a href="./console.html" class="nav-link"><i class="fe fe-minus-square"></i> Console</a>
                   </li>
                   <li class="nav-item">
-                    <a href="./databases.html" class="nav-link"><i class="fe fe-database"></i> Databases</a>
+                    <a href="./databases.html" class="nav-link"><i class="fe fe-database"></i> Tables</a>
                   </li>
                   <li class="nav-item">
                     <a href="./docs/index.html" class="nav-link"><i class="fe fe-file-text"></i> Documentation</a>
@@ -164,10 +164,10 @@
                             data: {
                               columns: [
                                   // each columns data
-                                ['data1', 63],
-                                ['data2', 44],
-                                ['data3', 12],
-                                ['data4', 14]
+                                ['data1', 40],
+                                ['data2', 10],
+                                ['data3', 45],
+                                ['data4', 5]
                               ],
                               type: 'donut', // default type of chart
                               colors: {
@@ -209,7 +209,7 @@
                         <div class="text-right text-green">
                           <i class="fe fe-chevron-up"></i>
                         </div>
-                        <div class="h1 m-0 text-green">20</div>
+                        <div class="h1 m-0 text-green">26</div>
                         <div class="text-muted mb-4">Live Nodes</div>
                       </div>
                     </div>
@@ -220,7 +220,7 @@
                         <div class="text-right text-yellow">
                           <i class="fe fe-chevron-down"></i>
                         </div>
-                        <div class="h1 m-0 text-yellow">1</div>
+                        <div class="h1 m-0 text-yellow">0</div>
                         <div class="text-muted mb-4">Lost Nodes</div>
                       </div>
                     </div>
@@ -231,7 +231,7 @@
                         <div class="text-right text-red">
                           <i class="fe fe-chevron-down"></i>
                         </div>
-                        <div class="h1 m-0 text-red">2</div>
+                        <div class="h1 m-0 text-red">0</div>
                         <div class="text-muted mb-4">Dead Nodes</div>
                       </div>
                     </div>
@@ -259,7 +259,7 @@
                           <i class="fe fe-chevron-up"></i>
                         </div>
                         <div class="h1 m-0">16</div>
-                        <div class="text-muted mb-4">Hadoop</div>
+                        <div class="text-muted mb-4">Loader</div>
                       </div>
                     </div>
                   </div>
@@ -270,7 +270,7 @@
                           v 0.192
                           <i class="fe fe-chevron-up"></i>
                         </div>
-                        <div class="h1 m-0">16</div>
+                        <div class="h1 m-0">17</div>
                         <div class="text-muted mb-4">Presto</div>
                       </div>
                     </div>
@@ -283,191 +283,230 @@
               <div class="col-12">
                 <div class="card">
                   <div class="card-header">
-                    <h3 class="card-title">Invoices</h3>
+                    <h3 class="card-title">Nodes</h3>
                   </div>
                   <div class="table-responsive">
                     <table class="table card-table table-vcenter text-nowrap">
                       <thead>
                         <tr>
-                          <th class="w-1">No.</th>
-                          <th>Invoice Subject</th>
-                          <th>Client</th>
-                          <th>VAT No.</th>
-                          <th>Created</th>
-                          <th>Status</th>
-                          <th>Price</th>
-                          <th></th>
-                          <th></th>
+                          <th class="w-1">Name</th>
+                            <th>Host</th>
+                            <th>URL</th>
+                            <th>Role</th>
+                            <th>Created</th>
+                            <th>Status</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td><span class="text-muted">001401</span></td>
-                          <td><a href="invoice.html" class="text-inherit">Design Works</a></td>
+                          <td><span class="text-muted">coordinator</span></td>
+                            <td>dbiir01</td>
+                          <td>10.77.110.11</td>
                           <td>
-                            Carlson Limited
+                              Coordinator
                           </td>
                           <td>
-                            87956621
+                              19 Oct 2018
                           </td>
                           <td>
-                            15 Dec 2017
-                          </td>
-                          <td>
-                            <span class="status-icon bg-success"></span> Paid
-                          </td>
-                          <td>$887</td>
-                          <td class="text-right">
-                            <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                            <div class="dropdown">
-                              <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="icon" href="javascript:void(0)">
-                              <i class="fe fe-edit"></i>
-                            </a>
+                            <span class="status-icon bg-success"></span> Running
                           </td>
                         </tr>
                         <tr>
-                          <td><span class="text-muted">001402</span></td>
-                          <td><a href="invoice.html" class="text-inherit">UX Wireframes</a></td>
+                          <td><span class="text-muted">loader01</span></td>
+                            <td>dbiir11</td>
+                          <td>10.77.110.21</td>
                           <td>
-                            Adobe
+                              Paraflow Loader
                           </td>
                           <td>
-                            87956421
+                              19 Oct 2018
                           </td>
                           <td>
-                            12 Apr 2017
-                          </td>
-                          <td>
-                            <span class="status-icon bg-warning"></span> Pending
-                          </td>
-                          <td>$1200</td>
-                          <td class="text-right">
-                            <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                            <div class="dropdown">
-                              <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="icon" href="javascript:void(0)">
-                              <i class="fe fe-edit"></i>
-                            </a>
+                            <span class="status-icon bg-success"></span> Running
                           </td>
                         </tr>
                         <tr>
-                          <td><span class="text-muted">001403</span></td>
-                          <td><a href="invoice.html" class="text-inherit">New Dashboard</a></td>
-                          <td>
-                            Bluewolf
-                          </td>
-                          <td>
-                            87952621
-                          </td>
-                          <td>
-                            23 Oct 2017
-                          </td>
-                          <td>
-                            <span class="status-icon bg-warning"></span> Pending
-                          </td>
-                          <td>$534</td>
-                          <td class="text-right">
-                            <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                            <div class="dropdown">
-                              <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="icon" href="javascript:void(0)">
-                              <i class="fe fe-edit"></i>
-                            </a>
-                          </td>
+                            <td><span class="text-muted">loader02</span></td>
+                            <td>dbiir12</td>
+                            <td>10.77.110.22</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
                         </tr>
                         <tr>
-                          <td><span class="text-muted">001404</span></td>
-                          <td><a href="invoice.html" class="text-inherit">Landing Page</a></td>
-                          <td>
-                            Salesforce
-                          </td>
-                          <td>
-                            87953421
-                          </td>
-                          <td>
-                            2 Sep 2017
-                          </td>
-                          <td>
-                            <span class="status-icon bg-secondary"></span> Due in 2 Weeks
-                          </td>
-                          <td>$1500</td>
-                          <td class="text-right">
-                            <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                            <div class="dropdown">
-                              <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="icon" href="javascript:void(0)">
-                              <i class="fe fe-edit"></i>
-                            </a>
-                          </td>
+                            <td><span class="text-muted">loader03</span></td>
+                            <td>dbiir13</td>
+                            <td>10.77.110.23</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
                         </tr>
                         <tr>
-                          <td><span class="text-muted">001405</span></td>
-                          <td><a href="invoice.html" class="text-inherit">Marketing Templates</a></td>
-                          <td>
-                            Printic
-                          </td>
-                          <td>
-                            87956621
-                          </td>
-                          <td>
-                            29 Jan 2018
-                          </td>
-                          <td>
-                            <span class="status-icon bg-danger"></span> Paid Today
-                          </td>
-                          <td>$648</td>
-                          <td class="text-right">
-                            <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                            <div class="dropdown">
-                              <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="icon" href="javascript:void(0)">
-                              <i class="fe fe-edit"></i>
-                            </a>
-                          </td>
+                            <td><span class="text-muted">loader04</span></td>
+                            <td>dbiir14</td>
+                            <td>10.77.110.24</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
                         </tr>
                         <tr>
-                          <td><span class="text-muted">001406</span></td>
-                          <td><a href="invoice.html" class="text-inherit">Sales Presentation</a></td>
-                          <td>
-                            Tabdaq
-                          </td>
-                          <td>
-                            87956621
-                          </td>
-                          <td>
-                            4 Feb 2018
-                          </td>
-                          <td>
-                            <span class="status-icon bg-secondary"></span> Due in 3 Weeks
-                          </td>
-                          <td>$300</td>
-                          <td class="text-right">
-                            <a href="javascript:void(0)" class="btn btn-secondary btn-sm">Manage</a>
-                            <div class="dropdown">
-                              <button class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown">Actions</button>
-                            </div>
-                          </td>
-                          <td>
-                            <a class="icon" href="javascript:void(0)">
-                              <i class="fe fe-edit"></i>
-                            </a>
-                          </td>
+                            <td><span class="text-muted">loader05</span></td>
+                            <td>dbiir15</td>
+                            <td>10.77.110.25</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-muted">loader06</span></td>
+                            <td>dbiir17</td>
+                            <td>10.77.110.27</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-muted">loader08</span></td>
+                            <td>dbiir18</td>
+                            <td>10.77.110.28</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-muted">loader09</span></td>
+                            <td>dbiir19</td>
+                            <td>10.77.110.29</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-muted">loader10</span></td>
+                            <td>dbiir20</td>
+                            <td>10.77.110.30</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-muted">loader11</span></td>
+                            <td>dbiir21</td>
+                            <td>10.77.110.31</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-muted">loader12</span></td>
+                            <td>dbiir22</td>
+                            <td>10.77.110.32</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-muted">loader13</span></td>
+                            <td>dbiir23</td>
+                            <td>10.77.110.33</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-muted">loader14</span></td>
+                            <td>dbiir24</td>
+                            <td>10.77.110.34</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="text-muted">loader15</span></td>
+                            <td>dbiir25</td>
+                            <td>10.77.110.35</td>
+                            <td>
+                                Paraflow Loader
+                            </td>
+                            <td>
+                                19 Oct 2018
+                            </td>
+                            <td>
+                                <span class="status-icon bg-success"></span> Running
+                            </td>
                         </tr>
                       </tbody>
                     </table>

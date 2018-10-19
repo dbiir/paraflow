@@ -29,8 +29,3 @@ ParaFlow is an interactive analysis system for OLAP developed at [DBIIR Lab @ RU
 5. Start Paraflow Loader
 6. Start Paraflow Collector
 7. Start Presto
-
-#### Contributors
-1. [Yueguo Chen](http://iir.ruc.edu.cn/~ygchen/)
-2. [Guodong Jin](http://iir.ruc.edu.cn/~guodong/index.html)
-3. Youxian Tao

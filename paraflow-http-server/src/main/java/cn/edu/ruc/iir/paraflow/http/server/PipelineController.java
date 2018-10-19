@@ -103,12 +103,15 @@ public class PipelineController
         try {
             Connection conn = DriverManager.getConnection(url, properties);
             Statement stmt = conn.createStatement();
+            long start = System.currentTimeMillis();
             ResultSet rs = stmt.executeQuery(sql);
+            long duration = System.currentTimeMillis() - start;
 
             // deal with result set
             DynamicJson result = JsonDBUtil.rSToJson(rs, true);
             j.setDatas(result);
             j.setState(1);
+            j.setMsg("Execution time: " + duration + " ms");
             stmt.close();
             rs.close();
         }

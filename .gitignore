@@ -5,7 +5,6 @@ paraflow-1.0-alpha1/plugin
 paraflow-1.0-alpha1/bin/launcher*
 paraflow-1.0-alpha1/bin/procname
 paraflow-1.0-alpha1/logs
-paraflow-1.0-alpha1/config
 _site
 paraflow-benchmark/data
 
