@@ -24,7 +24,11 @@ Paraflow enables users to load data into data warehouse (like HDFS) as soon as p
 2. **No loss staging**. Kafka is used in the system to stage data without losses.
 3. **Real-time analysis**. Lightweight indices are used in Paraflow to speed up queries.
 
+## Demonstration
+![Demonstration Video](https://youtu.be/en1J0Z4HZIo)
+
 ## Publication
++ Towards Real-time Analysis of ID-Associated Data. ER'18 Demo.
 + Entity Fiber based Partitioning, no Loss Staging and Fast Loading of Log Data. PDCAT'16.
 
 ## Contacting Us
