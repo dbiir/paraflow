@@ -175,6 +175,9 @@ implements ConnectorSplitManager
 
     private ParaflowFiberPartitioner parsePartitioner(String partitionerName)
     {
+//        Class clazz = Class.forName(partitionerName);
+//        Constructor c = clazz.getConstructor(int.class);
+//        ParaflowFiberPartitioner partitioner = c.newInstance(partitionNum);
         try {
             Class clazz = ParaflowMetaDataReader.class.getClassLoader().loadClass(partitionerName);
             return (ParaflowFiberPartitioner) clazz.newInstance();

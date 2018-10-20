@@ -39,9 +39,12 @@ public class DataFlusher
         this.metaClient = metaClient;
         this.metric = new Metric(config.getGateWayUrl(), config.getLoaderId(), "loader_latency", "Loader latency (ms)", "paraflow_loader");
         this.metricEnabled = config.isMetricEnabled();
-        Configuration configuration = new Configuration();
+        Configuration configuration = new Configuration(false);
         configuration.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         configuration.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+        configuration.set("dfs.replication", "1");
+        System.out.println("DFS replication " + configuration.get("dfs.replication"));
+        logger.info("DFS replication " + configuration.get("dfs.replication"));
         try {
             fs = FileSystem.get(URI.create(config.getHDFSWarehouse()), configuration);
         }
@@ -75,6 +78,7 @@ public class DataFlusher
         String newPath = config.getHDFSWarehouse() + suffix;
         Path outputPath = new Path(newPath);
         try {
+            fs.create(outputPath, (short) 1);
             fs.copyFromLocalFile(true, new Path(segmentPath), outputPath);
             // add block index
             long[] fiberMinTimestamps = segment.getFiberMinTimestamps();
@@ -91,7 +95,7 @@ public class DataFlusher
                 metaClient.createBlockIndex(db, table, i + partitionFrom, fiberMinTimestamps[i], fiberMaxTimestamps[i], newPath);
             }
             double writeLatency = Math.abs(writeTime - segment.getAvgTimestamp());
-            double flushLatency = Math.abs(System.currentTimeMillis() - segment.getAvgTimestamp());
+//            double flushLatency = Math.abs(System.currentTimeMillis() - segment.getAvgTimestamp());
             logger.info("write latency: " + writeLatency + " ms.");
 //            logger.info("flush latency: " + flushLatency + " ms.");
             if (metricEnabled) {
