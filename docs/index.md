@@ -5,8 +5,8 @@ title: Introduction
 # ParaFlow
 
 ## Why ParaFlow?
-Log data contains valuable information for decision makings.
-Timely and efficiently analyzing of log data can bring significant business value.
+ID-associated data (sequences of entries, and each entry is semantically associated with a unique ID. ie. user IDs in user behaviour logs of mobile applications) contains valuable information for decision makings.
+Timely and efficiently analyzing of ID-associated data can bring significant business value.
 For example, by analyzing log data of servers and applications, we can infer root causes of failures.
 By analyzing log data of e-commerce sites, we can learn recent changes in browsing and purchasing behaviours of specific customers.
 Based on that, e-commerce sites can provide more personalized recommendations.

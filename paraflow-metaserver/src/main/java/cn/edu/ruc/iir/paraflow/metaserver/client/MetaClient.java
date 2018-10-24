@@ -618,7 +618,6 @@ public class MetaClient
                                                  long timeEnd,
                                                  String path)
     {
-        System.out.println("coming into MetaClient createBlockIndex!");
         StatusProto.ResponseStatus status;
             MetaProto.DbNameParam databaseName = MetaProto.DbNameParam.newBuilder()
                     .setDatabase(dbName)
