@@ -40,7 +40,7 @@ import static java.util.Objects.requireNonNull;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowModule
-implements Module
+        implements Module
 {
     private final String connectorId;
     private final TypeManager typeManager;

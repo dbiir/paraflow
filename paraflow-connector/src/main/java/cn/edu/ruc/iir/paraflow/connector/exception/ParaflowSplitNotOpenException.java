@@ -20,7 +20,7 @@ import org.apache.hadoop.fs.Path;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowSplitNotOpenException
-extends PrestoException
+        extends PrestoException
 {
     public ParaflowSplitNotOpenException(Path path)
     {

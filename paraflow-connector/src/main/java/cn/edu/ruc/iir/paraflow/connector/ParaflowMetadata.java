@@ -101,13 +101,6 @@ public class ParaflowMetadata
         return getTableMetadata(tableName);
     }
 
-    private ConnectorTableMetadata getTableMetadata(SchemaTableName tableName)
-    {
-        List<ColumnMetadata> columns = paraflowMetaDataReader.getTableColMetadata(connectorId, tableName.getSchemaName(),
-                tableName.getTableName()).orElse(new ArrayList<>());
-        return new ConnectorTableMetadata(tableName, columns);
-    }
-
     @Override
     public List<SchemaTableName> listTables(ConnectorSession session, String schemaNameOrNull)
     {
@@ -185,5 +178,12 @@ public class ParaflowMetadata
     {
         ParaflowTableHandle paraflowTableHandle = (ParaflowTableHandle) tableHandle;
         paraflowMetaDataReader.dropTable(paraflowTableHandle.getSchemaName(), paraflowTableHandle.getTableName());
+    }
+
+    private ConnectorTableMetadata getTableMetadata(SchemaTableName tableName)
+    {
+        List<ColumnMetadata> columns = paraflowMetaDataReader.getTableColMetadata(connectorId, tableName.getSchemaName(),
+                tableName.getTableName()).orElse(new ArrayList<>());
+        return new ConnectorTableMetadata(tableName, columns);
     }
 }

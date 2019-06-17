@@ -28,6 +28,7 @@ public class TableNotFoundException extends ParaFlowException
     {
         this.tblName = tblName;
     }
+
     /**
      * get error message.
      *
@@ -44,7 +45,7 @@ public class TableNotFoundException extends ParaFlowException
     {
         return StatusProto.ResponseStatus.newBuilder()
                 .setStatus(StatusProto.ResponseStatus.State.TABLE_NOT_FOUND_WARN)
-                        .build();
+                .build();
     }
 
     /**

@@ -7,11 +7,6 @@ package cn.edu.ruc.iir.paraflow.collector;
  */
 public abstract class DataSink
 {
-    public enum DataType
-    {
-        Parquet, ORC;
-    }
-
     private final String name;
 
     public DataSink(String name)
@@ -31,11 +26,16 @@ public abstract class DataSink
     public abstract DataType getType();
 
     @Override
-    public abstract String toString();
-
-    @Override
     public abstract int hashCode();
 
     @Override
     public abstract boolean equals(Object other);
+
+    @Override
+    public abstract String toString();
+
+    public enum DataType
+    {
+        Parquet, ORC;
+    }
 }

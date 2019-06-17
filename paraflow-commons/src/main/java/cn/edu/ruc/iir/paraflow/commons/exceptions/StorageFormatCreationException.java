@@ -36,7 +36,7 @@ public class StorageFormatCreationException extends ParaFlowException
     {
         return StatusProto.ResponseStatus.newBuilder()
                 .setStatus(StatusProto.ResponseStatus.State.STORAGE_FORMAT_CREATION_ERROR)
-                        .build();
+                .build();
     }
 
     /**
@@ -49,6 +49,7 @@ public class StorageFormatCreationException extends ParaFlowException
     {
         return null;
     }
+
     /**
      * get exception level
      *

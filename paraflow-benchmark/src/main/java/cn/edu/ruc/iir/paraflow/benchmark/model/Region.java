@@ -29,6 +29,14 @@ public class Region
         return rowNumber;
     }
 
+    @Override
+    public String toLine()
+    {
+        return regionKey + "|" +
+                name + "|" +
+                comment;
+    }
+
     public long getRegionKey()
     {
         return regionKey;
@@ -42,13 +50,5 @@ public class Region
     public String getComment()
     {
         return comment;
-    }
-
-    @Override
-    public String toLine()
-    {
-        return regionKey + "|" +
-               name + "|" +
-               comment;
     }
 }

@@ -38,7 +38,7 @@ public class TblPrivDeleteException extends ParaFlowException
     {
         return StatusProto.ResponseStatus.newBuilder()
                 .setStatus(StatusProto.ResponseStatus.State.TBLPRIV_DELETE_ERROR)
-                        .build();
+                .build();
     }
 
     /**

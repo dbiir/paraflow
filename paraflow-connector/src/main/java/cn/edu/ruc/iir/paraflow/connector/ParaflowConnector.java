@@ -36,7 +36,7 @@ import static java.util.Objects.requireNonNull;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowConnector
-implements Connector
+        implements Connector
 {
     private final Logger logger = Logger.get(ParaflowConnector.class);
 

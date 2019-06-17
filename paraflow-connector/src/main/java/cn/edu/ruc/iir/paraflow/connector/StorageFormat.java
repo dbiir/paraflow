@@ -16,6 +16,7 @@ package cn.edu.ruc.iir.paraflow.connector;
 /**
  * @author jelly.guodong.jin@gmail.com
  */
-public enum StorageFormat {
+public enum StorageFormat
+{
     PARQUET, ORC, RCFILE
 }

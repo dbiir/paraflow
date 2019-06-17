@@ -25,16 +25,16 @@ import static com.google.common.base.MoreObjects.firstNonNull;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowPlugin
-implements Plugin
+        implements Plugin
 {
+    public static ClassLoader getClassLoader()
+    {
+        return firstNonNull(Thread.currentThread().getContextClassLoader(), ParaflowPlugin.class.getClassLoader());
+    }
+
     @Override
     public Iterable<ConnectorFactory> getConnectorFactories()
     {
         return ImmutableList.of(new ParaflowConnectorFactory());
-    }
-
-    public static ClassLoader getClassLoader()
-    {
-        return firstNonNull(Thread.currentThread().getContextClassLoader(), ParaflowPlugin.class.getClassLoader());
     }
 }

@@ -2,18 +2,13 @@ package cn.edu.ruc.iir.paraflow.loader;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public abstract class Processor
 {
-    private final int parallelism;
     final String name;
     final String db;
     final String table;
     final AtomicBoolean isReadyToStop = new AtomicBoolean(false);
+    private final int parallelism;
 
     public Processor(String name, String db, String table, int parallelism)
     {

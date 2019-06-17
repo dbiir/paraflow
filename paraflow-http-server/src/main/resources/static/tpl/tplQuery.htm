@@ -1,14 +1,14 @@
 ﻿<table class="table mb-0">
     <thead>
-        <tr>
-            <%
-            for( var j=0; j< tplData.column.length; j++){
-            var aColumn = tplData.column[j];
-            %>
-            <th class="pl-0"><%=aColumn %></th>
-            <%} %>
-            <!--<th class="pr-0">Comment</th>-->
-        </tr>
+    <tr>
+        <%
+        for( var j=0; j< tplData.column.length; j++){
+        var aColumn = tplData.column[j];
+        %>
+        <th class="pl-0"><%=aColumn %></th>
+        <%} %>
+        <!--<th class="pr-0">Comment</th>-->
+    </tr>
     </thead>
     <%
     for( var i=0;i< tplData.data.length;i++){
@@ -26,7 +26,7 @@
     <%} %>
     <% if ( tplData.length<=0){ %>
     <tr>
-        <td colspan="4" class="text-center text-red">
+        <td class="text-center text-red" colspan="4">
             <i class="fa fa-exclamation-triangle"></i> no result.
         </td>
     </tr>

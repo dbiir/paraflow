@@ -16,23 +16,23 @@ public class ClusterInfo
         this.uptime = "100h";
     }
 
-    public void setVersion(String version)
-    {
-        this.version = version;
-    }
-
-    public void setUptime(String uptime)
-    {
-        this.uptime = uptime;
-    }
-
     public String getVersion()
     {
         return version;
     }
 
+    public void setVersion(String version)
+    {
+        this.version = version;
+    }
+
     public String getUptime()
     {
         return uptime;
+    }
+
+    public void setUptime(String uptime)
+    {
+        this.uptime = uptime;
     }
 }

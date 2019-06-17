@@ -8,7 +8,8 @@ package cn.edu.ruc.iir.paraflow.metaserver.utils;
 public class Utils
 {
     private Utils()
-    {}
+    {
+    }
 
     public static String formatDbUrl(String dbName)
     {
@@ -21,6 +22,7 @@ public class Utils
         }
         return base + dbName;
     }
+
     public static String formatTblUrl(String dbName, String tblName)
     {
         String base = MetaConfig.INSTANCE().getHDFSWarehouse();

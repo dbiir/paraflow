@@ -19,6 +19,6 @@ import com.facebook.presto.spi.connector.ConnectorPartitioningHandle;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowPartitioningHandle
-implements ConnectorPartitioningHandle
+        implements ConnectorPartitioningHandle
 {
 }

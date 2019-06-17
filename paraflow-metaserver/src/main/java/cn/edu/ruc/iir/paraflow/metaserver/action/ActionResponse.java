@@ -12,19 +12,14 @@ public class ActionResponse
     private Object param = null;
     private Map<String, Object> properties = null;
 
-    void setResponseResultList(ResultList res)
-    {
-        this.responseResultList = res;
-    }
-
     ResultList getResponseResultList()
     {
         return responseResultList;
     }
 
-    public void setParam(Object param)
+    void setResponseResultList(ResultList res)
     {
-        this.param = param;
+        this.responseResultList = res;
     }
 
     public Optional<Object> getParam()
@@ -33,6 +28,11 @@ public class ActionResponse
             return Optional.empty();
         }
         return Optional.of(param);
+    }
+
+    public void setParam(Object param)
+    {
+        this.param = param;
     }
 
     public void setProperties(String key, Object value)

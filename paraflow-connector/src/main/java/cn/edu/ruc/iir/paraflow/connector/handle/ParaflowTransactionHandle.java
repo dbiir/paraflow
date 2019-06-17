@@ -27,7 +27,7 @@ import static java.util.Objects.requireNonNull;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowTransactionHandle
-implements ConnectorTransactionHandle
+        implements ConnectorTransactionHandle
 {
     private final UUID uuid;
 
@@ -49,6 +49,12 @@ implements ConnectorTransactionHandle
     }
 
     @Override
+    public int hashCode()
+    {
+        return Objects.hash(uuid);
+    }
+
+    @Override
     public boolean equals(Object obj)
     {
         if (this == obj) {
@@ -60,12 +66,6 @@ implements ConnectorTransactionHandle
 
         ParaflowTransactionHandle other = (ParaflowTransactionHandle) obj;
         return Objects.equals(uuid, other.uuid);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(uuid);
     }
 
     @Override

@@ -31,7 +31,7 @@ import static java.util.Objects.requireNonNull;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowSplit
-implements ConnectorSplit
+        implements ConnectorSplit
 {
     private final ParaflowConnectorId connectorId;
     private final SchemaTableName table;
@@ -48,7 +48,7 @@ implements ConnectorSplit
             @JsonProperty("start") long start,
             @JsonProperty("len") long len,
             @JsonProperty("addresses") List<HostAddress> addresses
-            )
+    )
     {
         this.connectorId = requireNonNull(connectorId, "connectorId is null");
         this.table = requireNonNull(table, "table is null");
@@ -62,6 +62,24 @@ implements ConnectorSplit
     public boolean isRemotelyAccessible()
     {
         return false;
+    }
+
+    @JsonProperty
+    @Override
+    public List<HostAddress> getAddresses()
+    {
+        return addresses;
+    }
+
+    @Override
+    public Object getInfo()
+    {
+        return ImmutableMap.builder()
+                .put("connectorId", connectorId)
+                .put("table", table)
+                .put("path", path)
+                .put("addresses", addresses)
+                .build();
     }
 
     @JsonProperty
@@ -92,24 +110,6 @@ implements ConnectorSplit
     public long getLen()
     {
         return len;
-    }
-
-    @JsonProperty
-    @Override
-    public List<HostAddress> getAddresses()
-    {
-        return addresses;
-    }
-
-    @Override
-    public Object getInfo()
-    {
-        return ImmutableMap.builder()
-                .put("connectorId", connectorId)
-                .put("table", table)
-                .put("path", path)
-                .put("addresses", addresses)
-                .build();
     }
 
     @Override

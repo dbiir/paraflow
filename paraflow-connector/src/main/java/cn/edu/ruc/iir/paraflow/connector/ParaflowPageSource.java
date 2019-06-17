@@ -61,9 +61,8 @@ public class ParaflowPageSource
     private final List<String> columnNames;
     private final List<Type> types;
     private final Block[] constantBlocks;
-
-    private int batchId;
     private final int columnSize;
+    private int batchId;
     private boolean closed;
     private long readTimeNanos;
 
@@ -103,6 +102,7 @@ public class ParaflowPageSource
         columnNames = namesBuilder.build();
         types = typesBuilder.build();
     }
+
     /**
      * Gets the total input bytes that will be processed by this page source.
      * This is normally the same size as the split.  If size is not available,

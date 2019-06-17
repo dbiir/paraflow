@@ -38,7 +38,7 @@ public class TblParamDeleteException extends ParaFlowException
     {
         return StatusProto.ResponseStatus.newBuilder()
                 .setStatus(StatusProto.ResponseStatus.State.TBLPARAM_DELETE_ERROR)
-                        .build();
+                .build();
     }
 
     /**

@@ -28,6 +28,12 @@ public class MetaServer
     {
     }
 
+    public static void main(String[] args)
+    {
+        MetaServer server = new MetaServer();
+        server.start();
+    }
+
     /**
      * Start MetaServer.
      * 1. init and validate configuration
@@ -35,7 +41,7 @@ public class MetaServer
      * 3. register shutdown hook
      * 4. init connection pool
      * 5. init meta data
-     * */
+     */
     private void start()
     {
         StartupPipeline pipeline = new StartupPipeline();
@@ -120,7 +126,7 @@ public class MetaServer
      * Stop meta server and stop all sub-modules
      * 1. Stop rpcServer
      * 2. Stop db connection
-     * */
+     */
     public void stop()
     {
         if (server != null) {
@@ -135,7 +141,7 @@ public class MetaServer
 
     /**
      * Await for interrupted signal to stop server
-     * */
+     */
     private void blockUntilTermination()
     {
         if (server != null) {
@@ -148,11 +154,5 @@ public class MetaServer
                 stop();
             }
         }
-    }
-
-    public static void main(String[] args)
-    {
-        MetaServer server = new MetaServer();
-        server.start();
     }
 }

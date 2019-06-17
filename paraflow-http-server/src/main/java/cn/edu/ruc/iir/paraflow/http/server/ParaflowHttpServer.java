@@ -13,15 +13,15 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan
 public class ParaflowHttpServer
 {
-    private void init()
-    {
-        System.out.println("Paraflow http server is starting...");
-    }
-
     public static void main(String[] args)
     {
         ParaflowHttpServer httpServer = new ParaflowHttpServer();
         httpServer.init();
         SpringApplication.run(ParaflowHttpServer.class, args);
+    }
+
+    private void init()
+    {
+        System.out.println("Paraflow http server is starting...");
     }
 }

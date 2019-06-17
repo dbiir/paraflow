@@ -8,10 +8,12 @@ public class Table extends Base
     private String name;
     private List<Column> columns;
 
-    public Table() {
+    public Table()
+    {
     }
 
-    public Table(String name, List<Column> columns) {
+    public Table(String name, List<Column> columns)
+    {
         this.name = name;
         this.columns = columns;
     }
@@ -26,16 +28,19 @@ public class Table extends Base
         this.name = name;
     }
 
-    public List<Column> getColumns() {
+    public List<Column> getColumns()
+    {
         return columns;
     }
 
-    public void setColumns(List<Column> columns) {
+    public void setColumns(List<Column> columns)
+    {
         this.columns = columns;
     }
 
     @Override
-    public String toString() {
+    public String toString()
+    {
         return "Table{" +
                 "name='" + name + '\'' +
                 ", columns=" + columns +

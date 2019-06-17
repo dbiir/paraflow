@@ -9,11 +9,6 @@ import org.apache.kafka.common.serialization.ByteArrayDeserializer;
 import java.util.List;
 import java.util.Properties;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class ParaflowKafkaConsumer
 {
     private final Consumer<byte[], byte[]> consumer;

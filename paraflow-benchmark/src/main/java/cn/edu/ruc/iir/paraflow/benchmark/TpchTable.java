@@ -22,11 +22,6 @@ import com.google.common.collect.Maps;
 import java.util.List;
 import java.util.Map;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public abstract class TpchTable<E extends Model>
 {
     public static final TpchTable<Customer> CUSTOMER = new TpchTable<Customer>("customer", CustomerColumn.values())
@@ -75,18 +70,6 @@ public abstract class TpchTable<E extends Model>
         TABLES_BY_NAME = Maps.uniqueIndex(TABLES, TpchTable::getTableName);
     }
 
-    public static List<TpchTable<?>> getTables()
-    {
-        return TABLES;
-    }
-
-    public static TpchTable<?> getTable(String tableName)
-    {
-        TpchTable<?> table = TABLES_BY_NAME.get(tableName);
-        Preconditions.checkArgument(table != null, "Table %s not found", tableName);
-        return table;
-    }
-
     private final String tableName;
     private final List<Column<E>> columns;
     private final Map<String, Column<E>> columnsByName;
@@ -99,6 +82,18 @@ public abstract class TpchTable<E extends Model>
                 .putAll(Maps.uniqueIndex(this.columns, Column::getColumnName))
                 .putAll(Maps.uniqueIndex(this.columns, Column::getSimplifiedColumnName))
                 .build();
+    }
+
+    public static List<TpchTable<?>> getTables()
+    {
+        return TABLES;
+    }
+
+    public static TpchTable<?> getTable(String tableName)
+    {
+        TpchTable<?> table = TABLES_BY_NAME.get(tableName);
+        Preconditions.checkArgument(table != null, "Table %s not found", tableName);
+        return table;
     }
 
     public String getTableName()

@@ -15,6 +15,7 @@ package cn.edu.ruc.iir.paraflow.connector;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.lang.String.format;
+
 /**
  * @author jelly.guodong.jin@gmail.com
  */

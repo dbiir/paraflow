@@ -18,18 +18,18 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * paraflow default loader
- *
+ * <p>
  * default pipeline:
- *                                                                                                       QueryEngine
- *                                     ConcurrentQueue             BlockingQueue                              .
- *         DataPuller(DataTransformer) ---------------> DataSorter -------                                    |
- *                        ... ...                                        |                                    |
- *         DataPuller(DataTransformer) ---------------> DataSorter -------------> DataCompactor ----. SegmentContainer ([youngZone] [adultZone])
- *                        ... ...                                        |                                    |
- *         DataPuller(DataTransformer) ---------------> DataSorter -------                                    |
- *                                                                                                            . async flushing to files (in-memory)
- *                                                                                                       SegmentWriter ---. DataFlusher (flushing in-memory files to the disk)
- * */
+ * QueryEngine
+ * ConcurrentQueue             BlockingQueue                              .
+ * DataPuller(DataTransformer) ---------------> DataSorter -------                                    |
+ * ... ...                                        |                                    |
+ * DataPuller(DataTransformer) ---------------> DataSorter -------------> DataCompactor ----. SegmentContainer ([youngZone] [adultZone])
+ * ... ...                                        |                                    |
+ * DataPuller(DataTransformer) ---------------> DataSorter -------                                    |
+ * . async flushing to files (in-memory)
+ * SegmentWriter ---. DataFlusher (flushing in-memory files to the disk)
+ */
 public class DefaultLoader
 {
     private final ProcessPipeline pipeline;
@@ -98,7 +98,7 @@ public class DefaultLoader
         BlockingQueue<ParaflowSegment> flushingQueue =
                 new PushPullBlockingQueue<>(config.getFlushingCapacity(), SpinPolicy.SPINNING);
         SegmentContainer.INSTANCE().init(config.getContainerCapacity(), partitionFrom, partitionTo,
-                                         flushingQueue, pipeline.getExecutorService(), metaClient);
+                flushingQueue, pipeline.getExecutorService(), metaClient);
         // add a data compactor
         DataCompactor dataCompactor = new DataCompactor("compactor", db, table, 1, config.getCompactorThreshold(),
                 partitionFrom, partitionNum, sorterCompactorBlockingQueue);

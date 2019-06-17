@@ -44,26 +44,26 @@ public class ParaflowDatabase
         return name;
     }
 
-    public void setLocation(String location)
-    {
-        this.location = location;
-    }
-
     @JsonProperty
     public String getLocation()
     {
         return location;
     }
 
-    public void setId(String id)
+    public void setLocation(String location)
     {
-        this.id = id;
+        this.location = location;
     }
 
     @JsonProperty
     public String getId()
     {
         return id;
+    }
+
+    public void setId(String id)
+    {
+        this.id = id;
     }
 
     @Override

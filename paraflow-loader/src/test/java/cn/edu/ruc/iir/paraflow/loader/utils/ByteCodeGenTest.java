@@ -17,14 +17,6 @@ import static org.objectweb.asm.Opcodes.V1_6;
  */
 public class ByteCodeGenTest
 {
-    class MyClassLoader extends ClassLoader
-    {
-        Class defineClass(String name, byte[] b)
-        {
-            return defineClass(name, b, 0, b.length);
-        }
-    }
-
     @Test
     public void genClass()
     {
@@ -63,5 +55,13 @@ public class ByteCodeGenTest
     public void printClass()
     {
         genClass();
+    }
+
+    class MyClassLoader extends ClassLoader
+    {
+        Class defineClass(String name, byte[] b)
+        {
+            return defineClass(name, b, 0, b.length);
+        }
     }
 }

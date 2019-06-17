@@ -12,14 +12,11 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public abstract class SegmentWriter
         implements Runnable
 {
+    final LoaderConfig config = LoaderConfig.INSTANCE();
+    final Configuration configuration = new Configuration();
     private final Logger logger = LoggerFactory.getLogger(SegmentWriter.class);
     private final ParaflowSegment segment;
     private final Random random = new Random(System.nanoTime());
@@ -27,8 +24,6 @@ public abstract class SegmentWriter
     private final BlockingQueue<ParaflowSegment> flushingQueue;
     private final Map<String, MetaProto.StringListType> tableColumnNamesCache;
     private final Map<String, MetaProto.StringListType> tableColumnTypesCache;
-    final LoaderConfig config = LoaderConfig.INSTANCE();
-    final Configuration configuration = new Configuration();
 
     SegmentWriter(ParaflowSegment segment, MetaClient metaClient,
                   BlockingQueue<ParaflowSegment> flushingQueue)

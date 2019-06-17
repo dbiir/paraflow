@@ -39,7 +39,8 @@ import static cn.edu.ruc.iir.paraflow.benchmark.model.LineOrderColumn.TOTAL_PRIC
 public class BasicCollector
 {
     private BasicCollector()
-    {}
+    {
+    }
 
     public static void main(String[] args)
     {
@@ -121,9 +122,9 @@ public class BasicCollector
             for (int i = 0; i < parallelism; i++) {
                 DataSource dataSource = new TpchDataSource(sf, part, partCount, minCustKey, maxCustKey);
                 collector.collect(dataSource, 1, 22,
-                                  new BasicParaflowFiberPartitioner(partitionNum),
-                                  new StringMessageSerializationSchema<>(),
-                                  new MockDataSink(dbName, tableName));
+                        new BasicParaflowFiberPartitioner(partitionNum),
+                        new StringMessageSerializationSchema<>(),
+                        new MockDataSink(dbName, tableName));
             }
         }
         catch (ConfigFileNotFoundException e) {

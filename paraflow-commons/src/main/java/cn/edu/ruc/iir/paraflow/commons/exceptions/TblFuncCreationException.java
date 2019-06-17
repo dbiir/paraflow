@@ -17,7 +17,7 @@ public class TblFuncCreationException extends ParaFlowException
     {
         return StatusProto.ResponseStatus.newBuilder()
                 .setStatus(StatusProto.ResponseStatus.State.TBL_FUNC_CREATION_ERROR)
-                        .build();
+                .build();
     }
 
     @Override

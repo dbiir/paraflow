@@ -11,7 +11,8 @@ import cn.edu.ruc.iir.paraflow.loader.DefaultLoader;
 public class BasicLoader
 {
     private BasicLoader()
-    {}
+    {
+    }
 
     public static void main(String[] args)
     {

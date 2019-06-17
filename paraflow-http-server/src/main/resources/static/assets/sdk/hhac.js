@@ -51,11 +51,11 @@ var Ac = {
                     try {
                         if (aCallbackData.message != "") {
                             aData = JSON.parse(aCallbackData.message);
-                            var aResult = { State: 1, Datas: aData };
+                            var aResult = {State: 1, Datas: aData};
                             hhls.callBack(aCallback, aResult);
                         } else {
                             // =""
-                            var aResult = { State: 1, Datas: aData };
+                            var aResult = {State: 1, Datas: aData};
                             hhls.callBack(aCallback, aResult);
                         }
                     } catch (e) {
@@ -73,13 +73,12 @@ var Ac = {
                         }
                     }
                 }, error: function (aCallbackData) {
-                    var aResult = { State: 0, Datas: aCallbackData.statusText };
+                    var aResult = {State: 0, Datas: aCallbackData.statusText};
                     alert("acHttpGet " + aCallbackData.status + ", " + aCallbackData.statusText);
                     hhls.callBack(aCallback, aResult);
                 }
             });
-        }
-        catch (E) {
+        } catch (E) {
             alert(E);
         }
     },
@@ -97,12 +96,13 @@ var Ac = {
                     hhls.callBack(aCallBack, aCallbackData);
                 },
                 error: function (a, b, c) {
-                    var aResult = { state: 0, datas: { Ea: a, Eb: b, Ec: c } };
+                    var aResult = {state: 0, datas: {Ea: a, Eb: b, Ec: c}};
                     hhls.callBack(aCallBack, aResult);
                 }
             });
+        } catch (e) {
+            ;
         }
-        catch (e) {; }
     },
     acExecuteSql: function (aPath, aDataPs, aCallback) {
         try {
@@ -113,8 +113,7 @@ var Ac = {
             Ac.Call_Get("acExecuteSql", aPostPs, function (aRes) {
                 hhls.callBack(aCallback, aRes);
             });
-        }
-        catch (E) {
+        } catch (E) {
             alert(E);
         }
     },
@@ -134,11 +133,12 @@ var Ac = {
                     hhls.callBack(aCallback, aResult);
                 },
                 error: function (a, b, c) {
-                    var aResult = { state: 0, datas: { Ea: a, Eb: b, Ec: c } };
+                    var aResult = {state: 0, datas: {Ea: a, Eb: b, Ec: c}};
                     hhls.callBack(aCallback, aResult);
                 }
             });
+        } catch (E) {
+            ;
         }
-        catch (E) {; }
     },
 };

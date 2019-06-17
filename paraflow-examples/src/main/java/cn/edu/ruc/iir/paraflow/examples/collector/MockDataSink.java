@@ -41,12 +41,6 @@ public class MockDataSink
     }
 
     @Override
-    public String toString()
-    {
-        return "MockDataSink";
-    }
-
-    @Override
     public int hashCode()
     {
         return Objects.hashCode("mock-sink");
@@ -56,5 +50,11 @@ public class MockDataSink
     public boolean equals(Object other)
     {
         return false;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "MockDataSink";
     }
 }

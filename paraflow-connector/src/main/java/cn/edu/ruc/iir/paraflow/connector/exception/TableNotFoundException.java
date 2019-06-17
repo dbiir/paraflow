@@ -21,7 +21,7 @@ import com.facebook.presto.spi.PrestoException;
  * @author Jelly
  */
 public class TableNotFoundException
-    extends PrestoException
+        extends PrestoException
 {
     public TableNotFoundException(String tableName)
     {

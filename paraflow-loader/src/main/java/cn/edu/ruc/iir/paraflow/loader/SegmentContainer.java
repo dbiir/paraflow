@@ -9,11 +9,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 class SegmentContainer
 {
     private final Logger logger = LoggerFactory.getLogger(SegmentContainer.class);
@@ -29,11 +24,6 @@ class SegmentContainer
 
     private SegmentContainer()
     {
-    }
-
-    private static final class SegmentContainerHolder
-    {
-        private static final SegmentContainer instance = new SegmentContainer();
     }
 
     static SegmentContainer INSTANCE()
@@ -58,17 +48,17 @@ class SegmentContainer
 
     /**
      * if (container.size >= capacity) {
-     *     loop over current container to find a segment that is OFF_HEAP
-     *     if find, send it to the FlushingBlockingQueue, and set it as current segment, return true;
-     *     if not find, which means all segments are busy, return false;
+     * loop over current container to find a segment that is OFF_HEAP
+     * if find, send it to the FlushingBlockingQueue, and set it as current segment, return true;
+     * if not find, which means all segments are busy, return false;
      * }
      * else {
-     *     container[writeIndex++] = segment;
-     *     start a writer thread for the segment;
-     *     size++;
-     *     return true;
+     * container[writeIndex++] = segment;
+     * start a writer thread for the segment;
+     * size++;
+     * return true;
      * }
-     * */
+     */
     boolean addSegment(ParaflowSegment segment)
     {
         if (containerSize.get() >= capacity) {
@@ -90,8 +80,13 @@ class SegmentContainer
 
     /**
      * Call this when the process stops, and flushes all off-heap segments to disks
-     * */
+     */
     void stop()
     {
+    }
+
+    private static final class SegmentContainerHolder
+    {
+        private static final SegmentContainer instance = new SegmentContainer();
     }
 }

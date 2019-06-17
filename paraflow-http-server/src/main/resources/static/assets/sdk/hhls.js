@@ -12,13 +12,11 @@ var hhls = {
             if (aCallback) {
                 if (aPara) {
                     aCallback(aPara);
-                }
-                else {
+                } else {
                     aCallback(aPara);
                 }
             }
-        }
-        catch (cer) {
+        } catch (cer) {
             var m = cer.message;
         }
     },
@@ -31,7 +29,7 @@ var hhls = {
                     aIndex++;
                     if (aIndex < aResPathList.length) {
                         var aUrl = aResPathList[aIndex];
-                        var aItem = { Path: aUrl, Content: "" };
+                        var aItem = {Path: aUrl, Content: ""};
                         $.ajax({
                             url: aUrl,
                             cache: false,
@@ -45,16 +43,17 @@ var hhls = {
                                 getRes();
                             }
                         });
-                    }
-                    else {
+                    } else {
                         hhls.callBack(aCallback, aResults);
                     }
+                } catch (cer) {
+                    ;
                 }
-                catch (cer) {; }
             }
             getRes();
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
     },
     clearElement: function (aSelector) {
         try {
@@ -63,8 +62,9 @@ var hhls = {
                 $(aItem).remove();
             });
             $(aSelector).empty();
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
     },
     removeElement: function (aSelector) {
         try {
@@ -72,22 +72,23 @@ var hhls = {
                 hhls.clearElement(aSelector);
                 $(aSelector).remove();
             }
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
     },
     fillElement: function (aSelector, aHtml) {
         try {
             hhls.clearElement(aSelector);
             $(aSelector).html(aHtml);
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
     },
     getObjJson: function (aObj) {
         var aJson = "";
         try {
             aJson = JSON.stringify(aObj);
-        }
-        catch (e) {
+        } catch (e) {
             alert(e);
         }
         return aJson;
@@ -96,8 +97,9 @@ var hhls = {
         var aObj = null;
         try {
             aObj = eval('(' + aJson + ')');
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
         return aObj;
     },
     getClone: function (aObj) {
@@ -112,8 +114,9 @@ var hhls = {
                 return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
             };
             aId = (S4() + S4() + aSplitString + S4() + aSplitString + S4() + aSplitString + S4() + aSplitString + S4() + S4() + S4());
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
         return aId;
     }
     , GetTpls: function (aTpls, aCallback) {
@@ -133,8 +136,9 @@ var hhls = {
                 }
                 hhls.callBack(aCallback);
             });
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
     },
     GetAgreements: function (aTpls, aCallback) {
         try {
@@ -153,9 +157,10 @@ var hhls = {
                 }
                 hhls.callBack(aCallback);
             });
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
-    }    
+    }
     //返回URL参数
     , getUrlHashVal: function (aUrlPara) {
         var reg = new RegExp("(^|&)" + aUrlPara + "=([^&]*)(&|$)", "i");
@@ -166,7 +171,8 @@ var hhls = {
     , getUrlParam: function (aUrlPara) {
         var reg = new RegExp("(^|&)" + aUrlPara + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象 
         var r = window.location.search.substr(1).match(reg);  //匹配目标参数 
-        if (r != null) return unescape(r[2]); return ""; //返回参数值 
+        if (r != null) return unescape(r[2]);
+        return ""; //返回参数值 
     }
     //返回URL参数
     , getUrlParamByDefault: function (aUrlPara, aDefault) {
@@ -197,8 +203,9 @@ var hhls = {
                 }
                 hhls.callBack(aCallback);
             });
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
     },
     getOrderviewsRes: function (aResPathList, aSvrList, aCallback) {
         try {
@@ -210,7 +217,7 @@ var hhls = {
                     if (aIndex < aResPathList.length) {
                         var aUrl = aResPathList[aIndex];
                         var aSvr = aSvrList[aIndex];
-                        var aItem = { Path: aUrl, Content: "", Svr: aSvr};
+                        var aItem = {Path: aUrl, Content: "", Svr: aSvr};
 
                         var aSvrUrl = aSvr.C.url + aUrl
                         var aService = "http://10.77.20.101:4000/service";
@@ -235,7 +242,7 @@ var hhls = {
                             success: function (aRes) {
                                 var aData = [];
                                 if (aRes.message != "") {
-                                    try{
+                                    try {
                                         aData = JSON.parse(aRes.message);
                                     } catch (e) {
                                         aData = [];
@@ -248,17 +255,18 @@ var hhls = {
                                 aResults.push(aItem);
                                 getRes();
                             }
-                        }); 
-                    }
-                    else {
+                        });
+                    } else {
                         hhls.callBack(aCallback, aResults);
                     }
+                } catch (cer) {
+                    ;
                 }
-                catch (cer) {; }
             }
             getRes();
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
     },
     getAgreementRes: function (aResPathList, aCallback) {
         try {
@@ -269,7 +277,7 @@ var hhls = {
                     aIndex++;
                     if (aIndex < aResPathList.length) {
                         var aUrl = aResPathList[aIndex];
-                        var aItem = { Path: aUrl, Content: "" };
+                        var aItem = {Path: aUrl, Content: ""};
 
                         var aService = "http://10.77.20.101:4000/getagreement";
                         var aToken = "Bearer " + Index.Datas.Res.resToken.C;
@@ -299,17 +307,18 @@ var hhls = {
                                 aResults.push(aItem);
                                 getRes();
                             }
-                        }); 
-                    }
-                    else {
+                        });
+                    } else {
                         hhls.callBack(aCallback, aResults);
                     }
+                } catch (cer) {
+                    ;
                 }
-                catch (cer) {; }
             }
             getRes();
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
     },
     getIndex: function (aArray, aFun) {
         var aIndex = -1;
@@ -321,23 +330,26 @@ var hhls = {
                     break;
                 }
             }
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
         return aIndex;
     },
     saveLocalObj: function (aKey, aObj) {
         try {
             window.localStorage.setItem(aKey, hhls.getObjJson(aObj));
+        } catch (cer) {
+            ;
         }
-        catch (cer) {; }
     },
     loadLocalObj: function (aKey) {
         var aObj = null;
         try {
             var ajson = window.localStorage.getItem(aKey);
             aObj = hhls.getJsonObj(ajson);
+        } catch (cer) {
+            aObj = null;
         }
-        catch (cer) { aObj = null; }
         return aObj;
     },
     goUrl: function (aUrl) {
@@ -346,8 +358,8 @@ var hhls = {
             aNewUrl += aUrl.indexOf("?") >= 0 ? "&" : "?";
             aNewUrl += "rndurl=" + Math.random();
             window.location.href = aNewUrl;
+        } catch (cer) {
         }
-        catch (cer) { }
     }
 };
 

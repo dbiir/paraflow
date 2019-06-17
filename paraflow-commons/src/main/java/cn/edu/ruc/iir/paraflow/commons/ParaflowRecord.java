@@ -12,11 +12,7 @@ public abstract class ParaflowRecord
     private int fiberId;
 
     public ParaflowRecord()
-    {}
-
-    public void setKey(long key)
     {
-        this.key = key;
     }
 
     public long getKey()
@@ -24,9 +20,9 @@ public abstract class ParaflowRecord
         return key;
     }
 
-    public void setTimestamp(long timestamp)
+    public void setKey(long key)
     {
-        this.timestamp = timestamp;
+        this.key = key;
     }
 
     public long getTimestamp()
@@ -34,14 +30,19 @@ public abstract class ParaflowRecord
         return timestamp;
     }
 
-    public void setFiberId(int fiberId)
+    public void setTimestamp(long timestamp)
     {
-        this.fiberId = fiberId;
+        this.timestamp = timestamp;
     }
 
     public int getFiberId()
     {
         return fiberId;
+    }
+
+    public void setFiberId(int fiberId)
+    {
+        this.fiberId = fiberId;
     }
 
     public abstract Object getValue(int idx);

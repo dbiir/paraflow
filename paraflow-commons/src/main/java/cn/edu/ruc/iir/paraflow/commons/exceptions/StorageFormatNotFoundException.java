@@ -24,6 +24,7 @@ public class StorageFormatNotFoundException extends ParaFlowException
     {
         this.sfName = sfName;
     }
+
     /**
      * get error message.
      *
@@ -40,7 +41,7 @@ public class StorageFormatNotFoundException extends ParaFlowException
     {
         return StatusProto.ResponseStatus.newBuilder()
                 .setStatus(StatusProto.ResponseStatus.State.STORAGE_FORMAT_NOT_FOUND_ERROR)
-                        .build();
+                .build();
     }
 
     /**

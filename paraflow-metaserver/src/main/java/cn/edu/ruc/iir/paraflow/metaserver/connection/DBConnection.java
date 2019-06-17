@@ -13,8 +13,6 @@ import java.util.Arrays;
  * ParaFlow
  * This is a db connection instance.
  * This is NOT thread safe!!!
- *
- *
  */
 public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.Connection
 {
@@ -23,16 +21,6 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
     public DBConnection(Connection connection)
     {
         this.connection = connection;
-    }
-
-    public void setAutoCommit(boolean autoCommit) throws SQLExecutionException
-    {
-        try {
-            connection.setAutoCommit(autoCommit);
-        }
-        catch (SQLException e) {
-            throw new SQLExecutionException("auto commit setup");
-        }
     }
 
     public int executeUpdate(String sqlStatement) throws SQLExecutionException
@@ -63,19 +51,6 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
         }
     }
 
-    private ResultList convert(ResultSet resultSet, int colCount) throws SQLException
-    {
-        ResultList resultList = new ResultList();
-        while (resultSet.next()) {
-            JDBCRecord jdbcRecord = new JDBCRecord(colCount);
-            for (int i = 0; i < colCount; i++) {
-                jdbcRecord.put(resultSet.getString(i + 1), i);
-            }
-            resultList.add(jdbcRecord);
-        }
-        return resultList;
-    }
-
     public ResultList executeQuery(String sqlStatement) throws SQLExecutionException
     {
         ResultSet resultSet;
@@ -91,7 +66,17 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
         catch (SQLException e) {
             throw new SQLExecutionException(sqlStatement);
         }
-        return  resultList;
+        return resultList;
+    }
+
+    public void setAutoCommit(boolean autoCommit) throws SQLExecutionException
+    {
+        try {
+            connection.setAutoCommit(autoCommit);
+        }
+        catch (SQLException e) {
+            throw new SQLExecutionException("auto commit setup");
+        }
     }
 
     public void commit() throws SQLExecutionException
@@ -123,5 +108,18 @@ public class DBConnection extends cn.edu.ruc.iir.paraflow.metaserver.connection.
         catch (SQLException e) {
             throw new SQLExecutionException("connection close");
         }
+    }
+
+    private ResultList convert(ResultSet resultSet, int colCount) throws SQLException
+    {
+        ResultList resultList = new ResultList();
+        while (resultSet.next()) {
+            JDBCRecord jdbcRecord = new JDBCRecord(colCount);
+            for (int i = 0; i < colCount; i++) {
+                jdbcRecord.put(resultSet.getString(i + 1), i);
+            }
+            resultList.add(jdbcRecord);
+        }
+        return resultList;
     }
 }

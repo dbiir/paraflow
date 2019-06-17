@@ -98,6 +98,65 @@ public class LineOrderGenerator
         this.numCustomerKey = numCustomerKey;
     }
 
+    private static RandomBoundedInt createQuantityRandom()
+    {
+        return new RandomBoundedInt(209208115, QUANTITY_MIN, QUANTITY_MAX, LINE_COUNT_MAX);
+    }
+
+    private static RandomBoundedInt createDiscountRandom()
+    {
+        return new RandomBoundedInt(554590007, DISCOUNT_MIN, DISCOUNT_MAX, LINE_COUNT_MAX);
+    }
+
+    private static RandomBoundedInt createTaxRandom()
+    {
+        return new RandomBoundedInt(721958466, TAX_MIN, TAX_MAX, LINE_COUNT_MAX);
+    }
+
+    private static RandomBoundedLong createPartKeyRandom(double scaleFactor)
+    {
+        return new RandomBoundedLong(1808217256, scaleFactor >= 30000, PART_KEY_MIN, (long) (PartGenerator.SCALE_BASE * scaleFactor), LINE_COUNT_MAX);
+    }
+
+    private static RandomBoundedInt createShipDateRandom()
+    {
+        return new RandomBoundedInt(1769349045, SHIP_DATE_MIN, SHIP_DATE_MAX, LINE_COUNT_MAX);
+    }
+
+    private static RandomBoundedInt createLineCountRandom()
+    {
+        return new RandomBoundedInt(1434868289, LINE_COUNT_MIN, LINE_COUNT_MAX);
+    }
+
+    private static RandomBoundedInt createOrderDateRandom()
+    {
+        return new RandomBoundedInt(1066728069, ORDER_DATE_MIN, ORDER_DATE_MAX);
+    }
+
+    private static long calculatePartPrice(long p)
+    {
+        long price = 90000;
+
+        // limit contribution to $200
+        price += (p / 10) % 20001;
+        price += (p % 1000) * 100;
+
+        return (price);
+    }
+
+    private static long makeOrderKey(long orderIndex)
+    {
+        long lowBits = orderIndex & ((1 << ORDER_KEY_SPARSE_KEEP) - 1);
+
+        long ok = orderIndex;
+        ok = ok >> ORDER_KEY_SPARSE_KEEP;
+        ok = ok << ORDER_KEY_SPARSE_BITS;
+        ok = ok << ORDER_KEY_SPARSE_KEEP;
+        ok += lowBits;
+
+        return ok;
+    }
+
     @Override
     public Iterator<LineOrder> iterator()
     {
@@ -339,64 +398,5 @@ public class LineOrderGenerator
             }
             return customerKey;
         }
-    }
-
-    private static RandomBoundedInt createQuantityRandom()
-    {
-        return new RandomBoundedInt(209208115, QUANTITY_MIN, QUANTITY_MAX, LINE_COUNT_MAX);
-    }
-
-    private static RandomBoundedInt createDiscountRandom()
-    {
-        return new RandomBoundedInt(554590007, DISCOUNT_MIN, DISCOUNT_MAX, LINE_COUNT_MAX);
-    }
-
-    private static RandomBoundedInt createTaxRandom()
-    {
-        return new RandomBoundedInt(721958466, TAX_MIN, TAX_MAX, LINE_COUNT_MAX);
-    }
-
-    private static RandomBoundedLong createPartKeyRandom(double scaleFactor)
-    {
-        return new RandomBoundedLong(1808217256, scaleFactor >= 30000, PART_KEY_MIN, (long) (PartGenerator.SCALE_BASE * scaleFactor), LINE_COUNT_MAX);
-    }
-
-    private static RandomBoundedInt createShipDateRandom()
-    {
-        return new RandomBoundedInt(1769349045, SHIP_DATE_MIN, SHIP_DATE_MAX, LINE_COUNT_MAX);
-    }
-
-    private static RandomBoundedInt createLineCountRandom()
-    {
-        return new RandomBoundedInt(1434868289, LINE_COUNT_MIN, LINE_COUNT_MAX);
-    }
-
-    private static RandomBoundedInt createOrderDateRandom()
-    {
-        return new RandomBoundedInt(1066728069, ORDER_DATE_MIN, ORDER_DATE_MAX);
-    }
-
-    private static long calculatePartPrice(long p)
-    {
-        long price = 90000;
-
-        // limit contribution to $200
-        price += (p / 10) % 20001;
-        price += (p % 1000) * 100;
-
-        return (price);
-    }
-
-    private static long makeOrderKey(long orderIndex)
-    {
-        long lowBits = orderIndex & ((1 << ORDER_KEY_SPARSE_KEEP) - 1);
-
-        long ok = orderIndex;
-        ok = ok >> ORDER_KEY_SPARSE_KEEP;
-        ok = ok << ORDER_KEY_SPARSE_BITS;
-        ok = ok << ORDER_KEY_SPARSE_KEEP;
-        ok += lowBits;
-
-        return ok;
     }
 }

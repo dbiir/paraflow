@@ -24,11 +24,11 @@ public abstract class DataSource
     }
 
     @Override
-    public abstract String toString();
-
-    @Override
     public abstract int hashCode();
 
     @Override
     public abstract boolean equals(Object other);
+
+    @Override
+    public abstract String toString();
 }

@@ -168,8 +168,8 @@ public class TestParquetWriter
                         "bigint"
                 };
                 collector.createTable(dbName, tableName, "parquet", 0, 22,
-                                      "cn.edu.ruc.iir.paraflow.examples.collector.BasicParaflowFiberPartitioner",
-                                      Arrays.asList(names), Arrays.asList(types));
+                        "cn.edu.ruc.iir.paraflow.examples.collector.BasicParaflowFiberPartitioner",
+                        Arrays.asList(names), Arrays.asList(types));
             }
             if (!collector.existsTopic(dbName + "-" + tableName)) {
                 collector.createTopic(dbName + "-" + tableName, partitionNum, (short) 1);
@@ -190,7 +190,7 @@ public class TestParquetWriter
             ParaflowKafkaProducer producer = new ParaflowKafkaProducer(collectorConfig, 1000);
             ProducerRecord<byte[], byte[]> record =
                     new ProducerRecord<>(dbName + "-" + tableName, 0, message.getTimestamp(),
-                                         new byte[0], serialized);
+                            new byte[0], serialized);
             producer.sendMsg(record, serialized.length);
             producer.close();
 

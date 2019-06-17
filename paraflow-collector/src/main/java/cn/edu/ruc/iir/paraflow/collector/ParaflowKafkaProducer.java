@@ -37,7 +37,7 @@ public class ParaflowKafkaProducer
         }
         kafkaProducer = new KafkaProducer<>(config);
         this.throughputStats = new ThroughputStats(statsInterval, conf.isMetricEnabled(), conf.getPushGateWayUrl(),
-                                                   conf.getCollectorId());
+                conf.getCollectorId());
     }
 
     public void sendMsg(ProducerRecord<byte[], byte[]> record, int length)

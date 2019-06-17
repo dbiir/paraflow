@@ -17,6 +17,7 @@ public final class ConfigFileNotFoundException extends ParaFlowException
     {
         this.configPath = configPath;
     }
+
     /**
      * get error message.
      *

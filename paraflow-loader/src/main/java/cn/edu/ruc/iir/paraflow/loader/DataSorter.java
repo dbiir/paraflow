@@ -6,11 +6,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class DataSorter
         extends Processor
 {
@@ -78,7 +73,7 @@ public class DataSorter
      * compact the fiber buffer
      *
      * @param fiberId which fiber to be compacted. if -1, all fibers will be compacted.
-     * */
+     */
     private void sort(int fiberId)
     {
         // sort all fibers

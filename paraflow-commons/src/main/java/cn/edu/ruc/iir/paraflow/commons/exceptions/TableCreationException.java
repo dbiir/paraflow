@@ -27,6 +27,7 @@ public class TableCreationException extends ParaFlowException
     {
         this.tblName = tblName;
     }
+
     /**
      * get error message.
      *
@@ -43,7 +44,7 @@ public class TableCreationException extends ParaFlowException
     {
         return StatusProto.ResponseStatus.newBuilder()
                 .setStatus(StatusProto.ResponseStatus.State.TABLE_CREATION_ERROR)
-                        .build();
+                .build();
     }
 
     /**

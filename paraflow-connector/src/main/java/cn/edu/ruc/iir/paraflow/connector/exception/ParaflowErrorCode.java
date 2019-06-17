@@ -23,7 +23,7 @@ import static com.facebook.presto.spi.ErrorType.EXTERNAL;
  * @author jelly.guodong.jin@gmail.com
  */
 public enum ParaflowErrorCode
-    implements ErrorCodeSupplier
+        implements ErrorCodeSupplier
 {
     CONNECTOR_INIT_ERROR(0, ErrorType.INTERNAL_ERROR),
     CONNECTOR_SHUTDOWN_ERROR(1, ErrorType.INTERNAL_ERROR),

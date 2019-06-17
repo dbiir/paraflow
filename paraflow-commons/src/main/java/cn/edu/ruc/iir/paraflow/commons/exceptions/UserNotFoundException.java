@@ -22,6 +22,7 @@ public class UserNotFoundException extends ParaFlowException
     public UserNotFoundException()
     {
     }
+
     /**
      * get error message.
      *

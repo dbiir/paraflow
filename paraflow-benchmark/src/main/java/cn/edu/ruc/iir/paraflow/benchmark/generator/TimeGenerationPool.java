@@ -15,11 +15,7 @@ public class TimeGenerationPool
     private long counter = 0;
 
     private TimeGenerationPool()
-    {}
-
-    private static final class TimeGenerationPoolHolder
     {
-        private static final TimeGenerationPool instance = new TimeGenerationPool();
     }
 
     public static final TimeGenerationPool INSTANCE()
@@ -29,7 +25,7 @@ public class TimeGenerationPool
 
     /**
      * Generation frequency. records/s
-     * */
+     */
     public void init(long startTime, long stride, long frequency)
     {
         this.currentTime = startTime;
@@ -46,5 +42,10 @@ public class TimeGenerationPool
             return currentTime;
         }
         return currentTime;
+    }
+
+    private static final class TimeGenerationPoolHolder
+    {
+        private static final TimeGenerationPool instance = new TimeGenerationPool();
     }
 }

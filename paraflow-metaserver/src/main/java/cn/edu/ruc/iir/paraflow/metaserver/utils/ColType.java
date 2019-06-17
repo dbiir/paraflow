@@ -13,7 +13,8 @@
  */
 package cn.edu.ruc.iir.paraflow.metaserver.utils;
 
-public enum ColType {
+public enum ColType
+{
     REGULAR(0),
     FIBER(1),
     TIMESTAMP(2);

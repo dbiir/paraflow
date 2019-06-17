@@ -98,15 +98,15 @@ public class ParaflowMetaDataReader
         String tblName;
         String dbName;
         if (dbPrefix != null) {
-                MetaProto.StringListType stringListType = metaClient.listTables(dbPrefix);
-                if (stringListType.getStrCount() == 0) {
-                    return tables;
-                }
-                for (int i = 0; i < stringListType.getStrCount(); i++) {
-                    tblName = stringListType.getStr(0);
-                    dbName = dbPrefix;
-                    tables.add(new SchemaTableName(dbName, tblName));
-                }
+            MetaProto.StringListType stringListType = metaClient.listTables(dbPrefix);
+            if (stringListType.getStrCount() == 0) {
+                return tables;
+            }
+            for (int i = 0; i < stringListType.getStrCount(); i++) {
+                tblName = stringListType.getStr(0);
+                dbName = dbPrefix;
+                tables.add(new SchemaTableName(dbName, tblName));
+            }
         }
         return tables;
     }
@@ -184,7 +184,7 @@ public class ParaflowMetaDataReader
 
     /**
      * Get all column handles of specified table
-     * */
+     */
     public Optional<List<ParaflowColumnHandle>> getTableColumnHandle(String connectorId, String dbName, String tblName)
     {
         log.debug("Get list of column handles of table " + formName(dbName, tblName));
@@ -327,10 +327,14 @@ public class ParaflowMetaDataReader
     {
         log.debug("Get col type " + typeName);
         switch (typeName) {
-            case 1: return ParaflowColumnHandle.ColumnType.FIBER;
-            case 2: return ParaflowColumnHandle.ColumnType.TIMESTAMP;
-            case 0: return ParaflowColumnHandle.ColumnType.REGULAR;
-            default : log.error("No match col type!");
+            case 1:
+                return ParaflowColumnHandle.ColumnType.FIBER;
+            case 2:
+                return ParaflowColumnHandle.ColumnType.TIMESTAMP;
+            case 0:
+                return ParaflowColumnHandle.ColumnType.REGULAR;
+            default:
+                log.error("No match col type!");
                 return ParaflowColumnHandle.ColumnType.NOTVALID;
         }
     }
@@ -374,17 +378,28 @@ public class ParaflowMetaDataReader
             return DecimalType.createDecimalType(Integer.parseInt(dprecision), Integer.parseInt(dscale));
         }
         switch (typeName) {
-            case "boolean": return BooleanType.BOOLEAN;
-            case "tinyint": return TinyintType.TINYINT;
-            case "smallint": return SmallintType.SMALLINT;
-            case "integer": return IntegerType.INTEGER;
-            case "bigint": return BigintType.BIGINT;
-            case "real": return RealType.REAL;
-            case "double": return DoubleType.DOUBLE;
-            case "date": return DateType.DATE;
-            case "time": return TimeType.TIME;
-            case "timestamp": return TimestampType.TIMESTAMP;
-            default: return UnknownType.UNKNOWN;
+            case "boolean":
+                return BooleanType.BOOLEAN;
+            case "tinyint":
+                return TinyintType.TINYINT;
+            case "smallint":
+                return SmallintType.SMALLINT;
+            case "integer":
+                return IntegerType.INTEGER;
+            case "bigint":
+                return BigintType.BIGINT;
+            case "real":
+                return RealType.REAL;
+            case "double":
+                return DoubleType.DOUBLE;
+            case "date":
+                return DateType.DATE;
+            case "time":
+                return TimeType.TIME;
+            case "timestamp":
+                return TimestampType.TIMESTAMP;
+            default:
+                return UnknownType.UNKNOWN;
         }
     }
 

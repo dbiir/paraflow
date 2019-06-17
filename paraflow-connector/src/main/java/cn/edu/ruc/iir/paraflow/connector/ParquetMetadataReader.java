@@ -60,7 +60,9 @@ public final class ParquetMetadataReader
     private static final int PARQUET_METADATA_LENGTH = 4;
     private static final byte[] MAGIC = "PAR1".getBytes(US_ASCII);
 
-    private ParquetMetadataReader() {}
+    private ParquetMetadataReader()
+    {
+    }
 
     public static ParquetMetadata readFooter(FileSystem fileSystem, Path file)
             throws IOException

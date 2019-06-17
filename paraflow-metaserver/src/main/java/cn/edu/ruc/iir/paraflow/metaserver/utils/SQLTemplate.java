@@ -16,7 +16,8 @@ package cn.edu.ruc.iir.paraflow.metaserver.utils;
 public class SQLTemplate
 {
     private SQLTemplate()
-    {}
+    {
+    }
 
     public static String createUser(String userName, String password, long createTime, long lastVisitTime)
     {
@@ -91,6 +92,7 @@ public class SQLTemplate
                 tblId,
                 colName);
     }
+
     public static String getColumnName(long dbId, long tblId, long colId)
     {
         return String.format("SELECT colname FROM meta_colmodel WHERE dbid = %d AND tblid = %d AND colindex = %d;",

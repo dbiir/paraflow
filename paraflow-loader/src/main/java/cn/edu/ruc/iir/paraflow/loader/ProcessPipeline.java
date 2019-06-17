@@ -13,8 +13,6 @@ import java.util.concurrent.Future;
 
 /**
  * paraflow loader process pipeline
-
- * @author guodong
  */
 class ProcessPipeline
 {

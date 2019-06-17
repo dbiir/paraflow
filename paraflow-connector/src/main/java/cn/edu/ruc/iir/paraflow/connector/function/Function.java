@@ -27,7 +27,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public interface Function
 {
     int apply(String v);
+
     long apply(int v);
+
     long apply(long v);
 
     @Override

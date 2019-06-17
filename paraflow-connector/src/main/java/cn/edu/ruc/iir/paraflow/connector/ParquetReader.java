@@ -59,14 +59,13 @@ public class ParquetReader
     private final List<BlockMetaData> blocks;
     private final ParquetDataSource dataSource;
     private final TypeManager typeManager;
-
+    private final Map<ColumnDescriptor, ParquetColumnReader> columnReadersMap = new HashMap<>();
     private int currentBlock;
     private BlockMetaData currentBlockMetadata;
     private long currentPosition;
     private long currentGroupRowCount;
     private long nextRowInGroup;
     private int batchSize;
-    private final Map<ColumnDescriptor, ParquetColumnReader> columnReadersMap = new HashMap<>();
 
     public ParquetReader(MessageType fileSchema,
                          MessageType requestedSchema,
