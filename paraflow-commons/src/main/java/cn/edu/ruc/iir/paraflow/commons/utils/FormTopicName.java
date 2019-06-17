@@ -8,7 +8,8 @@ package cn.edu.ruc.iir.paraflow.commons.utils;
 public class FormTopicName
 {
     private FormTopicName()
-    {}
+    {
+    }
 
     public static String formTopicName(String database, String table)
     {

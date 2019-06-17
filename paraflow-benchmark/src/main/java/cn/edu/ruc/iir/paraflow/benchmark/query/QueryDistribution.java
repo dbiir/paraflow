@@ -12,9 +12,9 @@ import static com.google.common.base.Preconditions.checkArgument;
  */
 public class QueryDistribution
 {
+    private final Map<String, Long> distributions;
     private long sizeLimit = -1L;  // limit of query size generation. when reaching the specified number of queries, stop generation.
     private long timeLimit = -1L;  // limit of query time generation. when reaching the specified time, stop generation.
-    private final Map<String, Long> distributions;
 
     public QueryDistribution()
     {

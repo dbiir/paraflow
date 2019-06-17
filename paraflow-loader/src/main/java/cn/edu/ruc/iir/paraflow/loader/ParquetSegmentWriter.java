@@ -20,11 +20,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class ParquetSegmentWriter
         extends SegmentWriter
 {
@@ -127,7 +122,7 @@ public class ParquetSegmentWriter
                                 break;
                             default:
                                 group.append(columnNames.getStr(k),
-                                             Binary.fromConstantByteArray((byte[]) record.getValue(k)));
+                                        Binary.fromConstantByteArray((byte[]) record.getValue(k)));
                                 break;
                         }
                     }

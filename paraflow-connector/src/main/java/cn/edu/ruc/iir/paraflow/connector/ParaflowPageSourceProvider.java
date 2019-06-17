@@ -53,6 +53,7 @@ public class ParaflowPageSourceProvider
 {
     private final TypeManager typeManager;
     private final FSFactory fsFactory;
+    private Logger log = Logger.get(ParaflowPageSourceProvider.class.getName());
 
     @Inject
     public ParaflowPageSourceProvider(TypeManager typeManager, FSFactory fsFactory)
@@ -60,8 +61,6 @@ public class ParaflowPageSourceProvider
         this.typeManager = requireNonNull(typeManager, "typeManager is null");
         this.fsFactory = requireNonNull(fsFactory, "fsFactory is null");
     }
-
-    private Logger log = Logger.get(ParaflowPageSourceProvider.class.getName());
 
     @Override
     public ConnectorPageSource createPageSource(ConnectorTransactionHandle transactionHandle, ConnectorSession session,

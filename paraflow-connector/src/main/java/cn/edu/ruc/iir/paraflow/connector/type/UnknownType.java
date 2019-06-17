@@ -50,7 +50,7 @@ public final class UnknownType
     @Override
     public long hash(Block block, int position)
     {
-            // Check that the position is valid
+        // Check that the position is valid
         checkArgument(block.isNull(position), "Expected NULL value for UnknownType");
         return 0;
     }

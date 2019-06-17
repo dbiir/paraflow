@@ -8,12 +8,9 @@ import java.util.Properties;
 public class LoaderConfig
 {
     private ParaFlowConfig paraflowConfig;
-    private LoaderConfig()
-    {}
 
-    private static class MetaConfigHolder
+    private LoaderConfig()
     {
-        private static final LoaderConfig instance = new LoaderConfig();
     }
 
     public static final LoaderConfig INSTANCE()
@@ -173,5 +170,10 @@ public class LoaderConfig
     public String getGateWayUrl()
     {
         return paraflowConfig.getProperty("gateway.url");
+    }
+
+    private static class MetaConfigHolder
+    {
+        private static final LoaderConfig instance = new LoaderConfig();
     }
 }

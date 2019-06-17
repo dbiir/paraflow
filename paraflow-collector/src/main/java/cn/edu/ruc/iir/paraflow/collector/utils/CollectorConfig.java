@@ -15,11 +15,7 @@ public class CollectorConfig
     private ParaFlowConfig paraflowConfig;
 
     private CollectorConfig()
-    {}
-
-    private static class MetaConfigHolder
     {
-        private static final CollectorConfig instance = new CollectorConfig();
     }
 
     public static final CollectorConfig INSTANCE()
@@ -71,5 +67,10 @@ public class CollectorConfig
     public int getMetaClientShutdownTimeout()
     {
         return Integer.parseInt(paraflowConfig.getProperty("meta.client.shutdown.timeout"));
+    }
+
+    private static class MetaConfigHolder
+    {
+        private static final CollectorConfig instance = new CollectorConfig();
     }
 }

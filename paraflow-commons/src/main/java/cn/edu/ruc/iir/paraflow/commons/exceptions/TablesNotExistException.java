@@ -28,6 +28,7 @@ public class TablesNotExistException extends ParaFlowException
     {
         this.dbName = dbName;
     }
+
     /**
      * get error message.
      *
@@ -44,7 +45,7 @@ public class TablesNotExistException extends ParaFlowException
     {
         return StatusProto.ResponseStatus.newBuilder()
                 .setStatus(StatusProto.ResponseStatus.State.TABLES_NOT_EXIST_WARN)
-                        .build();
+                .build();
     }
 
     /**

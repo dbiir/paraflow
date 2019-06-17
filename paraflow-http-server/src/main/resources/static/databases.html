@@ -1,40 +1,42 @@
 ﻿<!doctype html>
-<html lang="en" dir="ltr">
-  <head>
+<html dir="ltr" lang="en">
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta http-equiv="Content-Language" content="en" />
-    <meta name="msapplication-TileColor" content="#2d89ef">
-    <meta name="theme-color" content="#4188c9">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="HandheldFriendly" content="True">
-    <meta name="MobileOptimized" content="320">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
-    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <meta content="en" http-equiv="Content-Language"/>
+    <meta content="#2d89ef" name="msapplication-TileColor">
+    <meta content="#4188c9" name="theme-color">
+    <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="mobile-web-app-capable">
+    <meta content="True" name="HandheldFriendly">
+    <meta content="320" name="MobileOptimized">
+    <link href="./favicon.ico" rel="icon" type="image/x-icon"/>
+    <link href="./favicon.ico" rel="shortcut icon" type="image/x-icon"/>
     <title>Paraflow Dashboard</title>
-    <link href="assets/sdk/icons/css/font-awesome.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="./assets/sdk/googleapis.css">
+    <link href="assets/sdk/icons/css/font-awesome.min.css" rel="stylesheet"/>
+    <link href="./assets/sdk/googleapis.css" rel="stylesheet">
     <script src="./assets/js/require.min.js"></script>
     <script>
-      requirejs.config({
-          baseUrl: '.'
-      });
+        requirejs.config({
+            baseUrl: '.'
+        });
+
     </script>
     <!-- Dashboard Core -->
-    <link href="./assets/css/dashboard-min.css" rel="stylesheet" />
+    <link href="./assets/css/dashboard-min.css" rel="stylesheet"/>
     <script src="./assets/js/dashboard.js"></script>
     <!-- c3.js Charts Plugin -->
-    <link href="./assets/plugins/charts-c3/plugin.css" rel="stylesheet" />
+    <link href="./assets/plugins/charts-c3/plugin.css" rel="stylesheet"/>
     <script src="./assets/plugins/charts-c3/plugin.js"></script>
     <!-- Google Maps Plugin -->
-    <link href="./assets/plugins/maps-google/plugin.css" rel="stylesheet" />
+    <link href="./assets/plugins/maps-google/plugin.css" rel="stylesheet"/>
     <script src="./assets/plugins/maps-google/plugin.js"></script>
     <!-- Input Mask Plugin -->
     <script src="./assets/plugins/input-mask/plugin.js"></script>
-    <link href="assets/sdk/Style.css" rel="stylesheet" />
+    <link href="assets/sdk/Style.css" rel="stylesheet"/>
     <script src="assets/sdk/jQuery-2.1.3.min.js"></script>
     <script src="assets/sdk/json.js"></script>
     <script src="assets/sdk/hhac.js"></script>
@@ -48,7 +50,7 @@
             Init.WebToast("Loading data...");
             Ac.acGetData(aUrl, aData, "GET", function (aRes) {
                 if (aRes.state == 1) {
-                    var aHtml = bt(Tpls.tplTable.C, { tplData: aRes.datas });
+                    var aHtml = bt(Tpls.tplTable.C, {tplData: aRes.datas});
                     hhls.fillElement(".tables", aHtml);
                     $(".web-toast_content").text("Loading success.");
                 } else {
@@ -58,99 +60,106 @@
                 Init.ClearToast("#webToast", 1)
             })
         }
+
         var Tpls = {
-            tplTable: { P: "tpl/tplTable.htm", C: "" }
+            tplTable: {P: "tpl/tplTable.htm", C: ""}
         };
         $(document).ready(function () {
             hhls.GetTpls(Tpls, function () {
                 getTables();
             });
         });
+
     </script>
-  </head>
-  <body class="">
-    <div class="page">
-      <div class="page-main">
+</head>
+<body class="">
+<div class="page">
+    <div class="page-main">
         <div class="header py-4">
-          <div class="container">
-            <div class="d-flex">
-              <a class="header-brand" href="./index.html">
-                  <span>PARAFLOW</span>
-              </a>
-              <div class="d-flex order-lg-2 ml-auto">
-                <div class="nav-item d-none d-md-flex">
-                  <span style="color: #888888; font-size: small;" id="version-number">1.0-alpha</span>
+            <div class="container">
+                <div class="d-flex">
+                    <a class="header-brand" href="./index.html">
+                        <span>PARAFLOW</span>
+                    </a>
+                    <div class="d-flex order-lg-2 ml-auto">
+                        <div class="nav-item d-none d-md-flex">
+                            <span id="version-number" style="color: #888888; font-size: small;">1.0-alpha</span>
+                        </div>
+                        <div class="nav-item d-none d-md-flex">
+                            <a class="btn btn-sm btn-outline-primary" href="https://github.com/tabler/tabler"
+                               target="_blank">Source code</a>
+                        </div>
+                    </div>
                 </div>
-                <div class="nav-item d-none d-md-flex">
-                  <a href="https://github.com/tabler/tabler" class="btn btn-sm btn-outline-primary" target="_blank">Source code</a>
-                </div>
-              </div>
             </div>
-          </div>
         </div>
         <div class="header collapse d-lg-flex p-0" id="headerMenuCollapse">
-          <div class="container">
-            <div class="row align-items-center">
-              <div class="col-lg order-lg-first">
-                <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item">
-                    <a href="./index.html" class="nav-link"><i class="fe fe-home"></i> Home</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fa fa-line-chart"></i> Metrics</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./loader.html" class="dropdown-item ">Loader</a>
-                      <a href="./collector.html" class="dropdown-item ">Collector</a>
-                      <a href="./query.html" class="dropdown-item ">Query</a>
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg order-lg-first">
+                        <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
+                            <li class="nav-item">
+                                <a class="nav-link" href="./index.html"><i class="fe fe-home"></i> Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="dropdown" href="javascript:void(0)"><i
+                                        class="fa fa-line-chart"></i> Metrics</a>
+                                <div class="dropdown-menu dropdown-menu-arrow">
+                                    <a class="dropdown-item " href="./loader.html">Loader</a>
+                                    <a class="dropdown-item " href="./collector.html">Collector</a>
+                                    <a class="dropdown-item " href="./query.html">Query</a>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="./console.html"><i class="fe fe-minus-square"></i> Console</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="./databases.html"><i class="fe fe-database"></i> Tables</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="./docs/index.html"><i class="fe fe-file-text"></i>
+                                    Documentation</a>
+                            </li>
+                        </ul>
                     </div>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./console.html" class="nav-link"><i class="fe fe-minus-square"></i> Console</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./databases.html" class="nav-link active"><i class="fe fe-database"></i> Tables</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./docs/index.html" class="nav-link"><i class="fe fe-file-text"></i> Documentation</a>
-                  </li>
-                </ul>
-              </div>
+                </div>
             </div>
-          </div>
         </div>
         <div class="my-3 my-md-5">
-          <div class="container">
-            <div class="row">
+            <div class="container">
+                <div class="row">
+                </div>
+                <div class="col-lg-12 tables">
+                </div>
             </div>
-            <div class="col-lg-12 tables">
-            </div>
-          </div>
         </div>
-      </div>
     </div>
+</div>
 
-    <footer class="footer">
-      <div class="container">
+<footer class="footer">
+    <div class="container">
         <div class="row align-items-center flex-row-reverse">
-          <div class="col-auto ml-lg-auto">
-            <div class="row align-items-center">
-              <div class="col-auto">
-                <ul class="list-inline list-inline-dots mb-0">
-                  <li class="list-inline-item"><a href="./docs/index.html">Documentation</a></li>
-                  <li class="list-inline-item"><a href="./faq.html">FAQ</a></li>
-                </ul>
-              </div>
-              <div class="col-auto">
-                <a href="https://github.com/dbiir/paraflow" class="btn btn-outline-primary btn-sm">Source code</a>
-              </div>
+            <div class="col-auto ml-lg-auto">
+                <div class="row align-items-center">
+                    <div class="col-auto">
+                        <ul class="list-inline list-inline-dots mb-0">
+                            <li class="list-inline-item"><a href="./docs/index.html">Documentation</a></li>
+                            <li class="list-inline-item"><a href="./faq.html">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-auto">
+                        <a class="btn btn-outline-primary btn-sm" href="https://github.com/dbiir/paraflow">Source
+                            code</a>
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class="col-12 col-lg-auto mt-3 mt-lg-0 text-center">
-            Copyright © 2018 <a href=".">Paraflow</a> by <a href="http://iir.ruc.edu.cn" target="_blank">DBIIR</a> All rights reserved.
-          </div>
+            <div class="col-12 col-lg-auto mt-3 mt-lg-0 text-center">
+                Copyright © 2018 <a href=".">Paraflow</a> by <a href="http://iir.ruc.edu.cn" target="_blank">DBIIR</a>
+                All rights reserved.
+            </div>
         </div>
-      </div>
-    </footer>
-  </div>
+    </div>
+</footer>
+</div>
 </body>
 </html>

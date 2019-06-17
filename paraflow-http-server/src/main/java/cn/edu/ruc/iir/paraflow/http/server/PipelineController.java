@@ -35,8 +35,8 @@ import java.util.Properties;
 @EnableAutoConfiguration
 public class PipelineController
 {
-    private final Properties properties = new Properties();
     final MetaClient metaClient = new MetaClient("10.77.110.27", 10012);
+    private final Properties properties = new Properties();
     private final String url = "jdbc:presto://dbiir10:8080/paraflow/test";
 
     public PipelineController()

@@ -48,7 +48,7 @@ public class GetDbTblIdAction extends Action
                         .build();
             }
             else {
-                  stringList = MetaProto.StringListType.newBuilder()
+                stringList = MetaProto.StringListType.newBuilder()
                         .setIsEmpty(true)
                         .build();
             }

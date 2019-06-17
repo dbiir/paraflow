@@ -6,7 +6,7 @@ import java.util.Random;
  * paraflow db query generator.
  * based on the given distribution, generate queries for db.
  * | select | insert | update | delete |
- *  -----------------------------------
+ * -----------------------------------
  *
  * @author guodong
  */

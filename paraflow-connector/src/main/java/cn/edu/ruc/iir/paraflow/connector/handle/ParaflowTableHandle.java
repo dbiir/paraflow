@@ -27,7 +27,7 @@ import static java.util.Objects.requireNonNull;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowTableHandle
-    implements ConnectorTableHandle
+        implements ConnectorTableHandle
 {
     private final String connectorId;
     private final String tableName;

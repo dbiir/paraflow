@@ -31,6 +31,15 @@ public class Nation
         return rowNumber;
     }
 
+    @Override
+    public String toLine()
+    {
+        return nationKey + "|" +
+                name + "|" +
+                regionKey + "|" +
+                comment;
+    }
+
     public long getNationKey()
     {
         return nationKey;
@@ -49,14 +58,5 @@ public class Nation
     public String getComment()
     {
         return comment;
-    }
-
-    @Override
-    public String toLine()
-    {
-        return nationKey + "|" +
-               name + "|" +
-               regionKey + "|" +
-               comment;
     }
 }

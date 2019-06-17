@@ -35,7 +35,7 @@ public class FlowTask<T>
             ProducerRecord<byte[], byte[]> record;
             int partition = partitioner.getFiberId(message.getKey());
             record = new ProducerRecord<>(topic, partition, message.getTimestamp(),
-                                          new byte[0], message.getValue());
+                    new byte[0], message.getValue());
             kafkaProducer.sendMsg(record, message.getValue().length);
         }
         return immediateFuture(null);

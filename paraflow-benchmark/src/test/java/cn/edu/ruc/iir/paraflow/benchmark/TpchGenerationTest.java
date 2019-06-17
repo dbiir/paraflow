@@ -38,7 +38,7 @@ public class TpchGenerationTest
         long end = System.currentTimeMillis();
         long duration = end - start;
         System.out.println("Generate " + counter + " messages in " + duration +
-                           "ms (" + (1.0 * msgLen / duration) + " KB/s)");
+                "ms (" + (1.0 * msgLen / duration) + " KB/s)");
     }
 
     @Test
@@ -94,6 +94,40 @@ public class TpchGenerationTest
         }
     }
 
+    @Test
+    public void testGenerateNationFile()
+    {
+        Iterable<Nation> nationIterable = TpchTable.NATION.createGenerator(1, 1, 1500, 0, 0);
+        Iterator<Nation> nationIterator = nationIterable.iterator();
+        File file = new File("/Users/Jelly/Developer/paraflow/paraflow-benchmark/data/nation.tbl");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            while (nationIterator.hasNext()) {
+                writer.write(nationIterator.next().toLine());
+                writer.newLine();
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testGenerateRegionFile()
+    {
+        Iterable<Region> regionIterable = TpchTable.REGION.createGenerator(1, 1, 1500, 0, 0);
+        Iterator<Region> regionIterator = regionIterable.iterator();
+        File file = new File("/Users/Jelly/Developer/paraflow/paraflow-benchmark/data/region.tbl");
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            while (regionIterator.hasNext()) {
+                writer.write(regionIterator.next().toLine());
+                writer.newLine();
+            }
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private class LineOrderGenerationThread
             implements Runnable
     {
@@ -129,41 +163,7 @@ public class TpchGenerationTest
             long end = System.currentTimeMillis();
             long duration = end - start;
             System.out.println("Generate " + counter + " messages in " + duration +
-                               "ms (" + (1.0 * msgLen / duration) + " KB/s)");
-        }
-    }
-
-    @Test
-    public void testGenerateNationFile()
-    {
-        Iterable<Nation> nationIterable = TpchTable.NATION.createGenerator(1, 1, 1500, 0, 0);
-        Iterator<Nation> nationIterator = nationIterable.iterator();
-        File file = new File("/Users/Jelly/Developer/paraflow/paraflow-benchmark/data/nation.tbl");
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            while (nationIterator.hasNext()) {
-                writer.write(nationIterator.next().toLine());
-                writer.newLine();
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Test
-    public void testGenerateRegionFile()
-    {
-        Iterable<Region> regionIterable = TpchTable.REGION.createGenerator(1, 1, 1500, 0, 0);
-        Iterator<Region> regionIterator = regionIterable.iterator();
-        File file = new File("/Users/Jelly/Developer/paraflow/paraflow-benchmark/data/region.tbl");
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            while (regionIterator.hasNext()) {
-                writer.write(regionIterator.next().toLine());
-                writer.newLine();
-            }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+                    "ms (" + (1.0 * msgLen / duration) + " KB/s)");
         }
     }
 }

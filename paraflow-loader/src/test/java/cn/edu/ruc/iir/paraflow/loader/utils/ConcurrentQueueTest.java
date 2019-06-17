@@ -34,7 +34,7 @@ public class ConcurrentQueueTest
             e.printStackTrace();
         }
     }
-    
+
     @Test
     public void testDisruptorQueuePerformance()
     {

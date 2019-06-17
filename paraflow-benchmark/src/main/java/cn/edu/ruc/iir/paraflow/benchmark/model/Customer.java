@@ -42,6 +42,19 @@ public class Customer
         return rowNumber;
     }
 
+    @Override
+    public String toLine()
+    {
+        return customerKey + "|" +
+                name + "|" +
+                address + "|" +
+                nationKey + "|" +
+                phone + "|" +
+                formatMoney(accountBalance) + "|" +
+                marketSegment + "|" +
+                comment;
+    }
+
     public long getCustomerKey()
     {
         return customerKey;
@@ -85,18 +98,5 @@ public class Customer
     public String getComment()
     {
         return comment;
-    }
-
-    @Override
-    public String toLine()
-    {
-        return customerKey + "|" +
-               name + "|" +
-               address + "|" +
-               nationKey + "|" +
-               phone + "|" +
-               formatMoney(accountBalance) + "|" +
-               marketSegment + "|" +
-               comment;
     }
 }

@@ -16,9 +16,9 @@ public class CollectorThroughputMetric
     private final CollectorRegistry registry = new CollectorRegistry();
     private final Gauge throughputMetric =
             Gauge.build().name("collector_throughput")
-                 .help("Collector throughput (MB/s)")
-                 .labelNames("id")
-                 .register(registry);
+                    .help("Collector throughput (MB/s)")
+                    .labelNames("id")
+                    .register(registry);
     private final String id;
     private final PushGateway gateway;
 

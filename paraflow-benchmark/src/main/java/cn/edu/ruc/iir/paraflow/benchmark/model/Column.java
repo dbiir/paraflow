@@ -9,11 +9,11 @@ import io.airlift.tpch.TpchColumnType;
  */
 public interface Column<E extends Model>
 {
+    String TPCH_COLUMN_VALID_PREFIX_REGEX = "(?i)^(lo|c|n|r)_";
+
     String getColumnName();
 
     TpchColumnType getType();
-
-    String TPCH_COLUMN_VALID_PREFIX_REGEX = "(?i)^(lo|c|n|r)_";
 
     default String getSimplifiedColumnName()
     {

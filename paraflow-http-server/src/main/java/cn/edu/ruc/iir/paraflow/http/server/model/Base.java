@@ -10,15 +10,18 @@ import java.io.Serializable;
  * @author: tao
  * @date: Create in 2018-09-18 15:07
  **/
-public class Base implements Serializable {
+public class Base implements Serializable
+{
     private static final long serialVersionUID = -7598432013090890964L;
     private int id;
 
-    public int getId() {
+    public int getId()
+    {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(int id)
+    {
         this.id = id;
     }
 
@@ -31,8 +34,7 @@ public class Base implements Serializable {
     @Override
     public boolean equals(Object o)
     {
-        if (o instanceof Base)
-        {
+        if (o instanceof Base) {
             return this.id == ((Base) o).id;
         }
         return false;

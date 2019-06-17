@@ -13,11 +13,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.BlockingQueue;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class DataFlusher
         extends Processor
 {
@@ -68,6 +63,19 @@ public class DataFlusher
         }
     }
 
+    @Override
+    public void stop()
+    {
+        isReadyToStop.set(true);
+        while (true) {
+            ParaflowSegment segment = flushingQueue.poll();
+            if (segment == null) {
+                break;
+            }
+            flushSegment(segment);
+        }
+    }
+
     private void flushSegment(ParaflowSegment segment)
     {
         String segmentPath = segment.getPath();
@@ -112,19 +120,6 @@ public class DataFlusher
                     e1.printStackTrace();
                 }
             }
-        }
-    }
-
-    @Override
-    public void stop()
-    {
-        isReadyToStop.set(true);
-        while (true) {
-            ParaflowSegment segment = flushingQueue.poll();
-            if (segment == null) {
-                break;
-            }
-            flushSegment(segment);
         }
     }
 }

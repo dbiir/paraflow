@@ -12,10 +12,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class LockTest
 {
-    enum Level {
-        FIRST, SECOND, THIRD
-    }
-
     @Test
     public void readWriteLockTest()
     {
@@ -38,6 +34,11 @@ public class LockTest
         catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    enum Level
+    {
+        FIRST, SECOND, THIRD
     }
 
     private class Case

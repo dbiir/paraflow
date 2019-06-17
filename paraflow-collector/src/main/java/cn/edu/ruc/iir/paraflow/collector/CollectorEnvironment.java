@@ -8,7 +8,8 @@ package cn.edu.ruc.iir.paraflow.collector;
 public class CollectorEnvironment
 {
     private CollectorEnvironment()
-    {}
+    {
+    }
 
     public static CollectorEnvironment getEnvironment()
     {

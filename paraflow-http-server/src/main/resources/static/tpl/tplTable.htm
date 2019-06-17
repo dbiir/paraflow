@@ -10,49 +10,49 @@ var aItem = tplData[i];
     <div class="card-body">
         <table class="table mb-0">
             <thead>
-                <tr>
-                    <th class="pl-0">Id</th>
-                    <th>Column Name</th>
-                    <th>Data Type</th>
-                    <th class="pr-0">Comment</th>
-                </tr>
-            </thead>
-        <%
-        for( var j=0;j< aItem.columns.length;j++){
-        var aColumn = aItem.columns[j];
-            var k = j+1;
-        %>
             <tr>
-               <td class="pl-0">
-                  <span><%=k %></span>
-               </td>
-              <td>
-                   <span><%=aColumn.name %></span>
-              <td>
-                   <span><%=aColumn.type %></span>
-              </td>
-              <td class="pr-0">
-                   <span></span>
-              </td>
+                <th class="pl-0">Id</th>
+                <th>Column Name</th>
+                <th>Data Type</th>
+                <th class="pr-0">Comment</th>
             </tr>
-        <%} %>
-        <% if ( aItem.columns.length<=0){ %>
-             <tr>
-                <td colspan="4" class="text-center text-red">
+            </thead>
+            <%
+            for( var j=0;j< aItem.columns.length;j++){
+            var aColumn = aItem.columns[j];
+            var k = j+1;
+            %>
+            <tr>
+                <td class="pl-0">
+                    <span><%=k %></span>
+                </td>
+                <td>
+                    <span><%=aColumn.name %></span>
+                <td>
+                    <span><%=aColumn.type %></span>
+                </td>
+                <td class="pr-0">
+                    <span></span>
+                </td>
+            </tr>
+            <%} %>
+            <% if ( aItem.columns.length<=0){ %>
+            <tr>
+                <td class="text-center text-red" colspan="4">
                     <i class="fa fa-exclamation-triangle"></i> no column.
                 </td>
             </tr>
-        <%} %>
+            <%} %>
         </table>
     </div>
 </div>
 
 <%} %>
 
-        <% if ( tplData.length<=0){ %>
+<% if ( tplData.length<=0){ %>
 <div class="card">
     <div class="card-header">
         <h3 class="card-title text-red"><i class="fa fa-exclamation-triangle"></i> no table.</h3>
     </div>
 </div>
-        <%} %>
+<%} %>

@@ -43,18 +43,12 @@ public class TpchDataSource
             LineOrder lineOrder = lineOrderIterator.next();
             kryo.writeObject(output, lineOrder);
             Message message = new Message(BytesUtils.toBytes((int) lineOrder.getCustomerKey()),
-                               output.toBytes(),
-                               lineOrder.getCreation());
+                    output.toBytes(),
+                    lineOrder.getCreation());
             output.reset();
             return message;
         }
         return null;
-    }
-
-    @Override
-    public String toString()
-    {
-        return "TpchDataSource";
     }
 
     @Override
@@ -67,5 +61,11 @@ public class TpchDataSource
     public boolean equals(Object other)
     {
         return false;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "TpchDataSource";
     }
 }

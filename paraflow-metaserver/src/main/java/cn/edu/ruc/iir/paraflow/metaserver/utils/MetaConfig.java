@@ -13,11 +13,7 @@ public class MetaConfig
     private ParaFlowConfig paraflowConfig;
 
     public MetaConfig()
-    {}
-
-    private static class MetaConfigHolder
     {
-        public static final MetaConfig instance = new MetaConfig();
     }
 
     public static final MetaConfig INSTANCE()
@@ -59,5 +55,10 @@ public class MetaConfig
     public String getHDFSWarehouse()
     {
         return paraflowConfig.getProperty("hdfs.warehouse");
+    }
+
+    private static class MetaConfigHolder
+    {
+        public static final MetaConfig instance = new MetaConfig();
     }
 }

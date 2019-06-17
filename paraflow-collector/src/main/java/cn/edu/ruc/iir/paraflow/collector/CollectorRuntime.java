@@ -24,18 +24,18 @@ class CollectorRuntime
         kafkaProducer = new ParaflowKafkaProducer(conf, statsInterval);
     }
 
-    <T> void run(DataFlow<T> dataFlow)
-    {
-        FlowTask<T> task = new FlowTask<>(dataFlow, kafkaProducer);
-        flowTasks.put(dataFlow.getName(), task);
-        executorService.submit((Runnable) task::execute);
-    }
-
     static void destroy()
     {
         for (FlowTask task : flowTasks.values()) {
             task.close();
         }
         executorService.shutdownNow();
+    }
+
+    <T> void run(DataFlow<T> dataFlow)
+    {
+        FlowTask<T> task = new FlowTask<>(dataFlow, kafkaProducer);
+        flowTasks.put(dataFlow.getName(), task);
+        executorService.submit((Runnable) task::execute);
     }
 }

@@ -6,11 +6,6 @@ import io.airlift.tpch.RandomPhoneNumber;
 import io.airlift.tpch.RandomText;
 import io.airlift.tpch.TextPool;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class DBInsertTemplate
         extends QueryTemplate
 {
@@ -32,15 +27,15 @@ public class DBInsertTemplate
     {
         counter++;
         String q = "INSERT INTO " + table + " VALUES(" +
-               (BASE + counter) +                                            // c_custkey
-               ", 'Customer#0" + BASE + "'" +                                // c_name
-               ", '" + addressRandom.nextValue() + "'" +                     // c_address
-               ", " + (counter % 25) +                                       // c_nationkey
-               ", '" + phoneNumber.nextValue(counter % 25) + "'" + // c_phone
-               ", " + acctbalRandom.nextValue() +                            // c_acctbal
-               ", '" + segments[counter % 5] + "'" +                         // c_mktsegment
-               ", '" + commentRandom.nextValue() + "'" +                     // c_comment
-               ");";
+                (BASE + counter) +                                            // c_custkey
+                ", 'Customer#0" + BASE + "'" +                                // c_name
+                ", '" + addressRandom.nextValue() + "'" +                     // c_address
+                ", " + (counter % 25) +                                       // c_nationkey
+                ", '" + phoneNumber.nextValue(counter % 25) + "'" + // c_phone
+                ", " + acctbalRandom.nextValue() +                            // c_acctbal
+                ", '" + segments[counter % 5] + "'" +                         // c_mktsegment
+                ", '" + commentRandom.nextValue() + "'" +                     // c_comment
+                ");";
         addressRandom.rowFinished();
         phoneNumber.rowFinished();
         acctbalRandom.rowFinished();

@@ -35,11 +35,6 @@ public class Message
         return timestamp;
     }
 
-    public void setTopic(String topic)
-    {
-        this.topic = topic;
-    }
-
     public Optional<String> getTopic()
     {
         if (topic != null) {
@@ -48,10 +43,9 @@ public class Message
         return Optional.empty();
     }
 
-    public void setFiberId(int fiberId)
+    public void setTopic(String topic)
     {
-        this.fiberId = fiberId;
-        this.hasFiberId = true;
+        this.topic = topic;
     }
 
     public Optional<Integer> getFiberId()
@@ -62,10 +56,10 @@ public class Message
         return Optional.empty();
     }
 
-    @Override
-    public String toString()
+    public void setFiberId(int fiberId)
     {
-        return String.format("key: %s, timestamp: %d, topic: %s", Arrays.toString(key), timestamp, topic);
+        this.fiberId = fiberId;
+        this.hasFiberId = true;
     }
 
     @Override
@@ -87,5 +81,11 @@ public class Message
                     Arrays.equals(this.value, otherMsg.value);
         }
         return false;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("key: %s, timestamp: %d, topic: %s", Arrays.toString(key), timestamp, topic);
     }
 }

@@ -38,14 +38,14 @@ public interface Collector<T>
                                            List<String> dataType);
 
     StatusProto.ResponseStatus createTable(String dbName,
-                                                String tblName,
-                                                String userName,
-                                                String storageFormatName,
-                                                int fiberColIndex,
-                                                int timestampColIndex,
-                                                String fiberFuncName,
-                                                List<String> columnName,
-                                                List<String> dataType);
+                                           String tblName,
+                                           String userName,
+                                           String storageFormatName,
+                                           int fiberColIndex,
+                                           int timestampColIndex,
+                                           String fiberFuncName,
+                                           List<String> columnName,
+                                           List<String> dataType);
 
     void shutdown();
 }

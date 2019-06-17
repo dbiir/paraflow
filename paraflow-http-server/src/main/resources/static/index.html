@@ -1,546 +1,555 @@
 <!doctype html>
-<html lang="en" dir="ltr">
-  <head>
+<html dir="ltr" lang="en">
+<head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta http-equiv="Content-Language" content="en" />
-    <meta name="msapplication-TileColor" content="#2d89ef">
-    <meta name="theme-color" content="#4188c9">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="HandheldFriendly" content="True">
-    <meta name="MobileOptimized" content="320">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon"/>
-    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <meta content="en" http-equiv="Content-Language"/>
+    <meta content="#2d89ef" name="msapplication-TileColor">
+    <meta content="#4188c9" name="theme-color">
+    <meta content="black-translucent" name="apple-mobile-web-app-status-bar-style"/>
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="mobile-web-app-capable">
+    <meta content="True" name="HandheldFriendly">
+    <meta content="320" name="MobileOptimized">
+    <link href="./favicon.ico" rel="icon" type="image/x-icon"/>
+    <link href="./favicon.ico" rel="shortcut icon" type="image/x-icon"/>
     <!-- Generated: 2018-04-16 09:29:05 +0200 -->
     <title>Paraflow Dashboard</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,300i,400,400i,500,500i,600,600i,700,700i&amp;subset=latin-ext"
+          rel="stylesheet">
     <script src="./assets/js/require.min.js"></script>
     <script>
-      requirejs.config({
-          baseUrl: '.'
-      });
+        requirejs.config({
+            baseUrl: '.'
+        });
+
     </script>
     <!-- Dashboard Core -->
-    <link href="./assets/css/dashboard-min.css" rel="stylesheet" />
+    <link href="./assets/css/dashboard-min.css" rel="stylesheet"/>
     <script src="./assets/js/dashboard.js"></script>
     <!-- c3.js Charts Plugin -->
-    <link href="./assets/plugins/charts-c3/plugin.css" rel="stylesheet" />
+    <link href="./assets/plugins/charts-c3/plugin.css" rel="stylesheet"/>
     <script src="./assets/plugins/charts-c3/plugin.js"></script>
     <!-- Google Maps Plugin -->
-    <link href="./assets/plugins/maps-google/plugin.css" rel="stylesheet" />
+    <link href="./assets/plugins/maps-google/plugin.css" rel="stylesheet"/>
     <script src="./assets/plugins/maps-google/plugin.js"></script>
     <!-- Input Mask Plugin -->
     <script src="./assets/plugins/input-mask/plugin.js"></script>
-  </head>
-  <body class="">
-    <div class="page">
-      <div class="page-main">
+</head>
+<body class="">
+<div class="page">
+    <div class="page-main">
         <div class="header py-4">
-          <div class="container">
-            <div class="d-flex">
-              <a class="header-brand" href="./index.html">
-                  <span>PARAFLOW</span>
-              </a>
-              <div class="d-flex order-lg-2 ml-auto">
-                <div class="nav-item d-none d-md-flex">
-                  <span style="color: #888888; font-size: small;" id="version-number">1.0-alpha</span>
+            <div class="container">
+                <div class="d-flex">
+                    <a class="header-brand" href="./index.html">
+                        <span>PARAFLOW</span>
+                    </a>
+                    <div class="d-flex order-lg-2 ml-auto">
+                        <div class="nav-item d-none d-md-flex">
+                            <span id="version-number" style="color: #888888; font-size: small;">1.0-alpha</span>
+                        </div>
+                        <div class="nav-item d-none d-md-flex">
+                            <a class="btn btn-sm btn-outline-primary" href="https://github.com/tabler/tabler"
+                               target="_blank">Source code</a>
+                        </div>
+                        <!--<div class="nav-item d-none d-md-flex">-->
+                        <!--<span class="fa fa-circle text-info fa-circle-thin" id="status-indicator"></span>-->
+                        <!--<span style="color: #888888; font-size: small;" id="uptime">0h</span>-->
+                        <!--</div>-->
+                    </div>
                 </div>
-                <div class="nav-item d-none d-md-flex">
-                  <a href="https://github.com/tabler/tabler" class="btn btn-sm btn-outline-primary" target="_blank">Source code</a>
-                </div>
-                <!--<div class="nav-item d-none d-md-flex">-->
-                  <!--<span class="fa fa-circle text-info fa-circle-thin" id="status-indicator"></span>-->
-                  <!--<span style="color: #888888; font-size: small;" id="uptime">0h</span>-->
-                <!--</div>-->
-              </div>
             </div>
-          </div>
-          <div class="header collapse d-lg-flex p-0" id="headerMenuCollapse">
-          <div class="container">
-            <div class="row align-items-center">
-              <div class="col-lg order-lg-first">
-                <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
-                  <li class="nav-item">
-                    <a href="./index.html" class="nav-link active"><i class="fe fe-home"></i> Home</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="javascript:void(0)" class="nav-link" data-toggle="dropdown"><i class="fa fa-line-chart"></i> Metrics</a>
-                    <div class="dropdown-menu dropdown-menu-arrow">
-                      <a href="./loader.html" class="dropdown-item ">Loader</a>
-                      <a href="./collector.html" class="dropdown-item ">Collector</a>
-                      <a href="./query.html" class="dropdown-item ">Query</a>
+            <div class="header collapse d-lg-flex p-0" id="headerMenuCollapse">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-lg order-lg-first">
+                            <ul class="nav nav-tabs border-0 flex-column flex-lg-row">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="./index.html"><i class="fe fe-home"></i> Home</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-toggle="dropdown" href="javascript:void(0)"><i
+                                            class="fa fa-line-chart"></i> Metrics</a>
+                                    <div class="dropdown-menu dropdown-menu-arrow">
+                                        <a class="dropdown-item " href="./loader.html">Loader</a>
+                                        <a class="dropdown-item " href="./collector.html">Collector</a>
+                                        <a class="dropdown-item " href="./query.html">Query</a>
+                                    </div>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="./console.html"><i class="fe fe-minus-square"></i> Console</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="./databases.html"><i class="fe fe-database"></i>
+                                        Tables</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="./docs/index.html"><i class="fe fe-file-text"></i>
+                                        Documentation</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./console.html" class="nav-link"><i class="fe fe-minus-square"></i> Console</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./databases.html" class="nav-link"><i class="fe fe-database"></i> Tables</a>
-                  </li>
-                  <li class="nav-item">
-                    <a href="./docs/index.html" class="nav-link"><i class="fe fe-file-text"></i> Documentation</a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-          </div>
-          <div class="my-3 my-md-5">
-          <div class="container">
-            <div class="page-header">
-              <h1 class="page-title">
-                Overview
-              </h1>
-            </div>
-            <div class="row row-cards">
-              <div class="col-6">
-                <div class="row">
-                  <div class="col-sm-6">
-                    <div class="card">
-                      <div class="card-header">
-                        <h3 class="card-title">Disk Usage</h3>
-                      </div>
-                      <div class="card-body">
-                        <div id="chart-donut" style="height: 12rem;"></div>
-                      </div>
-                    </div>
-                    <script>
-                      require(['c3', 'jquery'], function(c3, $) {
-                        $(document).ready(function(){
-                          var chart = c3.generate({
-                            bindto: '#chart-donut', // id of chart wrapper
-                            data: {
-                              columns: [
-                                  // each columns data
-                                ['data1', 20],
-                                ['data2', 50],
-                                ['data3', 30]
-                              ],
-                              type: 'donut', // default type of chart
-                              colors: {
-                                'data1': tabler.colors["red"],
-                                'data2': tabler.colors["green"],
-                                'data3': tabler.colors["yellow"]
-                              },
-                              names: {
-                                  // name of each serie
-                                'data1': 'Used',
-                                'data2': 'Available',
-                                'data3': 'Unavailable'
-                              }
-                            },
-                            axis: {
-                            },
-                            legend: {
-                                      show: false, //hide legend
-                            },
-                            padding: {
-                              bottom: 0,
-                              top: 0
-                            },
-                          });
-                        });
-                      });
-                    </script>
-                  </div>
-                  <div class="col-sm-6">
-                    <div class="card">
-                      <div class="card-header">
-                        <h3 class="card-title">Memory Usage</h3>
-                      </div>
-                      <div class="card-body">
-                        <div id="chart-pie" style="height: 12rem;"></div>
-                      </div>
-                    </div>
-                    <script>
-                      require(['c3', 'jquery'], function(c3, $) {
-                        $(document).ready(function(){
-                          var chart = c3.generate({
-                            bindto: '#chart-pie', // id of chart wrapper
-                            data: {
-                              columns: [
-                                  // each columns data
-                                ['data1', 40],
-                                ['data2', 10],
-                                ['data3', 45],
-                                ['data4', 5]
-                              ],
-                              type: 'donut', // default type of chart
-                              colors: {
-                                'data1': tabler.colors["blue-darker"],
-                                'data2': tabler.colors["blue"],
-                                'data3': tabler.colors["blue-light"],
-                                'data4': tabler.colors["blue-lighter"]
-                              },
-                              names: {
-                                  // name of each serie
-                                'data1': 'JVM Used',
-                                'data2': 'Native Used',
-                                'data3': 'Available',
-                                'data4': 'Unavailable'
-                              }
-                            },
-                            axis: {
-                            },
-                            legend: {
-                                      show: false, //hide legend
-                            },
-                            padding: {
-                              bottom: 0,
-                              top: 0
-                            },
-                          });
-                        });
-                      });
-                    </script>
-                  </div>
                 </div>
-              </div>
-              <div class="col-6">
-                  <!--  -->
-                <div class="row">
-                  <div class="col-4">
-                    <div class="card">
-                      <div class="card-body p-3 text-center">
-                        <div class="text-right text-green">
-                          <i class="fe fe-chevron-up"></i>
-                        </div>
-                        <div class="h1 m-0 text-green">26</div>
-                        <div class="text-muted mb-4">Live Nodes</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-4">
-                    <div class="card">
-                      <div class="card-body p-3 text-center">
-                        <div class="text-right text-yellow">
-                          <i class="fe fe-chevron-down"></i>
-                        </div>
-                        <div class="h1 m-0 text-yellow">0</div>
-                        <div class="text-muted mb-4">Lost Nodes</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-4">
-                    <div class="card">
-                      <div class="card-body p-3 text-center">
-                        <div class="text-right text-red">
-                          <i class="fe fe-chevron-down"></i>
-                        </div>
-                        <div class="h1 m-0 text-red">0</div>
-                        <div class="text-muted mb-4">Dead Nodes</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                  <!--  -->
-                <div class="row">  
-                  <div class="col-4">
-                    <div class="card">
-                      <div class="card-body p-3 text-center">
-                        <div class="text-right text-green">
-                          v 1.11
-                          <i class="fe fe-chevron-up"></i>
-                        </div>
-                        <div class="h1 m-0">8</div>
-                        <div class="text-muted mb-4">Kafka</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-4">
-                    <div class="card">
-                      <div class="card-body p-3 text-center">
-                        <div class="text-right text-green">
-                          v 2.7.3
-                          <i class="fe fe-chevron-up"></i>
-                        </div>
-                        <div class="h1 m-0">16</div>
-                        <div class="text-muted mb-4">Loader</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-4">
-                    <div class="card">
-                      <div class="card-body p-3 text-center">
-                        <div class="text-right text-green">
-                          v 0.192
-                          <i class="fe fe-chevron-up"></i>
-                        </div>
-                        <div class="h1 m-0">17</div>
-                        <div class="text-muted mb-4">Presto</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
+            <div class="my-3 my-md-5">
+                <div class="container">
+                    <div class="page-header">
+                        <h1 class="page-title">
+                            Overview
+                        </h1>
+                    </div>
+                    <div class="row row-cards">
+                        <div class="col-6">
+                            <div class="row">
+                                <div class="col-sm-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Disk Usage</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="chart-donut" style="height: 12rem;"></div>
+                                        </div>
+                                    </div>
+                                    <script>
+                                        require(['c3', 'jquery'], function (c3, $) {
+                                            $(document).ready(function () {
+                                                var chart = c3.generate({
+                                                    bindto: '#chart-donut', // id of chart wrapper
+                                                    data: {
+                                                        columns: [
+                                                            // each columns data
+                                                            ['data1', 20],
+                                                            ['data2', 50],
+                                                            ['data3', 30]
+                                                        ],
+                                                        type: 'donut', // default type of chart
+                                                        colors: {
+                                                            'data1': tabler.colors["red"],
+                                                            'data2': tabler.colors["green"],
+                                                            'data3': tabler.colors["yellow"]
+                                                        },
+                                                        names: {
+                                                            // name of each serie
+                                                            'data1': 'Used',
+                                                            'data2': 'Available',
+                                                            'data3': 'Unavailable'
+                                                        }
+                                                    },
+                                                    axis: {},
+                                                    legend: {
+                                                        show: false, //hide legend
+                                                    },
+                                                    padding: {
+                                                        bottom: 0,
+                                                        top: 0
+                                                    },
+                                                });
+                                            });
+                                        });
 
-            <div class="row row-cards row-deck">
-              <div class="col-12">
-                <div class="card">
-                  <div class="card-header">
-                    <h3 class="card-title">Nodes</h3>
-                  </div>
-                  <div class="table-responsive">
-                    <table class="table card-table table-vcenter text-nowrap">
-                      <thead>
-                        <tr>
-                          <th class="w-1">Name</th>
-                            <th>Host</th>
-                            <th>URL</th>
-                            <th>Role</th>
-                            <th>Created</th>
-                            <th>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <td><span class="text-muted">coordinator</span></td>
-                            <td>dbiir01</td>
-                          <td>10.77.110.11</td>
-                          <td>
-                              Coordinator
-                          </td>
-                          <td>
-                              19 Oct 2018
-                          </td>
-                          <td>
-                            <span class="status-icon bg-success"></span> Running
-                          </td>
-                        </tr>
-                        <tr>
-                          <td><span class="text-muted">loader01</span></td>
-                            <td>dbiir11</td>
-                          <td>10.77.110.21</td>
-                          <td>
-                              Paraflow Loader
-                          </td>
-                          <td>
-                              19 Oct 2018
-                          </td>
-                          <td>
-                            <span class="status-icon bg-success"></span> Running
-                          </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader02</span></td>
-                            <td>dbiir12</td>
-                            <td>10.77.110.22</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader03</span></td>
-                            <td>dbiir13</td>
-                            <td>10.77.110.23</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader04</span></td>
-                            <td>dbiir14</td>
-                            <td>10.77.110.24</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader05</span></td>
-                            <td>dbiir15</td>
-                            <td>10.77.110.25</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader06</span></td>
-                            <td>dbiir17</td>
-                            <td>10.77.110.27</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader08</span></td>
-                            <td>dbiir18</td>
-                            <td>10.77.110.28</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader09</span></td>
-                            <td>dbiir19</td>
-                            <td>10.77.110.29</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader10</span></td>
-                            <td>dbiir20</td>
-                            <td>10.77.110.30</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader11</span></td>
-                            <td>dbiir21</td>
-                            <td>10.77.110.31</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader12</span></td>
-                            <td>dbiir22</td>
-                            <td>10.77.110.32</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader13</span></td>
-                            <td>dbiir23</td>
-                            <td>10.77.110.33</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader14</span></td>
-                            <td>dbiir24</td>
-                            <td>10.77.110.34</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><span class="text-muted">loader15</span></td>
-                            <td>dbiir25</td>
-                            <td>10.77.110.35</td>
-                            <td>
-                                Paraflow Loader
-                            </td>
-                            <td>
-                                19 Oct 2018
-                            </td>
-                            <td>
-                                <span class="status-icon bg-success"></span> Running
-                            </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                                    </script>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="card">
+                                        <div class="card-header">
+                                            <h3 class="card-title">Memory Usage</h3>
+                                        </div>
+                                        <div class="card-body">
+                                            <div id="chart-pie" style="height: 12rem;"></div>
+                                        </div>
+                                    </div>
+                                    <script>
+                                        require(['c3', 'jquery'], function (c3, $) {
+                                            $(document).ready(function () {
+                                                var chart = c3.generate({
+                                                    bindto: '#chart-pie', // id of chart wrapper
+                                                    data: {
+                                                        columns: [
+                                                            // each columns data
+                                                            ['data1', 40],
+                                                            ['data2', 10],
+                                                            ['data3', 45],
+                                                            ['data4', 5]
+                                                        ],
+                                                        type: 'donut', // default type of chart
+                                                        colors: {
+                                                            'data1': tabler.colors["blue-darker"],
+                                                            'data2': tabler.colors["blue"],
+                                                            'data3': tabler.colors["blue-light"],
+                                                            'data4': tabler.colors["blue-lighter"]
+                                                        },
+                                                        names: {
+                                                            // name of each serie
+                                                            'data1': 'JVM Used',
+                                                            'data2': 'Native Used',
+                                                            'data3': 'Available',
+                                                            'data4': 'Unavailable'
+                                                        }
+                                                    },
+                                                    axis: {},
+                                                    legend: {
+                                                        show: false, //hide legend
+                                                    },
+                                                    padding: {
+                                                        bottom: 0,
+                                                        top: 0
+                                                    },
+                                                });
+                                            });
+                                        });
+
+                                    </script>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <!--  -->
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="card">
+                                        <div class="card-body p-3 text-center">
+                                            <div class="text-right text-green">
+                                                <i class="fe fe-chevron-up"></i>
+                                            </div>
+                                            <div class="h1 m-0 text-green">26</div>
+                                            <div class="text-muted mb-4">Live Nodes</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card">
+                                        <div class="card-body p-3 text-center">
+                                            <div class="text-right text-yellow">
+                                                <i class="fe fe-chevron-down"></i>
+                                            </div>
+                                            <div class="h1 m-0 text-yellow">0</div>
+                                            <div class="text-muted mb-4">Lost Nodes</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card">
+                                        <div class="card-body p-3 text-center">
+                                            <div class="text-right text-red">
+                                                <i class="fe fe-chevron-down"></i>
+                                            </div>
+                                            <div class="h1 m-0 text-red">0</div>
+                                            <div class="text-muted mb-4">Dead Nodes</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--  -->
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="card">
+                                        <div class="card-body p-3 text-center">
+                                            <div class="text-right text-green">
+                                                v 1.11
+                                                <i class="fe fe-chevron-up"></i>
+                                            </div>
+                                            <div class="h1 m-0">8</div>
+                                            <div class="text-muted mb-4">Kafka</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card">
+                                        <div class="card-body p-3 text-center">
+                                            <div class="text-right text-green">
+                                                v 2.7.3
+                                                <i class="fe fe-chevron-up"></i>
+                                            </div>
+                                            <div class="h1 m-0">16</div>
+                                            <div class="text-muted mb-4">Loader</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card">
+                                        <div class="card-body p-3 text-center">
+                                            <div class="text-right text-green">
+                                                v 0.192
+                                                <i class="fe fe-chevron-up"></i>
+                                            </div>
+                                            <div class="h1 m-0">17</div>
+                                            <div class="text-muted mb-4">Presto</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-cards row-deck">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h3 class="card-title">Nodes</h3>
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table card-table table-vcenter text-nowrap">
+                                        <thead>
+                                        <tr>
+                                            <th class="w-1">Name</th>
+                                            <th>Host</th>
+                                            <th>URL</th>
+                                            <th>Role</th>
+                                            <th>Created</th>
+                                            <th>Status</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td><span class="text-muted">coordinator</span></td>
+                                            <td>dbiir01</td>
+                                            <td>10.77.110.11</td>
+                                            <td>
+                                                Coordinator
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader01</span></td>
+                                            <td>dbiir11</td>
+                                            <td>10.77.110.21</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader02</span></td>
+                                            <td>dbiir12</td>
+                                            <td>10.77.110.22</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader03</span></td>
+                                            <td>dbiir13</td>
+                                            <td>10.77.110.23</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader04</span></td>
+                                            <td>dbiir14</td>
+                                            <td>10.77.110.24</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader05</span></td>
+                                            <td>dbiir15</td>
+                                            <td>10.77.110.25</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader06</span></td>
+                                            <td>dbiir17</td>
+                                            <td>10.77.110.27</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader08</span></td>
+                                            <td>dbiir18</td>
+                                            <td>10.77.110.28</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader09</span></td>
+                                            <td>dbiir19</td>
+                                            <td>10.77.110.29</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader10</span></td>
+                                            <td>dbiir20</td>
+                                            <td>10.77.110.30</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader11</span></td>
+                                            <td>dbiir21</td>
+                                            <td>10.77.110.31</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader12</span></td>
+                                            <td>dbiir22</td>
+                                            <td>10.77.110.32</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader13</span></td>
+                                            <td>dbiir23</td>
+                                            <td>10.77.110.33</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader14</span></td>
+                                            <td>dbiir24</td>
+                                            <td>10.77.110.34</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><span class="text-muted">loader15</span></td>
+                                            <td>dbiir25</td>
+                                            <td>10.77.110.35</td>
+                                            <td>
+                                                Paraflow Loader
+                                            </td>
+                                            <td>
+                                                19 Oct 2018
+                                            </td>
+                                            <td>
+                                                <span class="status-icon bg-success"></span> Running
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
-          </div>
-          </div>
         </div>
 
         <footer class="footer">
-        <div class="container">
-          <div class="row align-items-center flex-row-reverse">
-            <div class="col-auto ml-lg-auto">
-              <div class="row align-items-center">
-                <div class="col-auto">
-                  <ul class="list-inline list-inline-dots mb-0">
-                    <li class="list-inline-item"><a href="./docs/index.html">Documentation</a></li>
-                    <li class="list-inline-item"><a href="./faq.html">FAQ</a></li>
-                  </ul>
+            <div class="container">
+                <div class="row align-items-center flex-row-reverse">
+                    <div class="col-auto ml-lg-auto">
+                        <div class="row align-items-center">
+                            <div class="col-auto">
+                                <ul class="list-inline list-inline-dots mb-0">
+                                    <li class="list-inline-item"><a href="./docs/index.html">Documentation</a></li>
+                                    <li class="list-inline-item"><a href="./faq.html">FAQ</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-auto">
+                                <a class="btn btn-outline-primary btn-sm" href="https://github.com/dbiir/paraflow">Source
+                                    code</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-auto mt-3 mt-lg-0 text-center">
+                        Copyright © 2018 <a href=".">Paraflow</a> by <a href="http://iir.ruc.edu.cn" target="_blank">DBIIR</a>
+                        All rights reserved.
+                    </div>
                 </div>
-                <div class="col-auto">
-                  <a href="https://github.com/dbiir/paraflow" class="btn btn-outline-primary btn-sm">Source code</a>
-                </div>
-              </div>
             </div>
-            <div class="col-12 col-lg-auto mt-3 mt-lg-0 text-center">
-              Copyright © 2018 <a href=".">Paraflow</a> by <a href="http://iir.ruc.edu.cn" target="_blank">DBIIR</a> All rights reserved.
-            </div>
-          </div>
-        </div>
         </footer>
-      </div>
-  </div>  
-  </body>
+    </div>
+</div>
+</body>
 </html>

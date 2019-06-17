@@ -8,7 +8,8 @@ package cn.edu.ruc.iir.paraflow.commons.utils;
 public class BytesUtils
 {
     private BytesUtils()
-    {}
+    {
+    }
 
     public static byte[] toBytes(int v)
     {

@@ -2,17 +2,8 @@ package cn.edu.ruc.iir.paraflow.loader;
 
 import cn.edu.ruc.iir.paraflow.commons.ParaflowRecord;
 
-/**
- * paraflow segment
- *
- * @author guodong
- */
 public class ParaflowSegment
 {
-    public enum StorageLevel {
-        ON_HEAP, OFF_HEAP, ON_DISK
-    }
-
     private ParaflowRecord[][] records;   // records of each fiber
     private long[] fiberMinTimestamps;    // minimal timestamp of each fiber
     private long[] fiberMaxTimestamps;    // maximum timestamp of each fiber
@@ -50,19 +41,14 @@ public class ParaflowSegment
         return records;
     }
 
-    public void setDb(String db)
-    {
-        this.db = db;
-    }
-
     public String getDb()
     {
         return db;
     }
 
-    public void setTable(String table)
+    public void setDb(String db)
     {
-        this.table = table;
+        this.db = db;
     }
 
     public String getTable()
@@ -70,9 +56,9 @@ public class ParaflowSegment
         return table;
     }
 
-    public void setPath(String path)
+    public void setTable(String table)
     {
-        this.path = path;
+        this.table = table;
     }
 
     public String getPath()
@@ -80,14 +66,19 @@ public class ParaflowSegment
         return path;
     }
 
-    public void setStorageLevel(StorageLevel storageLevel)
+    public void setPath(String path)
     {
-        this.storageLevel = storageLevel;
+        this.path = path;
     }
 
     public StorageLevel getStorageLevel()
     {
         return storageLevel;
+    }
+
+    public void setStorageLevel(StorageLevel storageLevel)
+    {
+        this.storageLevel = storageLevel;
     }
 
     public long[] getFiberMaxTimestamps()
@@ -105,9 +96,19 @@ public class ParaflowSegment
         return avgTimestamp;
     }
 
+    public long getWriteTime()
+    {
+        return writeTime;
+    }
+
     public void setWriteTime(long writeTime)
     {
         this.writeTime = writeTime;
+    }
+
+    public long getFlushTime()
+    {
+        return flushTime;
     }
 
     public void setFlushTime(long flushTime)
@@ -115,13 +116,8 @@ public class ParaflowSegment
         this.flushTime = flushTime;
     }
 
-    public long getWriteTime()
+    public enum StorageLevel
     {
-        return writeTime;
-    }
-
-    public long getFlushTime()
-    {
-        return flushTime;
+        ON_HEAP, OFF_HEAP, ON_DISK
     }
 }

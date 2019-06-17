@@ -52,7 +52,7 @@ import static java.util.Objects.requireNonNull;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowSplitManager
-implements ConnectorSplitManager
+        implements ConnectorSplitManager
 {
     private static final Logger logger = Logger.get(ParaflowSplitManager.class.getName());
     private final ParaflowConnectorId connectorId;
@@ -164,9 +164,9 @@ implements ConnectorSplitManager
         }
 
         files.forEach(file -> splits.add(new ParaflowSplit(connectorId,
-                        tableHandle.get().getSchemaTableName(),
-                        file.toString(), 0, -1,
-                        fsFactory.getBlockLocations(file, 0, Long.MAX_VALUE))));
+                tableHandle.get().getSchemaTableName(),
+                file.toString(), 0, -1,
+                fsFactory.getBlockLocations(file, 0, Long.MAX_VALUE))));
         splits.forEach(split -> logger.info(split.toString()));
         Collections.shuffle(splits);
 

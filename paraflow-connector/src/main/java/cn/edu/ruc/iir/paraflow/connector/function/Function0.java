@@ -26,8 +26,9 @@ import java.util.Objects;
 
 /**
  * presto-root
- *
+ * <p>
  * Using MurmurHash function
+ *
  * @author Jelly
  */
 @ThreadSafe

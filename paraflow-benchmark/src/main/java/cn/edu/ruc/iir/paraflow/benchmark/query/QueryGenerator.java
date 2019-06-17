@@ -14,12 +14,12 @@ public abstract class QueryGenerator
         this.distribution = distribution;
     }
 
+    public abstract boolean hasNext();
+
+    public abstract String next();
+
     public enum QueryType
     {
         UPDATE, INSERT, DELETE, SELECT
     }
-
-    public abstract boolean hasNext();
-
-    public abstract String next();
 }

@@ -19,18 +19,6 @@ public class ParaflowPrestoConfig
         return metaserverHost;
     }
 
-    @NotNull
-    public int getMetaserverPort()
-    {
-        return metaserverPort;
-    }
-
-    @NotNull
-    public String getHDFSWarehouse()
-    {
-        return hdfsWarehouse;
-    }
-
     @Config("metaserver.host")
     @ConfigDescription("metaserver host")
     public void setMetaserverHost(String metaserverHost)
@@ -38,11 +26,23 @@ public class ParaflowPrestoConfig
         this.metaserverHost = requireNonNull(metaserverHost);
     }
 
+    @NotNull
+    public int getMetaserverPort()
+    {
+        return metaserverPort;
+    }
+
     @Config("metaserver.port")
     @ConfigDescription("metaserver port")
     public void setMetaserverPort(int metaserverPort)
     {
         this.metaserverPort = metaserverPort;
+    }
+
+    @NotNull
+    public String getHDFSWarehouse()
+    {
+        return hdfsWarehouse;
     }
 
     @Config("hdfs.warehouse")

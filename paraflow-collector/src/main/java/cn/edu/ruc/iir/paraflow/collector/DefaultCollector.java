@@ -76,16 +76,12 @@ public class DefaultCollector<T>
         collectorRuntime.run(fiberFlow);
     }
 
-    public boolean existsTopic(String topic)
+    @Override
+    public void deleteTopic(String topicName)
     {
-        try {
-            Set<String> topics = kafkaAdminClient.listTopics().names().get();
-            return topics.contains(topic);
-        }
-        catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return false;
+        Collection<String> topics = new LinkedList<>();
+        topics.add(topicName);
+        kafkaAdminClient.deleteTopics(topics);
     }
 
     @Override
@@ -100,14 +96,6 @@ public class DefaultCollector<T>
         catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void deleteTopic(String topicName)
-    {
-        Collection<String> topics = new LinkedList<>();
-        topics.add(topicName);
-        kafkaAdminClient.deleteTopics(topics);
     }
 
     @Override
@@ -171,14 +159,14 @@ public class DefaultCollector<T>
 
     @Override
     public StatusProto.ResponseStatus createTable(String dbName,
-                                                       String tblName,
-                                                       String userName,
-                                                       String storageFormatName,
-                                                       int fiberColIndex,
-                                                       int timestampColIndex,
-                                                       String fiberPartitioner,
-                                                       List<String> columnName,
-                                                       List<String> dataType)
+                                                  String tblName,
+                                                  String userName,
+                                                  String storageFormatName,
+                                                  int fiberColIndex,
+                                                  int timestampColIndex,
+                                                  String fiberPartitioner,
+                                                  List<String> columnName,
+                                                  List<String> dataType)
     {
         return metaClient.createTable(dbName, tblName, userName, storageFormatName, fiberColIndex, fiberPartitioner, timestampColIndex, columnName, dataType);
     }
@@ -187,6 +175,18 @@ public class DefaultCollector<T>
     public void shutdown()
     {
         Runtime.getRuntime().exit(0);
+    }
+
+    public boolean existsTopic(String topic)
+    {
+        try {
+            Set<String> topics = kafkaAdminClient.listTopics().names().get();
+            return topics.contains(topic);
+        }
+        catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     private void beforeShutdown()

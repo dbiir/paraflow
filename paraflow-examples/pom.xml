@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>paraflow</artifactId>
@@ -44,7 +44,8 @@
                         </goals>
                         <configuration>
                             <finalName>paraflow-collector-${project.version}</finalName>
-                            <outputDirectory>${project.parent.basedir}/paraflow-${project.version}/libs</outputDirectory>
+                            <outputDirectory>${project.parent.basedir}/paraflow-${project.version}/libs
+                            </outputDirectory>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>allinone</shadedClassifierName>
                             <filters>
@@ -58,7 +59,8 @@
                                 </filter>
                             </filters>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>cn.edu.ruc.iir.paraflow.examples.collector.BasicCollector</mainClass>
                                 </transformer>
                             </transformers>
@@ -72,7 +74,8 @@
                         </goals>
                         <configuration>
                             <finalName>paraflow-loader-${project.version}</finalName>
-                            <outputDirectory>${project.parent.basedir}/paraflow-${project.version}/libs</outputDirectory>
+                            <outputDirectory>${project.parent.basedir}/paraflow-${project.version}/libs
+                            </outputDirectory>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <shadedClassifierName>allinone</shadedClassifierName>
                             <filters>
@@ -86,7 +89,8 @@
                                 </filter>
                             </filters>
                             <transformers>
-                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                <transformer
+                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <mainClass>cn.edu.ruc.iir.paraflow.examples.loader.BasicLoader</mainClass>
                                 </transformer>
                             </transformers>

@@ -32,7 +32,7 @@ import static java.util.Objects.requireNonNull;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowTableLayoutHandle
-implements ConnectorTableLayoutHandle
+        implements ConnectorTableLayoutHandle
 {
     private final ParaflowTableHandle table;
     private final ParaflowColumnHandle fiberColumn;
@@ -104,15 +104,15 @@ implements ConnectorTableLayoutHandle
         return storageFormat;
     }
 
-    public void setPredicates(Optional<TupleDomain<ColumnHandle>> predicates)
-    {
-        this.predicates = predicates;
-    }
-
     @JsonProperty
     public Optional<TupleDomain<ColumnHandle>> getPredicates()
     {
         return predicates;
+    }
+
+    public void setPredicates(Optional<TupleDomain<ColumnHandle>> predicates)
+    {
+        this.predicates = predicates;
     }
 
     @Override

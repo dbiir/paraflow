@@ -35,7 +35,7 @@ public class TableDeleteException extends ParaFlowException
     {
         return StatusProto.ResponseStatus.newBuilder()
                 .setStatus(StatusProto.ResponseStatus.State.TABLE_DELETE_ERROR)
-                        .build();
+                .build();
     }
 
     /**

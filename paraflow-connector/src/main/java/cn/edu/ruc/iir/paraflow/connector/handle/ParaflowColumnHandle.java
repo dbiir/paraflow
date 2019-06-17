@@ -27,16 +27,8 @@ import static java.util.Objects.requireNonNull;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowColumnHandle
-implements ColumnHandle
+        implements ColumnHandle
 {
-    public enum ColumnType
-    {
-        REGULAR,
-        FIBER,
-        TIMESTAMP,
-        NOTVALID
-    }
-
     private final String name;
     private final Type type;
     private final String comment;
@@ -122,5 +114,13 @@ implements ColumnHandle
                 .add("column type", colType)
                 .add("connector id", connectorId)
                 .toString();
+    }
+
+    public enum ColumnType
+    {
+        REGULAR,
+        FIBER,
+        TIMESTAMP,
+        NOTVALID
     }
 }

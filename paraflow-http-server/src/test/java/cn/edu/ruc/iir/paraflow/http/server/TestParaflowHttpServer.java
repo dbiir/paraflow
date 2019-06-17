@@ -16,5 +16,6 @@ public class TestParaflowHttpServer
 {
     @Test
     public void contextLoads()
-    {}
+    {
+    }
 }

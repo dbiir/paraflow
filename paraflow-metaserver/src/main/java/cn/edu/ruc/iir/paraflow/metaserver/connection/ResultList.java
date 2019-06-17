@@ -4,7 +4,6 @@ import java.util.LinkedList;
 
 /**
  * paraflow
- *
  */
 public class ResultList
 {

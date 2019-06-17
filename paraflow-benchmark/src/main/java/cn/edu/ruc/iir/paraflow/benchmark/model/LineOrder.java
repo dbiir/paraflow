@@ -19,12 +19,6 @@ public class LineOrder
         this.values = new Object[23];
     }
 
-    @Override
-    public Object getValue(int idx)
-    {
-        return values[idx];
-    }
-
     public LineOrder(
             long rowNumber,
             long lineOrderKey,
@@ -58,9 +52,10 @@ public class LineOrder
                 lineitemComment, creation};
     }
 
-    public void setLineOrderKey(long lineOrderKey)
+    @Override
+    public Object getValue(int idx)
     {
-        this.values[0] = lineOrderKey;
+        return values[idx];
     }
 
     public long getLineOrderKey()
@@ -68,9 +63,9 @@ public class LineOrder
         return (long) this.values[0];
     }
 
-    public void setCustomerKey(long customerKey)
+    public void setLineOrderKey(long lineOrderKey)
     {
-        this.values[1] = customerKey;
+        this.values[0] = lineOrderKey;
     }
 
     public long getCustomerKey()
@@ -78,9 +73,9 @@ public class LineOrder
         return (long) values[1];
     }
 
-    public void setOrderStatus(char orderStatus)
+    public void setCustomerKey(long customerKey)
     {
-        this.values[2] = orderStatus;
+        this.values[1] = customerKey;
     }
 
     public char getOrderStatus()
@@ -88,9 +83,9 @@ public class LineOrder
         return (char) values[2];
     }
 
-    public void setTotalPrice(double totalPrice)
+    public void setOrderStatus(char orderStatus)
     {
-        this.values[3] = totalPrice;
+        this.values[2] = orderStatus;
     }
 
     public double getTotalPrice()
@@ -98,14 +93,14 @@ public class LineOrder
         return (double) values[3];
     }
 
+    public void setTotalPrice(double totalPrice)
+    {
+        this.values[3] = totalPrice;
+    }
+
     public long getTotalPriceInCents()
     {
         return (long) values[3];
-    }
-
-    public void setOrderDate(int orderDate)
-    {
-        this.values[4] = orderDate;
     }
 
     public int getOrderDate()
@@ -113,9 +108,9 @@ public class LineOrder
         return (int) values[4];
     }
 
-    public void setOrderPriority(String orderPriority)
+    public void setOrderDate(int orderDate)
     {
-        this.values[5] = orderPriority;
+        this.values[4] = orderDate;
     }
 
     public String getOrderPriority()
@@ -123,9 +118,9 @@ public class LineOrder
         return (String) values[5];
     }
 
-    public void setClerk(String clerk)
+    public void setOrderPriority(String orderPriority)
     {
-        this.values[6] = clerk;
+        this.values[5] = orderPriority;
     }
 
     public String getClerk()
@@ -133,9 +128,9 @@ public class LineOrder
         return (String) values[6];
     }
 
-    public void setShipPriority(int shipPriority)
+    public void setClerk(String clerk)
     {
-        this.values[7] = shipPriority;
+        this.values[6] = clerk;
     }
 
     public int getShipPriority()
@@ -143,9 +138,9 @@ public class LineOrder
         return (int) values[7];
     }
 
-    public void setOrderComment(String orderComment)
+    public void setShipPriority(int shipPriority)
     {
-        this.values[8] = orderComment;
+        this.values[7] = shipPriority;
     }
 
     public String getOrderComment()
@@ -153,9 +148,9 @@ public class LineOrder
         return (String) values[8];
     }
 
-    public void setLineNumber(int lineNumber)
+    public void setOrderComment(String orderComment)
     {
-        this.values[9] = lineNumber;
+        this.values[8] = orderComment;
     }
 
     public int getLineNumber()
@@ -163,9 +158,9 @@ public class LineOrder
         return (int) values[9];
     }
 
-    public void setQuantity(double quantity)
+    public void setLineNumber(int lineNumber)
     {
-        this.values[10] = quantity;
+        this.values[9] = lineNumber;
     }
 
     public double getQuantity()
@@ -173,9 +168,9 @@ public class LineOrder
         return (double) values[10];
     }
 
-    public void setExtendedPrice(double extendedPrice)
+    public void setQuantity(double quantity)
     {
-        this.values[11] = extendedPrice;
+        this.values[10] = quantity;
     }
 
     public double getExtendedPrice()
@@ -183,9 +178,9 @@ public class LineOrder
         return (double) values[11];
     }
 
-    public void setDiscount(double discount)
+    public void setExtendedPrice(double extendedPrice)
     {
-        this.values[12] = discount;
+        this.values[11] = extendedPrice;
     }
 
     public double getDiscount()
@@ -193,9 +188,9 @@ public class LineOrder
         return (double) values[12];
     }
 
-    public void setTax(double tax)
+    public void setDiscount(double discount)
     {
-        this.values[13] = tax;
+        this.values[12] = discount;
     }
 
     public double getTax()
@@ -203,9 +198,9 @@ public class LineOrder
         return (double) values[13];
     }
 
-    public void setReturnFlag(String returnFlag)
+    public void setTax(double tax)
     {
-        this.values[14] = returnFlag;
+        this.values[13] = tax;
     }
 
     public String getReturnFlag()
@@ -213,9 +208,9 @@ public class LineOrder
         return (String) values[14];
     }
 
-    public void setLineStatus(char lineStatus)
+    public void setReturnFlag(String returnFlag)
     {
-        this.values[15] = lineStatus;
+        this.values[14] = returnFlag;
     }
 
     public char getLineStatus()
@@ -223,9 +218,9 @@ public class LineOrder
         return (char) values[15];
     }
 
-    public void setShipDate(int shipDate)
+    public void setLineStatus(char lineStatus)
     {
-        this.values[16] = shipDate;
+        this.values[15] = lineStatus;
     }
 
     public int getShipDate()
@@ -233,9 +228,9 @@ public class LineOrder
         return (int) values[16];
     }
 
-    public void setCommitDate(int commitDate)
+    public void setShipDate(int shipDate)
     {
-        this.values[17] = commitDate;
+        this.values[16] = shipDate;
     }
 
     public int getCommitDate()
@@ -243,9 +238,9 @@ public class LineOrder
         return (int) values[17];
     }
 
-    public void setReceiptDate(int receiptDate)
+    public void setCommitDate(int commitDate)
     {
-        this.values[18] = receiptDate;
+        this.values[17] = commitDate;
     }
 
     public int getReceiptDate()
@@ -253,9 +248,9 @@ public class LineOrder
         return (int) values[18];
     }
 
-    public void setShipInstructions(String shipInstructions)
+    public void setReceiptDate(int receiptDate)
     {
-        this.values[19] = shipInstructions;
+        this.values[18] = receiptDate;
     }
 
     public String getShipInstructions()
@@ -263,9 +258,9 @@ public class LineOrder
         return (String) values[19];
     }
 
-    public void setShipMode(String shipMode)
+    public void setShipInstructions(String shipInstructions)
     {
-        this.values[20] = shipMode;
+        this.values[19] = shipInstructions;
     }
 
     public String getShipMode()
@@ -273,9 +268,9 @@ public class LineOrder
         return (String) values[20];
     }
 
-    public void setLineitemComment(String lineitemComment)
+    public void setShipMode(String shipMode)
     {
-        this.values[21] = lineitemComment;
+        this.values[20] = shipMode;
     }
 
     public String getLineitemComment()
@@ -283,9 +278,9 @@ public class LineOrder
         return (String) values[21];
     }
 
-    public void setCreation(long creation)
+    public void setLineitemComment(String lineitemComment)
     {
-        this.values[22] = creation;
+        this.values[21] = lineitemComment;
     }
 
     public long getCreation()
@@ -293,14 +288,19 @@ public class LineOrder
         return (long) values[22];
     }
 
-    public void setRowNumber(long rowNumber)
+    public void setCreation(long creation)
     {
-        this.rowNumber = rowNumber;
+        this.values[22] = creation;
     }
 
     public long getRowNumber()
     {
         return rowNumber;
+    }
+
+    public void setRowNumber(long rowNumber)
+    {
+        this.rowNumber = rowNumber;
     }
 
     public String toLine()

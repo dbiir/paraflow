@@ -25,6 +25,7 @@ public class DatabaseNotFoundException extends ParaFlowException
     {
         this.dbName = dbName;
     }
+
     /**
      * get error message.
      *

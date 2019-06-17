@@ -30,7 +30,7 @@ import com.facebook.presto.spi.connector.ConnectorTransactionHandle;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowHandleResolver
-implements ConnectorHandleResolver
+        implements ConnectorHandleResolver
 {
     @Override
     public Class<? extends ConnectorTableHandle> getTableHandleClass()

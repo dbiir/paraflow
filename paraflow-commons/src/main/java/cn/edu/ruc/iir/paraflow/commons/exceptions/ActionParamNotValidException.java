@@ -11,6 +11,7 @@ public class ActionParamNotValidException extends ParaFlowException
      * @return error message
      */
     private static final long serialVersionUID = 6980171393859140122L;
+
     @Override
     public String getMessage()
     {

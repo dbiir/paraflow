@@ -19,7 +19,7 @@ import com.facebook.presto.spi.PrestoException;
  * @author jelly.guodong.jin@gmail.com
  */
 public class ParaflowCursorException
-extends PrestoException
+        extends PrestoException
 {
     public ParaflowCursorException()
     {

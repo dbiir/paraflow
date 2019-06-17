@@ -1,12 +1,7 @@
 package cn.edu.ruc.iir.paraflow.loader;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class RunningProcessor
-    implements Runnable
+        implements Runnable
 {
     private final Processor processor;
 

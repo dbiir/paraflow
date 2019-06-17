@@ -10,11 +10,6 @@ import java.util.Comparator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
-/**
- * paraflow
- *
- * @author guodong
- */
 public class DataCompactor
         extends Processor
 {

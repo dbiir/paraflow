@@ -55,97 +55,6 @@ import io.grpc.stub.StreamObserver;
 public class MetaService extends MetaGrpc.MetaImplBase
 {
     @Override
-    public void createUser(MetaProto.UserParam user,
-                           StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
-    {
-        TransactionController txController = null;
-        try {
-            txController = ConnectionPool.INSTANCE().getTxController();
-            ActionResponse input = new ActionResponse();
-            input.setParam(user);
-            txController.setAutoCommit(false);
-            txController.addAction(new CreateUserAction());
-            txController.commit(input);
-            responseStreamObserver.onNext(MetaConstants.OKStatus);
-            responseStreamObserver.onCompleted();
-        }
-        catch (ParaFlowException e) {
-            responseStreamObserver.onNext(e.getResponseStatus());
-            responseStreamObserver.onCompleted();
-            e.handle();
-        }
-        finally {
-            if (txController != null) {
-                txController.close();
-            }
-        }
-    }
-
-    @Override
-    public void createDatabase(MetaProto.DbParam dbParam,
-                               StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
-    {
-        TransactionController txController = null;
-        try {
-            txController = ConnectionPool.INSTANCE().getTxController();
-            ActionResponse input = new ActionResponse();
-            input.setParam(dbParam);
-            input.setProperties("userName", dbParam.getUserName());
-            txController.setAutoCommit(false);
-            txController.addAction(new GetUserIdAction());
-            txController.addAction(new CreateDatabaseAction());
-            txController.commit(input);
-            responseStreamObserver.onNext(MetaConstants.OKStatus);
-            responseStreamObserver.onCompleted();
-        }
-        catch (ParaFlowException e) {
-            responseStreamObserver.onNext(e.getResponseStatus());
-            responseStreamObserver.onCompleted();
-            e.handle();
-        }
-        finally {
-            if (txController != null) {
-                txController.close();
-            }
-        }
-    }
-
-    @Override
-    public void createTable(MetaProto.TblParam tblParam,
-                            StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
-    {
-        TransactionController txController = null;
-        try {
-            txController = ConnectionPool.INSTANCE().getTxController();
-            ActionResponse input = new ActionResponse();
-            input.setParam(tblParam);
-            input.setProperties("userName", tblParam.getUserName());
-            input.setProperties("dbName", tblParam.getDbName());
-            input.setProperties("sfName", tblParam.getStorageFormatName());
-            input.setProperties("partitionerName", tblParam.getFuncName());
-            txController.setAutoCommit(false);
-            txController.addAction(new GetUserIdAction());
-            txController.addAction(new GetDatabaseIdAction());
-            txController.addAction(new CreateTableAction());
-            txController.addAction(new GetTableIdAction());
-            txController.addAction(new CreateColumnAction());
-            txController.commit(input);
-            responseStreamObserver.onNext(MetaConstants.OKStatus);
-            responseStreamObserver.onCompleted();
-        }
-        catch (ParaFlowException e) {
-            responseStreamObserver.onNext(e.getResponseStatus());
-            responseStreamObserver.onCompleted();
-            e.handle();
-        }
-        finally {
-            if (txController != null) {
-                txController.close();
-            }
-        }
-    }
-
-    @Override
     public void listDatabases(MetaProto.NoneType none,
                               StreamObserver<MetaProto.StringListType> responseStreamObserver)
     {
@@ -165,8 +74,8 @@ public class MetaService extends MetaGrpc.MetaImplBase
         }
         catch (ParaFlowException e) {
             MetaProto.StringListType stringList = MetaProto.StringListType.newBuilder()
-                        .setIsEmpty(true)
-                        .build();
+                    .setIsEmpty(true)
+                    .build();
             responseStreamObserver.onNext(stringList);
             responseStreamObserver.onCompleted();
             e.handle();
@@ -250,7 +159,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
 
     @Override
     public void listColumnsId(MetaProto.DbTblParam dbTblParam,
-                            StreamObserver<MetaProto.StringListType> responseStreamObserver)
+                              StreamObserver<MetaProto.StringListType> responseStreamObserver)
     {
         TransactionController txController = null;
         try {
@@ -286,7 +195,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
 
     @Override
     public void listColumnsDataType(MetaProto.DbTblParam dbTblParam,
-                                       StreamObserver<MetaProto.StringListType> responseStreamObserver)
+                                    StreamObserver<MetaProto.StringListType> responseStreamObserver)
     {
         TransactionController txController = null;
         try {
@@ -432,7 +341,7 @@ public class MetaService extends MetaGrpc.MetaImplBase
 
     @Override
     public void getColumnName(MetaProto.DbTblColIdParam dbTblColIdParam,
-                          StreamObserver<MetaProto.ColNameParam> responseStreamObserver)
+                              StreamObserver<MetaProto.ColNameParam> responseStreamObserver)
     {
         TransactionController txController = null;
         try {
@@ -464,82 +373,90 @@ public class MetaService extends MetaGrpc.MetaImplBase
     }
 
     @Override
-    public void renameColumn(MetaProto.RenameColParam renameColumn,
-                             StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
-    {
-        TransactionController txController = null;
-        try {
-            txController = ConnectionPool.INSTANCE().getTxController();
-            ActionResponse input = new ActionResponse();
-            input.setParam(renameColumn);
-            input.setProperties("dbName", renameColumn.getDatabase().getDatabase());
-            input.setProperties("tblName", renameColumn.getTable().getTable());
-            input.setProperties("oldName", renameColumn.getOldName());
-            input.setProperties("newName", renameColumn.getNewName());
-            txController.setAutoCommit(false);
-            txController.addAction(new GetDatabaseIdAction());
-            txController.addAction(new GetTableIdAction());
-            txController.addAction(new RenameColumnAction());
-            txController.commit(input);
-            responseStreamObserver.onNext(MetaConstants.OKStatus);
-            responseStreamObserver.onCompleted();
-        }
-        catch (ParaFlowException e) {
-            responseStreamObserver.onNext(e.getResponseStatus());
-            responseStreamObserver.onCompleted();
-            e.handle();
-        }
-        finally {
-            if (txController != null) {
-                txController.close();
-            }
-        }
-    }
-
-    @Override
-    public void renameTable(MetaProto.RenameTblParam renameTblParam,
-                            StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
-    {
-        TransactionController txController = null;
-        try {
-            txController = ConnectionPool.INSTANCE().getTxController();
-            ActionResponse input = new ActionResponse();
-            input.setParam(renameTblParam);
-            input.setProperties("dbName", renameTblParam.getDatabase().getDatabase());
-            input.setProperties("newName", renameTblParam.getNewName());
-            input.setProperties("oldName", renameTblParam.getOldName());
-            txController.setAutoCommit(false);
-            txController.addAction(new GetDatabaseIdAction());
-            txController.addAction(new RenameTableAction());
-            txController.commit(input);
-            responseStreamObserver.onNext(MetaConstants.OKStatus);
-            responseStreamObserver.onCompleted();
-        }
-        catch (ParaFlowException e) {
-            responseStreamObserver.onNext(e.getResponseStatus());
-            responseStreamObserver.onCompleted();
-            e.handle();
-        }
-        finally {
-            if (txController != null) {
-                txController.close();
-            }
-        }
-    }
-
-    @Override
-    public void renameDatabase(MetaProto.RenameDbParam renameDbParam,
+    public void createDatabase(MetaProto.DbParam dbParam,
                                StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
     {
         TransactionController txController = null;
         try {
             txController = ConnectionPool.INSTANCE().getTxController();
             ActionResponse input = new ActionResponse();
-            input.setParam(renameDbParam);
-            input.setProperties("newName", renameDbParam.getNewName());
-            input.setProperties("oldName", renameDbParam.getOldName());
+            input.setParam(dbParam);
+            input.setProperties("userName", dbParam.getUserName());
             txController.setAutoCommit(false);
-            txController.addAction(new RenameDatabaseAction());
+            txController.addAction(new GetUserIdAction());
+            txController.addAction(new CreateDatabaseAction());
+            txController.commit(input);
+            responseStreamObserver.onNext(MetaConstants.OKStatus);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            responseStreamObserver.onNext(e.getResponseStatus());
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+
+    @Override
+    public void createTable(MetaProto.TblParam tblParam,
+                            StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(tblParam);
+            input.setProperties("userName", tblParam.getUserName());
+            input.setProperties("dbName", tblParam.getDbName());
+            input.setProperties("sfName", tblParam.getStorageFormatName());
+            input.setProperties("partitionerName", tblParam.getFuncName());
+            txController.setAutoCommit(false);
+            txController.addAction(new GetUserIdAction());
+            txController.addAction(new GetDatabaseIdAction());
+            txController.addAction(new CreateTableAction());
+            txController.addAction(new GetTableIdAction());
+            txController.addAction(new CreateColumnAction());
+            txController.commit(input);
+            responseStreamObserver.onNext(MetaConstants.OKStatus);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            responseStreamObserver.onNext(e.getResponseStatus());
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+
+    @Override
+    public void deleteDatabase(MetaProto.DbNameParam dbNameParam,
+                               StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(dbNameParam);
+            input.setProperties("dbName", dbNameParam.getDatabase());
+            txController.setAutoCommit(false);
+            txController.addAction(new GetDatabaseIdAction());
+            txController.addAction(new GetDbTblIdAction());
+            txController.addAction(new DeleteDbTblParamAction());
+            txController.addAction(new DeleteDbTblPrivAction());
+            txController.addAction(new DeleteDbBlockIndexAction());
+            txController.addAction(new DeleteDbColumnAction());
+            txController.addAction(new DeleteDbTableAction());
+            txController.addAction(new DeleteDbParamAction());
+            txController.addAction(new GetDatabaseIdAction());
+            txController.addAction(new DeleteDatabaseAction());
             txController.commit(input);
             responseStreamObserver.onNext(MetaConstants.OKStatus);
             responseStreamObserver.onCompleted();
@@ -592,26 +509,82 @@ public class MetaService extends MetaGrpc.MetaImplBase
     }
 
     @Override
-    public void deleteDatabase(MetaProto.DbNameParam dbNameParam,
+    public void renameDatabase(MetaProto.RenameDbParam renameDbParam,
                                StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
     {
         TransactionController txController = null;
         try {
             txController = ConnectionPool.INSTANCE().getTxController();
             ActionResponse input = new ActionResponse();
-            input.setParam(dbNameParam);
-            input.setProperties("dbName", dbNameParam.getDatabase());
+            input.setParam(renameDbParam);
+            input.setProperties("newName", renameDbParam.getNewName());
+            input.setProperties("oldName", renameDbParam.getOldName());
+            txController.setAutoCommit(false);
+            txController.addAction(new RenameDatabaseAction());
+            txController.commit(input);
+            responseStreamObserver.onNext(MetaConstants.OKStatus);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            responseStreamObserver.onNext(e.getResponseStatus());
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+
+    @Override
+    public void renameTable(MetaProto.RenameTblParam renameTblParam,
+                            StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(renameTblParam);
+            input.setProperties("dbName", renameTblParam.getDatabase().getDatabase());
+            input.setProperties("newName", renameTblParam.getNewName());
+            input.setProperties("oldName", renameTblParam.getOldName());
             txController.setAutoCommit(false);
             txController.addAction(new GetDatabaseIdAction());
-            txController.addAction(new GetDbTblIdAction());
-            txController.addAction(new DeleteDbTblParamAction());
-            txController.addAction(new DeleteDbTblPrivAction());
-            txController.addAction(new DeleteDbBlockIndexAction());
-            txController.addAction(new DeleteDbColumnAction());
-            txController.addAction(new DeleteDbTableAction());
-            txController.addAction(new DeleteDbParamAction());
+            txController.addAction(new RenameTableAction());
+            txController.commit(input);
+            responseStreamObserver.onNext(MetaConstants.OKStatus);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            responseStreamObserver.onNext(e.getResponseStatus());
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+
+    @Override
+    public void renameColumn(MetaProto.RenameColParam renameColumn,
+                             StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(renameColumn);
+            input.setProperties("dbName", renameColumn.getDatabase().getDatabase());
+            input.setProperties("tblName", renameColumn.getTable().getTable());
+            input.setProperties("oldName", renameColumn.getOldName());
+            input.setProperties("newName", renameColumn.getNewName());
+            txController.setAutoCommit(false);
             txController.addAction(new GetDatabaseIdAction());
-            txController.addAction(new DeleteDatabaseAction());
+            txController.addAction(new GetTableIdAction());
+            txController.addAction(new RenameColumnAction());
             txController.commit(input);
             responseStreamObserver.onNext(MetaConstants.OKStatus);
             responseStreamObserver.onCompleted();
@@ -763,6 +736,33 @@ public class MetaService extends MetaGrpc.MetaImplBase
             input.setParam(updateBlockPathParam);
             txController.setAutoCommit(false);
             txController.addAction(new UpdateBlockPathAction());
+            txController.commit(input);
+            responseStreamObserver.onNext(MetaConstants.OKStatus);
+            responseStreamObserver.onCompleted();
+        }
+        catch (ParaFlowException e) {
+            responseStreamObserver.onNext(e.getResponseStatus());
+            responseStreamObserver.onCompleted();
+            e.handle();
+        }
+        finally {
+            if (txController != null) {
+                txController.close();
+            }
+        }
+    }
+
+    @Override
+    public void createUser(MetaProto.UserParam user,
+                           StreamObserver<StatusProto.ResponseStatus> responseStreamObserver)
+    {
+        TransactionController txController = null;
+        try {
+            txController = ConnectionPool.INSTANCE().getTxController();
+            ActionResponse input = new ActionResponse();
+            input.setParam(user);
+            txController.setAutoCommit(false);
+            txController.addAction(new CreateUserAction());
             txController.commit(input);
             responseStreamObserver.onNext(MetaConstants.OKStatus);
             responseStreamObserver.onCompleted();

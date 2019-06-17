@@ -29,7 +29,7 @@ public class DBUpdateTemplate
     private String template1()
     {
         String q = "UPDATE " + table + " SET c_address='" + addressRandom.nextValue()
-               + "' WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
+                + "' WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
         addressRandom.rowFinished();
         custkeyRandom.rowFinished();
         return q;
@@ -38,7 +38,7 @@ public class DBUpdateTemplate
     private String template2()
     {
         String q = "UPDATE " + table + " SET c_phone='" + phoneNumber.nextValue(counter % 25)
-               + "' WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
+                + "' WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
         phoneNumber.rowFinished();
         custkeyRandom.rowFinished();
         return q;
@@ -47,7 +47,7 @@ public class DBUpdateTemplate
     private String template3()
     {
         String q = "UPDATE " + table + " SET c_acctbal=" + acctbalRandom.nextValue()
-               + " WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
+                + " WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
         acctbalRandom.rowFinished();
         custkeyRandom.rowFinished();
         return q;
@@ -56,7 +56,7 @@ public class DBUpdateTemplate
     private String template4()
     {
         String q = "UPDATE " + table + " SET c_comment='" + commentRandom.nextValue()
-               + "' WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
+                + "' WHERE c_custkey=" + custkeyRandom.nextValue() + ";";
         commentRandom.rowFinished();
         custkeyRandom.rowFinished();
         return q;

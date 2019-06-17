@@ -16,18 +16,13 @@ public class ConnectionPool
 {
     private HikariDataSource dataSource = null;
 
-    private static class ConnectionPoolHolder
+    private ConnectionPool()
     {
-        private static ConnectionPool instance = new ConnectionPool();
     }
 
     public static final ConnectionPool INSTANCE()
     {
         return ConnectionPoolHolder.instance;
-    }
-
-    private ConnectionPool()
-    {
     }
 
     public void initialize()
@@ -55,5 +50,10 @@ public class ConnectionPool
     public void close()
     {
         dataSource.close();
+    }
+
+    private static class ConnectionPoolHolder
+    {
+        private static ConnectionPool instance = new ConnectionPool();
     }
 }
