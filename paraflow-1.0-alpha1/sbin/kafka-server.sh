@@ -1,4 +1,4 @@
-#!/bin/sh
+:q#!/bin/sh
 # init|start|stop|clean|destroy the kafka cluster
 
 echo $1" the kafka cluster."
