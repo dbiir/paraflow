@@ -12,6 +12,7 @@ PARAFLOW_BIN="/home/iir/opt/paraflow/bin"
 PRESTO_SBIN="/home/iir/opt/presto-server-0.192/sbin"
 PRESTO_BIN="/home/iir/opt/presto-server-0.192/bin"
 
+
 # start the Zookeeper
 ssh $PREFIX"0"$master_num "chown -R iir:iir $PARAFLOW_SBIN"
 
@@ -22,8 +23,8 @@ echo "start zookeeper02-06 cluster from dbiir0$master_num"
 ssh $PREFIX"0"$master_num "$PARAFLOW_SBIN/kafka-server.sh start"
 echo "start kafka02-06 cluster from dbiir0$master_num"
 
-#start the paraflow metaserver
-ssh $PREFIX"0"$master_num "$PARAFLOW_BIN/paraflow-metaserver-start.sh [-daemon]"
+#start the paraflow metaserver in daemon use &
+ssh $PREFIX"0"$master_num "$PARAFLOW_BIN/paraflow-metaserver-start.sh &"
 echo " metaserver on dbiir0$master_num have started in daemon"
 
 #start the paraflow collector
@@ -35,7 +36,6 @@ echo "test-tpch topic have been created in kafka, creating data"
 ssh $PREFIX"0"$master_num "$PARAFLOW_SBIN/paraflow-loader.sh start"
 echo "paraflow loader on dbiir0$master_num have started"
 echo "loader is drawing data as a consumer from topic, at the same time, meta data sinking,relation data flushing to hdfs"
-
 
 #start the presto server cluster01-09
 ssh $PREFIX"0"$master_num "$PRESTO_SBIN/start-all.sh"
