@@ -28,6 +28,7 @@
         <module>paraflow-master</module>
         <module>paraflow-examples</module>
         <module>paraflow-benchmark</module>
+        <module>paraflow-client</module>
     </modules>
     <packaging>pom</packaging>
 
