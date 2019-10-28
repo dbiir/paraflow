@@ -6,8 +6,8 @@ import cn.edu.ruc.iir.paraflow.commons.proto.StatusProto;
 import java.util.List;
 
 /**
- * paraflow connector
- *
+ * paraflow collector
+ * @description create topic in kafka and import data
  * @author guodong
  */
 public interface Collector<T>
