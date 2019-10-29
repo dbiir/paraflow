@@ -4,13 +4,13 @@
 echo $1" paraflow loaders."
 
 PREFIX="dbiir"
-START=11
-END=26
+START=2
+END=9
 PARAFLOW_HOME="/home/iir/opt/paraflow"
 PARAFLOW_HEAP_OPTS="-Xmx16G -Xms8G"
 PARAFLOW_DIR="/home/iir/opt/paraflow-1.0-alpha1"
 DB="test"
-TABLE="line"
+TABLE="tpch"
 PARTITION_FROM=0
 PARTITION_TO=319
 
@@ -27,12 +27,12 @@ deploy()
       echo "deploy paraflow loader on dbiir0$i"
       scp -r $PARAFLOW_DIR $PREFIX"0"$i:$PARAFLOW_DIR
       ssh $PREFIX"0"$i "chown -R iir:iir $PARAFLOW_DIR"
-      ssh $PREFIX"0"$i "$PARAFLOW_DIR/sbin/paraflow-init.sh"
+      ssh $PREFIX"0"$i "$PARAFLOW_DIR/sbin/paraflow-loader-init.sh"
     else
       echo "deploy paraflow loader on dbiir$i"
       scp -r $PARAFLOW_DIR $PREFIX$i:$PARAFLOW_DIR
       ssh $PREFIX$i "chown -R iir:iir $PARAFLOW_DIR"
-      ssh $PREFIX$i "$PARAFLOW_DIR/sbin/paraflow-init.sh"
+      ssh $PREFIX$i "$PARAFLOW_DIR/sbin/paraflow-loader-init.sh"
     fi
   done
 }

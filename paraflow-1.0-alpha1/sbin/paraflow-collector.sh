@@ -5,16 +5,16 @@ echo $1" paraflow collectors."
 
 PREFIX="dbiir"
 START=2
-END=9
+END=2
 PARAFLOW_HOME="/home/iir/opt/paraflow"
-PARAFLOW_HEAP_OPTS="-Xmx8G -Xms6G"
+PARAFLOW_HEAP_OPTS="-Xmx16G -Xms8G"
 PARAFLOW_DIR="/home/iir/opt/paraflow-1.0-alpha1"
 DB="test"
-TABLE="line"
+TABLE="tpch"
 PARALLELISM="8"
 PARTITION_NUM="320"
-SF="300"
-PART_COUNT="8"
+SF="1008"
+PART_COUNT="1"
 MIN_CUSTKEY="0"
 MAX_CUSTKEY="10000000"
 
@@ -27,10 +27,12 @@ deploy()
       echo "deploy paraflow collector on dbiir0$i"
       scp -r $PARAFLOW_DIR $PREFIX"0"$i:$PARAFLOW_DIR
       ssh $PREFIX"0"$i "cd $PARAFLOW_DIR/.. && ln -s $PARAFLOW_DIR paraflow"
+      ssh $PREFIX"0"$i "$PARAFLOW_DIR/sbin/paraflow-collector-init.sh"
     else
       echo "deploy paraflow collector on dbiir$i"
       scp -r $PARAFLOW_DIR $PREFIX$i:$PARAFLOW_DIR
       ssh $PREFIX$i "ln -s $PARAFLOW_DIR paraflow"
+      ssh $PREFIX$i "$PARAFLOW_DIR/sbin/paraflow-collector-init.sh"
     fi
   done
 }
@@ -74,10 +76,10 @@ cleanup()
   do
     if [ $i -lt 10 ]; then
       echo "cleaning paraflow collector on dbiir0"$i
-      ssh $PREFIX"0"$i "rm -rf $PARAFLOW_HOME/logs"
+      ssh $PREFIX"0"$i "rm -rf $PARAFLOW_HOME/logs && mkdir $PARAFLOW_HOME/logs"
     else
       echo "cleaning paraflow collector on dbiir"$i
-      ssh $PREFIX$i "rm -rf $PARAFLOW_HOME/logs"
+      ssh $PREFIX$i "rm -rf $PARAFLOW_HOME/logs && mkdir $PARAFLOW_HOME/logs"
     fi
   done
 }

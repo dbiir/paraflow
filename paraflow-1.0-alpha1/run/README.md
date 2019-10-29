@@ -31,12 +31,11 @@ $pg_ctl restart
 ```
 
 通过`sudo -u postgres psql`进入
-
-`CREATE USER paraflow WITH PASSWORD 'paraflow'`;
-
-`CREATE DATABASE paraflowmeta`;
-
-`GRANT ALL ON DATABASE paraflowmeta TO paraflow`.
+```
+CREATE USER paraflow WITH PASSWORD 'paraflow';
+CREATE DATABASE paraflowmeta;
+GRANT ALL ON DATABASE paraflowmeta TO paraflow;
+```
 
 #### Startup
 1. Start Zookeeper
@@ -72,7 +71,9 @@ cd /home/iir/opt/presto-server-0.192
 
 ## configuration
 - 清空数据
+```
 // hadoop
 ./bin/hadoop fs -rm -r /paraflow/test/tpch/*
 // PG
-DROP DATABASE paraflowmeta
+DROP DATABASE paraflowmeta;
+```

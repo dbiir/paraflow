@@ -145,10 +145,11 @@ public class ParaflowSplitManager
                         }
                     }
                 }
-                if (fiber == -1 && timeLow == -1L && timeHigh == -1L) {
-                    files = fsFactory.listFiles(new Path(tablePath));
-                }
-                else {
+                logger.info("[Param] fiber:" + fiber + " ,timeLow:" + timeLow + " ,timeHigh:" + timeHigh);
+//                if (fiber == -1 && timeLow == -1L && timeHigh == -1L) {
+//                    files = fsFactory.listFiles(new Path(tablePath));
+//                }
+//                else {
                     files = metaDataQuery.filterBlocks(
                             dbName,
                             tblName,
@@ -156,13 +157,23 @@ public class ParaflowSplitManager
                             timeLow,
                             timeHigh)
                             .stream().map(Path::new).collect(Collectors.toList());         // filter file paths with fiber domains and time domains using meta server
-                }
+//                }
             }
         }
         else {
             files = fsFactory.listFiles(new Path(tablePath));
         }
-
+        logger.info("[File Num Begin]:" + files.size());
+        int count = 0;
+        for (int i = files.size() - 1; i >= 0; i--) {
+            Path item = files.get(i);
+            if (item.toString().contains("shm")) {
+                files.remove(item);
+                count++;
+            }
+        }
+        logger.info("[File Num] Exclude:" + count);
+        logger.info("[File Num] End:" + files.size());
         files.forEach(file -> splits.add(new ParaflowSplit(connectorId,
                 tableHandle.get().getSchemaTableName(),
                 file.toString(), 0, -1,

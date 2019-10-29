@@ -5,7 +5,7 @@ echo $1" the kafka cluster."
 
 PREFIX="dbiir"
 START=2
-END=9
+END=6
 KAFKA_HOME="/home/iir/opt/kafka"
 KAFKA_HEAP_OPTS="-Xmx8G -Xms2G"
 KAFKA_DIR="/home/iir/opt/kafka_2.11-1.1.1"
