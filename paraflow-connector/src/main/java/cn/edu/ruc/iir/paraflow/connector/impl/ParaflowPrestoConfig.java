@@ -12,6 +12,20 @@ public class ParaflowPrestoConfig
     private String metaserverHost;
     private int metaserverPort;
     private String hdfsWarehouse;
+    private boolean fiberEnable;
+
+    @NotNull
+    public boolean getFiberEnable()
+    {
+        return fiberEnable;
+    }
+
+    @Config("fiber.enabled")
+    @ConfigDescription("fiber enabled")
+    public void setFiberEnable(boolean fiberEnable)
+    {
+        this.fiberEnable = fiberEnable;
+    }
 
     @NotNull
     public String getMetaserverHost()
