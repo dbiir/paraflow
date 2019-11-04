@@ -290,7 +290,7 @@ public class SQLTemplate
 
     public static String filterBlockIndexBeginEnd(long tblId, long timeBegin, long timeEnd)
     {
-        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d AND (timeBegin < %d OR timeEnd > %d);", tblId, timeEnd, timeBegin);
+        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d AND (timeBegin < %d AND timeEnd > %d);", tblId, timeEnd, timeBegin);
     }
 
     public static String filterBlockIndexBegin(long tblId, long timeBegin)
@@ -310,7 +310,7 @@ public class SQLTemplate
 
     public static String filterBlockIndexByFiberBeginEnd(long tblId, long value, long timeBegin, long timeEnd)
     {
-        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d AND (timeBegin < %d OR timeEnd > %d);", tblId, value, timeEnd, timeBegin);
+        return String.format("SELECT DISTINCT blockPath FROM meta_blockindex WHERE tblid = %d AND fiberValue = %d AND (timeBegin < %d AND timeEnd > %d);", tblId, value, timeEnd, timeBegin);
     }
 
     public static String filterBlockIndexByFiberBegin(long tblId, long value, long timeBegin)

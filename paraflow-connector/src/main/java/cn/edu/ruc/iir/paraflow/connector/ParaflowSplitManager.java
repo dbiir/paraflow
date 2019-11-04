@@ -98,7 +98,7 @@ public class ParaflowSplitManager
         List<Path> files;
 
         if (this.fiberEnabled) {
-            logger.info("Step into fiber config");
+            logger.info("Step One: go into fiber config");
             if (predicatesOptional.isPresent()) {
                 TupleDomain<ColumnHandle> predicates = predicatesOptional.get();
                 ColumnHandle fiberCol = layout.getFiberColumn();
@@ -141,9 +141,17 @@ public class ParaflowSplitManager
                         Domain timeDomain = domains.get().get(timeCol);
                         ValueSet timeValueSet = timeDomain.getValues();
                         if (timeValueSet instanceof SortedRangeSet) {
-                            Range range = ((SortedRangeSet) timeValueSet).getOrderedRanges().get(0);
+                            // todo list all ranges
+                            List<Range> ranges = ((SortedRangeSet) timeValueSet).getOrderedRanges();
+                            Range range = ranges.get(0);
+                            logger.info("[Step 0] range:" + range.toString(session));
+                            for (int i = 1; i < ranges.size(); i++) {
+                                range = range.span(ranges.get(i));
+                            }
+                            logger.info("[Step 1] range:" + range.toString(session));
                             Marker low = range.getLow();
                             Marker high = range.getHigh();
+                            logger.info("[Step 0] range:" + range.toString(session));
                             if (!low.isLowerUnbounded()) {
                                 timeLow = (Long) low.getValue();
                             }
@@ -189,7 +197,7 @@ public class ParaflowSplitManager
                     fsFactory.getBlockLocations(file, 0, Long.MAX_VALUE))));
         }
         else {
-            logger.info("Step into no fiber config");
+            logger.info("Step Two: go into no fiber config");
             files = fsFactory.listFiles(new Path(tablePath));
             logger.info("[File_1 Num Begin]:" + files.size());
             final int[] count = {0};
@@ -208,7 +216,7 @@ public class ParaflowSplitManager
             logger.info("[File_1 Num] End:" + files.size());
         }
 
-        splits.forEach(split -> logger.info(split.toString()));
+//        splits.forEach(split -> logger.info(split.toString()));
         Collections.shuffle(splits);
 
         return new FixedSplitSource(splits);

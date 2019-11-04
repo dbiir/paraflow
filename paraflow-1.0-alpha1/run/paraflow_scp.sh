@@ -1,5 +1,12 @@
 #!/bin/bash
 
+
+
+if [ $1 = 'y' ]; then
+    cd /home/tao/software/station/DBIIR/paraflow
+    mvn package
+fi
+
 host="dbiir01"
 PRESTO_DIR=/home/iir/opt/presto-server-0.192/
 
@@ -15,4 +22,5 @@ echo "task is done."
 
 #/home/iir/opt/paraflow/run/exe_script.sh "tail -10 ~/opt/presto-server-0.192/data/var/log/server.log"
 
-ssh iir@$host "$PRESTO_DIR/sbin/cmd.sh"
+ssh iir@$host "$PRESTO_DIR/sbin/cmd.sh true"
+
