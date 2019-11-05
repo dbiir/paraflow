@@ -76,7 +76,8 @@ public final class FSFactory
             fileStatuses = this.fileSystem.listStatus(dirPath);
             if (fileStatuses != null) {
                 for (FileStatus f : fileStatuses) {
-                    if (f.isFile()) {
+                    //avoid add empty file
+                    if (f.isFile() && f.getLen() > 0) {
                         files.add(f.getPath());
                     }
                 }
