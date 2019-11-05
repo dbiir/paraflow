@@ -1,4 +1,4 @@
-:aq::#!/bin/sh
+#!/bin/sh
 # init|start|stop|clean|destroy paraflow collectors
 
 echo $1" paraflow collectors."
