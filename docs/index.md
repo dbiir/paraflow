@@ -25,7 +25,7 @@ Paraflow enables users to load data into data warehouse (like HDFS) as soon as p
 3. **Real-time analysis**. Lightweight indices are used in Paraflow to speed up queries.
 
 ## Demonstration
-[Demonstration Video](https://youtu.be/en1J0Z4HZIo)
+[Demonstration Video](https://youtu.be/nMnFzUArOq4)
 
 ## Publication
 + Towards Real-time Analysis of ID-Associated Data. ER'18 Demo.
