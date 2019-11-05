@@ -1,4 +1,4 @@
-#!/bin/sh
+:aq::#!/bin/sh
 # init|start|stop|clean|destroy paraflow collectors
 
 echo $1" paraflow collectors."
@@ -10,7 +10,7 @@ PARAFLOW_HOME="/home/iir/opt/paraflow"
 PARAFLOW_HEAP_OPTS="-Xmx8G -Xms6G"
 PARAFLOW_DIR="/home/iir/opt/paraflow-1.0-alpha1"
 DB="test"
-TABLE="line"
+TABLE="tpch"
 PARALLELISM="8"
 PARTITION_NUM="320"
 SF="300"
