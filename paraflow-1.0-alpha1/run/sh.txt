@@ -1,0 +1,5 @@
+sed -i 's/loader.parallelism=8/loader.parallelism=16/g' /home/iir/opt/paraflow/config/loader.conf
+
+./bin/kafka-topics.sh --delete --zookeeper dbiir02:2180,dbiir03:2180,dbiir04:2180,dbiir05:2180,dbiir06:2180 --topic test-tpch
+
+

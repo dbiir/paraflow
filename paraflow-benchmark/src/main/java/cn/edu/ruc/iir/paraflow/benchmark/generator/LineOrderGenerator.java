@@ -383,8 +383,8 @@ public class LineOrderGenerator
                     shipInstructions.getBytes(Charset.forName("UTF-8")),
                     shipMode.getBytes(Charset.forName("UTF-8")),
                     lineitemComment.getBytes(Charset.forName("UTF-8")),
-                    timeGenerationPool.nextTime());
-//                    System.currentTimeMillis());
+//                    timeGenerationPool.nextTime());
+                    System.currentTimeMillis());
         }
 
         private long generateCustomerKey()
