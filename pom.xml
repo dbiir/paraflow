@@ -64,7 +64,7 @@
         <java.source.version>1.8</java.source.version>
         <java.target.version>1.8</java.target.version>
 
-        <hadoop.version>2.7.3</hadoop.version>
+        <hadoop.version>2.10.1</hadoop.version>
         <dep.testng.version>6.8.21</dep.testng.version>
         <guice.version>4.0</guice.version>
         <presto.version>0.192</presto.version>
